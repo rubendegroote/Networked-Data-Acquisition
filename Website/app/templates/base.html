@@ -1,0 +1,25 @@
+<html>
+  <head>
+  <link rel="stylesheet" href="static/base.css" type="text/css" />
+    {% if title %}
+    <title>{{ title }} - CRIS Data Website</title>
+    {% else %}
+    <title>Welcome to the CRIS Data Website</title>
+    {% endif %}
+  </head>
+  <body>
+    <h1>CRIS Data:</h1>
+    <h2><a href="/index">Home</a>|<a href="/parameters">Edit parameters</a>|<a href="/data">View data</a></h2>
+    <hr>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li>{{ message }} </li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </body>
+</html>

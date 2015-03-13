@@ -1,0 +1,115 @@
+from flask import render_template, flash, redirect
+from app import app
+from .forms import LoginForm, ParameterForm
+import logging
+
+from bokeh.embed import components
+from bokeh.models import ColumnDataSource
+from bokeh.plotting import figure
+from bokeh.resources import Resources
+from bokeh.templates import RESOURCES
+from bokeh.utils import encode_utf8
+from bokeh.models.widgets import HBox, Paragraph, Slider, VBox
+
+from threading import Thread
+
+logging.basicConfig(level=logging.INFO)
+bokeh_url = 'http://ksf712:5006'
+
+
+@app.route('/')
+@app.route('/index')
+def index():
+    user = {'nickname': 'Miguel'}  # fake user
+    posts = [  # fake array of posts
+        {
+            'author': {'nickname': 'John'},
+            'body': 'Beautiful day in Portland!'
+        },
+        {
+            'author': {'nickname': 'Susan'},
+            'body': 'The Avengers movie was so cool!'
+        }
+    ]
+    return render_template("index.html",
+                           title='Home',
+                           user=user,
+                           posts=posts)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        flash('Login requested for OpenID="%s", remember_me=%s' %
+              (form.openid.data, str(form.remember_me.data)))
+        return redirect('/index')
+    return render_template('login.html',
+                           title='Sign In',
+                           form=form,
+                           providers=app.config['OPENID_PROVIDERS'])
+
+
+@app.route('/parameters', methods=['GET', 'POST'])
+def parameter():
+    form = ParameterForm()
+    return render_template('parameters.html',
+                           title='Input parameters',
+                           form=form)
+
+
+@app.route("/data")
+def root():
+    spectrogram = makePlots()
+
+    resources = Resources("inline")
+    plot_resources = RESOURCES.render(
+        js_raw=resources.js_raw,
+        css_raw=resources.css_raw,
+        js_files=resources.js_files,
+        css_files=resources.css_files,
+    )
+
+    plot_script, plot_div = components(
+        spectrogram, resources
+    )
+
+    html = render_template(
+        "animation.html",
+        plot_resources=plot_resources,
+        plot_script=plot_script,
+        plot_div=plot_div,
+    )
+    return encode_utf8(html)
+
+i = 1
+
+
+def makePlots():
+    import numpy as np
+    global i
+
+    x = np.linspace(0, 2 * np.pi)
+    y = np.sin(i * x)
+    data = {'x': x, 'y': y}
+    p_source = ColumnDataSource(data)
+
+    p = figure(x_range=[-11, 11], y_range=[-11, 11])
+
+    p.line(x='x', y='y', source=p_source)
+    layout = VBox(children=[p])
+
+    return layout
+
+import time
+
+def changeData():
+    global i
+    while True:
+        print(i)
+        i += 1
+        time.sleep(0.5)
+
+
+# t = Thread(target=changeData, args=())
+# t.start()

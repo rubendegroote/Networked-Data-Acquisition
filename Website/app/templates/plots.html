@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+    <head>
+        <meta charset="utf-8">
+        <script src="{{ app_url }}"></script>
+        <script>
+            window._bokeh_onload_callbacks = [window.DatashowingApp.main];
+        </script>
+    </head>
+    <body>
+        {{ app_tag|indent(8)|safe }}
+    </body>
+{% endblock %}
