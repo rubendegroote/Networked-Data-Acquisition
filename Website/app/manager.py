@@ -3,7 +3,7 @@ import asynchat
 import socket
 import threading as th
 import pickle
-from .helpers import *
+from .Helpers import *
 import logging
 
 logging.basicConfig(format='%(asctime)s: %(message)s', level=logging.INFO)
