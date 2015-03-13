@@ -8,7 +8,7 @@ import pickle
 import pandas as pd
 import time
 from acquire import acquire
-from Helpers import *
+from helpers import *
 from collections import deque
 
 # logging.basicConfig(filename='example.log', level=logging.DEBUG)

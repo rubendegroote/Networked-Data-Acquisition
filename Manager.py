@@ -6,7 +6,7 @@ import threading as th
 import pickle
 import numpy as np
 import pandas as pd
-from Helpers import *
+from helpers import *
 
 
 class Manager():
