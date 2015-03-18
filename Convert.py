@@ -34,7 +34,9 @@ def save_groups_csv(data, name,mQ):
 
 def read(name):
     if ".h5" in name:
-        return pd.read_hdf(name, 'data')
+        f = pd.get_store(name)
+        data = pd.concat([f[k] for k in f.keys()])
+        return data
     elif ".csv" in name:
         return pd.read_csv(name)
     else:

@@ -6,7 +6,6 @@ import logging
 logging.basicConfig(format='%(asctime)s: %(message)s',
                     level=logging.INFO)
 
-
 def GetFromQueue(q, name):
     if not q.empty():
         try:
@@ -25,7 +24,6 @@ def GetFromQueue(q, name):
 
     return ret
 
-
 def emptyPipe(q):
     toSend = []
     now = time.time()
@@ -38,31 +36,29 @@ def emptyPipe(q):
                 pass
     return toSend
 
-
 def mass_concat(array, format):
     data = np.concatenate([d for d in array])
     data = pd.DataFrame(data, columns=format)
     return data
 
-
 def flatten(array):
     return [l for sub in array for l in sub]
 
-
-def save(data, name):
-    # with pd.get_store(name+'.h5') as store:
-
+def save(data, name,artist):
+    print('save')
+    with pd.get_store(name+'_stream.h5') as store:
+        store.append(artist, data.convert_objects())
     groups = data.groupby('scan', sort=False)
     for n, group in groups:
+        if not n == -1:
+            with pd.get_store(name+'_scan_'+ str(int(n))+ '.h5') as store:
+                store.append(artist, group.convert_objects())
+
+def save_csv(data,name,artist=''):
+    for n, group in groups:
         if n == -1:
-            with pd.get_store(name + '.h5') as store:
-                store.append('stream', group.convert_objects())
+            with open(name+'_stream.csv', 'a') as f:
+                group.to_csv(f,na_rep='nan')
         else:
-            # with pd.get_store(name+'.h5') as store:
-            #     print(store)
-                # if not n in store:
-                    # df = pd.DataFrame([group['time'][0],n],
-                    #             columns = [['time'],['scan']])
-                    # store.append('keys',df.convert_objects())
-            with pd.get_store(name + '.h5') as store:
-                store.append('scan' + str(int(n)), group.convert_objects())
+            with open(name+'_scan' + str(int(n))+'.csv', 'a') as f:
+                group.to_csv(f,na_rep='nan')

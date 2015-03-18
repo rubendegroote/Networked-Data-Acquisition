@@ -54,9 +54,9 @@ def acquire(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
 
             # put data on the queue
             dQ.send(np.array([
-                np.array([datetime.datetime.now()]),
-                np.array([ns.scanNo]),
-                np.array([p]), np.random.rand(1), np.random.rand(1)
+                np.array(1000*[datetime.datetime.now()]),
+                np.array(1000*[ns.scanNo]),
+                np.array(1000*[p]), np.random.rand(1000), np.random.rand(1000)
             ]).T)
             i += 1
 

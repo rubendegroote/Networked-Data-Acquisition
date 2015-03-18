@@ -8,7 +8,7 @@ import pickle
 import pandas as pd
 import time
 from acquire import acquire
-from helpers import *
+from Helpers import *
 from collections import deque
 
 # logging.basicConfig(filename='example.log', level=logging.DEBUG)
@@ -64,7 +64,7 @@ class Artist(asyncore.dispatcher):
 
         self.name = name
         self._data = []
-        self.saveDir = self.name + 'Artist'
+        self.saveDir = "Artist_" + name
         self.transmitters = []
 
         # dictionary holding the initial settings for the hardware
@@ -136,6 +136,7 @@ class Artist(asyncore.dispatcher):
         for t in self.transmitters:
             t.format = self.format
             logging.info(t.format)
+        print(self.format)
         self.readThread = th.Timer(0, self.ReadData).start()
         logging.info('DAQ Started.')
 
@@ -192,7 +193,7 @@ class Artist(asyncore.dispatcher):
             data = [self.saveQ.popleft() for i in range(l)]
             data = flatten(data)
             data = mass_concat(data, self.format)
-            save(data, self.saveDir)
+            save(data, self.saveDir, self.name)
 
         # # slightly more stable if the save runs every 0.5 seconds,
         # # regardless of how long the previous saving took
@@ -336,7 +337,9 @@ def start():
 
 
 def main():
-    a = makeArtist(name='Wouter', PORT=5005, save=False)
+    port = int(input('PORT?'))
+    name = input('Name?')
+    a = makeArtist(name=name, PORT=port, save=True)
     t0 = th.Timer(1, a.StartDAQ).start()
     asyncore.loop(0.001)
 

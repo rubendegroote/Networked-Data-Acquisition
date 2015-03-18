@@ -9,7 +9,7 @@ import threading as th
 import time
 
 from bokeh.embed import autoload_server
-from helpers import *
+from Helpers import *
 import numpy as np
 import pandas as pd
 
@@ -126,8 +126,9 @@ def render_plot():
         f.write(html)
     return pop
 
-SAVE_INTERVAL = 0.1
 
+SAVE_INTERVAL = 2
+SHARED = ['scan','time']
 
 class DataServer():
 
@@ -135,7 +136,7 @@ class DataServer():
         self._readers = {}
         self.saveDir = "Server"
         self.dQs = {}
-        self.plot = render_plot()
+        # self.plot = render_plot()
         for address in artists:
             self.addReader(address)
         self._saveThread = th.Timer(1, self.save).start()
@@ -151,7 +152,7 @@ class DataServer():
             return
         logging.info('Adding reader')
         # try:
-        reader = ArtistReader(IP=address[0], PORT=address[1])
+        reader = ArtistReader(IP=address[0], PORT=int(address[1]))
         self._readers[reader.artistName] = reader
         self.dQs[reader.artistName] = deque()
         self._readers[reader.artistName].dQ = self.dQs[reader.artistName]
@@ -163,25 +164,26 @@ class DataServer():
         # should be merged before saving!
         # should be better now, but never run before!!!
         now = time.time()
-        new_data = []
+        new_data = pd.DataFrame()
         for name, reader in self._readers.items():
             dQ = self.dQs[name]
             l = len(dQ)
             if not l == 0:
                 data = [dQ.popleft() for i in range(l)]
-                data = flatten(data)
-                new_data.append(data)
+                data = mass_concat(flatten(data), format=reader._format)
+                if self.save_data:
+                    print(len(data))
+                    save(data,self.saveDir,reader.artistName)
+                new_data = new_data.append(data)
+
         if not len(new_data) == 0:
-            new_data = mass_concat(flatten(new_data), format=reader._format)
-            if self.save_data:
-                save(new_data, self.saveDir)
             if self.remember:
                 self.extractMemory(new_data)
 
         # slightly more stable if the save runs every 0.5 seconds,
         # regardless of how long the previous saving took
         wait = abs(min(0, time.time() - now - SAVE_INTERVAL))
-        # print(wait)
+        print(wait)
         self._saveThread = th.Timer(wait, self.save).start()
 
     def extractMemory(self, new_data):
@@ -194,9 +196,9 @@ class DataServer():
         self._data = self._data[-100:]
 
         # self.bin_current()
-
         # print(self._data)
-        update_population(self.plot, self)
+
+        # update_population(self.plot, self)
 
     def bin_current(self):
         # some stuff about binning the current data in some
@@ -252,7 +254,7 @@ class ArtistReader(asynchat.async_chat):
         self._buffer = b''
         data = pickle.loads(buff)
         if type(data) == tuple:
-            self._format = data
+            self._format = tuple([self.artistName + d if d not in SHARED else d for d in data])
         else:
             if not data == []:
                 self.dQ.append(data)
@@ -262,16 +264,16 @@ class ArtistReader(asynchat.async_chat):
 def makeServer(channel=[('KSF402', 5005)], save=True, remember=True):
     return DataServer(channel, save, remember)
 
-
 def start():
     while True:
         asyncore.loop(count=1)
         time.sleep(0.01)
 
-
 def main():
     # render_plot()
-    d = makeServer([('KSF712', 5005)], save=False, remember=True)
+    channels = input('IP,PORTS?').split(";")
+    channels = [c.split(",") for c in channels]
+    d = makeServer(channels, save=int(input('save?'))==1, remember=int(input('remember?'))==1)
     asyncore.loop(0.001)
 
 if __name__ == '__main__':
