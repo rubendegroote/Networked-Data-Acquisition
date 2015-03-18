@@ -8,7 +8,7 @@ import threading as th
 import multiprocessing as mp
 import pickle
 import time
-from convert import *
+from Convert import *
 
 
 FILE_SERVER_PORT = 5009
@@ -63,7 +63,7 @@ class FileHandler(asynchat.async_chat):
             self.mQ.put(files_with_size)
         elif "SEND" in req:
             if req == "SEND_ALL_H5_FILES_CONVERTED":
-                fileNames = [f for f in files if '.h5' in f]
+                fileNames = [f for f in files if 'stream.h5' in f]
                 req = "SEND_FILE_H5_AS_CSV_PLUS_SCANS"
             else:
                 fileNames = [request[1]]

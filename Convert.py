@@ -3,13 +3,11 @@ import os
 
 
 def save_csv(data, name,mQ):
-    mQ.put('Converting {} ({} rows) and extracting scans...'
-          .format(name, len(data)))
+    mQ.put('Converting {} ({} rows)'.format(name, len(data)))
     f = name.strip(".h5") + '.csv'
     with open(f, "w") as myfile:
         data.to_csv(myfile, index=True, na_rep='Nan', sep=';')
-    mQ.put('Converted all-data-file {} ({} bytes)'
-          .format(f, os.path.getsize(f)))
+    mQ.put('Converted all-data-file {} ({} bytes)'.format(f, os.path.getsize(f)))
     return f
 
 

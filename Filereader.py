@@ -11,12 +11,12 @@ import urllib.request
 
 request_info = \
 """Type a number:
-1 = GET_FILE_LIST
-2 = SEND_FILE
-3 = SEND_FILE_H5_AS_CSV
-4 = SEND_FILE_H5_AS_CSV_PLUS_SCANS
-5 = SEND_FILE_H5_AS_CSV_ONLY_SCANS
-6 = SEND_ALL_H5_FILES_CONVERTED
+1 = Show the files in the data directory
+2 = Transfer one file
+3 = Convert a .h5 scan file to .csv and transfer it
+4 = Convert a .h5 stream file to .csv, unpack all of the scans in the stream, and transfer them all
+5 = Unpack all of the scans in a .h5 stream file, convert them, and transfer the scan files
+6 = Unpack all of the scans in all of the .h5 stream files, convert them, and transfer the scan files
 Number: """
 
 FILE_SERVER_PORT = 5009
@@ -81,19 +81,29 @@ def main():
                 reader.send_request(["SEND_ALL_H5_FILES_CONVERTED"])
             else:
                 f = input("Which file?")
-                if '.h5' in resp or '.csv' in f:
+                
+                if '.h5' in f or '.csv' in f:
                     if resp == "2":
                         reader.send_request(
                                 ["SEND_FILE",f])
                     elif resp == "3":
-                        reader.send_request(
-                                ["SEND_FILE_H5_AS_CSV",f])
+                        if 'scan' in f:
+                            reader.send_request(
+                                    ["SEND_FILE_H5_AS_CSV",f])
+                        else:
+                            print('File is not a scan file!')
                     elif resp == "4":
-                        reader.send_request(
+                        if 'stream' in f:
+                            reader.send_request(
                                 ["SEND_FILE_H5_AS_CSV_PLUS_SCANS",f])
+                        else:
+                            print('File is not a stream file!')
                     elif resp == "5":
-                        reader.send_request(
+                        if 'stream' in f:
+                            reader.send_request(
                                 ["SEND_FILE_H5_AS_CSV_ONLY_SCANS",f])
+                        else:
+                            print('File is not a stream file!')
                 else:
                     print('File is not .csv or .h5!')
         else:
