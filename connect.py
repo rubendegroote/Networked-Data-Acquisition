@@ -25,14 +25,14 @@ class ConnectionDialog(QtGui.QDialog):
         layout = QtGui.QGridLayout(self)
 
         self.typeCombo = QtGui.QComboBox(self)
-        self.typeCombo.addItems(['Server'])
+        self.typeCombo.addItems(['Radio'])
         layout.addWidget(self.typeCombo)
 
         layout.addWidget(QtGui.QLabel('Channel'),1,0,1,1)        
         self.channelBox = QtGui.QLineEdit(self,text="KSF402")
         layout.addWidget(self.channelBox,2,0,1,1)
         layout.addWidget(QtGui.QLabel('Port'),1,1,1,1)
-        self.portBox = QtGui.QLineEdit(self,text="5005")
+        self.portBox = QtGui.QLineEdit(self,text="5004")
         layout.addWidget(self.portBox,2,1,1,1)
 
         buttons = QtGui.QDialogButtonBox(

@@ -22,8 +22,16 @@ logging.basicConfig(format='%(asctime)s: %(message)s',
 SAVE_INTERVAL = 0.05
 SHARED = ['scan','time']
 
-class DataServer():
-    def __init__(self, artists=[], save=False, remember=True):
+class DataServer(asyncore.dispatcher):
+    def __init__(self,artists=[],PORT=5006,save=False, remember=True):
+        super(DataServer, self).__init__()
+        self.port = PORT
+        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
+        # self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        self.bind(('', self.port))
+        self.listen(5)
+        logging.info('Listening on port {}'.format(self.port))
+
         self._readers = {}
         self.saveDir = "Server"
         self.dQs = {}
@@ -35,6 +43,7 @@ class DataServer():
         self.remember = remember
         if remember:
             self._data = pd.DataFrame()
+            print(self._data)
             self._data_current_scan = pd.DataFrame()
 
         self.looping = True
@@ -100,14 +109,52 @@ class DataServer():
         # self.bin_current()
         # print(self._data)
 
-    def bin_current(self):
-        # some stuff about binning the current data in some
-        # XY format with certain X steps 'n stuff
-        pass
+    def getData(self,columns):
+        try:
+            return self._data[columns]
+        except:
+            return pd.DataFrame()
 
+    def writeable(self):
+        return False
+
+    def readable(self):
+        return True
+
+    def handle_accept(self):
+        pair = self.accept()
+        if pair is not None:
+            sock, addr = pair
+            self.receiver = RadioTransmitter(sock, self)
+            logging.info('Accepted {} as {}'.format(addr, "Radio"))
+
+    def handle_close(self):
+        logging.info('Closing Artist')
+        super(DataServer, self).handle_close()
+
+class RadioTransmitter(asynchat.async_chat):
+    def __init__(self,sock,server,*args,**kwargs):
+        super(RadioTransmitter, self).__init__(sock=sock, *args, **kwargs)
+        self.set_terminator('END_MESSAGE'.encode('UTF-8'))
+        self.server = server
+        self.buffer = b""
+
+    def found_terminator(self):
+        columns = pickle.loads(self.buffer)
+        self.buffer = b''
+        self.push(pickle.dumps(tuple(self.server._data.columns.values)))
+        self.push('STOP_DATA'.encode('UTF-8'))
+        self.push(pickle.dumps(self.server.getData(columns)))
+        self.push('STOP_DATA'.encode('UTF-8'))
+
+    def collect_incoming_data(self, data):
+        self.buffer += data
+
+    def handle_close(self):
+        logging.info('Closing RadioTransmitter')
+        super(RadioTransmitter, self).handle_close()
 
 class ArtistReader(asynchat.async_chat):
-
     def __init__(self, IP='KSF402', PORT=5005):
         super(ArtistReader, self).__init__()
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -161,16 +208,16 @@ class ArtistReader(asynchat.async_chat):
             self.push('Next'.encode('UTF-8') + 'END_MESSAGE'.encode('UTF-8'))
 
 
-def makeServer(channel=[('KSF402', 5005)], save=True, remember=True):
-    return DataServer(channel, save, remember)
-
+def makeServer(channel=[('KSF402', 5005)],PORT=5004,save=True,remember=True):
+    return DataServer(channel,PORT,save,remember)
 
 def main():
-    channels = input('IP,PORTS?').split(";")
+    channels = input('Artist IP,PORTS?').split(";")
     channels = [c.split(",") for c in channels]
-    d = makeServer(channels, save=int(input('save?'))==1, remember=int(input('remember?'))==1)
-
-    t = th.Thread(target = start).start()
+    PORT = input('PORT?')
+    save = int(input('save?'))==1
+    rem = int(input('remember?'))==1
+    d = makeServer(channels,int(PORT),save=save, remember=rem)
 
 if __name__ == '__main__':
     main()

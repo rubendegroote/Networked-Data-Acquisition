@@ -63,7 +63,7 @@ class Artist(asyncore.dispatcher):
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         # self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self.bind(('', self.port))
-        self.listen(100)
+        self.listen(5)
         logging.info('Listening on port {}'.format(self.port))
 
         self.name = name
@@ -299,12 +299,10 @@ class InstructionReceiver(asynchat.async_chat):
 
 
 class DataTransmitter(asynchat.async_chat):
-
     def __init__(self, sock, format, *args, **kwargs):
         super(DataTransmitter, self).__init__(sock=sock, *args, **kwargs)
         self.set_terminator('END_MESSAGE'.encode('UTF-8'))
         self.format = format
-
         self.chunkQ = deque()
 
     def found_terminator(self):
@@ -329,16 +327,13 @@ class DataTransmitter(asynchat.async_chat):
         logging.info('Closing DataTransmitter')
         super(DataTransmitter, self).handle_close()
 
-
 def makeArtist(name='test1', PORT=5005, save=True):
     return Artist(name=name, PORT=PORT, save=save)
-
 
 def start():
     while True:
         asyncore.loop(count=1)
         time.sleep(0.02)
-
 
 def main():
     port = int(input('PORT?'))

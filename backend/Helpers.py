@@ -45,7 +45,6 @@ def flatten(array):
     return [l for sub in array for l in sub]
 
 def save(data, name,artist):
-    print('save')
     with pd.get_store(name+'_stream.h5') as store:
         store.append(artist, data.convert_objects())
     groups = data.groupby('scan', sort=False)

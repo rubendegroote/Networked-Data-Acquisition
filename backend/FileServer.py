@@ -16,7 +16,6 @@ HTTP_SERVER_PORT = 5009
 
 
 class FileServer(asyncore.dispatcher):
-
     def __init__(self):
         super(FileServer, self).__init__()
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)

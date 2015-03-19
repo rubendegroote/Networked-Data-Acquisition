@@ -14,23 +14,14 @@ class GraphDock(pg.dockarea.Dock):
         self.graph = MyGraph(name)
         self.layout.addWidget(self.graph)
 
-    def plot(self,data):
-        self.graph.plot(data)
-
-
 class MyGraph(QtGui.QWidget):
     def __init__(self,name):
         super(QtGui.QWidget,self).__init__()
 
-        self.metaCap = None
-        self.curves = []
-        self.fitCurves = []
-
-        self.data = None
+        self.options = []
+        self.name = name
 
         self.layout = QtGui.QGridLayout(self)
-
-        self.name = name
 
         self.labelStyle = {'font-size': '18pt'}
 
@@ -48,25 +39,18 @@ class MyGraph(QtGui.QWidget):
         self.comboY = QtGui.QComboBox(parent = None)
         self.comboY.setToolTip('Choose the variable you want to put\
  on the Y-axis.')
-        # self.comboY.currentIndexChanged.connect(self.updatePlot)
+        self.comboY.currentIndexChanged.connect(self.newXY)
         self.sublayout.addWidget(self.comboY,0,1)
-
-        self.comboY2 = QtGui.QComboBox(parent = None)
-        self.comboY2.setToolTip('Choose the variable you want to\
- divide the first Y-varible by.')
-        self.comboY2.setVisible(False)
-        # self.comboY2.currentIndexChanged.connect(self.updatePlot)
-        self.sublayout.addWidget(self.comboY2,0,2)
 
         label = QtGui.QLabel('vs')
         label.setStyleSheet("border: 0px;");
-        self.sublayout.addWidget(label,0,3)
+        self.sublayout.addWidget(label,0,2)
 
         self.comboX = QtGui.QComboBox(parent = None)
         self.comboX.setToolTip('Choose the variable you want to put\
  on the X-axis.')
-        # self.comboX.currentIndexChanged.connect(self.updatePlot)
-        self.sublayout.addWidget(self.comboX,0,4)
+        self.comboX.currentIndexChanged.connect(self.newXY)
+        self.sublayout.addWidget(self.comboX,0,3)
 
  #        self.mathCheckBox = QtGui.QCheckBox('Mathy math math')
  #        self.mathCheckBox.setToolTip('Check this box if you want to some\
@@ -139,9 +123,35 @@ class MyGraph(QtGui.QWidget):
 
     def plot(self,data):
         try:
-            time = (data['time'].values-datetime.datetime(1970,1,1))
-            time = [t.total_seconds() for t in time]
-            self.graph.plot(time,data['Rubenz'].values, 
+            try:
+                time = (data['time'].values-datetime.datetime(1970,1,1))
+                data['time'] = [t.total_seconds() for t in time]
+            except:
+                pass
+
+            columns = data.columns.values
+            self.graph.plot(data[columns[0]].values,data[columns[1]].values, 
                 pen = 'r', clear = True)
         except Exception as e:
             pass
+
+    def setXYOptions(self,options):
+        if not options == self.options:
+            self.options = options
+            curX = int(self.comboX.currentIndex())
+            curY = int(self.comboY.currentIndex())
+            self.comboX.clear()
+            self.comboX.addItems(options)
+
+            self.comboY.clear()
+            self.comboY.addItems(options)
+
+            self.comboX.setCurrentIndex(curX)
+            self.comboY.setCurrentIndex(curY)
+
+        else:
+            pass
+
+    def newXY(self):
+        self.xkey = str(self.comboX.currentText())
+        self.ykey = str(self.comboY.currentText())

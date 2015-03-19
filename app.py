@@ -4,6 +4,7 @@ from connect import ConnectionsWidget
 from central import CentralDock
 
 from backend.DataServer import DataServer
+from backend.Radio import Radio
 
 class Application(QtGui.QMainWindow):
     def __init__(self):
@@ -30,20 +31,25 @@ class Application(QtGui.QMainWindow):
         self.timer.start(50)
 
     def addConnection(self,data):
-        if data[0] == 'Server':
-            self.dataServer = DataServer(artists=[(data[1],data[2])], 
-                                         save=False, remember=True)
+        if data[0] == 'Radio':
+            self.radio = Radio(IP=data[1],PORT=int(data[2]))
+
+        elif data[0] == 'FileServer':
+            self.fileServer = FileServer(artists=[(data[1],data[2])], 
+                                      save=False, remember=True)
         
     def plot(self):
         try:
-            for graph in self.centralDock.graphs:
-                graph.plot(self.dataServer._data)
-        except AttributeError:
+            for g in self.centralDock.graphDocks:
+                g.graph.setXYOptions(list(self.radio.format))
+                g.graph.plot(self.radio.data)
+                self.radio.xy = [g.graph.xkey,g.graph.ykey]
+        except AttributeError as e:
             pass
 
     def closeEvent(self,event):
         try:
-            self.dataServer.stop()
+            self.radio.stop()
         except Exception as e:
             print(e)
 

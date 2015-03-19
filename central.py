@@ -8,6 +8,6 @@ class CentralDock(pg.dockarea.DockArea):
         self.createUIDocks()
 
     def createUIDocks(self):
-        self.graphs = []
-        self.graphs.append(GraphDock('Test'))
-        self.addDock(self.graphs[-1])
+        self.graphDocks = []
+        self.graphDocks.append(GraphDock('Test'))
+        self.addDock(self.graphDocks[-1])
