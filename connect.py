@@ -5,14 +5,14 @@ class ConnectionsWidget(QtGui.QWidget):
     def __init__(self):
         super(ConnectionsWidget,self).__init__()
         self.layout = QtGui.QGridLayout(self)
-        
+
         self.addConButton = QtGui.QPushButton('Add Connection')
         self.addConButton.clicked.connect(self.addConn)
 
         self.layout.addWidget(self.addConButton)
 
     def addConn(self):
-        respons = ConnectionDialog.getInfo()
+        respons = ConnectionDialog.getInfo(self)
         if respons[1]:
             self.newConn.emit(respons[0])
 
@@ -23,10 +23,6 @@ class ConnectionDialog(QtGui.QDialog):
         self.port = 5005
 
         layout = QtGui.QGridLayout(self)
-
-        self.typeCombo = QtGui.QComboBox(self)
-        self.typeCombo.addItems(['Radio'])
-        layout.addWidget(self.typeCombo)
 
         layout.addWidget(QtGui.QLabel('Channel'),1,0,1,1)        
         self.channelBox = QtGui.QLineEdit(self,text="KSF402")
@@ -44,8 +40,7 @@ class ConnectionDialog(QtGui.QDialog):
 
 
     def getData(self):
-        return (self.typeCombo.currentText(),
-                self.channelBox.text(),
+        return (self.channelBox.text(),
                 self.portBox.text(),)
 
     @staticmethod

@@ -31,9 +31,16 @@ class Radio(asynchat.async_chat):
         self.push('END_MESSAGE'.encode('UTF-8'))
 
         self.data = pd.DataFrame()
+    #     self.looping = True
+    #     t = th.Thread(target = self.start).start()
 
-        self.looping = True
-        t = th.Thread(target = self.start).start()
+    # def stop(self):
+    #     self.looping = False
+
+    # def start(self):
+    #     while self.looping:
+    #         asyncore.loop(count=1)
+    #         time.sleep(0.01)
 
     def collect_incoming_data(self, data):
         self._buffer += data
@@ -49,11 +56,3 @@ class Radio(asynchat.async_chat):
                 self.data = data
             self.push(pickle.dumps(self.xy))
             self.push('END_MESSAGE'.encode('UTF-8'))
-
-    def stop(self):
-        self.looping = False
-
-    def start(self):
-        while self.looping:
-            asyncore.loop(count=1)
-            time.sleep(0.01)

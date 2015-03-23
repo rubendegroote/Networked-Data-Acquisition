@@ -6,8 +6,7 @@ import pandas as pd
 # developing a general acquisition function, to get a feel for the data
 # standard we would like
 
-
-def acquire(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
+def acquire(settings,dQ,iQ,rQ,mQ,contFlag,stopFlag,IStoppedFlag,ns):
     """ This is the function that will be the target function of a Process.
 
     Parameters:
@@ -43,6 +42,8 @@ def acquire(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     contFlag.wait()
     i = 0
     p = 0
+    got_instr = False
+
     while not stopFlag.is_set():
         try:
             # if the contFlag is set: wait for it to be unset
@@ -66,6 +67,13 @@ def acquire(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
             # get instructions from the instructions queue
             try:
                 instr = iQ.get_nowait()
+                got_instr = True
+            except:
+                got_instr = False
+                # no instructions received
+                pass
+
+            if got_instr:
                 if instr[0] == 'Change':
                     pass
                     # Change parameter
@@ -79,27 +87,24 @@ def acquire(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
                         scanPar, scanRange, tPerStep = instr[1:]
                         totalSteps = len(scanRange)
                         mQ.put("Started scanning {} in range {} at 1 step per {}s"
-                               .format(instr[1], instr[2], instr[2]))
+                               .format(instr[1], instr[2], instr[3]))
+                        rQ.put((True,0))
                     else:
                         mQ.put('''Already scanning! Abort current scan first
                             or wait for it to finish.''')
-                # hardware_give_instructions(instr)
-            except:
-                # no instructions received
-                pass
 
             if ns.scanning:
                 if curPos == totalSteps:
                     ns.scanning = False
+                    rQ.put((False,100))
                 elif curPos == 0 or time.time() - t0 >= tPerStep:
                     # Set scanPar to scanRange[curPos]
-                    mQ.put('Set {} to {} ({} out of {}), {} after the previous change'.
-                           format(scanPar, str(scanRange[curPos]),
-                                  str(curPos + 1), str(totalSteps),
-                                  time.time() - t0))
                     p = scanRange[curPos]
                     curPos += 1
                     t0 = time.time()
+                    
+                    progress = int(curPos / len(scanRange) * 100)
+                    rQ.put((True,progress))
 
         except Exception as e:
             mQ.put(e)

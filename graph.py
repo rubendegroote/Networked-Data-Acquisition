@@ -5,9 +5,6 @@ import datetime
 
 from picbutton import PicButton
 
-PATH = "./resources/"
-
-
 class GraphDock(pg.dockarea.Dock):
     def __init__(self,name):
         super(GraphDock,self).__init__(name)
@@ -98,14 +95,12 @@ class MyGraph(QtGui.QWidget):
         self.sublayout.addWidget(self.binSpinBox,2,4)      
         
 
-        self.saveButton = PicButton('save',checkable = False,size = 25,
-            path = PATH)
+        self.saveButton = PicButton('save',checkable = False,size = 25)
         self.saveButton.setToolTip('Save the current graph to file.')
         # self.saveButton.clicked.connect(self.saveSpectrum)
         self.sublayout.addWidget(self.saveButton, 0,7,1,1)
 
-        self.settingsButton = PicButton('settings',checkable = True,size = 25,
-            path = PATH)
+        self.settingsButton = PicButton('settings',checkable = True,size = 25)
         self.settingsButton.setToolTip('Display the advanced plotting options.')
         # self.settingsButton.clicked.connect(self.showSettings)
         self.sublayout.addWidget(self.settingsButton, 0,8,1,1)

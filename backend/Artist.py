@@ -79,6 +79,8 @@ class Artist(asyncore.dispatcher):
         # instructions queue:
         # Manager -> InstructionReceiver -> acquire
         self.iQ = mp.Queue()
+        # Manager <- InstructionReceiver <- acquire
+        self.rQ = mp.Queue()
         # message queue: acquire -> ARTIST
         self.mQ = mp.Queue()
         # data queue: acquire -> ARTIST
@@ -130,7 +132,8 @@ class Artist(asyncore.dispatcher):
         self.InitializeScanning()
         self.DAQProcess = mp.Process(target=acquire,
                                      args=(self.settings,
-                                           self.acquire_dQ, self.iQ, self.mQ,
+                                           self.acquire_dQ,self.iQ, 
+                                           self.rQ,self.mQ,
                                            self.contFlag, self.stopFlag,
                                            self.IStoppedFlag, self.ns))
         self.DAQProcess.start()
@@ -252,7 +255,6 @@ class Artist(asyncore.dispatcher):
 
 
 class InstructionReceiver(asynchat.async_chat):
-
     def __init__(self, sock, artist, *args, **kwargs):
         super(InstructionReceiver, self).__init__(sock=sock, *args, **kwargs)
         self.instruction = b""
@@ -260,6 +262,7 @@ class InstructionReceiver(asynchat.async_chat):
 
         # is this the proper way to do it?
         self.iQ = artist.iQ
+        self.rQ = artist.rQ
         self.StopDAQ = artist.StopDAQ
         self.StartDAQ = artist.StartDAQ
         self.RestartDAQ = artist.RestartDAQ
@@ -269,21 +272,26 @@ class InstructionReceiver(asynchat.async_chat):
 
     def found_terminator(self):
         instruction = self.decode_instruction()
-        logging.info('Got "{}" instruction'.format(instruction))
-        if instruction[0] == 'STOP':
-            self.StopDAQ()
-        elif instruction[0] == 'START':
-            self.StartDAQ()
-        elif instruction[0] == 'RESTART':
-            self.RestartDAQ()
-        elif instruction[0] == 'PAUZE':
-            self.PauzeDAQ()
-        elif instruction[0] == 'RESUME':
-            self.ResumeDAQ()
-        elif instruction[0] == 'CHANGE SETTINGS':
-            self.changeSet(instructions[1])
+        if instruction == 'CONT':
+            message = GetFromQueue(self.rQ,'InstructionReceiver')
+            self.push(pickle.dumps(message))
+            self.push('STOP_DATA'.encode('UTF-8'))
         else:
-            self.iQ.put(instruction)
+            logging.info('Got "{}" instruction'.format(instruction))
+            if instruction[0] == 'STOP':
+                self.StopDAQ()
+            elif instruction[0] == 'START':
+                self.StartDAQ()
+            elif instruction[0] == 'RESTART':
+                self.RestartDAQ()
+            elif instruction[0] == 'PAUZE':
+                self.PauzeDAQ()
+            elif instruction[0] == 'RESUME':
+                self.ResumeDAQ()
+            elif instruction[0] == 'CHANGE SETTINGS':
+                self.changeSet(instructions[1])
+            else:
+                self.iQ.put(instruction)
 
     def decode_instruction(self):
         instr = pickle.loads(self.instruction)

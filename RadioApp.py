@@ -12,9 +12,9 @@ from backend.Radio import Radio
 from backend.Manager import Manager
 
 
-class Application(QtGui.QMainWindow):
+class RadioApp(QtGui.QMainWindow):
     def __init__(self):
-        super(Application, self).__init__()
+        super(RadioApp, self).__init__()
         self.init_UI()
 
     def init_UI(self):
@@ -27,13 +27,6 @@ class Application(QtGui.QMainWindow):
         self.connectionsWidget.newConn.connect(self.addConnection)
         self.connectToolBar.addWidget(self.connectionsWidget)
 
-        self.scanToolBar = QtGui.QToolBar('Connections')
-        self.scanToolBar.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.addToolBar(self.scanToolBar)
-        self.scanner = ScannerWidget()
-        self.scanner.scanInfo.connect(self.startScan)
-        self.scanToolBar.addWidget(self.scanner)
-
         self.centralDock = CentralDock()
         self.setCentralWidget(self.centralDock)
 
@@ -43,8 +36,8 @@ class Application(QtGui.QMainWindow):
         self.timer.timeout.connect(self.plot)
         self.timer.start(50)
 
-        # self.looping = True
-        # t = th.Thread(target = self.startIOLoop).start()
+        self.looping = True
+        t = th.Thread(target = self.startIOLoop).start()
 
     def stopIOLoop(self):
         self.looping = False
@@ -55,14 +48,8 @@ class Application(QtGui.QMainWindow):
             time.sleep(0.01)
 
     def addConnection(self,data):
-        if data[0] == 'Radio':
-            self.radio = Radio(IP=data[1],PORT=int(data[2]))
-        elif data[0] == 'FileServer':
-            self.fileServer = FileServer(artists=[(data[1],data[2])], 
-                                      save=False, remember=True)
-        elif data[0] == 'Manager':
-            self.manager = Manager(artists=[(data[1],data[2])])
-
+        self.radio = Radio(IP=data[0],PORT=int(data[1]))
+        
     def plot(self):
         try:
             for g in self.centralDock.graphDocks:
@@ -71,9 +58,6 @@ class Application(QtGui.QMainWindow):
                 self.radio.xy = [g.graph.xkey,g.graph.ykey]
         except AttributeError as e:
             pass
-
-    def startScan(self,scanInfo):
-        self.manager.scan(scanInfo)
 
     def closeEvent(self,event):
         self.stopIOLoop()

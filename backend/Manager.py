@@ -6,12 +6,15 @@ import threading as th
 import pickle
 import numpy as np
 import pandas as pd
-from helpers import *
-
+try:
+    from Helpers import *
+except:
+    from backend.Helpers import *
 
 class Manager():
-
     def __init__(self, artists=[]):
+        self.scanProgress = 0
+        self.scanning = False
         self._instructors = {}
         for address in artists:
             self.addInstructor(address)
@@ -22,31 +25,41 @@ class Manager():
             return
         print('Adding Instructor')
         try:
-            intr = ArtistInstructor(IP=address[0], PORT=address[1])
+            intr = ArtistInstructor(IP=address[0], PORT=int(address[1]), manager = self)
             self._instructors[intr.artistName] = intr
             print('Connected to ' + intr.artistName)
         except Exception as e:
             print('Connection failed')
 
+    def scan(self,scanInfo):
+        name = 'Ruben'
+        instruction = ("Scan",)+scanInfo
+        self.send_instruction(name,instruction)
+
     def send_instruction(self, name, instruction):
         print(name, instruction)
         self._instructors[name].send_instruction(instruction)
-
 
 class ArtistInstructor(asynchat.async_chat):
 
     """docstring for ArtistInstructor"""
 
-    def __init__(self, IP='KSF402', PORT=5005):
+    def __init__(self, IP='KSF402', PORT=5005, manager = None):
         super(ArtistInstructor, self).__init__()
+        self.manager = manager
+
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self.connect((IP, PORT))
+        self.set_terminator('STOP_DATA'.encode('UTF-8'))
         time.sleep(0.1)
         self.send('Manager'.encode('UTF-8'))
 
         self.artistName = self.wait_for_connection()
         self.message = b""
+
+        self.push(pickle.dumps('CONT'))
+        self.push('END_MESSAGE'.encode('UTF-8'))
 
     def wait_for_connection(self):
         # Wait for connection to be made with timeout
@@ -68,7 +81,14 @@ class ArtistInstructor(asynchat.async_chat):
         self.message += data
 
     def found_terminator(self):
-        pass
+        message = pickle.loads(self.message)
+        self.message = b""
+        if message is not None:
+            self.manager.scanning = message[0]
+            self.manager.scanProgress = message[1]
+
+        self.push(pickle.dumps('CONT'))
+        self.push('END_MESSAGE'.encode('UTF-8'))
 
     def send_instruction(self, instruction):
         """
@@ -94,22 +114,3 @@ class ArtistInstructor(asynchat.async_chat):
         self.push(pickle.dumps(instruction))
         self.push('END_MESSAGE'.encode('UTF-8'))
         print('Instruction sent')
-
-
-def makeManager(channel=[('KSF402', 5005)]):
-    return Manager(channel)
-
-
-def start():
-    while True:
-        asyncore.loop(count=1)
-        time.sleep(0.001)
-
-
-def main():
-    m = makeManager([('10.33.62.20', 5005)])
-    t = th.Thread(target=start).start()
-    return m
-
-if __name__ == '__main__':
-    main()
