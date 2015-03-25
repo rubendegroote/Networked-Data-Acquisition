@@ -79,8 +79,6 @@ class Artist(asyncore.dispatcher):
         # instructions queue:
         # Manager -> InstructionReceiver -> acquire
         self.iQ = mp.Queue()
-        # Manager <- InstructionReceiver <- acquire
-        self.rQ = mp.Queue()
         # message queue: acquire -> ARTIST
         self.mQ = mp.Queue()
         # data queue: acquire -> ARTIST
@@ -110,10 +108,8 @@ class Artist(asyncore.dispatcher):
         self.mgr = mp.Manager()
         # Shared scan number
         self.ns = self.mgr.Namespace()
-        self.ns.scanNo = 0
-
-        # are we scanning?
-        self.ns.scanning = False
+        self.ns.scanNo = -1
+        self.ns.measuring = False
         self.ns.format = ('time', 'scan', 'x', 'y', 'z')
 
         self.save_data = save
@@ -132,18 +128,20 @@ class Artist(asyncore.dispatcher):
         self.InitializeScanning()
         self.DAQProcess = mp.Process(target=acquire,
                                      args=(self.settings,
-                                           self.acquire_dQ,self.iQ, 
-                                           self.rQ,self.mQ,
+                                           self.acquire_dQ,self.iQ,self.mQ,
                                            self.contFlag, self.stopFlag,
                                            self.IStoppedFlag, self.ns))
         self.DAQProcess.start()
         time.sleep(1)
         self.format = self.ns.format
+        logging.info(self.format)
         self.contFlag.set()
         for t in self.transmitters:
             t.format = self.format
-            logging.info(t.format)
-        print(self.format)
+        try:
+            self.receiver.format = self.format
+        except:
+            pass
         self.readThread = th.Timer(0, self.ReadData).start()
         logging.info('DAQ Started.')
 
@@ -259,39 +257,35 @@ class InstructionReceiver(asynchat.async_chat):
         super(InstructionReceiver, self).__init__(sock=sock, *args, **kwargs)
         self.instruction = b""
         self.set_terminator('END_MESSAGE'.encode('UTF-8'))
-
-        # is this the proper way to do it?
-        self.iQ = artist.iQ
-        self.rQ = artist.rQ
-        self.StopDAQ = artist.StopDAQ
-        self.StartDAQ = artist.StartDAQ
-        self.RestartDAQ = artist.RestartDAQ
-        self.PauzeDAQ = artist.PauzeDAQ
-        self.ResumeDAQ = artist.ResumeDAQ
-        self.changeSet = artist.changeSet
+        self.artist = artist
 
     def found_terminator(self):
         instruction = self.decode_instruction()
         if instruction == 'CONT':
-            message = GetFromQueue(self.rQ,'InstructionReceiver')
-            self.push(pickle.dumps(message))
+            info = {'format':self.artist.format,'measuring':self.artist.ns.measuring}
+            self.push(pickle.dumps(info))
             self.push('STOP_DATA'.encode('UTF-8'))
         else:
             logging.info('Got "{}" instruction'.format(instruction))
             if instruction[0] == 'STOP':
-                self.StopDAQ()
+                self.artist.StopDAQ()
             elif instruction[0] == 'START':
-                self.StartDAQ()
+                self.artist.StartDAQ()
             elif instruction[0] == 'RESTART':
-                self.RestartDAQ()
+                self.artist.RestartDAQ()
             elif instruction[0] == 'PAUZE':
-                self.PauzeDAQ()
+                self.artist.PauzeDAQ()
             elif instruction[0] == 'RESUME':
-                self.ResumeDAQ()
+                self.artist.ResumeDAQ()
             elif instruction[0] == 'CHANGE SETTINGS':
-                self.changeSet(instructions[1])
+                self.artist.changeSet(instructions[1])
+            elif instruction[0] == 'idling':
+                self.artist.ns.scanNo = -1
+            elif instruction[0] == 'Measuring':
+                self.artist.ns.scanNo = instruction[1]
             else:
-                self.iQ.put(instruction)
+                self.artist.iQ.put(instruction)
+
 
     def decode_instruction(self):
         instr = pickle.loads(self.instruction)

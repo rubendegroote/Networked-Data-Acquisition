@@ -6,7 +6,7 @@ import pandas as pd
 # developing a general acquisition function, to get a feel for the data
 # standard we would like
 
-def acquire(settings,dQ,iQ,rQ,mQ,contFlag,stopFlag,IStoppedFlag,ns):
+def acquire(settings,dQ,iQ,mQ,contFlag,stopFlag,IStoppedFlag,ns):
     """ This is the function that will be the target function of a Process.
 
     Parameters:
@@ -75,36 +75,44 @@ def acquire(settings,dQ,iQ,rQ,mQ,contFlag,stopFlag,IStoppedFlag,ns):
 
             if got_instr:
                 if instr[0] == 'Change':
-                    pass
-                    # Change parameter
-                    # mQ.put("Changed {} to {}".format(instr[1], instr[2]))
-                elif instr[0] == 'Scan':
-                    if not ns.scanning:
-                        # Start the scanning process
-                        ns.scanning = True
-                        ns.scanNo += 1
-                        curPos = 0
-                        scanPar, scanRange, tPerStep = instr[1:]
-                        totalSteps = len(scanRange)
-                        mQ.put("Started scanning {} in range {} at 1 step per {}s"
-                               .format(instr[1], instr[2], instr[3]))
-                        rQ.put((True,0))
-                    else:
-                        mQ.put('''Already scanning! Abort current scan first
-                            or wait for it to finish.''')
-
-            if ns.scanning:
-                if curPos == totalSteps:
-                    ns.scanning = False
-                    rQ.put((False,100))
-                elif curPos == 0 or time.time() - t0 >= tPerStep:
-                    # Set scanPar to scanRange[curPos]
-                    p = scanRange[curPos]
-                    curPos += 1
-                    t0 = time.time()
+                    par = instr[1]
+                    tPerStep = instr[3]
+                    ## setting parameter in hardware somewhere
+                    p = instr[2] 
+                    time.sleep(0.5)
                     
-                    progress = int(curPos / len(scanRange) * 100)
-                    rQ.put((True,progress))
+                    ns.measuring = True
+                    t0 = time.time()
+
+            if ns.measuring and time.time() - t0 >= tPerStep:
+                ns.measuring = False
+
+            #     elif instr[0] == 'Scan':
+            #         if not ns.scanning:
+            #             # Start the scanning process
+            #             ns.scanning = True
+            #             curPos = 0
+            #             scanPar, scanRange, tPerStep = instr[1:]
+            #             totalSteps = len(scanRange)
+            #             mQ.put("Started scanning {} in range {} at 1 step per {}s"
+            #                    .format(instr[1], instr[2], instr[3]))
+            #         else:
+            #             mQ.put('''Already scanning! Abort current scan first
+            #                 or wait for it to finish.''')
+
+            # if ns.scanning:
+            #     if curPos == totalSteps:
+            #         ns.scanning = False
+            #         ns.prog = 100 #done scanning
+            #     elif curPos == 0 or time.time() - t0 >= tPerStep:
+            #         # Set scanPar to scanRange[curPos]
+            #         p = scanRange[curPos]
+            #         curPos += 1
+            #         t0 = time.time()
+
+            #         progress = int(curPos / len(scanRange) * 100)
+            #         ns.prog = progress
+                    
 
         except Exception as e:
             mQ.put(e)

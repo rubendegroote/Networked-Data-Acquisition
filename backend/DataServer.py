@@ -57,7 +57,6 @@ class DataServer(asyncore.dispatcher):
     def stop(self):
         self.looping = False
 
-
     def addReader(self, address=None):
         if address is None:
             logging.warning('provide IP address and PORT')
@@ -99,19 +98,21 @@ class DataServer(asyncore.dispatcher):
 
     def extractMemory(self, new_data):
         self._data = self._data.append(new_data)
-        # save the current scan in memory!
-        groups = self._data.groupby('scan')
-        # not sure this works - is groups a dictionary?
-        # self._data_current_scan = groups[max(groups.keys)]
-        # save last 10.000 data points
+        
+        # save the current scan in memory
+        m=self._data['scan'].max()
+        self._data_current_scan = self._data[self._data['scan']==m]
+                
+        # save last 5000 data points
         self._data = self._data[-5000:]
 
-        # self.bin_current()
-        # print(self._data)
 
-    def getData(self,columns):
+    def getData(self,perScan,columns):
         try:
-            return self._data[columns]
+            if perScan:
+                return self._data_current_scan[columns]
+            else:
+                return self._data[columns] 
         except:
             return pd.DataFrame()
 
@@ -140,11 +141,11 @@ class RadioTransmitter(asynchat.async_chat):
         self.buffer = b""
 
     def found_terminator(self):
-        columns = pickle.loads(self.buffer)
+        perScan,columns = pickle.loads(self.buffer)
         self.buffer = b''
         self.push(pickle.dumps(tuple(self.server._data.columns.values)))
         self.push('STOP_DATA'.encode('UTF-8'))
-        self.push(pickle.dumps(self.server.getData(columns)))
+        self.push(pickle.dumps(self.server.getData(perScan,columns)))
         self.push('STOP_DATA'.encode('UTF-8'))
 
     def collect_incoming_data(self, data):
@@ -160,7 +161,6 @@ class ArtistReader(asynchat.async_chat):
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         # self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self.connect((IP, PORT))
-        time.sleep(0.1)
         self.send('Server'.encode('UTF-8'))
 
         self.artistName = self.wait_for_connection()
@@ -193,15 +193,11 @@ class ArtistReader(asynchat.async_chat):
     def found_terminator(self):
         buff = self._buffer
         self.total += len(self._buffer)
-        # try:
-        #     print(int(self.total/(time.time() - self.now))/1000000)
-        # except:
-        #     self.now = time.time()
 
         self._buffer = b''
         data = pickle.loads(buff)
         if type(data) == tuple:
-            self._format = tuple([self.artistName + d if d not in SHARED else d for d in data])
+            self._format = tuple([self.artistName + ': ' + d if d not in SHARED else d for d in data])
         else:
             if not data == []:
                 self.dQ.append(data)

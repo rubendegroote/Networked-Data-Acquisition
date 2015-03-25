@@ -27,20 +27,11 @@ class Radio(asynchat.async_chat):
         self.format = tuple()
         self.set_terminator('STOP_DATA'.encode('UTF-8'))
         self.xy = ['time','Rubeny']
-        self.push(pickle.dumps(self.xy))
+        self.perScan = True
+        self.push(pickle.dumps((self.perScan,self.xy)))
         self.push('END_MESSAGE'.encode('UTF-8'))
 
         self.data = pd.DataFrame()
-    #     self.looping = True
-    #     t = th.Thread(target = self.start).start()
-
-    # def stop(self):
-    #     self.looping = False
-
-    # def start(self):
-    #     while self.looping:
-    #         asyncore.loop(count=1)
-    #         time.sleep(0.01)
 
     def collect_incoming_data(self, data):
         self._buffer += data
@@ -54,5 +45,5 @@ class Radio(asynchat.async_chat):
         else:
             if not len(data) == 0:
                 self.data = data
-            self.push(pickle.dumps(self.xy))
+            self.push(pickle.dumps((self.perScan,self.xy)))
             self.push('END_MESSAGE'.encode('UTF-8'))

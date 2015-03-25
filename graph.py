@@ -118,6 +118,7 @@ class MyGraph(QtGui.QWidget):
 
     def plot(self,data):
         try:
+            data = data.dropna()
             try:
                 time = (data['time'].values-datetime.datetime(1970,1,1))
                 data['time'] = [t.total_seconds() for t in time]

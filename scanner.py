@@ -14,8 +14,8 @@ class ScannerWidget(QtGui.QWidget):
         self.layout.addWidget(self.progressBar,0,0,1,4)
 
         self.parCombo = QtGui.QComboBox()
+        self.pars = {}
         self.layout.addWidget(self.parCombo,1,0,1,1)
-        self.parCombo.addItems(['WL'])
 
         self.startEdit = QtGui.QLineEdit("0")
         self.layout.addWidget(self.startEdit,1,1,1,1)
@@ -25,10 +25,10 @@ class ScannerWidget(QtGui.QWidget):
         self.stopEdit = QtGui.QLineEdit("1")
         self.layout.addWidget(self.stopEdit,1,3,1,1)
 
-        self.controlButton = PicButton('new',checkable = False,size = 100)
-        self.state = 'NEW'
-        self.controlButton.clicked.connect(self.changeControl)
-        self.layout.addWidget(self.controlButton,0,5,1,1)
+        self.controlButton = PicButton('start',checkable = False,size = 100)
+        self.state = 'START'
+        self.controlButton.clicked.connect(self.control)
+        self.layout.addWidget(self.controlButton,0,5,2,1)
 
         self.modeCombo = QtGui.QComboBox()
         self.modeCombo.setToolTip('Choose the criterium to be used for deciding\
@@ -63,19 +63,39 @@ class ScannerWidget(QtGui.QWidget):
 
         self.scanInfo.emit((par,rng,dt))
 
-    def changeControl(self):
-        if self.state == "NEW":
-            self.state = "START"
-            self.controlButton.setIcon('start.png')
-            self.controlButton.setToolTip('Click here to initialize start the capture.')
-
-        elif self.state == "START":
-            self.state = "STOP"
+    def control(self):
+        if self.state == "START":
             self.makeScan()
+        elif self.state == "STOP":
+            pass #Stop the scan
+
+    def changeControl(self):
+        # if self.state == "NEW":
+        #     self.state = "START"
+        #     self.controlButton.setIcon('start.png')
+        #     self.controlButton.setToolTip('Click here to initialize start the capture.')
+
+        if self.state == "START":
+            self.state = "STOP"
             self.controlButton.setIcon('stop.png')
             self.controlButton.setToolTip('Click here to stop the current capture.')
 
         elif self.state == "STOP":
-            self.state = "NEW"    
-            self.controlButton.setIcon('new.png')
-            self.controlButton.setToolTip('Click here to initialize a new capture.')
+            self.state = "START"    
+            self.controlButton.setIcon('start.png')
+            self.controlButton.setToolTip('Click here to start a new capture.')
+
+    def setParCombo(self,format):
+        self.pars = format
+        items = []
+        for key,val in self.pars.items():
+            for v in val:
+                if not 'time' in v and not 'scan' in v:
+                    items.append(key + ': ' + v)
+
+        curPar = int(self.parCombo.currentIndex())
+        if curPar == -1:
+            curPar = 0
+        self.parCombo.clear()
+        self.parCombo.addItems(items)
+        self.parCombo.setCurrentIndex(curPar)
