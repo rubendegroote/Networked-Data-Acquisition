@@ -11,8 +11,16 @@ try:
 except:
     from backend.Helpers import *
 
-class Manager():
-    def __init__(self, artists=[]):
+class Manager(asyncore.dispatcher):
+    def __init__(self, artists=[],PORT=5007):
+        super(Manager, self).__init__()
+        self.port = PORT
+        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
+        # self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        self.bind(('', self.port))
+        self.listen(5)
+        logging.info('Listening on port {}'.format(self.port))
+
         self.scanNo = 0
         self.progress = 0
         self.scanning = False
@@ -21,6 +29,17 @@ class Manager():
         self._instructors = {}
         for address in artists:
             self.addInstructor(address)
+
+        self.looping = True
+        t = th.Thread(target = self.start).start()
+
+    def start(self):
+        while self.looping:
+            asyncore.loop(count=1)
+            time.sleep(0.01)
+
+    def stop(self):
+        self.looping = False
 
     def addInstructor(self, address=None):
         if address is None:
@@ -61,6 +80,67 @@ class Manager():
         self.curPos +=1
         self.progress =  int(self.curPos / len(self.scanRange) * 100)
 
+    def writeable(self):
+        return False
+
+    def readable(self):
+        return True
+
+    def handle_accept(self):
+        pair = self.accept()
+        if pair is not None:
+            sock, addr = pair
+            self.connector = Connector(sock, self)
+            logging.info('Accepted {} as {}'.format(addr, "Connector"))
+
+    def handle_close(self):
+        logging.info('Closing Manager')
+        super(Manager, self).handle_close()
+
+class Connector(asynchat.async_chat):
+    def __init__(self,sock,manager=None):
+        super(Connector, self).__init__(sock)
+        self.set_terminator('END_MESSAGE'.encode('UTF-8'))
+        self.manager = manager
+        self.buff = b"" 
+
+    def collect_incoming_data(self, data):
+        self.buff += data
+
+    def found_terminator(self):
+        buff = self.buff
+        self.buff = b""
+
+        data = pickle.loads(buff)
+        if data == 'NEXT':
+            pass
+        elif data == 'ARTISTS?':
+            self.pushArtistInfo()
+        elif data[0] == 'Add Artist':
+            self.manager.addInstructor(data[1])
+            self.pushArtistInfo()
+        elif data[0] == 'Remove Artist':
+            print(data[1])
+            self.pushArtistInfo()
+        elif data[0] == 'Scan':
+            self.manager.scan(data[1])
+
+        self.push(pickle.dumps([self.manager.scanning,self.manager.progress,
+                self.manager.format]))
+        self.push('STOP_DATA'.encode('UTF-8'))
+
+    def pushArtistInfo(self):
+        info = {}
+        for k,v in self.manager._instructors.items():
+            info[k] = (v.IP,v.PORT)
+
+        self.push(pickle.dumps(info))
+        self.push('STOP_DATA'.encode('UTF-8'))
+
+    def handle_close(self):
+        logging.info('Closing Connector')
+        super(Connector, self).handle_close()
+
 class ArtistInstructor(asynchat.async_chat):
 
     """docstring for ArtistInstructor"""
@@ -69,6 +149,9 @@ class ArtistInstructor(asynchat.async_chat):
         super(ArtistInstructor, self).__init__()
         self.manager = manager
         self.scanning = False
+
+        self.IP = IP
+        self.PORT = PORT
 
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
@@ -146,3 +229,15 @@ class ArtistInstructor(asynchat.async_chat):
         self.push(pickle.dumps(instruction))
         self.push('END_MESSAGE'.encode('UTF-8'))
         print('Instruction sent')
+
+def makeManager(channel=[('KSF402', 5005)],PORT=5004):
+    return Manager(channel,PORT)
+
+def main():
+    channels = input('Artist IP,PORTS?').split(";")
+    channels = [c.split(",") for c in channels]
+    PORT = input('PORT?')
+    d = makeManager(channels,int(PORT))
+
+if __name__ == '__main__':
+    main()

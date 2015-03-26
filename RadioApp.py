@@ -15,8 +15,11 @@ from backend.Manager import Manager
 class RadioApp(QtGui.QMainWindow):
     def __init__(self):
         super(RadioApp, self).__init__()
-        self.init_UI()
+        self.looping = True
+        t = th.Thread(target = self.startIOLoop).start()
 
+        self.init_UI()
+        
     def init_UI(self):
 
         self.connectToolBar = QtGui.QToolBar('Connections')
@@ -36,8 +39,6 @@ class RadioApp(QtGui.QMainWindow):
         self.timer.timeout.connect(self.plot)
         self.timer.start(50)
 
-        self.looping = True
-        t = th.Thread(target = self.startIOLoop).start()
 
     def stopIOLoop(self):
         self.looping = False

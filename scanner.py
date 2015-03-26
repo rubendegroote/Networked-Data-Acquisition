@@ -86,6 +86,9 @@ class ScannerWidget(QtGui.QWidget):
             self.controlButton.setToolTip('Click here to start a new capture.')
 
     def setParCombo(self,format):
+        if self.pars == format:
+            return
+            
         self.pars = format
         items = []
         for key,val in self.pars.items():

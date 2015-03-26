@@ -106,7 +106,6 @@ class DataServer(asyncore.dispatcher):
         # save last 5000 data points
         self._data = self._data[-5000:]
 
-
     def getData(self,perScan,columns):
         try:
             if perScan:
@@ -130,7 +129,7 @@ class DataServer(asyncore.dispatcher):
             logging.info('Accepted {} as {}'.format(addr, "Radio"))
 
     def handle_close(self):
-        logging.info('Closing Artist')
+        logging.info('Closing DataServer')
         super(DataServer, self).handle_close()
 
 class RadioTransmitter(asynchat.async_chat):
