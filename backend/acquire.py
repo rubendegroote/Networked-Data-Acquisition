@@ -9,6 +9,10 @@ import pandas as pd
 def acquire(settings,dQ,iQ,mQ,contFlag,stopFlag,IStoppedFlag,ns):
     """ This is the function that will be the target function of a Process.
 
+    VERY IMPORTANT: the type of the data that is put on the data queue MUST be
+    consistent! E.g. do not start with sending an initial value of an integer 0,
+    and then start sending floats! 
+
     Parameters:
 
     settings: a dictionary with settings that are used for the initial
@@ -41,8 +45,9 @@ def acquire(settings,dQ,iQ,mQ,contFlag,stopFlag,IStoppedFlag,ns):
     ns.format = ('time', 'scan', 'x', 'y', 'z')
     contFlag.wait()
     i = 0
-    p = 0
+    p = float(0.)
     got_instr = False
+
 
     while not stopFlag.is_set():
         try:
@@ -54,11 +59,13 @@ def acquire(settings,dQ,iQ,mQ,contFlag,stopFlag,IStoppedFlag,ns):
             now = time.time()
 
             # put data on the queue
-            dQ.send(np.array([
-                np.array([datetime.datetime.now()]),
-                np.array([ns.scanNo]),
-                np.array([p]), np.random.rand(1), np.random.rand(1)
-            ]).T)
+            dQ.send((
+                    np.array([datetime.datetime.now()]),
+                    np.array([ns.scanNo]),
+                    np.array([p]), 
+                    np.random.rand(1), 
+                    np.random.rand(1)
+                   ))
             i += 1
 
             while time.time() - now < 0.05:
@@ -82,37 +89,16 @@ def acquire(settings,dQ,iQ,mQ,contFlag,stopFlag,IStoppedFlag,ns):
                     time.sleep(0.5)
                     
                     ns.measuring = True
-                    t0 = time.time()
+                    # initial guess of when scanNo will be set to the current scan value. This
+                    # is not a perfect guess because there is some time required for the 
+                    # change in ns.measuring to propagate to the manager and back.
+                    # This initial guess will later be modified by the Artist to the actual time
+                    # it received the 'Measuring' instruction.
+                    ns.t0 = time.time()
 
-            if ns.measuring and time.time() - t0 >= tPerStep:
+            if ns.measuring and time.time() - ns.t0 >= tPerStep:
                 ns.measuring = False
-
-            #     elif instr[0] == 'Scan':
-            #         if not ns.scanning:
-            #             # Start the scanning process
-            #             ns.scanning = True
-            #             curPos = 0
-            #             scanPar, scanRange, tPerStep = instr[1:]
-            #             totalSteps = len(scanRange)
-            #             mQ.put("Started scanning {} in range {} at 1 step per {}s"
-            #                    .format(instr[1], instr[2], instr[3]))
-            #         else:
-            #             mQ.put('''Already scanning! Abort current scan first
-            #                 or wait for it to finish.''')
-
-            # if ns.scanning:
-            #     if curPos == totalSteps:
-            #         ns.scanning = False
-            #         ns.prog = 100 #done scanning
-            #     elif curPos == 0 or time.time() - t0 >= tPerStep:
-            #         # Set scanPar to scanRange[curPos]
-            #         p = scanRange[curPos]
-            #         curPos += 1
-            #         t0 = time.time()
-
-            #         progress = int(curPos / len(scanRange) * 100)
-            #         ns.prog = progress
-                    
+                   
 
         except Exception as e:
             mQ.put(e)

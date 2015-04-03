@@ -44,7 +44,12 @@ def mass_concat(array, format):
 def flatten(array):
     return [l for sub in array for l in sub]
 
-def save(data, name,artist):
+def convert(data_list,format):
+    data = np.array([l for subl in data_list for l in subl]).reshape((-1,len(format)))
+    data = pd.DataFrame(data, columns=format).set_index('time')
+    return data
+
+def save(data,name,artist):
     with pd.get_store(name+'_stream.h5') as store:
         store.append(artist, data.convert_objects())
     groups = data.groupby('scan', sort=False)

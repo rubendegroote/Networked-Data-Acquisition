@@ -3,7 +3,8 @@ from picbutton import PicButton,PicSpinBox
 import numpy as np
 
 class ScannerWidget(QtGui.QWidget):
-    scanInfo = QtCore.Signal(tuple)
+    scanInfoSig = QtCore.Signal(tuple)
+    stopScanSig = QtCore.Signal(bool)
     def __init__(self):
         super(ScannerWidget,self).__init__()
         self.layout = QtGui.QGridLayout(self)
@@ -48,26 +49,11 @@ class ScannerWidget(QtGui.QWidget):
         self.timeEdit.setMaximumWidth(120)
         self.layout.addWidget(self.timeEdit,1,4,1,1)
 
-    def updateProgress(self,val):
-        self.progressBar.setValue(10*val)
-
-    def makeScan(self):
-        par = self.parCombo.currentText()
-
-        start = float(self.startEdit.text())
-        stop = float(self.stopEdit.text())
-        steps = float(self.stepsBox.text())
-        rng = np.linspace(start,stop,steps)
-            
-        dt = float(self.timeEdit.text())
-
-        self.scanInfo.emit((par,rng,dt))
-
     def control(self):
         if self.state == "START":
             self.makeScan()
         elif self.state == "STOP":
-            pass #Stop the scan
+            self.stopScan()
 
     def changeControl(self):
         # if self.state == "NEW":
@@ -85,6 +71,33 @@ class ScannerWidget(QtGui.QWidget):
             self.controlButton.setIcon('start.png')
             self.controlButton.setToolTip('Click here to start a new capture.')
 
+    def makeScan(self):
+        par = self.parCombo.currentText()
+
+        start = float(self.startEdit.text())
+        stop = float(self.stopEdit.text())
+        steps = float(self.stepsBox.text())
+        rng = np.linspace(start,stop,steps)
+            
+        dt = float(self.timeEdit.text())
+
+        self.scanInfoSig.emit((par,rng,dt))
+
+    def stopScan(self):
+        self.stopScanSig.emit(True)
+
+    def update(self,info):
+        format,progress,artists = info
+        self.updateProgress(progress)
+        try:
+            form = {}
+            for k,v in artists.items():
+                if v[0]:
+                    form[k]=format[k]
+            self.setParCombo(form)
+        except:
+            pass
+            
     def setParCombo(self,format):
         if self.pars == format:
             return
@@ -102,3 +115,6 @@ class ScannerWidget(QtGui.QWidget):
         self.parCombo.clear()
         self.parCombo.addItems(items)
         self.parCombo.setCurrentIndex(curPar)
+
+    def updateProgress(self,val):
+        self.progressBar.setValue(10*val)

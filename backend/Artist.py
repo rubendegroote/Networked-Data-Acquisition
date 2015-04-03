@@ -57,7 +57,7 @@ class Artist(asyncore.dispatcher):
         A dictionary with the data
     """
 
-    def __init__(self, name='', settings={}, PORT=5005, save=True):
+    def __init__(self, name='', settings={}, PORT=5005, save_data=True):
         super(Artist, self).__init__()
         self.port = PORT
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -108,11 +108,12 @@ class Artist(asyncore.dispatcher):
         self.mgr = mp.Manager()
         # Shared scan number
         self.ns = self.mgr.Namespace()
+        self.ns.t0 = time.time()
         self.ns.scanNo = -1
         self.ns.measuring = False
         self.ns.format = ('time', 'scan', 'x', 'y', 'z')
 
-        self.save_data = save
+        self.save_data = save_data
         self._saveThread = th.Timer(1, self.save).start()
 
     def InitializeScanning(self):
@@ -196,13 +197,11 @@ class Artist(asyncore.dispatcher):
         l = len(self.saveQ)
         if not l == 0:
             data = [self.saveQ.popleft() for i in range(l)]
-            data = flatten(data)
-            data = mass_concat(data, self.format)
+            data = convert(data, self.format)
             save(data, self.saveDir, self.name)
 
         # # slightly more stable if the save runs every 0.5 seconds,
         # # regardless of how long the previous saving took
-
         wait = abs(min(0, time.time() - now - SAVE_INTERVAL))
         if self.save:
             self._saveThread = th.Timer(wait, self.save).start()
@@ -282,6 +281,8 @@ class InstructionReceiver(asynchat.async_chat):
             elif instruction[0] == 'idling':
                 self.artist.ns.scanNo = -1
             elif instruction[0] == 'Measuring':
+                self.artist.ns.t0 = time.time()
+
                 self.artist.ns.scanNo = instruction[1]
             else:
                 self.artist.iQ.put(instruction)
@@ -313,7 +314,6 @@ class DataTransmitter(asynchat.async_chat):
         l = len(self.chunkQ)
         if not l == 0:
             data = [self.chunkQ.popleft() for i in range(l)]
-            data = flatten(data)
         self.transmit(pickle.dumps(data))
 
     def transmit(self, data):
@@ -329,18 +329,18 @@ class DataTransmitter(asynchat.async_chat):
         logging.info('Closing DataTransmitter')
         super(DataTransmitter, self).handle_close()
 
-def makeArtist(name='test1', PORT=5005, save=True):
-    return Artist(name=name, PORT=PORT, save=save)
+def makeArtist(name='test1', PORT=5005, save_data=True):
+    return Artist(name=name, PORT=PORT, save_data=save_data)
 
 def start():
     while True:
         asyncore.loop(count=1)
-        time.sleep(0.02)
+        time.sleep(0.01)
 
 def main():
     port = int(input('PORT?'))
     name = input('Name?')
-    a = makeArtist(name=name, PORT=port, save=False)
+    a = makeArtist(name=name, PORT=port, save_data=True)
     t0 = th.Timer(1, a.StartDAQ).start()
     asyncore.loop(0.001)
 
