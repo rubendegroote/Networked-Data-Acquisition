@@ -47,7 +47,6 @@ class Man_DS_Connection():
         return self.man.scanning
 
     def instruct(self,t,instr):
-        print(t,instr)
         if t == 'Manager':
             self.man.connQ.put(instr)
         elif t =='Data Server':
