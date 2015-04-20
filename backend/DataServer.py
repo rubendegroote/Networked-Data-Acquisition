@@ -14,10 +14,10 @@ import pandas as pd
 from bokeh.embed import autoload_server
 try:
     from Helpers import *
-    from connectors import DataServerConnector
+    from connectors import Connector,Acceptor
 except:
     from backend.Helpers import *
-    from backend.connectors import DataServerConnector
+    from backend.connectors import Connector,Acceptor
 
 
 
@@ -43,7 +43,7 @@ class DataServer(asyncore.dispatcher):
         self.bitrates = []
         self.saveDir = "Server"
         self.dQs = {}
-        self.conns = []
+        self.acceptors = []
         self.transmitters = []
         # self.plot = render_plot()
         for address in artists:
@@ -80,12 +80,13 @@ class DataServer(asyncore.dispatcher):
                 if self._readerInfo[name][0]:
                     return
         try:
-            reader = ArtistReader(IP=address[0], PORT=int(address[1]))
+            reader = ArtistReader(chan=(address[0],int(address[1])),
+                callback=None,onCloseCallback=readerClosed, t='DS_to_artist')
             self._readers[reader.artistName] = reader
             self.dQs[reader.artistName] = reader.dQ
             self._readerInfo[reader.artistName] = (True,reader.IP,reader.PORT)
-            for c in self.conns:
-                c.connQ.put(self._readerInfo)
+            for c in self.acceptors:
+                c.commQ.put(self._readerInfo)
             logging.info('Connected to ' + reader.artistName)
         except Exception as e:
             logging.info('Connection failed')
@@ -101,17 +102,36 @@ class DataServer(asyncore.dispatcher):
             del self._readers[name]
             del self._readerInfo[name]
 
-        for c in self.conns:
-            c.connQ.put(self._readerInfo)
+        for c in self.acceptors:
+            c.commQ.put(self._readerInfo)
 
-    def readerClosed(self,artistName):
-        reader = self.readers[artistName]
-        self._readerInfo[artistName] = (False,reader.IP,reader.PORT)
-        for c in self.conns:
-            c.connQ.put(self._readerInfo)
+    def processRequests(self,sender,data):
+        if data[0] == 'ARTISTS?':
+            return self._readerInfo
+        elif data[0] == 'Data':
+            perScan,columns = data[1]
+            return self.getData(perScan,columns),tuple(self._data.columns.values)
+        elif data[0] == 'Add Artist':
+            self.addReader(data[1])
+            return None
+        elif data[0] == 'Remove Artist':
+            self.removeReader(data[1])
+            return None
+        elif data == 'info':
+            try:
+                return sender.commQ.get_nowait()
+            except:
+                pass
+        
+        return self.bitrates
 
-    def connClosed(self,connector):
-        self.conns.remove(connector)
+    def readerClosed(self,reader):
+        self._readerInfo[reader.artistName] = (False,reader.IP,reader.PORT)
+        for c in self.acceptors:
+            c.commQ.put(self._readerInfo)
+
+    def accClosed(self,acceptor):
+        self.acceptors.remove(acceptor)
 
     def getFromReader(self):
         now = time.time()
@@ -124,11 +144,13 @@ class DataServer(asyncore.dispatcher):
                 data = convert(flatten(data), format=reader._format)
                 new_data = new_data.append(data)
                 if self.save_data:
+                    self.lock.acquire()
                     try:
                         self.toSave[name] = self.toSave[name].append(data)
                     except KeyError:
                         self.toSave[name] = data
-
+                    self.lock.release()
+                    
 
         if not len(new_data) == 0:
             if self.remember:
@@ -185,11 +207,12 @@ class DataServer(asyncore.dispatcher):
             except:
                 logging.warn('Sender {} did not send proper ID'.format(addr))
                 return
-
             if sender == 'Radio':
-                self.transmitters.append(RadioTransmitter(sock, self))
+                self.transmitters.append(Acceptor(sock, callback = self.processRequests,
+                    onCloseCallback=self.accClosed,t='RGui_to_DS'))
             elif sender == 'Connector':
-                self.conns.append(DataServerConnector(sock, self))
+                self.acceptors.append(Acceptor(sock, callback = self.processRequests,
+                    onCloseCallback=self.accClosed,t='MGui_to_DS'))
             else:
                 logging.error('Sender {} named {} not understood'
                               .format(addr, sender))
@@ -212,65 +235,16 @@ class DataServer(asyncore.dispatcher):
         logging.info('Closing DataServer')
         super(DataServer, self).handle_close()
 
-class RadioTransmitter(asynchat.async_chat):
-    def __init__(self,sock,server,*args,**kwargs):
-        super(RadioTransmitter, self).__init__(sock=sock, *args, **kwargs)
-        self.set_terminator('END_MESSAGE'.encode('UTF-8'))
-        self.server = server
-        self.buffer = b""
-
-    def found_terminator(self):
-        perScan,columns = pickle.loads(self.buffer)
-        self.buffer = b''
-        self.push(pickle.dumps(tuple(self.server._data.columns.values)))
-        self.push('STOP_DATA'.encode('UTF-8'))
-        self.push(pickle.dumps(self.server.getData(perScan,columns)))
-        self.push('STOP_DATA'.encode('UTF-8'))
-
-    def collect_incoming_data(self, data):
-        self.buffer += data
-
-    def handle_close(self):
-        logging.info('Closing RadioTransmitter')
-        super(RadioTransmitter, self).handle_close()
-
-class ArtistReader(asynchat.async_chat):
-    def __init__(self, IP='KSF402', PORT=5005, server = None):
-        super(ArtistReader, self).__init__()
-        self.server = server
-        self.dQ = deque()
-        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        # self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-        self.connect((IP, PORT))
-        self.send('Server'.encode('UTF-8'))
-        self.IP = IP
-        self.PORT = PORT
+class ArtistReader(Connector):
+    def __init__(self,chan,callback):
+        super(ArtistReader, self).__init__(chan,callback,t='DS_to_artist')
 
         self.artistName = self.wait_for_connection()
-
+        self.dQ = deque()
         self._data = pd.DataFrame()
-        self._buffer = b''
-        self.set_terminator('STOP_DATA'.encode('UTF-8'))
-        self.push('Next'.encode('UTF-8') + 'END_MESSAGE'.encode('UTF-8'))
         self.total = 0
 
-    def wait_for_connection(self):
-        # Wait for connection to be made with timeout
-        success = False
-        now = time.time()
-        while time.time() - now < 5:  # Tested: raises RunTimeError after 5 s
-            try:
-                name = self.recv(1024).decode('UTF-8')
-                success = True
-                break
-            except:
-                pass
-        if not success:
-            raise
-        return name
-
-    def collect_incoming_data(self, data):
-        self._buffer += data
+        self.send_next()
 
     def found_terminator(self):
         buff = self._buffer
@@ -283,15 +257,7 @@ class ArtistReader(asynchat.async_chat):
         else:
             if not data == []:
                 self.dQ.append(data)
-            self.push('Next'.encode('UTF-8') + 'END_MESSAGE'.encode('UTF-8'))
-
-    def handle_close(self):
-        try:
-            logging.info('Closing ArtistReader ' + self.artistName)
-            self.server.readerClosed(self.artistName)
-        except AttributeError:
-            pass
-        super(ArtistReader, self).handle_close()
+            self.send_next()
 
 def makeServer(channel=[('KSF402', 5005)],PORT=5004,save=True,remember=True):
     return DataServer(channel,PORT,save,remember)

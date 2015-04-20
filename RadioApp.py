@@ -8,7 +8,7 @@ from connect import ConnectionsWidget
 from central import CentralDock
 
 from backend.DataServer import DataServer
-from backend.Radio import Radio
+from backend.connectors import RadioConnection
 from backend.Manager import Manager
 
 
@@ -49,7 +49,7 @@ class RadioApp(QtGui.QMainWindow):
             time.sleep(0.01)
 
     def addConnection(self,data):
-        self.radio = Radio(IP=data[0],PORT=int(data[1]))
+        self.radio = RadioConnection(chan=(data[0],int(data[1])),callback = None)
         
     def plot(self):
         try:

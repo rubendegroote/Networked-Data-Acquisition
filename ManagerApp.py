@@ -12,9 +12,8 @@ from connectiondialogs import Man_DS_ConnectionDialog
 from connectionwidgets import ArtistConnections
 
 from backend.DataServer import DataServer
-from backend.Radio import Radio
 from backend.Manager import Manager
-from backend.connectors import Man_DS_Connection
+from backend.connectors import Connector
 
 class ManagerApp(QtGui.QMainWindow):
     def __init__(self):
@@ -59,14 +58,14 @@ class ManagerApp(QtGui.QMainWindow):
 
     def addConnection(self,data):
         try:
-            self.Man_DS_Connection.man.handle_close()
-            self.Man_DS_Connection.DS.handle_close()
+            self.Man_DS_Connector.man.handle_close()
+            self.Man_DS_Connector.DS.handle_close()
         except:
             pass
         ManChan = data[0],int(data[1])
         DSChan = data[2],int(data[3])
-        self.Man_DS_Connection = Man_DS_Connection(ManChan,DSChan,callBack=self.lostConn)
-        if self.Man_DS_Connection.man and self.Man_DS_Connection.DS:
+        self.Man_DS_Connector = Man_DS_Connector(ManChan,DSChan,callBack=self.lostConn)
+        if self.Man_DS_Connector.man and self.Man_DS_Connector.DS:
             self.enable()
             self.statusBar().showMessage('Connected to Manager and Data Server')
 
@@ -91,25 +90,25 @@ class ManagerApp(QtGui.QMainWindow):
         self.looping = False
 
     def startScan(self,scanInfo):
-        self.Man_DS_Connection.instruct('Manager', ['Scan',scanInfo])
+        self.Man_DS_Connector.instruct('Manager', ['Scan',scanInfo])
 
     def stopScan(self):
-        self.Man_DS_Connection.instruct('Manager', ['Stop Scan'])
+        self.Man_DS_Connector.instruct('Manager', ['Stop Scan'])
 
     def addArtist(self,info):
         sender,address = info
-        self.Man_DS_Connection.instruct(sender,['Add Artist',address])
+        self.Man_DS_Connector.instruct(sender,['Add Artist',address])
 
     def removeArtist(self,address):
-        self.Man_DS_Connection.instruct('Both',['Remove Artist',address])
+        self.Man_DS_Connector.instruct('Both',['Remove Artist',address])
 
     def update(self):
         try:
-            self.scanner.update(self.Man_DS_Connection.getScanInfo())
-            self.connWidget.update(self.Man_DS_Connection.getArtistInfo())
-            if self.scanner.state == 'START' and self.Man_DS_Connection.scanning():
+            self.scanner.update(self.Man_DS_Connector.getScanInfo())
+            self.connWidget.update(self.Man_DS_Connector.getArtistInfo())
+            if self.scanner.state == 'START' and self.Man_DS_Connector.scanning():
                 self.scanner.changeControl()
-            elif self.scanner.state == 'STOP' and not self.Man_DS_Connection.scanning():
+            elif self.scanner.state == 'STOP' and not self.Man_DS_Connector.scanning():
                 self.scanner.changeControl()
         except AttributeError as e:
             pass
@@ -117,3 +116,105 @@ class ManagerApp(QtGui.QMainWindow):
     def closeEvent(self,event):
         self.stopIOLoop()
         event.accept()
+
+
+class Man_DS_Connector():
+    def __init__(self,ManChan,DSChan,callBack):
+        self.AppCallBack = callBack
+        try:
+            self.man = ManagerConnector(ManChan,
+                callback = None,onCloseCallback=self.onClosedCallback)
+        except Exception as e:
+            print(e)
+            self.man = None
+
+        try:
+            self.DS = DataServerConnector(DSChan,
+                callback = None,onCloseCallback=self.onClosedCallback)
+        except Exception as e:
+            print(e)
+            self.DS = None
+
+    def getArtistInfo(self):
+        retDict = {}
+        keys = set(self.DS.artists.keys()).union(set(self.man.artists.keys()))
+        for key in keys:
+            if key in self.man.artists.keys():
+                if key in self.DS.artists.keys():
+                    retDict[key] = (self.man.artists[key][0],self.DS.artists[key][0],
+                                                        self.man.artists[key][1:])
+                else:
+                    retDict[key] = (self.man.artists[key][0],False,
+                                                        self.man.artists[key][1:])
+            else:
+                retDict[key] = False,self.DS.artists[key][0],self.DS.artists[key][1:]
+
+        return retDict
+
+    def getScanInfo(self):
+        return self.man.format,self.man.progress,self.man.artists
+
+    def scanning(self):
+        return self.man.scanning
+
+    def instruct(self,t,instr):
+        if t == 'Manager':
+            self.man.commQ.put(instr)
+        elif t =='Data Server':
+            self.DS.commQ.put(instr)
+        elif t =='Both':
+            self.man.commQ.put(instr)
+            self.DS.commQ.put(instr)
+
+    def onClosedCallback(self,server):
+        # perhaps use this to change some settings or whatnot
+        self.AppCallBack(server.t)
+
+class ManagerConnector(Connector):
+    def __init__(self,chan,callback,onCloseCallback):
+        super(ManagerConnector,self).__init__(chan,callback,onCloseCallback,t='MGui_to_M')
+        self.progress = 0
+        self.scanning = False
+        self.format = {}
+
+        self.push(pickle.dumps(['ARTISTS?']))
+        self.push('END_MESSAGE'.encode('UTF-8'))
+
+    def found_terminator(self):
+        buff = self._buffer
+        self._buffer = b''
+        data = pickle.loads(buff)
+        if type(data) == dict:
+            self.artists = data
+        else:
+            self.scanning,self.progress,self.format = data
+        try:
+            info = self.commQ.get_nowait()
+            self.push(pickle.dumps(info))
+            self.push('END_MESSAGE'.encode('UTF-8'))
+        except:
+            pass
+
+        self.send_next()
+
+class DataServerConnector(Connector):
+    def __init__(self,chan,callback,onCloseCallback):
+        super(DataServerConnector,self).__init__(chan,callback,onCloseCallback,t='MGui_to_DS')
+
+        self.push(pickle.dumps(['ARTISTS?']))
+        self.push('END_MESSAGE'.encode('UTF-8'))
+
+    def found_terminator(self):
+        buff = self._buffer
+        self._buffer = b''
+        data = pickle.loads(buff)
+        if type(data) == dict:
+            self.artists = data
+        try:
+            info = self.commQ.get_nowait()
+            self.push(pickle.dumps(info))
+            self.push('END_MESSAGE'.encode('UTF-8'))
+        except:
+            pass
+
+        self.send_next()

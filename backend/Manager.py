@@ -9,10 +9,10 @@ import numpy as np
 import pandas as pd
 try:
     from Helpers import *
-    from connectors import ManagerConnector
+    from connectors import Connector,Acceptor
 except:
     from backend.Helpers import *
-    from backend.connectors import ManagerConnector
+    from backend.connectors import Connector,Acceptor
 
 logging.basicConfig(format='%(asctime)s: %(message)s',
                     level=logging.INFO)
@@ -38,7 +38,7 @@ class Manager(asyncore.dispatcher):
         for address in artists:
             self.addInstructor(address)
 
-        self.conns = []
+        self.acceptors = []
 
         self.looping = True
         t = th.Thread(target = self.start).start()
@@ -60,11 +60,13 @@ class Manager(asyncore.dispatcher):
                 if self._instructorInfo[name][0]:
                     return
         try:
-            instr = ArtistInstructor(IP=address[0], PORT=int(address[1]), manager = self)
+            instr = ArtistInstructor(chan=(address[0],int(address[1])), 
+                callback=self.processInformation,onCloseCallback=self.instructorClosed,
+                t='M_to_Artist')
             self._instructors[instr.artistName] = instr
             self._instructorInfo[instr.artistName] = (True,instr.IP,instr.PORT)
-            for c in self.conns:
-                c.connQ.put(self._instructorInfo)
+            for c in self.acceptors:
+                c.commQ.put(self._instructorInfo)
             logging.info('Connected to ' + instr.artistName)
         except Exception as e:
             logging.info('Connection failed')
@@ -80,17 +82,49 @@ class Manager(asyncore.dispatcher):
             del self._instructors[name]
             del self._instructorInfo[name]
 
-        for c in self.conns:
-            c.connQ.put(self._instructorInfo)
+        for c in self.acceptors:
+            c.commQ.put(self._instructorInfo)
 
-    def instructorClosed(self,artistName):
-        instr = self._instructors[artistName]
-        self._instructorInfo[artistName] = (False,instr.IP,instr.PORT)
-        for c in self.conns:
-            c.connQ.put(self._instructorInfo)
+    def processInformation(self,sender,message):
+        self.format[sender.artistName] = message['format']
+        if sender.scanning and message['measuring'] != self.measuring:
+            self.measuring = message['measuring']
+            if message['measuring']:
+                self.notifyAll(['Measuring', self.scanNo])
+            else:
+                self.notifyAll(['idling'])
+                self.scanToNext()
 
-    def connClosed(self,connector):
-        self.conns.remove(connector)
+    def processRequests(self,sender,data):
+        if data[0] == 'ARTISTS?':
+            return self._instructorInfo
+        elif data[0] == 'Add Artist':
+            self.addInstructor(data[1])
+            return None
+        elif data[0] == 'Remove Artist':
+            self.removeInstructor(data[1])
+            return None
+        elif data[0] == 'Scan':
+            self.scan(data[1])
+            return None
+        elif data[0] == 'Stop Scan':
+            self.stopScan()
+            return None
+        elif data == 'info':
+            try:
+                return sender.commQ.get_nowait()
+            except:
+                return [self.scanning,self.progress,self.format]
+        else:
+            return [self.scanning,self.progress,self.format]
+
+    def instructorClosed(self,isntr):
+        self._instructorInfo[instr.artistName] = (False,instr.IP,instr.PORT)
+        for c in self.acceptors:
+            c.commQ.put(self._instructorInfo)
+
+    def accClosed(self,acceptor):
+        self.acceptors.remove(acceptor)
 
     def scan(self,scanInfo):
         name,self.scanPar = scanInfo[0].split(':')
@@ -101,7 +135,7 @@ class Manager(asyncore.dispatcher):
         self.tPerStep = scanInfo[2]
         self.scanning = True
         self.scanNo += 1
-        self.sendNext()
+        self.scanToNext()
 
     def stopScan(self):
         self.scanning = False
@@ -111,7 +145,7 @@ class Manager(asyncore.dispatcher):
         for instr in self._instructors.values():
             instr.send_instruction(instruction)
 
-    def sendNext(self):
+    def scanToNext(self):
         if not self.scanning:
             return
 
@@ -143,7 +177,8 @@ class Manager(asyncore.dispatcher):
                 logging.warn('Sender {} did not send proper ID'.format(addr))
                 return
             if sender == 'Connector':
-                self.conns.append(ManagerConnector(sock, self))
+                self.acceptors.append(Acceptor(sock=sock,callback=self.processRequests,
+                    onCloseCallback=self.accClosed,t='MGui_to_M'))
             else:
                 logging.error('Sender {} named {} not understood'
                               .format(addr, sender))
@@ -166,66 +201,24 @@ class Manager(asyncore.dispatcher):
         logging.info('Closing Manager')
         super(Manager, self).handle_close()
 
-class ArtistInstructor(asynchat.async_chat):
+class ArtistInstructor(Connector):
 
     """docstring for ArtistInstructor"""
 
-    def __init__(self, IP='KSF402', PORT=5005, manager = None):
-        super(ArtistInstructor, self).__init__()
-        self.manager = manager
+    def __init__(self,chan,callback):
+        super(ArtistInstructor, self).__init__(chan,callback,t='M_to_Artist')
+
         self.scanning = False
-
-        self.IP = IP
-        self.PORT = PORT
-
-        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-        self.connect((IP, PORT))
-        self.set_terminator('STOP_DATA'.encode('UTF-8'))
-
-        self.send('Manager'.encode('UTF-8'))
-        self.artistName = ''
         self.artistName = self.wait_for_connection()
-        self.message = b""
 
-        self.send_continue()
-
-    def wait_for_connection(self):
-        # Wait for connection to be made with timeout
-        success = False
-        now = time.time()
-        while time.time() - now < 1:
-            try:
-                name = self.recv(1024).decode('UTF-8')
-                success = True
-                break
-            except Exception as e:
-                pass
-        if not success:
-            raise
-        return name
-
-    def collect_incoming_data(self, data):
-        self.message += data
+        self.send_next()
 
     def found_terminator(self):
         message = pickle.loads(self.message)
         self.message = b""
         if message is not None:
-            self.manager.format[self.artistName] = message['format']
-            if self.scanning and message['measuring'] != self.manager.measuring:
-                self.manager.measuring = message['measuring']
-                if message['measuring']:
-                    self.manager.notifyAll(['Measuring', self.manager.scanNo])
-                else:
-                    self.manager.notifyAll(['idling'])
-                    self.manager.sendNext()
-            
-        self.send_continue()
-
-    def send_continue(self):
-        self.push(pickle.dumps('CONT'))
-        self.push('END_MESSAGE'.encode('UTF-8'))
+            self.callback(sender=self,data=message)            
+        self.send_next()
 
     def send_instruction(self, instruction):
         """
@@ -250,14 +243,6 @@ class ArtistInstructor(asynchat.async_chat):
         """
         self.push(pickle.dumps(instruction))
         self.push('END_MESSAGE'.encode('UTF-8'))
-
-    def handle_close(self):
-        try:
-            logging.info('Closing ArtistInstructor ' + self.artistName)
-            self.manager.instructorClosed(self.artistName)
-        except AttributeError:
-            pass
-        super(ArtistInstructor, self).handle_close()
 
 def makeManager(channel=[('KSF402', 5005)],PORT=5004):
     return Manager(channel,PORT)
