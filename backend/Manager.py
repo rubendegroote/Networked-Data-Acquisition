@@ -56,15 +56,14 @@ class Manager(asyncore.dispatcher):
             print('provide IP address and PORT')
             return
         for name,add in self._instructors.items():
-            if address == (add.IP,str(add.PORT)):
+            if address == (add.chan[0],str(add.chan[1])):
                 if self._instructorInfo[name][0]:
                     return
         try:
             instr = ArtistInstructor(chan=(address[0],int(address[1])), 
-                callback=self.processInformation,onCloseCallback=self.instructorClosed,
-                t='M_to_Artist')
+                callback=self.processInformation,onCloseCallback=self.instructorClosed)
             self._instructors[instr.artistName] = instr
-            self._instructorInfo[instr.artistName] = (True,instr.IP,instr.PORT)
+            self._instructorInfo[instr.artistName] = (True,instr.chan[0],instr.chan[1])
             for c in self.acceptors:
                 c.commQ.put(self._instructorInfo)
             logging.info('Connected to ' + instr.artistName)
@@ -85,20 +84,18 @@ class Manager(asyncore.dispatcher):
         for c in self.acceptors:
             c.commQ.put(self._instructorInfo)
 
-    def processInformation(self,sender,message):
-        self.format[sender.artistName] = message['format']
-        if sender.scanning and message['measuring'] != self.measuring:
-            self.measuring = message['measuring']
-            if message['measuring']:
+    def processInformation(self,sender,data):
+        self.format[sender.artistName] = data['format']
+        if sender.scanning and data['measuring'] != self.measuring:
+            self.measuring = data['measuring']
+            if data['measuring']:
                 self.notifyAll(['Measuring', self.scanNo])
             else:
                 self.notifyAll(['idling'])
                 self.scanToNext()
 
     def processRequests(self,sender,data):
-        if data[0] == 'ARTISTS?':
-            return self._instructorInfo
-        elif data[0] == 'Add Artist':
+        if data[0] == 'Add Artist':
             self.addInstructor(data[1])
             return None
         elif data[0] == 'Remove Artist':
@@ -114,12 +111,12 @@ class Manager(asyncore.dispatcher):
             try:
                 return sender.commQ.get_nowait()
             except:
-                return [self.scanning,self.progress,self.format]
+                return (self._instructorInfo,[self.scanning,self.progress,self.format])
         else:
-            return [self.scanning,self.progress,self.format]
+            return None
 
-    def instructorClosed(self,isntr):
-        self._instructorInfo[instr.artistName] = (False,instr.IP,instr.PORT)
+    def instructorClosed(self,instr):
+        self._instructorInfo[instr.artistName] = (False,instr.chan[0],instr.chan[1])
         for c in self.acceptors:
             c.commQ.put(self._instructorInfo)
 
@@ -176,7 +173,7 @@ class Manager(asyncore.dispatcher):
             except:
                 logging.warn('Sender {} did not send proper ID'.format(addr))
                 return
-            if sender == 'Connector':
+            if sender == 'MGui_to_M':
                 self.acceptors.append(Acceptor(sock=sock,callback=self.processRequests,
                     onCloseCallback=self.accClosed,t='MGui_to_M'))
             else:
@@ -205,19 +202,17 @@ class ArtistInstructor(Connector):
 
     """docstring for ArtistInstructor"""
 
-    def __init__(self,chan,callback):
-        super(ArtistInstructor, self).__init__(chan,callback,t='M_to_Artist')
-
+    def __init__(self,chan,callback,onCloseCallback):
+        super(ArtistInstructor, self).__init__(chan,callback,onCloseCallback,t='M_to_Artist')
         self.scanning = False
-        self.artistName = self.wait_for_connection()
+        self.artistName = self.acceptorName
 
         self.send_next()
 
     def found_terminator(self):
-        message = pickle.loads(self.message)
-        self.message = b""
-        if message is not None:
-            self.callback(sender=self,data=message)            
+        message = pickle.loads(self.buff)
+        self.buff = b""
+        self.callback(sender=self,data=message)
         self.send_next()
 
     def send_instruction(self, instruction):

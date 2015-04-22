@@ -8,8 +8,8 @@ from connect import ConnectionsWidget
 from central import CentralDock
 
 from backend.DataServer import DataServer
-from backend.connectors import RadioConnection
 from backend.Manager import Manager
+from backend.radio import RadioConnector
 
 
 class RadioApp(QtGui.QMainWindow):
@@ -49,8 +49,12 @@ class RadioApp(QtGui.QMainWindow):
             time.sleep(0.01)
 
     def addConnection(self,data):
-        self.radio = RadioConnection(chan=(data[0],int(data[1])),callback = None)
+        self.radio = RadioConnector(chan=(data[0],int(data[1])),
+            callback=None,onCloseCallback=self.connLost)
         
+    def connLost(self):
+        pass
+
     def plot(self):
         try:
             for g in self.centralDock.graphDocks:
@@ -63,3 +67,4 @@ class RadioApp(QtGui.QMainWindow):
     def closeEvent(self,event):
         self.stopIOLoop()
         event.accept()
+

@@ -11,8 +11,10 @@ from collections import deque
 
 try:
     from Helpers import *
+    from connectors import Connector,Acceptor
 except:
     from backend.Helpers import *
+    from backend.connectors import Connector,Acceptor
 from acquire import acquire
 
 # logging.basicConfig(filename='example.log', level=logging.DEBUG)
@@ -119,6 +121,42 @@ class Artist(asyncore.dispatcher):
     def InitializeScanning(self):
         self.ns.scanning = False
 
+    def processRequests(self,sender,data):
+        if data == 'info':
+            info = {'format':self.format,'measuring':self.ns.measuring}
+            return info
+
+        elif data == 'data':
+            data = []
+            l = len(sender.dataDQ)
+            if not l == 0:
+                data = [sender.dataDQ.popleft() for i in range(l)]
+            return {'data':data,'format':self.format,'measuring':self.ns.measuring}
+
+        else:
+            logging.info('Got "{}" instruction'.format(data))
+            if data[0] == 'STOP':
+                self.StopDAQ()
+            elif data[0] == 'START':
+                self.StartDAQ()
+            elif data[0] == 'RESTART':
+                self.RestartDAQ()
+            elif data[0] == 'PAUZE':
+                self.PauzeDAQ()
+            elif data[0] == 'RESUME':
+                self.ResumeDAQ()
+            elif data[0] == 'CHANGE SETTINGS':
+                self.changeSet(data[1])
+            elif data[0] == 'idling':
+                self.ns.scanNo = -1
+            elif data[0] == 'Measuring':
+                self.ns.t0 = time.time()
+                self.ns.scanNo = data[1]
+            else:
+                self.iQ.put(data)
+
+            return None
+
     def StartDAQ(self):
         if not self.stopFlag.is_set():
             logging.warn('DAQ already running.')
@@ -137,12 +175,6 @@ class Artist(asyncore.dispatcher):
         self.format = self.ns.format
         logging.info(self.format)
         self.contFlag.set()
-        for t in self.transmitters:
-            t.format = self.format
-        try:
-            self.receiver.format = self.format
-        except:
-            pass
         self.readThread = th.Timer(0, self.ReadData).start()
         logging.info('DAQ Started.')
 
@@ -186,7 +218,7 @@ class Artist(asyncore.dispatcher):
                 if self.save_data:
                     self.saveQ.append(ret)
                 for t in self.transmitters:
-                    t.chunkQ.append(ret)
+                    t.dataDQ.append(ret)
             time.sleep(0.01)
             # print('starting')
             # self.readThread = th.Timer(0.01, self.ReadData).start()
@@ -222,17 +254,25 @@ class Artist(asyncore.dispatcher):
             except:
                 logging.warn('Sender {} did not send proper ID'.format(addr))
                 return
-            if sender == 'Manager':
-                self.receiver = InstructionReceiver(sock, self)
-                sock.send(self.name.encode('UTF-8'))
-            elif sender == 'Server':
-                self.transmitters.append(DataTransmitter(sock, self.format))
-                sock.send(self.name.encode('UTF-8'))
+            if sender == 'M_to_Artist':
+                self.receiver = Acceptor(sock, 
+                    callback = self.processRequests,onCloseCallback=self.removeReceiver,
+                    t=self.name)
+            elif sender == 'DS_to_Artist':
+                self.transmitters.append(Acceptor(sock, 
+                    callback = self.processRequests,onCloseCallback=self.removeTransmitter,
+                    t=self.name))
             else:
                 logging.error('Sender {} named {} not understood'
                               .format(addr, sender))
                 return
             logging.info('Accepted {} as {}'.format(addr, sender))
+
+    def removeReceiver(self,receiver):
+        self.receiver = None
+    
+    def removeTransmitter(self,transmitter):
+        self.transmitters.remove(transmitter)
 
     def get_sender_ID(self, sock):
         now = time.time()
@@ -249,85 +289,6 @@ class Artist(asyncore.dispatcher):
     def handle_close(self):
         logging.info('Closing Artist')
         super(Artist, self).handle_close()
-
-
-class InstructionReceiver(asynchat.async_chat):
-    def __init__(self, sock, artist, *args, **kwargs):
-        super(InstructionReceiver, self).__init__(sock=sock, *args, **kwargs)
-        self.instruction = b""
-        self.set_terminator('END_MESSAGE'.encode('UTF-8'))
-        self.artist = artist
-
-    def found_terminator(self):
-        instruction = self.decode_instruction()
-        if instruction == 'CONT':
-            info = {'format':self.artist.format,'measuring':self.artist.ns.measuring}
-            self.push(pickle.dumps(info))
-            self.push('STOP_DATA'.encode('UTF-8'))
-        else:
-            logging.info('Got "{}" instruction'.format(instruction))
-            if instruction[0] == 'STOP':
-                self.artist.StopDAQ()
-            elif instruction[0] == 'START':
-                self.artist.StartDAQ()
-            elif instruction[0] == 'RESTART':
-                self.artist.RestartDAQ()
-            elif instruction[0] == 'PAUZE':
-                self.artist.PauzeDAQ()
-            elif instruction[0] == 'RESUME':
-                self.artist.ResumeDAQ()
-            elif instruction[0] == 'CHANGE SETTINGS':
-                self.artist.changeSet(instructions[1])
-            elif instruction[0] == 'idling':
-                self.artist.ns.scanNo = -1
-            elif instruction[0] == 'Measuring':
-                self.artist.ns.t0 = time.time()
-
-                self.artist.ns.scanNo = instruction[1]
-            else:
-                self.artist.iQ.put(instruction)
-
-
-    def decode_instruction(self):
-        instr = pickle.loads(self.instruction)
-        self.instruction = b""
-        return instr
-
-    def collect_incoming_data(self, instruction):
-        self.instruction += instruction
-
-    def handle_close(self):
-        logging.info('Closing InstructionReceiver')
-        super(InstructionReceiver, self).handle_close()
-
-
-class DataTransmitter(asynchat.async_chat):
-    def __init__(self, sock, format, *args, **kwargs):
-        super(DataTransmitter, self).__init__(sock=sock, *args, **kwargs)
-        self.set_terminator('END_MESSAGE'.encode('UTF-8'))
-        self.format = format
-        self.chunkQ = deque()
-
-    def found_terminator(self):
-        data = []
-        # while len(data) == 0:
-        l = len(self.chunkQ)
-        if not l == 0:
-            data = [self.chunkQ.popleft() for i in range(l)]
-        self.transmit(pickle.dumps(data))
-
-    def transmit(self, data):
-        self.push(pickle.dumps(self.format))
-        self.push('STOP_DATA'.encode('UTF-8'))
-        self.push(data)
-        self.push('STOP_DATA'.encode('UTF-8'))
-
-    def collect_incoming_data(self, message):
-        pass
-
-    def handle_close(self):
-        logging.info('Closing DataTransmitter')
-        super(DataTransmitter, self).handle_close()
 
 def makeArtist(name='test1', PORT=5005, save_data=True):
     return Artist(name=name, PORT=PORT, save_data=save_data)

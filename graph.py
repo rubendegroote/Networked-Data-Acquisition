@@ -2,6 +2,7 @@ import pyqtgraph as pg
 from PyQt4 import QtCore,QtGui
 import pyqtgraph.dockarea as da
 import datetime
+import numpy as np
 
 from picbutton import PicButton
 
@@ -17,6 +18,8 @@ class MyGraph(QtGui.QWidget):
 
         self.options = []
         self.name = name
+        self.xkey = ''
+        self.ykey = ''
 
         self.layout = QtGui.QGridLayout(self)
 
@@ -118,20 +121,23 @@ class MyGraph(QtGui.QWidget):
 
     def plot(self,data):
         try:
-            data = data.dropna()
-            try:
-                time = (data['time'].values-datetime.datetime(1970,1,1))
-                data['time'] = [t.total_seconds() for t in time]
-            except:
-                pass
-
             columns = data.columns.values
-            self.graph.plot(data[columns[0]].values,data[columns[1]].values, 
-                pen = 'r', clear = True)
+            if len(columns) == 2:
+                data.sort_index(inplace=True)
+                data[columns[0]].fillna(method='bfill',inplace=True)
+                data.dropna(inplace=True)
+                self.graph.plot(data[columns[0]],data[columns[1]],pen = 'r', clear = True)
+            elif len(columns) == 1:
+                data.dropna(inplace=True)
+                time = [t.item()/10**9 for t in (data.index.values-np.datetime64('1970-01-01T00:00Z'))]
+                self.graph.plot(time,data[columns[0]],pen = 'r', clear = True)
+
+
         except Exception as e:
             pass
 
     def setXYOptions(self,options):
+        options.append('time')
         if not options == self.options:
             self.options = options
             curX = int(self.comboX.currentIndex())

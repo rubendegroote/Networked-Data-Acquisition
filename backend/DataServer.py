@@ -76,15 +76,15 @@ class DataServer(asyncore.dispatcher):
             logging.warning('provide IP address and PORT')
             return
         for name,add in self._readers.items():
-            if address == (add.IP,str(add.PORT)):
+            if address == (add.chan[0],str(add.chan[1])):
                 if self._readerInfo[name][0]:
                     return
         try:
             reader = ArtistReader(chan=(address[0],int(address[1])),
-                callback=None,onCloseCallback=readerClosed, t='DS_to_artist')
+                callback=None,onCloseCallback=self.readerClosed)
             self._readers[reader.artistName] = reader
             self.dQs[reader.artistName] = reader.dQ
-            self._readerInfo[reader.artistName] = (True,reader.IP,reader.PORT)
+            self._readerInfo[reader.artistName] = (True,reader.chan[0],reader.chan[1])
             for c in self.acceptors:
                 c.commQ.put(self._readerInfo)
             logging.info('Connected to ' + reader.artistName)
@@ -106,11 +106,9 @@ class DataServer(asyncore.dispatcher):
             c.commQ.put(self._readerInfo)
 
     def processRequests(self,sender,data):
-        if data[0] == 'ARTISTS?':
-            return self._readerInfo
-        elif data[0] == 'Data':
+        if data[0] == 'data':
             perScan,columns = data[1]
-            return self.getData(perScan,columns),tuple(self._data.columns.values)
+            return {'data':self.getData(perScan,columns),'format':tuple(self._data.columns.values)}
         elif data[0] == 'Add Artist':
             self.addReader(data[1])
             return None
@@ -121,12 +119,10 @@ class DataServer(asyncore.dispatcher):
             try:
                 return sender.commQ.get_nowait()
             except:
-                pass
-        
-        return self.bitrates
+                return (self._readerInfo,self.bitrates)
 
     def readerClosed(self,reader):
-        self._readerInfo[reader.artistName] = (False,reader.IP,reader.PORT)
+        self._readerInfo[reader.artistName] = (False,reader.chan[0],reader.chan[1])
         for c in self.acceptors:
             c.commQ.put(self._readerInfo)
 
@@ -207,10 +203,10 @@ class DataServer(asyncore.dispatcher):
             except:
                 logging.warn('Sender {} did not send proper ID'.format(addr))
                 return
-            if sender == 'Radio':
-                self.transmitters.append(Acceptor(sock, callback = self.processRequests,
-                    onCloseCallback=self.accClosed,t='RGui_to_DS'))
-            elif sender == 'Connector':
+            if sender == 'R_to_DS':
+                self.acceptors.append(Acceptor(sock, callback = self.processRequests,
+                    onCloseCallback=self.accClosed,t='R_to_DS'))
+            elif sender == 'MGui_to_DS':
                 self.acceptors.append(Acceptor(sock, callback = self.processRequests,
                     onCloseCallback=self.accClosed,t='MGui_to_DS'))
             else:
@@ -236,28 +232,30 @@ class DataServer(asyncore.dispatcher):
         super(DataServer, self).handle_close()
 
 class ArtistReader(Connector):
-    def __init__(self,chan,callback):
-        super(ArtistReader, self).__init__(chan,callback,t='DS_to_artist')
-
-        self.artistName = self.wait_for_connection()
+    def __init__(self,chan,callback,onCloseCallback):
+        super(ArtistReader, self).__init__(chan,callback,onCloseCallback,t='DS_to_Artist')
         self.dQ = deque()
-        self._data = pd.DataFrame()
-        self.total = 0
+
+        self.artistName = self.acceptorName
 
         self.send_next()
 
     def found_terminator(self):
-        buff = self._buffer
-        self.total += len(self._buffer)
-
-        self._buffer = b''
-        data = pickle.loads(buff)
-        if type(data) == tuple:
-            self._format = tuple([self.artistName + ': ' + d if d not in SHARED else d for d in data])
-        else:
+        data = pickle.loads(self.buff)
+        self.buff = b''
+        if type(data) == dict:
+            self._format = tuple([self.artistName + ': ' + f 
+                if f not in SHARED else f for f in data['format']])
+            d = data['data']
             if not data == []:
-                self.dQ.append(data)
-            self.send_next()
+                self.dQ.append(d)
+        
+        self.send_next()
+
+    def send_next(self):
+        self.push(pickle.dumps('data'))
+        self.push('END_MESSAGE'.encode('UTF-8'))
+
 
 def makeServer(channel=[('KSF402', 5005)],PORT=5004,save=True,remember=True):
     return DataServer(channel,PORT,save,remember)

@@ -70,6 +70,7 @@ class ManagerApp(QtGui.QMainWindow):
             self.statusBar().showMessage('Connected to Manager and Data Server')
 
     def lostConn(self,server):
+        print(server)
         self.statusBar().showMessage(server + ' connection fail')
         self.disable()
 
@@ -167,8 +168,9 @@ class Man_DS_Connector():
             self.DS.commQ.put(instr)
 
     def onClosedCallback(self,server):
+        print(server,server.type)
         # perhaps use this to change some settings or whatnot
-        self.AppCallBack(server.t)
+        self.AppCallBack(server.type)
 
 class ManagerConnector(Connector):
     def __init__(self,chan,callback,onCloseCallback):
@@ -176,45 +178,42 @@ class ManagerConnector(Connector):
         self.progress = 0
         self.scanning = False
         self.format = {}
+        self.artists = {}
 
-        self.push(pickle.dumps(['ARTISTS?']))
-        self.push('END_MESSAGE'.encode('UTF-8'))
+        self.send_next()
 
     def found_terminator(self):
-        buff = self._buffer
-        self._buffer = b''
+        buff = self.buff
+        self.buff = b''
         data = pickle.loads(buff)
-        if type(data) == dict:
-            self.artists = data
-        else:
-            self.scanning,self.progress,self.format = data
+        if type(data) == tuple:
+            self.artists,info = data
+            self.scanning,self.progress,self.format = info
+
         try:
             info = self.commQ.get_nowait()
             self.push(pickle.dumps(info))
             self.push('END_MESSAGE'.encode('UTF-8'))
         except:
-            pass
-
-        self.send_next()
+            self.send_next()
 
 class DataServerConnector(Connector):
     def __init__(self,chan,callback,onCloseCallback):
         super(DataServerConnector,self).__init__(chan,callback,onCloseCallback,t='MGui_to_DS')
 
-        self.push(pickle.dumps(['ARTISTS?']))
-        self.push('END_MESSAGE'.encode('UTF-8'))
+        self.artists = {}
+        
+        self.send_next()
 
     def found_terminator(self):
-        buff = self._buffer
-        self._buffer = b''
+        buff = self.buff
+        self.buff = b''
         data = pickle.loads(buff)
-        if type(data) == dict:
-            self.artists = data
+        if type(data) == tuple:
+            self.artists,bitrates = data
         try:
             info = self.commQ.get_nowait()
             self.push(pickle.dumps(info))
             self.push('END_MESSAGE'.encode('UTF-8'))
         except:
-            pass
-
-        self.send_next()
+            self.send_next()

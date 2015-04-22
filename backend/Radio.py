@@ -1,11 +1,12 @@
 import asynchat
 import asyncore
-from connectors import Connector
-
+from backend.connectors import Connector
+import pandas as pd
+import pickle
 
 class RadioConnector(Connector):
-    def __init__(self,chan,callback):
-        super(RadioConnector, self).__init__(chan,callback,t='RGui_to_DS')
+    def __init__(self,chan,callback,onCloseCallback):
+        super(RadioConnector, self).__init__(chan,callback,t='R_to_DS')
 
         self.format = tuple()
         self.xy = ['time','Rubeny']
@@ -15,15 +16,16 @@ class RadioConnector(Connector):
         self.send_next()
 
     def found_terminator(self):
-        format,data = pickle.loads(self.buff)
+        data = pickle.loads(self.buff)
         self.buff = b''
         
-        self.format = format
+        self.format = data['format']
         if not len(data) == 0:
-            self.data = data
+            self.data = data['data']
 
         self.send_next()
 
     def send_next(self):
-        self.push(pickle.dumps((self.perScan,self.xy)))
+        cols = [xy for xy in self.xy if not xy=='time']
+        self.push(pickle.dumps(['data',(self.perScan,cols)]))
         self.push('END_MESSAGE'.encode('UTF-8'))
