@@ -6,8 +6,6 @@ import pickle
 import asyncore
 
 from scanner import ScannerWidget
-from connect import ConnectionsWidget
-from central import CentralDock
 from connectiondialogs import Man_DS_ConnectionDialog
 from connectionwidgets import ArtistConnections
 

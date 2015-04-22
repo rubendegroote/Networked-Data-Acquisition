@@ -254,11 +254,11 @@ class Artist(asyncore.dispatcher):
             except:
                 logging.warn('Sender {} did not send proper ID'.format(addr))
                 return
-            if sender == 'M_to_Artist':
+            if sender == 'M_to_A':
                 self.receiver = Acceptor(sock, 
                     callback = self.processRequests,onCloseCallback=self.removeReceiver,
                     t=self.name)
-            elif sender == 'DS_to_Artist':
+            elif sender == 'DS_to_A':
                 self.transmitters.append(Acceptor(sock, 
                     callback = self.processRequests,onCloseCallback=self.removeTransmitter,
                     t=self.name))

@@ -66,7 +66,7 @@ class DataServer(asyncore.dispatcher):
     def start(self):
         while self.looping:
             asyncore.loop(count=1)
-            time.sleep(0.01)
+            time.sleep(0.1)
 
     def stop(self):
         self.looping = False
@@ -233,7 +233,7 @@ class DataServer(asyncore.dispatcher):
 
 class ArtistReader(Connector):
     def __init__(self,chan,callback,onCloseCallback):
-        super(ArtistReader, self).__init__(chan,callback,onCloseCallback,t='DS_to_Artist')
+        super(ArtistReader, self).__init__(chan,callback,onCloseCallback,t='DS_to_A')
         self.dQ = deque()
 
         self.artistName = self.acceptorName
@@ -257,16 +257,14 @@ class ArtistReader(Connector):
         self.push('END_MESSAGE'.encode('UTF-8'))
 
 
-def makeServer(channel=[('KSF402', 5005)],PORT=5004,save=True,remember=True):
+def makeServer(PORT=5006,save=True,remember=True):
     return DataServer(channel,PORT,save,remember)
 
 def main():
-    channels = input('Artist IP,PORTS?').split(";")
-    channels = [c.split(",") for c in channels]
     PORT = input('PORT?')
     save = int(input('save?'))==1
     rem = int(input('remember?'))==1
-    d = makeServer(channels,int(PORT),save=save, remember=rem)
+    d = makeServer(int(PORT),save=save, remember=rem)
 
 if __name__ == '__main__':
     main()

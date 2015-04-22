@@ -12,7 +12,7 @@ from Convert import *
 
 
 FILE_SERVER_PORT = 5009
-HTTP_SERVER_PORT = 5009
+HTTP_SERVER_PORT = 5010
 
 
 class FileServer(asyncore.dispatcher):
@@ -106,7 +106,7 @@ def start():
 
 
 def run():
-    server_address = ('', 5010)
+    server_address = ('', HTTP_SERVER_PORT)
     httpd = socketserver.TCPServer(server_address,
                                    http.server.SimpleHTTPRequestHandler)
     httpd.serve_forever()

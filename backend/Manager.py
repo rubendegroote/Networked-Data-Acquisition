@@ -46,7 +46,7 @@ class Manager(asyncore.dispatcher):
     def start(self):
         while self.looping:
             asyncore.loop(count=1)
-            time.sleep(0.01)
+            time.sleep(0.1)
 
     def stop(self):
         self.looping = False
@@ -203,7 +203,7 @@ class ArtistInstructor(Connector):
     """docstring for ArtistInstructor"""
 
     def __init__(self,chan,callback,onCloseCallback):
-        super(ArtistInstructor, self).__init__(chan,callback,onCloseCallback,t='M_to_Artist')
+        super(ArtistInstructor, self).__init__(chan,callback,onCloseCallback,t='M_to_A')
         self.scanning = False
         self.artistName = self.acceptorName
 
@@ -239,12 +239,10 @@ class ArtistInstructor(Connector):
         self.push(pickle.dumps(instruction))
         self.push('END_MESSAGE'.encode('UTF-8'))
 
-def makeManager(channel=[('KSF402', 5005)],PORT=5004):
-    return Manager(channel,PORT)
+def makeManager(PORT=5007):
+    return Manager(PORT)
 
 def main():
-    channels = input('Artist IP,PORTS?').split(";")
-    channels = [c.split(",") for c in channels]
     PORT = input('PORT?')
     d = makeManager(channels,int(PORT))
 

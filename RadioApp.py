@@ -46,7 +46,7 @@ class RadioApp(QtGui.QMainWindow):
     def startIOLoop(self):
         while self.looping:
             asyncore.loop(count=1,timeout=0.01)
-            time.sleep(0.01)
+            time.sleep(0.03)
 
     def addConnection(self,data):
         self.radio = RadioConnector(chan=(data[0],int(data[1])),
