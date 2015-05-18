@@ -3,8 +3,7 @@ import time
 import numpy as np
 import logging
 
-logging.basicConfig(format='%(asctime)s: %(message)s',
-                    level=logging.INFO)
+SAVE_PATH = 'C:/Data/'
 
 def GetFromQueue(q, name):
     if not q.empty():
@@ -15,8 +14,7 @@ def GetFromQueue(q, name):
             ret = q.get_nowait()
 
         except Exception as e:
-            logging.critical('An error occured while getting from queue {}.'
-                             .format(name))
+            logging.critical('An error occured while getting from queue {}.'.format(name))
             logging.critical(e)
             ret = None
     else:
@@ -44,25 +42,25 @@ def mass_concat(array, format):
 def flatten(array):
     return [l for sub in array for l in sub]
 
-def convert(data_list,format):
-    data = np.array([l for subl in data_list for l in subl]).reshape((-1,len(format)))
+def convert(data_list, format):
+    data = np.array([l for subl in data_list for l in subl]).reshape((-1, len(format)))
     data = pd.DataFrame(data, columns=format).set_index('time')
     return data
 
-def save(data,name,artist):
-    with pd.get_store(name+'_stream.h5') as store:
+def save(data, name, artist):
+    with pd.get_store(SAVE_PATH + name+'_stream.h5') as store:
         store.append(artist, data.convert_objects())
     groups = data.groupby('scan', sort=False)
     for n, group in groups:
         if not n == -1:
-            with pd.get_store(name+'_scan_'+ str(int(n))+ '.h5') as store:
+            with pd.get_store(SAVE_PATH + name+'_scan_'+ str(int(n))+ '.h5') as store:
                 store.append(artist, group.convert_objects())
 
-def save_csv(data,name,artist=''):
+def save_csv(data, name, artist=''):
     for n, group in groups:
         if n == -1:
-            with open(name+'_stream.csv', 'a') as f:
+            with open(SAVE_PATH + name+'_stream.csv', 'a') as f:
                 group.to_csv(f,na_rep='nan')
         else:
-            with open(name+'_scan' + str(int(n))+'.csv', 'a') as f:
+            with open(SAVE_PATH + name+'_scan' + str(int(n))+'.csv', 'a') as f:
                 group.to_csv(f,na_rep='nan')

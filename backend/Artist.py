@@ -3,6 +3,9 @@ import asyncore
 import socket
 import multiprocessing as mp
 import logging
+logging.basicConfig(filename='Artist.log',
+                    format='%(asctime)s: %(message)s',
+                    level=logging.INFO)
 import threading as th
 import pickle
 import pandas as pd
@@ -16,10 +19,6 @@ except:
     from backend.Helpers import *
     from backend.connectors import Connector,Acceptor
 from acquire import acquire
-
-# logging.basicConfig(filename='example.log', level=logging.DEBUG)
-logging.basicConfig(format='%(asctime)s: %(message)s',
-                    level=logging.INFO)
 
 SAVE_INTERVAL = 2
 
@@ -74,7 +73,15 @@ class Artist(asyncore.dispatcher):
         self.transmitters = []
 
         # dictionary holding the initial settings for the hardware
-        self.settings = settings
+        self.settings = dict(counterChannel = "/Dev1/ctr1", # corresponds to PFI3
+                             aoChannel = "/Dev1/ao0",
+                             aiChannel = "/Dev1/ai1,/Dev1/ai2",
+                             noOfAi = 2,
+                             clockChannel = "/Dev1/PFI1",
+                             timePerStep = 1,
+                             laser = 'CW Laser Voltage Scan',
+                             cristalMode = True,
+                             clearMode = True)
         self.format = ('',)
         self.data = pd.DataFrame()
 
@@ -113,7 +120,7 @@ class Artist(asyncore.dispatcher):
         self.ns.t0 = time.time()
         self.ns.scanNo = -1
         self.ns.measuring = False
-        self.ns.format = ('time', 'scan', 'x', 'y', 'z')
+        self.ns.format = ('time', 'scan', 'Counts', 'AOV', 'AIChannel1', 'AIChannel2')
 
         self.save_data = save_data
         self._saveThread = th.Timer(1, self.save).start()

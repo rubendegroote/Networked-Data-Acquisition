@@ -1,0 +1,294 @@
+2015-05-08 16:03:31,859: Listening on port 5007
+2015-05-08 16:05:28,609: MGui_to_M
+2015-05-08 16:05:28,625: Accepted ('127.0.0.1', 50393) as MGui_to_M
+2015-05-08 16:05:35,625: Connecting to M_to_A...
+2015-05-08 16:05:35,688: Connected to Wouter
+2015-05-08 16:33:41,806: Closing Acceptor MGui_to_M
+2015-05-08 16:33:54,307: MGui_to_M
+2015-05-08 16:33:54,307: Accepted ('127.0.0.1', 50424) as MGui_to_M
+2015-05-08 16:34:14,761: Connecting to M_to_A...
+2015-05-08 16:34:14,823: Connected to Wouter
+2015-05-08 16:35:51,041: MGui_to_M
+2015-05-08 16:35:51,041: Accepted ('127.0.0.1', 50434) as MGui_to_M
+2015-05-08 16:35:51,041: Closing Acceptor MGui_to_M
+2015-05-08 16:35:54,495: Closing Acceptor MGui_to_M
+2015-05-08 16:36:03,683: MGui_to_M
+2015-05-08 16:36:03,683: Accepted ('127.0.0.1', 50436) as MGui_to_M
+2015-05-08 16:46:25,652: Closing Acceptor MGui_to_M
+2015-05-08 16:46:42,106: Listening on port 5007
+2015-05-08 16:46:53,441: MGui_to_M
+2015-05-08 16:46:53,441: Accepted ('127.0.0.1', 50471) as MGui_to_M
+2015-05-08 16:46:57,613: Connecting to M_to_A...
+2015-05-08 16:46:57,676: Connected to Wouter
+2015-05-08 16:47:11,286: Closing M_to_A Connector
+2015-05-08 16:47:22,615: Closing Acceptor MGui_to_M
+2015-05-08 16:47:45,033: Listening on port 5007
+2015-05-08 16:47:50,581: MGui_to_M
+2015-05-08 16:47:50,581: Accepted ('127.0.0.1', 50474) as MGui_to_M
+2015-05-08 16:47:52,456: Connecting to M_to_A...
+2015-05-08 16:47:52,518: Connected to Wouter
+2015-05-08 16:49:59,221: Closing Acceptor MGui_to_M
+2015-05-08 16:50:28,007: Listening on port 5007
+2015-05-08 16:50:31,070: MGui_to_M
+2015-05-08 16:50:31,070: Accepted ('127.0.0.1', 50537) as MGui_to_M
+2015-05-08 16:50:32,507: Connecting to M_to_A...
+2015-05-08 16:50:32,570: Connected to Wouter
+2015-05-08 16:50:46,712: Closing M_to_A Connector
+2015-05-08 16:52:09,640: Listening on port 5007
+2015-05-08 16:52:13,594: MGui_to_M
+2015-05-08 16:52:13,594: Accepted ('127.0.0.1', 50544) as MGui_to_M
+2015-05-08 16:52:15,250: Connecting to M_to_A...
+2015-05-08 16:52:15,313: Connected to Wouter
+2015-05-08 16:58:14,710: Listening on port 5007
+2015-05-08 16:58:18,039: MGui_to_M
+2015-05-08 16:58:18,039: Accepted ('127.0.0.1', 50556) as MGui_to_M
+2015-05-08 16:58:19,367: Connecting to M_to_A...
+2015-05-08 16:58:19,429: Connected to Wouter
+2015-05-08 16:59:55,090: Listening on port 5007
+2015-05-08 16:59:58,278: MGui_to_M
+2015-05-08 16:59:58,278: Accepted ('127.0.0.1', 50560) as MGui_to_M
+2015-05-08 16:59:59,496: Connecting to M_to_A...
+2015-05-08 16:59:59,559: Connected to Wouter
+2015-05-08 17:01:39,052: Listening on port 5007
+2015-05-08 17:01:44,677: MGui_to_M
+2015-05-08 17:01:44,693: Accepted ('127.0.0.1', 50564) as MGui_to_M
+2015-05-08 17:01:45,803: Connecting to M_to_A...
+2015-05-08 17:01:45,865: Connected to Wouter
+2015-05-08 17:10:07,612: Listening on port 5007
+2015-05-08 17:10:14,722: MGui_to_M
+2015-05-08 17:10:14,722: Accepted ('127.0.0.1', 50620) as MGui_to_M
+2015-05-08 17:10:18,237: Connecting to M_to_A...
+2015-05-08 17:10:18,300: Connected to Wouter
+2015-05-08 17:34:35,811: Closing Acceptor MGui_to_M
+2015-05-08 17:34:45,113: MGui_to_M
+2015-05-08 17:34:45,113: Accepted ('127.0.0.1', 50645) as MGui_to_M
+2015-05-08 17:35:55,134: Closing Acceptor MGui_to_M
+2015-05-08 17:36:00,276: MGui_to_M
+2015-05-08 17:36:00,276: Accepted ('127.0.0.1', 50648) as MGui_to_M
+2015-05-08 17:42:29,715: Closing Acceptor MGui_to_M
+2015-05-08 17:42:36,168: MGui_to_M
+2015-05-08 17:42:36,168: Accepted ('127.0.0.1', 50656) as MGui_to_M
+2015-05-08 18:05:10,813: Closing Acceptor MGui_to_M
+2015-05-08 18:05:39,439: Listening on port 5007
+2015-05-08 18:05:50,649: MGui_to_M
+2015-05-08 18:05:50,649: Accepted ('127.0.0.1', 50679) as MGui_to_M
+2015-05-08 18:05:52,415: Connecting to M_to_A...
+2015-05-08 18:05:52,477: Connected to Wouter
+2015-05-08 18:05:54,446: Connecting to M_to_A...
+2015-05-08 18:05:54,509: Connected to Wouter
+2015-05-08 18:05:55,181: Connecting to M_to_A...
+2015-05-08 18:05:55,243: Connected to Wouter
+2015-05-08 18:05:55,368: Connecting to M_to_A...
+2015-05-08 18:05:55,431: Connected to Wouter
+2015-05-08 18:05:55,540: Connecting to M_to_A...
+2015-05-08 18:05:55,602: Connected to Wouter
+2015-05-08 18:05:55,727: Connecting to M_to_A...
+2015-05-08 18:05:55,790: Connected to Wouter
+2015-05-08 18:05:55,899: Connecting to M_to_A...
+2015-05-08 18:05:55,962: Connected to Wouter
+2015-05-08 18:05:56,071: Connecting to M_to_A...
+2015-05-08 18:05:56,134: Connected to Wouter
+2015-05-08 18:05:56,243: Connecting to M_to_A...
+2015-05-08 18:05:56,306: Connected to Wouter
+2015-05-08 18:05:56,415: Connecting to M_to_A...
+2015-05-08 18:05:56,478: Connected to Wouter
+2015-05-08 18:05:56,587: Connecting to M_to_A...
+2015-05-08 18:05:56,649: Connected to Wouter
+2015-05-08 18:05:56,868: Connecting to M_to_A...
+2015-05-08 18:05:56,931: Connected to Wouter
+2015-05-08 18:05:57,040: Connecting to M_to_A...
+2015-05-08 18:05:57,103: Connected to Wouter
+2015-05-08 18:05:57,212: Connecting to M_to_A...
+2015-05-08 18:05:57,274: Connected to Wouter
+2015-05-08 18:08:55,567: Closing Acceptor MGui_to_M
+2015-05-08 18:09:02,396: MGui_to_M
+2015-05-08 18:09:02,396: Accepted ('127.0.0.1', 50697) as MGui_to_M
+2015-05-08 18:09:13,007: Closing Acceptor MGui_to_M
+2015-05-08 18:11:10,949: Listening on port 5007
+2015-05-08 18:11:14,605: MGui_to_M
+2015-05-08 18:11:14,605: Accepted ('127.0.0.1', 50699) as MGui_to_M
+2015-05-08 18:11:16,261: Connecting to M_to_A...
+2015-05-08 18:11:16,324: Connected to Wouter
+2015-05-08 18:12:44,074: Listening on port 5007
+2015-05-08 18:12:47,715: MGui_to_M
+2015-05-08 18:12:47,731: Accepted ('127.0.0.1', 50703) as MGui_to_M
+2015-05-08 18:12:49,590: Connecting to M_to_A...
+2015-05-08 18:12:49,653: Connected to Wouter
+2015-05-08 18:12:49,653: Closing Acceptor MGui_to_M
+2015-05-08 18:13:46,704: Listening on port 5007
+2015-05-08 18:13:50,626: MGui_to_M
+2015-05-08 18:13:50,626: Accepted ('127.0.0.1', 50708) as MGui_to_M
+2015-05-08 18:13:53,704: Connecting to M_to_A...
+2015-05-08 18:13:53,767: Connected to Wouter
+2015-05-08 18:13:53,767: Closing Acceptor MGui_to_M
+2015-05-08 18:14:25,052: Listening on port 5007
+2015-05-08 18:14:28,803: MGui_to_M
+2015-05-08 18:14:28,803: Accepted ('127.0.0.1', 50711) as MGui_to_M
+2015-05-08 18:14:33,740: Connecting to M_to_A...
+2015-05-08 18:14:33,803: Connected to Wouter
+2015-05-08 18:14:33,818: Closing Acceptor MGui_to_M
+2015-05-08 18:15:21,826: Listening on port 5007
+2015-05-08 18:15:25,091: MGui_to_M
+2015-05-08 18:15:25,091: Accepted ('127.0.0.1', 50714) as MGui_to_M
+2015-05-08 18:15:26,967: Connecting to M_to_A...
+2015-05-08 18:15:27,029: Connected to Wouter
+2015-05-08 18:15:27,029: Closing Acceptor MGui_to_M
+2015-05-08 18:17:10,959: Listening on port 5007
+2015-05-08 18:17:13,819: MGui_to_M
+2015-05-08 18:17:13,819: Accepted ('127.0.0.1', 50722) as MGui_to_M
+2015-05-08 18:17:15,147: Connecting to M_to_A...
+2015-05-08 18:17:15,210: Connected to Wouter
+2015-05-08 18:17:15,335: Closing Acceptor MGui_to_M
+2015-05-08 18:19:21,393: Listening on port 5007
+2015-05-08 18:19:23,441: MGui_to_M
+2015-05-08 18:19:23,441: Accepted ('127.0.0.1', 50726) as MGui_to_M
+2015-05-08 18:19:25,207: Connecting to M_to_A...
+2015-05-08 18:19:25,269: Connected to Wouter
+2015-05-08 18:19:25,519: Closing Acceptor MGui_to_M
+2015-05-08 18:19:49,808: Listening on port 5007
+2015-05-08 18:19:57,918: MGui_to_M
+2015-05-08 18:19:57,918: Accepted ('127.0.0.1', 50729) as MGui_to_M
+2015-05-08 18:19:59,574: Connecting to M_to_A...
+2015-05-08 18:19:59,636: Connected to Wouter
+2015-05-08 18:19:59,761: Closing Acceptor MGui_to_M
+2015-05-08 18:20:46,280: Listening on port 5007
+2015-05-08 18:20:51,860: MGui_to_M
+2015-05-08 18:20:51,860: Accepted ('127.0.0.1', 50732) as MGui_to_M
+2015-05-08 18:20:53,735: Connecting to M_to_A...
+2015-05-08 18:20:53,797: Connected to Wouter
+2015-05-08 18:21:00,707: Closing Acceptor MGui_to_M
+2015-05-08 18:21:56,055: MGui_to_M
+2015-05-08 18:21:56,055: Accepted ('127.0.0.1', 50736) as MGui_to_M
+2015-05-08 18:22:48,428: Listening on port 5007
+2015-05-08 18:23:04,701: MGui_to_M
+2015-05-08 18:23:04,779: Accepted ('127.0.0.1', 50740) as MGui_to_M
+2015-05-08 18:23:08,279: Connecting to M_to_A...
+2015-05-08 18:23:08,342: Connected to Wouter
+2015-05-08 18:23:11,311: Closing Acceptor MGui_to_M
+2015-05-08 18:23:19,005: MGui_to_M
+2015-05-08 18:23:19,005: Accepted ('127.0.0.1', 50745) as MGui_to_M
+2015-05-08 18:29:51,485: Closing Acceptor MGui_to_M
+2015-05-08 18:30:02,159: Listening on port 5007
+2015-05-08 18:30:09,040: MGui_to_M
+2015-05-08 18:30:09,040: Accepted ('127.0.0.1', 50751) as MGui_to_M
+2015-05-08 18:30:12,446: Connecting to M_to_A...
+2015-05-08 18:30:12,509: Connected to Wouter
+2015-05-08 18:30:14,384: Closing Acceptor MGui_to_M
+2015-05-08 18:31:07,969: Listening on port 5007
+2015-05-08 18:31:14,782: MGui_to_M
+2015-05-08 18:31:14,782: Accepted ('127.0.0.1', 50755) as MGui_to_M
+2015-05-08 18:31:16,329: Connecting to M_to_A...
+2015-05-08 18:31:16,392: Connected to Wouter
+2015-05-08 18:31:17,845: Closing Acceptor MGui_to_M
+2015-05-08 18:31:58,299: Listening on port 5007
+2015-05-08 18:32:00,862: MGui_to_M
+2015-05-08 18:32:00,862: Accepted ('127.0.0.1', 50759) as MGui_to_M
+2015-05-08 18:32:02,299: Connecting to M_to_A...
+2015-05-08 18:32:02,362: Connected to Wouter
+2015-05-08 18:32:02,362: Closing Acceptor MGui_to_M
+2015-05-08 18:32:32,347: Listening on port 5007
+2015-05-08 18:32:34,065: MGui_to_M
+2015-05-08 18:32:34,065: Accepted ('127.0.0.1', 50762) as MGui_to_M
+2015-05-08 18:32:35,612: Connecting to M_to_A...
+2015-05-08 18:32:35,675: Connected to Wouter
+2015-05-08 18:32:37,034: Closing Acceptor MGui_to_M
+2015-05-08 18:34:17,693: Listening on port 5007
+2015-05-08 18:34:19,959: MGui_to_M
+2015-05-08 18:34:19,959: Accepted ('127.0.0.1', 50767) as MGui_to_M
+2015-05-08 18:34:21,287: Connecting to M_to_A...
+2015-05-08 18:34:21,349: Connected to Wouter
+2015-05-08 18:34:21,349: Closing Acceptor MGui_to_M
+2015-05-08 18:35:17,602: Listening on port 5007
+2015-05-08 18:35:20,477: MGui_to_M
+2015-05-08 18:35:20,477: Accepted ('127.0.0.1', 50770) as MGui_to_M
+2015-05-08 18:35:21,914: Connecting to M_to_A...
+2015-05-08 18:35:21,977: Connected to Wouter
+2015-05-08 18:35:57,260: Listening on port 5007
+2015-05-08 18:36:02,854: MGui_to_M
+2015-05-08 18:36:02,854: Accepted ('127.0.0.1', 50774) as MGui_to_M
+2015-05-08 18:36:05,713: Connecting to M_to_A...
+2015-05-08 18:36:05,776: Connected to Wouter
+2015-05-08 18:36:05,776: Closing Acceptor MGui_to_M
+2015-05-08 18:37:00,592: Listening on port 5007
+2015-05-08 18:37:03,967: MGui_to_M
+2015-05-08 18:37:03,983: Accepted ('127.0.0.1', 50782) as MGui_to_M
+2015-05-08 18:37:05,405: Connecting to M_to_A...
+2015-05-08 18:37:05,468: Connected to Wouter
+2015-05-08 18:37:08,983: Closing Acceptor MGui_to_M
+2015-05-08 18:37:14,812: MGui_to_M
+2015-05-08 18:37:14,812: Accepted ('127.0.0.1', 50786) as MGui_to_M
+2015-05-08 18:37:17,984: Closing Acceptor MGui_to_M
+2015-05-08 18:37:31,143: Listening on port 5007
+2015-05-08 18:37:34,362: MGui_to_M
+2015-05-08 18:37:34,362: Accepted ('127.0.0.1', 50788) as MGui_to_M
+2015-05-08 18:37:35,691: Connecting to M_to_A...
+2015-05-08 18:37:35,753: Connected to Wouter
+2015-05-08 18:37:37,737: Closing Acceptor MGui_to_M
+2015-05-08 18:42:16,147: Listening on port 5007
+2015-05-08 18:42:19,101: MGui_to_M
+2015-05-08 18:42:19,101: Accepted ('127.0.0.1', 50821) as MGui_to_M
+2015-05-08 18:42:20,429: Connecting to M_to_A...
+2015-05-08 18:42:20,507: Connected to Wouter
+2015-05-08 18:42:20,632: Closing Acceptor MGui_to_M
+2015-05-08 18:42:55,650: Listening on port 5007
+2015-05-08 18:42:58,197: MGui_to_M
+2015-05-08 18:42:58,197: Accepted ('127.0.0.1', 50824) as MGui_to_M
+2015-05-08 18:42:59,525: Connecting to M_to_A...
+2015-05-08 18:42:59,588: Connected to Wouter
+2015-05-08 20:49:51,771: Listening on port 5007
+2015-05-08 20:49:57,381: MGui_to_M
+2015-05-08 20:49:57,412: Accepted ('127.0.0.1', 51045) as MGui_to_M
+2015-05-08 20:50:02,115: Connecting to M_to_A...
+2015-05-08 20:50:02,177: Connected to Wouter
+2015-05-08 20:50:09,631: Closing Acceptor MGui_to_M
+2015-05-08 20:50:23,306: Listening on port 5007
+2015-05-08 20:50:26,431: MGui_to_M
+2015-05-08 20:50:26,431: Accepted ('127.0.0.1', 51049) as MGui_to_M
+2015-05-08 20:50:28,087: Connecting to M_to_A...
+2015-05-08 20:50:28,150: Connected to Wouter
+2015-05-08 20:50:31,666: Closing Acceptor MGui_to_M
+2015-05-08 20:50:42,990: MGui_to_M
+2015-05-08 20:50:42,990: Accepted ('127.0.0.1', 51054) as MGui_to_M
+2015-05-08 20:51:11,199: Listening on port 5007
+2015-05-08 20:51:16,043: MGui_to_M
+2015-05-08 20:51:16,043: Accepted ('127.0.0.1', 51056) as MGui_to_M
+2015-05-08 20:51:18,027: Connecting to M_to_A...
+2015-05-08 20:51:18,090: Connected to Wouter
+2015-05-08 21:01:24,297: Listening on port 5007
+2015-05-08 21:01:28,798: MGui_to_M
+2015-05-08 21:01:28,798: Accepted ('127.0.0.1', 51077) as MGui_to_M
+2015-05-08 21:01:41,627: Connecting to M_to_A...
+2015-05-08 21:01:41,689: Connected to Wouter
+2015-05-08 21:01:47,549: Closing Acceptor MGui_to_M
+2015-05-08 21:02:07,207: MGui_to_M
+2015-05-08 21:02:07,207: Accepted ('127.0.0.1', 51083) as MGui_to_M
+2015-05-09 13:43:44,891: Closing M_to_A Connector
+2015-05-09 13:46:59,478: Closing Acceptor MGui_to_M
+2015-05-09 13:48:32,937: Listening on port 5007
+2015-05-09 13:50:04,258: MGui_to_M
+2015-05-09 13:50:04,258: Accepted ('127.0.0.1', 54307) as MGui_to_M
+2015-05-09 13:50:32,898: Connecting to M_to_A...
+2015-05-09 13:50:32,976: Connected to Wouter
+2015-05-09 13:53:13,050: Listening on port 5007
+2015-05-09 13:53:35,584: MGui_to_M
+2015-05-09 13:53:35,584: Accepted ('127.0.0.1', 54312) as MGui_to_M
+2015-05-09 13:53:50,802: Connecting to M_to_A...
+2015-05-09 13:53:50,880: Connected to Wouter
+2015-05-09 13:54:45,693: Closing Acceptor MGui_to_M
+2015-05-09 13:54:55,693: MGui_to_M
+2015-05-09 13:54:55,693: Accepted ('127.0.0.1', 54316) as MGui_to_M
+2015-05-09 13:55:39,961: Listening on port 5007
+2015-05-09 13:55:42,930: MGui_to_M
+2015-05-09 13:55:42,930: Accepted ('127.0.0.1', 54320) as MGui_to_M
+2015-05-09 13:55:45,571: Connecting to M_to_A...
+2015-05-09 13:55:45,633: Connected to Wouter
+2015-05-09 13:58:29,891: Listening on port 5007
+2015-05-09 13:58:37,751: MGui_to_M
+2015-05-09 13:58:37,751: Accepted ('127.0.0.1', 54326) as MGui_to_M
+2015-05-09 13:58:39,407: Connecting to M_to_A...
+2015-05-09 13:58:39,470: Connected to Wouter
+2015-05-09 13:59:45,465: Listening on port 5007
+2015-05-09 13:59:52,059: MGui_to_M
+2015-05-09 13:59:52,059: Accepted ('127.0.0.1', 54332) as MGui_to_M
+2015-05-09 13:59:54,590: Connecting to M_to_A...
+2015-05-09 13:59:54,668: Connected to Wouter

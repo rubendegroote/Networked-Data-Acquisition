@@ -3,6 +3,7 @@ from PyQt4 import QtCore,QtGui
 from graph import GraphDock
 
 class CentralDock(pg.dockarea.DockArea):
+
     def __init__(self):
         super(CentralDock,self).__init__()
         self.createUIDocks()

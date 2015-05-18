@@ -3,10 +3,17 @@ import datetime
 import time
 import pickle
 import pandas as pd
+from PyDAQmx import *
+from PyDAQmx.DAQmxConstants import *
+from PyDAQmx.DAQmxFunctions import *
+try:
+    from OpenOPC import *
+except IOError:
+    from OpenOPC import *
 # developing a general acquisition function, to get a feel for the data
 # standard we would like
 
-def acquire(settings,dQ,iQ,mQ,contFlag,stopFlag,IStoppedFlag,ns):
+def acquire(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     """ This is the function that will be the target function of a Process.
 
     VERY IMPORTANT: the type of the data that is put on the data queue MUST be
@@ -28,6 +35,8 @@ def acquire(settings,dQ,iQ,mQ,contFlag,stopFlag,IStoppedFlag,ns):
         for some reason
     stopFlag: an Event which indicates if the process needs to exit
         for some reason (e.g. to allow for a reboot)
+    IStoppedFlag: an Event WHICH RUBEN HAS TO CLARIFY
+    ns: shared namespace with the Artist running the acquire process
     """
     t0 = 0
 
@@ -37,39 +46,85 @@ def acquire(settings,dQ,iQ,mQ,contFlag,stopFlag,IStoppedFlag,ns):
     # set_hardware_function(set1)
 
     # Start the acquisition loop
-    # data = np.linspace(0,99,1)
-    # times = np.array(1*[datetime.datetime.now()])
-    # scans = np.append(np.append(np.ones(1400)*1,np.ones(1400)*2),np.ones(200)*-1.0)
-
     # mQ.put(['time', 'scan', 'x', 'y', 'z'])
-    ns.format = ('time', 'scan', 'x', 'y', 'z')
-    contFlag.wait()
+    timeout = 10.0
+    maxRate = 10000.0  # Again, copied from old code
+
+    # Create the task handles (just defines different task)
+    countTaskHandle = TaskHandle(0)
+    aoTaskHandle = TaskHandle(0)
+    aiTaskHandle = TaskHandle(0)
+
+    # Creates the tasks
+    DAQmxCreateTask("", byref(countTaskHandle))
+    DAQmxCreateTask("", byref(aoTaskHandle))
+    DAQmxCreateTask("", byref(aiTaskHandle))
+
+    # Connect the tasks to PyDAQmx stuff...
+    try:
+        DAQmxCreateCICountEdgesChan(countTaskHandle,
+                                    settings['counterChannel'], "",
+                                    DAQmx_Val_Falling, 0, DAQmx_Val_CountUp)
+
+        DAQmxCfgSampClkTiming(countTaskHandle,
+                              settings['clockChannel'],
+                              maxRate, DAQmx_Val_Falling,
+                              DAQmx_Val_ContSamps, 1)
+
+        DAQmxCreateAOVoltageChan(aoTaskHandle,
+                                 settings['aoChannel'],
+                                 "", -10,
+                                 10,
+                                 DAQmx_Val_Volts, None)
+
+        DAQmxCreateAIVoltageChan(aiTaskHandle,
+                                 settings['aiChannel'], "",
+                                 DAQmx_Val_RSE, -10.0, 10.0,
+                                 DAQmx_Val_Volts, None)
+    except DAQError as err:
+        mQ.put("NI Communication failed: \n" + str(err))
+        return
+
+    # Start the tasks
+    DAQmxStartTask(countTaskHandle)
+    DAQmxStartTask(aoTaskHandle)
+    DAQmxStartTask(aiTaskHandle)
+
+    # Initialize the counters
+    lastCount = uInt32(0)
+    countData = uInt32(0) # the counter
+
+    # Check how many channels have to be created
+    AIChannels = settings['noOfAi']
+    # Initialize an array to store the data from all the channels
+    aiData = np.zeros((AIChannels,), dtype=np.float64)
+
+    # need to perform a count here that we then throw away
+    # otherwise get mysterious low first count
+    try:
+        DAQmxReadCounterScalarU32(countTaskHandle,
+                                  timeout,
+                                  byref(countData), None)
+    except DAQError as err:
+        mQ.put("NI Communication failed: \n" + str(err))
+        return
+    mQ.put("NI Communication established.")
+
+    # Create the format
+    ns.format = ('time', 'scan', 'Counts', 'AOV')
+    # Add an entry for each channel
+    ns.format = ns.format + tuple(['AIChannel' + str(i + 1) for i in range(AIChannels)])
+    print(ns.format)
+
     i = 0
-    p = float(0.)
+    p = float(0.)  # Initial value for the input
     got_instr = False
 
-
-    while not stopFlag.is_set():
+    contFlag.wait()  # Wait until the boolean for continuing is set to True
+    while not stopFlag.is_set():  # Continue the acquisition loop while the stop flag is False
         try:
             # if the contFlag is set: wait for it to be unset
             contFlag.wait()
-
-            # get data fom the hardware
-            # data = get_hardware_function()
-            now = time.time()
-
-            # put data on the queue
-            dQ.send((
-                    np.array([datetime.datetime.now()]),
-                    np.array([ns.scanNo]),
-                    np.array([p]), 
-                    np.random.rand(1), 
-                    np.random.rand(1)
-                   ))
-            i += 1
-
-            while time.time() - now < 0.05:
-                time.sleep(0.001)
 
             # get instructions from the instructions queue
             try:
@@ -82,12 +137,19 @@ def acquire(settings,dQ,iQ,mQ,contFlag,stopFlag,IStoppedFlag,ns):
 
             if got_instr:
                 if instr[0] == 'Change':
-                    par = instr[1]
+                    # instr[1] holds the parameter name to change. With the current architecture,
+                    # and the current acquire loop, this is not feasible. In this case,
+                    # the parameter to be scanned will always be the one input parameter.
+                    p = instr[2]
                     tPerStep = instr[3]
-                    ## setting parameter in hardware somewhere
-                    p = instr[2] 
-                    time.sleep(0.5)
-                    
+                    DAQmxWriteAnalogScalarF64(aoTaskHandle,
+                                      True, timeout,
+                                      p, None)
+                    # I assume the next line was a dummy line to simulate the writing
+                    # of the scanning voltage. I couldn't find it in the original code.
+                    # Nevertheless, it has been preserved.
+                    # time.sleep(0.5)
+
                     ns.measuring = True
                     # initial guess of when scanNo will be set to the current scan value. This
                     # is not a perfect guess because there is some time required for the 
@@ -95,6 +157,37 @@ def acquire(settings,dQ,iQ,mQ,contFlag,stopFlag,IStoppedFlag,ns):
                     # This initial guess will later be modified by the Artist to the actual time
                     # it received the 'Measuring' instruction.
                     ns.t0 = time.time()
+
+
+            # get data fom the hardware
+            DAQmxReadCounterScalarU32(countTaskHandle,
+                                      timeout,
+                                      byref(countData), None)
+            DAQmxReadAnalogF64(aiTaskHandle,
+                               -1, timeout,
+                               DAQmx_Val_GroupByChannel, aiData,
+                               AIChannels,
+                               byref(ctypes.c_long()), None)
+
+            # Modify the gathered data, to see how many counts since the last readout
+            # have registered.
+            counts = countData.value - lastCount.value
+            lastCount.value = countData.value
+            now = time.time()
+
+            # put data on the queue
+            # Does each value have to be an array in and of itself?
+            # For now, it is. The data from aiData is converted to
+            # arrays with a single value, and added to the tuple created
+            # from the other data (timestamp, scanNo, counts and scanningvoltage)
+            dQ.send((
+                    np.array([datetime.datetime.now()]),
+                    np.array([ns.scanNo]),
+                    np.array([counts]),
+                    np.array([p])) +
+                    tuple([np.array([val]) for val in aiData])
+                    )
+            i += 1
 
             if ns.measuring and time.time() - ns.t0 >= tPerStep:
                 ns.measuring = False

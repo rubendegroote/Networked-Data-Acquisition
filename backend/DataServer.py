@@ -4,6 +4,9 @@ from collections import deque
 from datetime import datetime
 from copy import deepcopy
 import logging
+logging.basicConfig(filename='DataServer.log',
+                    format='%(asctime)s: %(message)s',
+                    level=logging.INFO)
 import pickle
 import socket
 import threading as th
@@ -19,21 +22,17 @@ except:
     from backend.Helpers import *
     from backend.connectors import Connector,Acceptor
 
-
-
-logging.basicConfig(format='%(asctime)s: %(message)s',
-                    level=logging.INFO)
-
 GET_INTERVAL = 0.05
 SAVE_INTERVAL = 2
 SHARED = ['scan','time']
 
+
 class DataServer(asyncore.dispatcher):
-    def __init__(self,artists=[],PORT=5006,save_data=False, remember=True):
+
+    def __init__(self, artists=[], PORT=5006, save_data=False, remember=True):
         super(DataServer, self).__init__()
         self.port = PORT
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        # self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self.bind(('', self.port))
         self.listen(5)
         logging.info('Listening on port {}'.format(self.port))
@@ -45,7 +44,6 @@ class DataServer(asyncore.dispatcher):
         self.dQs = {}
         self.acceptors = []
         self.transmitters = []
-        # self.plot = render_plot()
         for address in artists:
             self.addReader(address)
         self._getThread = th.Timer(1, self.getFromReader).start()
@@ -53,7 +51,7 @@ class DataServer(asyncore.dispatcher):
         if save_data:
             self.lock = th.Lock()
             self.lastSaveTime = time.time()
-            self.toSave={}
+            self.toSave = {}
 
         self.remember = remember
         if remember:
@@ -61,7 +59,7 @@ class DataServer(asyncore.dispatcher):
             self._data_current_scan = pd.DataFrame()
 
         self.looping = True
-        t = th.Thread(target = self.start).start()
+        t = th.Thread(target=self.start).start()
 
     def start(self):
         while self.looping:
@@ -76,25 +74,26 @@ class DataServer(asyncore.dispatcher):
             logging.warning('provide IP address and PORT')
             return
         for name,add in self._readers.items():
-            if address == (add.chan[0],str(add.chan[1])):
+            if address == (add.chan[0], str(add.chan[1])):
                 if self._readerInfo[name][0]:
                     return
         try:
-            reader = ArtistReader(chan=(address[0],int(address[1])),
-                callback=None,onCloseCallback=self.readerClosed)
+            reader = ArtistReader(chan=(address[0], int(address[1])),
+                                  callback=None,
+                                  onCloseCallback=self.readerClosed)
             self._readers[reader.artistName] = reader
             self.dQs[reader.artistName] = reader.dQ
-            self._readerInfo[reader.artistName] = (True,reader.chan[0],reader.chan[1])
+            self._readerInfo[reader.artistName] = (True, reader.chan[0], reader.chan[1])
             for c in self.acceptors:
                 c.commQ.put(self._readerInfo)
             logging.info('Connected to ' + reader.artistName)
         except Exception as e:
             logging.info('Connection failed')
 
-    def removeReader(self,address=None):
+    def removeReader(self, address=None):
         toRemove = []
         for name,prop in self._readerInfo.items():
-            if address == (prop[1],str(prop[2])):
+            if address == (prop[1], str(prop[2])):
                 self._readers[name].close()
                 toRemove.append(name)
 
@@ -105,10 +104,10 @@ class DataServer(asyncore.dispatcher):
         for c in self.acceptors:
             c.commQ.put(self._readerInfo)
 
-    def processRequests(self,sender,data):
+    def processRequests(self, sender, data):
         if data[0] == 'data':
-            perScan,columns = data[1]
-            return {'data':self.getData(perScan,columns),'format':tuple(self._data.columns.values)}
+            perScan, columns = data[1]
+            return {'data': self.getData(perScan, columns), 'format': tuple(self._data.columns.values)}
         elif data[0] == 'Add Artist':
             self.addReader(data[1])
             return None
@@ -119,14 +118,14 @@ class DataServer(asyncore.dispatcher):
             try:
                 return sender.commQ.get_nowait()
             except:
-                return (self._readerInfo,self.bitrates)
+                return (self._readerInfo, self.bitrates)
 
-    def readerClosed(self,reader):
-        self._readerInfo[reader.artistName] = (False,reader.chan[0],reader.chan[1])
+    def readerClosed(self, reader):
+        self._readerInfo[reader.artistName] = (False, reader.chan[0], reader.chan[1])
         for c in self.acceptors:
             c.commQ.put(self._readerInfo)
 
-    def accClosed(self,acceptor):
+    def accClosed(self, acceptor):
         self.acceptors.remove(acceptor)
 
     def getFromReader(self):
@@ -153,7 +152,7 @@ class DataServer(asyncore.dispatcher):
                 self.extractMemory(new_data)
 
         if self.save_data and time.time() - self.lastSaveTime > SAVE_INTERVAL:
-            th.Thread(target = self.save).start()
+            th.Thread(target=self.save).start()
             self.lastSaveTime = time.time()
 
         wait = abs(min(0, time.time() - now - GET_INTERVAL))
@@ -166,19 +165,19 @@ class DataServer(asyncore.dispatcher):
         self.toSave = {}
         self.lock.release()
         for key,val in toSave.items():
-            save(val,self.saveDir,key)
+            save(val, self.saveDir, key)
 
     def extractMemory(self, new_data):
         self._data = self._data.append(new_data)
         
         # save the current scan in memory
-        m=self._data['scan'].max()
-        self._data_current_scan = self._data[self._data['scan']==m]
+        m = self._data['scan'].max()
+        self._data_current_scan = self._data[self._data['scan'] == m]
                 
         # save last 5000 data points
         self._data = self._data[-5000:]
 
-    def getData(self,perScan,columns):
+    def getData(self, perScan, columns):
         try:
             if perScan:
                 return self._data_current_scan[columns]
@@ -204,11 +203,15 @@ class DataServer(asyncore.dispatcher):
                 logging.warn('Sender {} did not send proper ID'.format(addr))
                 return
             if sender == 'R_to_DS':
-                self.acceptors.append(Acceptor(sock, callback = self.processRequests,
-                    onCloseCallback=self.accClosed,t='R_to_DS'))
+                self.acceptors.append(Acceptor(sock,
+                                               callback=self.processRequests,
+                                               onCloseCallback=self.accClosed,
+                                               t='R_to_DS'))
             elif sender == 'MGui_to_DS':
-                self.acceptors.append(Acceptor(sock, callback = self.processRequests,
-                    onCloseCallback=self.accClosed,t='MGui_to_DS'))
+                self.acceptors.append(Acceptor(sock,
+                                               callback=self.processRequests,
+                                               onCloseCallback=self.accClosed,
+                                               t='MGui_to_DS'))
             else:
                 logging.error('Sender {} named {} not understood'
                               .format(addr, sender))
@@ -231,9 +234,11 @@ class DataServer(asyncore.dispatcher):
         logging.info('Closing DataServer')
         super(DataServer, self).handle_close()
 
+
 class ArtistReader(Connector):
-    def __init__(self,chan,callback,onCloseCallback):
-        super(ArtistReader, self).__init__(chan,callback,onCloseCallback,t='DS_to_A')
+
+    def __init__(self,chan, callback, onCloseCallback):
+        super(ArtistReader, self).__init__(chan, callback, onCloseCallback, t='DS_to_A')
         self.dQ = deque()
 
         self.artistName = self.acceptorName
@@ -257,14 +262,14 @@ class ArtistReader(Connector):
         self.push('END_MESSAGE'.encode('UTF-8'))
 
 
-def makeServer(PORT=5006,save=True,remember=True):
-    return DataServer(channel,PORT,save,remember)
+def makeServer(PORT=5006, save=True, remember=True):
+    return DataServer([], PORT, save, remember)
 
 def main():
     PORT = input('PORT?')
     save = int(input('save?'))==1
     rem = int(input('remember?'))==1
-    d = makeServer(int(PORT),save=save, remember=rem)
+    d = makeServer(int(PORT), save=save, remember=rem)
 
 if __name__ == '__main__':
     main()

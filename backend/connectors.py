@@ -1,29 +1,26 @@
 import asynchat
-import asyncore
 import socket
 import multiprocessing as mp
 import pickle
 import time
 import logging
-import pandas as pd
 from collections import deque
 
 
-logging.basicConfig(format='%(asctime)s: %(message)s',
-                    level=logging.INFO)
-
 class Connector(asynchat.async_chat):
-    def __init__(self,chan,callback,onCloseCallback=None,t=''):
+
+    def __init__(self, chan, callback, onCloseCallback=None, t=''):
         super(Connector,self).__init__()
         self.type = t
         self.callback = callback
-        self.onCloseCallback=onCloseCallback
+        self.onCloseCallback = onCloseCallback
         self.chan = chan
 
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         # self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self.connect(chan)
         logging.info('Connecting to {}...'.format(self.type))
+        time.sleep(0.05)
         self.send(self.type.encode('UTF-8'))
         self.acceptorName = self.wait_for_connection()
 
@@ -66,12 +63,14 @@ class Connector(asynchat.async_chat):
             pass
         super(Connector, self).handle_close()
 
+
 class Acceptor(asynchat.async_chat):
-    def __init__(self,sock,callback=None,onCloseCallback=None,t=''):
+
+    def __init__(self, sock, callback=None, onCloseCallback=None, t=''):
         super(Acceptor, self).__init__(sock)
         self.set_terminator('END_MESSAGE'.encode('UTF-8'))
         self.callback = callback
-        self.onCloseCallback=onCloseCallback
+        self.onCloseCallback = onCloseCallback
         self.type = t
 
         self.buff = b""
@@ -87,12 +86,12 @@ class Acceptor(asynchat.async_chat):
         data = pickle.loads(self.buff)
         self.buff = b""
 
-        ret = self.callback(sender=self,data=data)
+        ret = self.callback(sender=self, data=data)
         if not ret == None:
             self.push(pickle.dumps(ret))
             self.push('STOP_DATA'.encode('UTF-8'))
         else:
-            info = self.callback(sender=self,data='info')
+            info = self.callback(sender=self, data='info')
             self.push(pickle.dumps(info))
             self.push('STOP_DATA'.encode('UTF-8'))
 
@@ -103,4 +102,3 @@ class Acceptor(asynchat.async_chat):
         except AttributeError:
             pass
         super(Acceptor, self).handle_close() 
-

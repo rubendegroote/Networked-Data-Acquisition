@@ -1,4 +1,5 @@
 from PyQt4 import QtCore,QtGui
+import configparser
 from connectiondialogs import ConnectionDialog
 
 class ArtistConnections(QtGui.QWidget):
@@ -23,7 +24,13 @@ class ArtistConnections(QtGui.QWidget):
         self.connections[name] = ConnectionWidget(self,name,IP,PORT)
         self.connections[name].removeSig.connect(self.remove)
         self.connections[name].reconnectSig.connect(self.reconnect)
-        self.layout.addWidget(self.connections[name],self.l,0,1,1)
+        self.layout.addWidget(self.connections[name], self.l, 0, 1, 1)
+        config = configparser.ConfigParser()
+        for key in self.connections.keys():
+            config[key] = {'IP': self.connections[name].IP,
+                           'Port': self.connections[name].PORT}
+        with open('ManagerArtistConnections.ini', 'w') as configfile:
+            config.write(configfile)
 
         self.l += 1
 
@@ -79,8 +86,8 @@ class ConnectionWidget(QtGui.QWidget):
         self.channel = QtGui.QLabel(self,text='IP: ' + IP)
         self.layout.addWidget(self.channel,0,3,1,1)
 
-        self.port = QtGui.QLabel(self,text='Port: ' + PORT)
-        self.layout.addWidget(self.port,0,4,1,1)
+        self.portlabel = QtGui.QLabel(self,text='Port: ' + PORT)
+        self.layout.addWidget(self.portlabel,0,4,1,1)
 
         self.ManReconnectButton = QtGui.QPushButton('Reconnect Manager')
         self.layout.addWidget(self.ManReconnectButton,0,1,1,1)
@@ -101,7 +108,7 @@ class ConnectionWidget(QtGui.QWidget):
 
     def reConnectArtist(self,sender):
         self.IP = str(self.channel.text().split(': ')[-1])
-        self.PORT = int(self.port.text().split(': ')[-1])
+        self.PORT = int(self.portlabel.text().split(': ')[-1])
         self.reconnectSig.emit((sender,(self.IP,self.PORT)))
 
     def update(self,name,status):

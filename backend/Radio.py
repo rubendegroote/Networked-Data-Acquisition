@@ -5,8 +5,8 @@ import pandas as pd
 import pickle
 
 class RadioConnector(Connector):
-    def __init__(self,chan,callback,onCloseCallback):
-        super(RadioConnector, self).__init__(chan,callback,t='R_to_DS')
+    def __init__(self, chan, callback, onCloseCallback):
+        super(RadioConnector, self).__init__(chan, callback, t='R_to_DS')
 
         self.format = tuple()
         self.xy = ['time','Rubeny']
@@ -27,5 +27,5 @@ class RadioConnector(Connector):
 
     def send_next(self):
         cols = [xy for xy in self.xy if not xy=='time']
-        self.push(pickle.dumps(['data',(self.perScan,cols)]))
+        self.push(pickle.dumps(['data', (self.perScan, cols)]))
         self.push('END_MESSAGE'.encode('UTF-8'))
