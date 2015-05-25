@@ -3,6 +3,7 @@ import asynchat
 import socket
 import multiprocessing as mp
 import ast
+from collections import OrderedDict
 import logging
 logging.basicConfig(filename='Manager.log',
                     format='%(asctime)s: %(message)s',
@@ -188,6 +189,15 @@ class Manager(asyncore.dispatcher):
             field = data[1]
             for i, entry in enumerate(self.logbook):
                 entry[-1][data[1]] = ''
+                logbooks.editEntry(self.logbook, i, **entry[-1])
+            self.notifyAllLogs(['Logbook', self.logbook])
+        elif data[0] == 'Add Tag To Logbook':
+            tag = data[1]
+            for i, entry in enumerate(self.logbook):
+                if 'Tags' not in entry[-1]:
+                    entry[-1]['Tags'] = OrderedDict()
+                if tag not in entry[-1]['Tags']:
+                    entry[-1]['Tags'][tag] = False
                 logbooks.editEntry(self.logbook, i, **entry[-1])
             self.notifyAllLogs(['Logbook', self.logbook])
         elif data[0] == 'Get Entry':

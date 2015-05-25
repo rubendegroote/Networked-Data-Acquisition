@@ -1,16 +1,12 @@
-import pyqtgraph as pg
-from PyQt4 import QtCore,QtGui
-
-from picbutton import PicButton
-
-import datetime
+from PyQt4 import QtCore, QtGui
 import os
 
 
 class CollapsibleArrow(QtGui.QPushButton):
-    def __init__(self, parent = None,path = None):
-        QtGui.QPushButton.__init__(self, parent = parent)
-        
+
+    def __init__(self, parent=None, path=None):
+        QtGui.QPushButton.__init__(self, parent=parent)
+
         self.isCollapsed = False
         self.setMaximumSize(24, 24)
         self.setStyleSheet("QFrame {\
@@ -28,12 +24,11 @@ class CollapsibleArrow(QtGui.QPushButton):
         self.arrowNameFalse = imagePath + 'maximizeBlue.png'
 
         self.setToolTip('Click to maximize/minimize.')
-        
-    def setArrow(self, arrowDir = True):
-        pass
+
+    def setArrow(self, arrowDir=True):
         if arrowDir:
-            self.setIcon(QtGui.QIcon(self.arrowNameTrue)) 
-            self.isCollapsed = True    
+            self.setIcon(QtGui.QIcon(self.arrowNameTrue))
+            self.isCollapsed = True
         else:
             self.setIcon(QtGui.QIcon(self.arrowNameFalse))
             self.isCollapsed = False
@@ -41,9 +36,10 @@ class CollapsibleArrow(QtGui.QPushButton):
     def mousePressEvent(self, event):
         self.emit(QtCore.SIGNAL('clicked()'))
         return super(CollapsibleArrow, self).mousePressEvent(event)
-        
+
 
 class TitleLabel(QtGui.QLabel):
+
     def __init__(self, parent=None, text=''):
         QtGui.QLabel.__init__(self, parent=parent, text=text)
         self.setStyleSheet("TitleLabel {background-color: rgba(0, 0, 0, 0);\
@@ -53,22 +49,23 @@ class TitleLabel(QtGui.QLabel):
         border-right: 0px transparent;\
         border-bottom: 0px transparent;\
         }")
-        
+
 
 class TitleFrame(QtGui.QFrame):
-    def __init__(self, parent = None, text = '',path = None):
-        QtGui.QFrame.__init__(self, parent = parent)
-        
+
+    def __init__(self, parent=None, text='', path=None):
+        QtGui.QFrame.__init__(self, parent=parent)
+
         self.titleLabel = None
         self.arrow = None
         self.path = path
         self.initTitleFrame(text)
-        
+
     def initArrow(self):
-        self.arrow = CollapsibleArrow(self,self.path)
-        
-    def initTitleLabel(self,text):
-        self.titleLabel = TitleLabel(self,text)
+        self.arrow = CollapsibleArrow(self, self.path)
+
+    def initTitleLabel(self, text):
+        self.titleLabel = TitleLabel(self, text)
         self.newLabel = TitleLabel(self, 'New!')
         self.newLabel.setHidden(True)
 
@@ -79,8 +76,8 @@ class TitleFrame(QtGui.QFrame):
         self.newLabel.setMinimumHeight(24)
         self.newLabel.setMinimumWidth(350)
         self.newLabel.move(QtCore.QPoint(150, 0))
-        
-    def initTitleFrame(self,text):
+
+    def initTitleFrame(self, text):
         self.setContentsMargins(0, 0, 0, 0)
         self.setMinimumHeight(24)
         self.setStyleSheet("QFrame {\
@@ -92,19 +89,20 @@ class TitleFrame(QtGui.QFrame):
         margin: 0px, 0px, 0px, 0px;\
         padding: 0px, 0px, 0px, 0px;\
         }")
-        
+
         self.initArrow()
-        self.initTitleLabel(text)    
-   
+        self.initTitleLabel(text)
+
     def mouseDoubleClickEvent(self, event):
         self.emit(QtCore.SIGNAL('doubleClicked()'))
         return super(TitleFrame, self).mouseDoubleClickEvent(event)
 
 
 class FrameLayout(QtGui.QFrame):
+
     def __init__(self, parent=None, text=None, path=None):
         QtGui.QFrame.__init__(self, parent=parent)
-        
+
         self.text = text
         self.path = ''
         self.isCollapsed = False
@@ -114,12 +112,12 @@ class FrameLayout(QtGui.QFrame):
         self.contentLayout = None
         self.label = None
         self.arrow = None
-        
+
         self.initFrameLayout()
-        
+
     def text(self):
         return self.text
-        
+
     def addWidget(self, widget):
         self.contentLayout.addWidget(widget)
 
@@ -128,11 +126,11 @@ class FrameLayout(QtGui.QFrame):
         self.mainLayout.setContentsMargins(0, 0, 0, 0)
         self.mainLayout.setSpacing(0)
         self.setLayout(self.mainLayout)
-        
+
     def initTitleFrame(self):
         self.titleFrame = TitleFrame(text=self.text, path=self.path)
         self.mainLayout.addWidget(self.titleFrame)
-        
+
     def initContentFrame(self):
         self.contentFrame = QtGui.QFrame()
         self.contentFrame.setContentsMargins(0, 0, 0, 0)
@@ -144,7 +142,7 @@ class FrameLayout(QtGui.QFrame):
         margin: 0px, 0px, 0px, 0px;\
         padding: 0px, 0px, 0px, 0px;\
         }")
-        
+
         self.contentLayout = QtGui.QVBoxLayout()
         self.contentLayout.setContentsMargins(0, 0, 0, 0)
         self.contentLayout.setSpacing(0)
@@ -156,7 +154,7 @@ class FrameLayout(QtGui.QFrame):
             self.show()
         else:
             self.collapse()
-    
+
     def collapse(self):
         self.contentFrame.setVisible(False)
         self.setVisible(True)
@@ -170,8 +168,8 @@ class FrameLayout(QtGui.QFrame):
         self.titleFrame.newLabel.setHidden(True)
 
     def setText(self, text):
-        self.label.setText(text)  
-        
+        self.label.setText(text)
+
     def initFrameLayout(self):
         self.setContentsMargins(0, 0, 0, 0)
         self.setStyleSheet("QFrame {\
@@ -179,7 +177,7 @@ class FrameLayout(QtGui.QFrame):
         margin: 0px, 0px, 0px, 0px;\
         padding: 0px, 0px, 0px, 0px;\
         }")
-        
+
         self.initMainLayout()
         self.initTitleFrame()
         self.initContentFrame()
@@ -190,8 +188,10 @@ class FrameLayout(QtGui.QFrame):
 
 class LogEntryWidget(FrameLayout):
 
-    updated = QtCore.pyqtSignal(object) #emitted when the new entry is updated
+    updated = QtCore.pyqtSignal(object)  # emitted when the new entry is updated
     renew = QtCore.pyqtSignal(object)
+    fieldAdded = QtCore.pyqtSignal()
+    tagAdded = QtCore.pyqtSignal()
 
     def __init__(self, text='Placeholder text', entry=None, number=0):
         super(LogEntryWidget, self).__init__(text=text, path='')
@@ -206,35 +206,34 @@ class LogEntryWidget(FrameLayout):
 
         self.labels = {}
         self.texts = {}
+        self.tags = {}
 
         self.visibleProp = list(self.entry[-1].keys())
         self.unEditableProp = ['time', 'scan number']
 
         self.widget = QtGui.QWidget(self)
         self.grid = QtGui.QGridLayout()
-
-    def selectDifferentVersion(self):
-        self.versionSelect.currentIndexChanged.disconnect(self.selectDifferentVersion)
-        self.selected = int(self.versionSelect.currentIndex())
-        # self.updated.emit((self.entry[-1], self.number))
-        self.renew.emit((self.entry, self.number))
-
-    def createFrame(self):
-        teller = 1
         self.versionLabel = QtGui.QLabel('Version')
         self.versionLabel.setStyleSheet('border: 0px;')
         self.versionSelect = QtGui.QComboBox(parent=None)
-        self.versionSelect.setToolTip('Choose the logbook you want to load.')
-        self.grid.addWidget(self.versionLabel, teller, 0)
-        self.grid.addWidget(self.versionSelect, teller, 1)
-
+        self.versionSelect.setToolTip('Choose the entry version you want to load.')
         options = [snap['Time'].strftime("%d-%m-%Y %H:%M:%S") for snap in self.entry]
         self.versionSelect.clear()
         self.versionSelect.addItems(options)
         self.versionSelect.setCurrentIndex(self.selected)
         self.versionSelect.currentIndexChanged.connect(self.selectDifferentVersion)
+        self.grid.addWidget(self.versionLabel, 1, 0)
+        self.grid.addWidget(self.versionSelect, 1, 1)
 
-        teller = teller + 1
+    def selectDifferentVersion(self):
+        # self.versionSelect.currentIndexChanged.disconnect(self.selectDifferentVersion)
+        self.selected = int(self.versionSelect.currentIndex())
+        # self.updated.emit((self.entry[-1], self.number))
+        self.renew.emit((self.entry, self.number))
+
+    def createFrame(self):
+        teller = 2
+
         for pkey in self.entry[self.selected].keys():
 
             propname = str(pkey)
@@ -243,34 +242,40 @@ class LogEntryWidget(FrameLayout):
                 self.texts[pkey].setToolTip('Type here to help future analysis with your info!')
                 self.texts[pkey].setText(self.entry[self.selected][pkey])
             elif pkey.lower() == 'tags':
-                tags = self.entry.getProperty(pkey)
-                if not tags == '':
-                    self.tags = set(tags.split(', '))
-                    for tag in self.tags:
-                        self.logBook.tags.add(tag)
-
-                    self.addTags(self.tags)
+                for tag, value in self.entry[self.selected][pkey].items():
+                    self.tags[tag] = QtGui.QCheckBox(tag)
+                    self.tags[tag].setChecked(value)
 
             elif pkey.lower() in self.unEditableProp:
                 if pkey.lower() == 'time':
                     self.texts[pkey] = QtGui.QLabel(self.entry[self.selected][pkey].strftime("%d-%m-%Y %H:%M:%S"))
                 else:
                     self.texts[pkey] = QtGui.QLabel(str(self.entry[self.selected][pkey]))
-                self.texts[pkey].setStyleSheet("border: 0px;");
+                self.texts[pkey].setStyleSheet("border: 0px;")
             else:
                 self.texts[pkey] = QtGui.QLineEdit(str(self.entry[self.selected][pkey]))
                 self.texts[pkey].setToolTip('Type here to help future analysis with your info!')
 
             if not pkey.lower() == 'tags':
                 self.labels[pkey] = QtGui.QLabel(text=propname)
-                self.labels[pkey].setStyleSheet("border: 0px;");
+                self.labels[pkey].setStyleSheet("border: 0px;")
                 self.grid.addWidget(self.labels[pkey], teller, 0)
                 self.grid.addWidget(self.texts[pkey], teller, 1)
                 teller = teller + 1
 
+        for box in self.tags.values():
+            self.grid.addWidget(box, teller, 1)
+            teller = teller + 1
+
         self.addFieldButton = QtGui.QPushButton(text='Add field')
-        self.addFieldButton.setToolTip('Click her to add a field to all logbook entries.')
+        self.addFieldButton.setToolTip('Click here to add a field to all logbook entries.')
+        self.addFieldButton.clicked.connect(lambda x: self.fieldAdded.emit())
         self.grid.addWidget(self.addFieldButton, teller, 0)
+
+        self.addTagButton = QtGui.QPushButton(text='Add tag')
+        self.addTagButton.setToolTip('Click here to add a tag to all logbook entries.')
+        self.addTagButton.clicked.connect(lambda x: self.tagAdded.emit())
+        self.grid.addWidget(self.addTagButton, teller + 1, 0)
 
         self.editButton = QtGui.QPushButton(text='Edit')
         self.editButton.setToolTip('Click this to edit this entry/confirm your changes.')
@@ -292,15 +297,16 @@ class LogEntryWidget(FrameLayout):
         self.confirmed = True
 
         self.widget.setLayout(self.grid)
-        
+
         self.addWidget(self.widget)
 
     def clearFrame(self):
         for i in reversed(range(self.grid.count())):
-            widget = self.grid.itemAt(i).widget()
-            widget.deleteLater()
-            self.grid.removeWidget(widget)
-            widget.setParent(None)
+            if i > 1:
+                widget = self.grid.itemAt(i).widget()
+                widget.deleteLater()
+                self.grid.removeWidget(widget)
+                widget.setParent(None)
 
     def confirmEntry(self):
         for (key, textItem) in self.texts.items():
@@ -315,6 +321,10 @@ class LogEntryWidget(FrameLayout):
             else:
                 self.entry[-1][key] = newText
 
+        for (key, box) in self.tags.items():
+            box.setDisabled(True)
+            self.entry[-1]['Tags'][key] = box.isChecked()
+
         self.confirmed = True
 
         self.editButton.setText('Edit')
@@ -326,6 +336,9 @@ class LogEntryWidget(FrameLayout):
     def editEntry(self):
         for text in self.texts.values():
             text.setEnabled(True)
+
+        for box in self.tags.values():
+            box.setEnabled(True)
 
         self.confirmed = False
 

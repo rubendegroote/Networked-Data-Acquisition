@@ -479,3 +479,16 @@
 2015-05-12 16:27:41,785: MGui_to_DS
 2015-05-12 16:27:41,785: Accepted ('137.138.32.91', 64685) as MGui_to_DS
 2015-05-12 18:09:10,105: Closing Acceptor MGui_to_DS
+2015-05-25 11:08:16,560: Listening on port 5004
+2015-05-25 11:09:08,037: MGui_to_DS
+2015-05-25 11:09:08,043: Accepted ('127.0.0.1', 65172) as MGui_to_DS
+2015-05-25 11:09:26,006: Closing Acceptor MGui_to_DS
+2015-05-25 11:09:31,202: MGui_to_DS
+2015-05-25 11:09:31,202: Accepted ('127.0.0.1', 65174) as MGui_to_DS
+2015-05-25 12:27:22,276: Closing Acceptor MGui_to_DS
+2015-05-25 12:27:44,130: MGui_to_DS
+2015-05-25 12:27:44,130: Accepted ('127.0.0.1', 49698) as MGui_to_DS
+2015-05-25 12:28:04,698: Closing Acceptor MGui_to_DS
+2015-05-25 12:28:10,329: MGui_to_DS
+2015-05-25 12:28:10,329: Accepted ('127.0.0.1', 49701) as MGui_to_DS
+2015-05-25 12:32:20,726: Closing Acceptor MGui_to_DS

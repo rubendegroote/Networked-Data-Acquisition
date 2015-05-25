@@ -292,3 +292,106 @@
 2015-05-09 13:59:52,059: Accepted ('127.0.0.1', 54332) as MGui_to_M
 2015-05-09 13:59:54,590: Connecting to M_to_A...
 2015-05-09 13:59:54,668: Connected to Wouter
+2015-05-25 11:07:51,250: Listening on port 5007
+2015-05-25 11:09:07,887: MGui_to_M
+2015-05-25 11:09:07,979: Accepted ('127.0.0.1', 65171) as MGui_to_M
+2015-05-25 11:09:19,486: Closing Acceptor MGui_to_M
+2015-05-25 11:09:31,144: MGui_to_M
+2015-05-25 11:09:31,144: Accepted ('127.0.0.1', 65173) as MGui_to_M
+2015-05-25 12:27:22,276: Closing Acceptor MGui_to_M
+2015-05-25 12:27:44,071: MGui_to_M
+2015-05-25 12:27:44,071: Accepted ('127.0.0.1', 49697) as MGui_to_M
+2015-05-25 12:28:04,698: Closing Acceptor MGui_to_M
+2015-05-25 12:28:10,270: MGui_to_M
+2015-05-25 12:28:10,270: Accepted ('127.0.0.1', 49700) as MGui_to_M
+2015-05-25 12:32:20,726: Closing Acceptor MGui_to_M
+2015-05-25 12:52:24,856: LGui_to_M
+2015-05-25 12:52:24,857: Accepted ('127.0.0.1', 49792) as LGui_to_M
+2015-05-25 12:52:47,565: Closing Acceptor LGui_to_M
+2015-05-25 12:53:10,677: Listening on port 5005
+2015-05-25 12:53:13,784: LGui_to_M
+2015-05-25 12:53:13,790: Accepted ('127.0.0.1', 49793) as LGui_to_M
+2015-05-25 12:53:18,562: Closing Acceptor LGui_to_M
+2015-05-25 12:54:12,845: Listening on port 5005
+2015-05-25 14:02:08,916: LGui_to_M
+2015-05-25 14:02:08,928: Accepted ('127.0.0.1', 50692) as LGui_to_M
+2015-05-25 14:02:18,058: Closing Acceptor LGui_to_M
+2015-05-25 14:02:39,418: LGui_to_M
+2015-05-25 14:02:39,418: Accepted ('127.0.0.1', 50693) as LGui_to_M
+2015-05-25 14:02:44,552: Closing Acceptor LGui_to_M
+2015-05-25 14:02:53,221: LGui_to_M
+2015-05-25 14:02:53,221: Accepted ('127.0.0.1', 50694) as LGui_to_M
+2015-05-25 14:02:57,329: Closing Acceptor LGui_to_M
+2015-05-25 14:03:46,976: Listening on port 5005
+2015-05-25 14:03:53,984: LGui_to_M
+2015-05-25 14:03:53,991: Accepted ('127.0.0.1', 50697) as LGui_to_M
+2015-05-25 14:03:59,302: Closing Acceptor LGui_to_M
+2015-05-25 14:04:17,283: LGui_to_M
+2015-05-25 14:04:17,283: Accepted ('127.0.0.1', 50712) as LGui_to_M
+2015-05-25 14:04:46,176: Closing Acceptor LGui_to_M
+2015-05-25 14:09:15,656: LGui_to_M
+2015-05-25 14:09:15,656: Accepted ('127.0.0.1', 50723) as LGui_to_M
+2015-05-25 14:09:33,120: Closing Acceptor LGui_to_M
+2015-05-25 14:10:48,415: LGui_to_M
+2015-05-25 14:10:48,415: Accepted ('127.0.0.1', 50729) as LGui_to_M
+2015-05-25 14:14:51,216: Closing Acceptor LGui_to_M
+2015-05-25 14:14:54,814: LGui_to_M
+2015-05-25 14:14:54,814: Accepted ('127.0.0.1', 50746) as LGui_to_M
+2015-05-25 14:15:19,749: Closing Acceptor LGui_to_M
+2015-05-25 14:17:20,774: LGui_to_M
+2015-05-25 14:17:20,774: Accepted ('127.0.0.1', 50755) as LGui_to_M
+2015-05-25 14:17:34,501: Closing Acceptor LGui_to_M
+2015-05-25 14:23:36,063: LGui_to_M
+2015-05-25 14:23:36,063: Accepted ('127.0.0.1', 50774) as LGui_to_M
+2015-05-25 15:42:54,039: Closing Acceptor LGui_to_M
+2015-05-25 15:46:53,164: Listening on port 5005
+2015-05-25 15:46:57,867: LGui_to_M
+2015-05-25 15:46:57,874: Accepted ('127.0.0.1', 51396) as LGui_to_M
+2015-05-25 15:47:55,917: Closing Acceptor LGui_to_M
+2015-05-25 15:47:59,102: LGui_to_M
+2015-05-25 15:47:59,102: Accepted ('127.0.0.1', 51399) as LGui_to_M
+2015-05-25 15:50:43,317: Closing Acceptor LGui_to_M
+2015-05-25 15:50:48,020: LGui_to_M
+2015-05-25 15:50:48,020: Accepted ('127.0.0.1', 51407) as LGui_to_M
+2015-05-25 16:37:41,771: Closing Acceptor LGui_to_M
+2015-05-25 16:37:54,172: Listening on port 5005
+2015-05-25 16:38:00,368: LGui_to_M
+2015-05-25 16:38:00,375: Accepted ('127.0.0.1', 51930) as LGui_to_M
+2015-05-25 16:38:04,761: Closing Acceptor LGui_to_M
+2015-05-25 16:41:22,953: LGui_to_M
+2015-05-25 16:41:22,953: Accepted ('127.0.0.1', 51950) as LGui_to_M
+2015-05-25 16:41:35,474: Closing Acceptor LGui_to_M
+2015-05-25 16:41:56,641: LGui_to_M
+2015-05-25 16:41:56,641: Accepted ('127.0.0.1', 51952) as LGui_to_M
+2015-05-25 16:42:16,628: Closing Acceptor LGui_to_M
+2015-05-25 16:42:48,261: Listening on port 5005
+2015-05-25 16:43:01,568: LGui_to_M
+2015-05-25 16:43:01,575: Accepted ('127.0.0.1', 51957) as LGui_to_M
+2015-05-25 16:46:15,259: Closing Acceptor LGui_to_M
+2015-05-25 16:46:18,632: LGui_to_M
+2015-05-25 16:46:18,632: Accepted ('127.0.0.1', 52041) as LGui_to_M
+2015-05-25 16:46:35,194: Closing Acceptor LGui_to_M
+2015-05-25 16:46:38,136: LGui_to_M
+2015-05-25 16:46:38,136: Accepted ('127.0.0.1', 52042) as LGui_to_M
+2015-05-25 16:47:13,035: Listening on port 5005
+2015-05-25 16:47:20,598: LGui_to_M
+2015-05-25 16:47:20,604: Accepted ('127.0.0.1', 52043) as LGui_to_M
+2015-05-25 16:48:17,306: Closing Acceptor LGui_to_M
+2015-05-25 16:48:23,654: LGui_to_M
+2015-05-25 16:48:23,654: Accepted ('127.0.0.1', 52064) as LGui_to_M
+2015-05-25 16:49:38,187: Closing Acceptor LGui_to_M
+2015-05-25 16:49:41,278: LGui_to_M
+2015-05-25 16:49:41,278: Accepted ('127.0.0.1', 52065) as LGui_to_M
+2015-05-25 16:49:59,986: Closing Acceptor LGui_to_M
+2015-05-25 16:51:56,875: LGui_to_M
+2015-05-25 16:51:56,875: Accepted ('127.0.0.1', 52077) as LGui_to_M
+2015-05-25 16:53:18,301: Closing Acceptor LGui_to_M
+2015-05-25 16:53:21,290: LGui_to_M
+2015-05-25 16:53:21,290: Accepted ('127.0.0.1', 52078) as LGui_to_M
+2015-05-25 16:53:43,825: Closing Acceptor LGui_to_M
+2015-05-25 16:54:12,673: LGui_to_M
+2015-05-25 16:54:12,673: Accepted ('127.0.0.1', 52079) as LGui_to_M
+2015-05-25 16:55:02,182: Closing Acceptor LGui_to_M
+2015-05-25 16:55:06,194: LGui_to_M
+2015-05-25 16:55:06,194: Accepted ('127.0.0.1', 52084) as LGui_to_M
+2015-05-25 16:55:20,120: Closing Acceptor LGui_to_M
