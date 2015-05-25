@@ -2,16 +2,17 @@ import pandas as pd
 import os
 
 
-def save_csv(data, name,mQ):
+def save_csv(data, name, mQ):
     mQ.put('Converting {} ({} rows)'.format(name, len(data)))
     f = name.strip(".h5") + '.csv'
     with open(f, "w") as myfile:
         data.to_csv(myfile, index=True, na_rep='Nan', sep=';')
-    mQ.put('Converted all-data-file {} ({} bytes)'.format(f, os.path.getsize(f)))
+    mQ.put(
+        'Converted all-data-file {} ({} bytes)'.format(f, os.path.getsize(f)))
     return f
 
 
-def save_groups_csv(data, name,mQ):
+def save_groups_csv(data, name, mQ):
     groups = data.groupby('scan', sort=False)
     number = len([1 for (n, g) in groups if n > 0])
     fs = []
@@ -19,13 +20,13 @@ def save_groups_csv(data, name,mQ):
     for n, group in groups:
         if not n == -1:
             mQ.put('Extracting and saving scan {} on server...'
-                  .format(str(int(n))))
+                   .format(str(int(n))))
             f = name.strip('.h5') + '_scan_' + str(int(n)) + '.csv'
             fs.append(f)
             with open(f, "w") as myfile:
                 group.to_csv(myfile, index=True, na_rep='Nan', sep=';')
             mQ.put('Saved scan file {} ({} bytes) on server.'
-                  .format(f, os.path.getsize(f)))
+                   .format(f, os.path.getsize(f)))
 
     return fs
 

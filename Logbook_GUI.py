@@ -1,4 +1,4 @@
-from PyQt4 import QtCore,QtGui
+from PyQt4 import QtCore, QtGui
 import pyqtgraph as pg
 from LogbookApp import LogbookApp
 from multiprocessing import freeze_support

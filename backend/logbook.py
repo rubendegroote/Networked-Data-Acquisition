@@ -8,11 +8,13 @@ from collections import OrderedDict
 
 
 def prettyPrint(snap):
-    return "\n".join([snap['Time'].strftime("%d-%m-%Y %H:%M:%S")] + [str(key) + ': ' + str(val) for key, val in snap.items() if not key =='time']) + "\n"
+    return "\n".join([snap['Time'].strftime("%d-%m-%Y %H:%M:%S")] + [str(key) + ': ' + str(val) for key, val in snap.items() if not key == 'time']) + "\n"
+
 
 def saveEntry(filename, logbook, entry):
     filename = filename + 'entry_'
-    filename = filename + str(entry) if entry > -1 else filename + str(entry + len(logbook))
+    filename = filename + \
+        str(entry) if entry > -1 else filename + str(entry + len(logbook))
     entry = logbook[entry]
     with open(filename + '.txt', 'w') as f:
         for snapshot in entry:
@@ -20,6 +22,7 @@ def saveEntry(filename, logbook, entry):
             f.write('\n')
     with open(filename + '_raw', 'wb') as f:
         pickle.dump(entry, f)
+
 
 def addEntry(logbook, **kwargs):
     snap = OrderedDict()
@@ -31,6 +34,7 @@ def addEntry(logbook, **kwargs):
             snap[key] = val
     logbook.append([snap])
 
+
 def editEntry(logbook, key, **kwargs):
     entry = logbook[key]
     fields = deepcopy(entry[-1])
@@ -39,17 +43,17 @@ def editEntry(logbook, key, **kwargs):
     fields['Time'] = datetime.now()
     entry.append(fields)
 
+
 def saveLogbook(filename, logbook):
     for i, entry in enumerate(logbook):
         saveEntry(filename, logbook, i)
 
+
 def loadLogbook(filePath):
     logbook = []
-    path = filePath
     fileNames = glob.glob(filePath + '*')
     fileNames = [f for f in fileNames if '_raw' in f]
     for fileName in fileNames:
-        nr = fileName.split('entry_')[-1].split('_raw')[0]
         with open(fileName, 'rb') as f:
             logbook.append(pickle.load(f))
     logbook = sorted(logbook, key=lambda entry: entry[0]['Time'])
@@ -135,7 +139,8 @@ def loadLogbook(filePath):
 #                     self[nr] = pickle.load(f)
 
 #     def __str__(self):
-#         return "\n".join(["Entry {}:\n".format(i) + str(e) for i, e in self.items()])
+# return "\n".join(["Entry {}:\n".format(i) + str(e) for i, e in
+# self.items()])
 
 def main():
     log = []

@@ -13,9 +13,9 @@ logging.basicConfig(format='%(asctime)s: %(message)s',
                     level=logging.INFO)
 
 
-
 class FileAndLogServer(asyncore.dispatcher):
-    def __init__(self,PORT=5008):
+
+    def __init__(self, PORT=5008):
         super(FileAndLogServer, self).__init__()
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         # self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
@@ -24,7 +24,7 @@ class FileAndLogServer(asyncore.dispatcher):
         print('Listening on port {}'.format(PORT))
 
         self.looping = True
-        t = th.Thread(target = self.start).start()
+        t = th.Thread(target=self.start).start()
 
     def start(self):
         while self.looping:
@@ -40,20 +40,20 @@ class FileAndLogServer(asyncore.dispatcher):
     def readable(self):
         return True
 
-    def assignLogbook(self,path):
+    def assignLogbook(self, path):
         self.logPath = path
 
-    def addManager(self,address=None):
-        if address==None:
+    def addManager(self, address=None):
+        if address == None:
             print('provide IP address and PORT')
             return
-        self.manConnector = ManagerConnector((address[0],int(address[1])), 
-                callback=self.processInformation,onCloseCallback=self.manConnectorClosed)
+        self.manConnector = ManagerConnector((address[0], int(address[1])),
+                                             callback=self.processInformation, onCloseCallback=self.manConnectorClosed)
 
-    def processInformation(self,data):
+    def processInformation(self, data):
         print(data)
 
-    def processRequests(self,data):
+    def processRequests(self, data):
         pass
 
     def manConnectorClosed(self):
@@ -71,8 +71,8 @@ class FileAndLogServer(asyncore.dispatcher):
                 return
 
             if sender == 'LG_to_L':
-                self.viewers.append(Acceptor(sock=sock,callback=None,
-                    onCloseCallback=None,t='LG_to_L'))
+                self.viewers.append(Acceptor(sock=sock, callback=None,
+                                             onCloseCallback=None, t='LG_to_L'))
             else:
                 logging.error('Sender {} named {} not understood'
                               .format(addr, sender))
@@ -95,20 +95,24 @@ class FileAndLogServer(asyncore.dispatcher):
         logging.info('Closing File and Log Server')
         super(FileAndLogServer, self).handle_close()
 
+
 class ManConnector(Connector):
-    def __init__(self,chan,callback,onCloseCallback):
-        super(ManConnector, self).__init__(chan,callback,onCloseCallback,t='L_to_M')
+
+    def __init__(self, chan, callback, onCloseCallback):
+        super(ManConnector, self).__init__(
+            chan, callback, onCloseCallback, t='L_to_M')
 
     def found_terminator(self):
         message = pickle.loads(self.buff)
         self.buff = b""
-        self.callback(sender=self,data=message)
-        ## Line below stays commented: traffic is one-way from manager to logbook (for now) :)
+        self.callback(sender=self, data=message)
+        # Line below stays commented: traffic is one-way from manager to logbook (for now) :)
         # self.send_next()
 
 
 def makeLogServer(PORT=5008):
     return FileAndLogServer(PORT)
+
 
 def main():
     PORT = input('PORT?')

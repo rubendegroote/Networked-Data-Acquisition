@@ -1,26 +1,23 @@
-from PyQt4 import QtCore, QtGui
-import threading as th
-import multiprocessing as mp
-import time
-import pickle
 import asyncore
-import configparser
-import os
+import pickle
+import threading as th
+import time
 
-from scanner import ScannerWidget
+from PyQt4 import QtCore, QtGui
+from backend.connectors import Connector
+import configparser
 from connectiondialogs import Man_DS_ConnectionDialog
 from connectionwidgets import ArtistConnections
+from scanner import ScannerWidget
 
-from backend.DataServer import DataServer
-from backend.Manager import Manager
-from backend.connectors import Connector
 
 class ResumeScanSignal(QtCore.QObject):
-    
+
     resumescan = QtCore.pyqtSignal(tuple)
 
 
 class ManagerApp(QtGui.QMainWindow):
+
     def __init__(self):
         super(ManagerApp, self).__init__()
         self.looping = True
@@ -35,7 +32,7 @@ class ManagerApp(QtGui.QMainWindow):
 
         self.show()
 
-    def connectToServers(self,message = ''):
+    def connectToServers(self, message=''):
         respons = Man_DS_ConnectionDialog.getInfo(parent=self, message=message)
         if respons[1]:
             self.addConnection(respons[0])
@@ -48,6 +45,7 @@ class ManagerApp(QtGui.QMainWindow):
         self.scanner = ScannerWidget()
         self.scanner.scanInfoSig.connect(self.startScan)
         self.scanner.stopScanSig.connect(self.stopScan)
+        self.scanner.setPointSig.connect(self.setPoint)
         layout.addWidget(self.scanner, 0, 0, 1, 1)
 
         self.connWidget = ArtistConnections()
@@ -61,7 +59,7 @@ class ManagerApp(QtGui.QMainWindow):
 
         self.disable()
 
-    def addConnection(self,data):
+    def addConnection(self, data):
         try:
             self.Man_DS_Connector.man.handle_close()
             self.Man_DS_Connector.DS.handle_close()
@@ -74,15 +72,15 @@ class ManagerApp(QtGui.QMainWindow):
                                                  resumeScanCallback=self.showResumeDialog)
         if self.Man_DS_Connector.man and self.Man_DS_Connector.DS:
             self.enable()
-            self.statusBar().showMessage('Connected to Manager and Data Server')
+            self.statusBar().showMessage(
+                'Connected to Manager and Data Server')
             config = configparser.ConfigParser()
             config['manager'] = {'address': data[0], 'port': int(data[1])}
             config['data server'] = {'address': data[2], 'port': int(data[3])}
             with open('ManagerDSConnections.ini', 'w') as configfile:
                 config.write(configfile)
 
-
-    def lostConn(self,server):
+    def lostConn(self, server):
         print(server)
         self.statusBar().showMessage(server + ' connection fail')
         self.serverButton.setEnabled(True)
@@ -104,19 +102,23 @@ class ManagerApp(QtGui.QMainWindow):
     def stopIOLoop(self):
         self.looping = False
 
-    def startScan(self,scanInfo):
+    def startScan(self, scanInfo):
         self.connWidget.setDisabled(True)
         self.serverButton.setDisabled(True)
         self.Man_DS_Connector.instruct('Manager', ['Scan', scanInfo])
 
+    def setPoint(self, setpointInfo):
+        print(setpointInfo)
+        self.Man_DS_Connector.instruct('Manager', ['Setpoint', setpointInfo])
+
     def stopScan(self):
         self.Man_DS_Connector.instruct('Manager', ['Stop Scan'])
 
-    def addArtist(self,info):
-        sender,address = info
+    def addArtist(self, info):
+        sender, address = info
         self.Man_DS_Connector.instruct(sender, ['Add Artist', address])
 
-    def removeArtist(self,address):
+    def removeArtist(self, address):
         self.Man_DS_Connector.instruct('Both', ['Remove Artist', address])
 
     def update(self):
@@ -136,21 +138,26 @@ class ManagerApp(QtGui.QMainWindow):
         smin, smax, sl, curpos, tPerStep, name = data
         resuming = QtGui.QMessageBox.question(None, 'Resume scan?',
                                               'An interrupted scan was found:\nScanning %s, %f to %f V, %f steps, on step %f, %f s per step\nResume this scan?' % (name,
-                                                                                                                                                                   float(smin),
-                                                                                                                                                                   float(smax),
-                                                                                                                                                                   float(sl),
-                                                                                                                                                                   float(curpos),
+                                                                                                                                                                   float(
+                                                                                                                                                                       smin),
+                                                                                                                                                                   float(
+                                                                                                                                                                       smax),
+                                                                                                                                                                   float(
+                                                                                                                                                                       sl),
+                                                                                                                                                                   float(
+                                                                                                                                                                       curpos),
                                                                                                                                                                    float(tPerStep)),
                                               QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
         if resuming == QtGui.QMessageBox.Yes:
             self.Man_DS_Connector.instruct('Manager', ['Resume Scan'])
 
-    def closeEvent(self,event):
+    def closeEvent(self, event):
         self.stopIOLoop()
         event.accept()
 
 
 class Man_DS_Connector():
+
     def __init__(self, ManChan, DSChan, callBack, resumeScanCallback):
         self.AppCallBack = callBack
         try:
@@ -164,8 +171,8 @@ class Man_DS_Connector():
 
         try:
             self.DS = DataServerConnector(DSChan,
-                                         callback=None,
-                                         onCloseCallback=self.onClosedCallback)
+                                          callback=None,
+                                          onCloseCallback=self.onClosedCallback)
         except Exception as e:
             print(e)
             self.DS = None
@@ -184,7 +191,8 @@ class Man_DS_Connector():
                                     False,
                                     self.man.artists[key][1:])
             else:
-                retDict[key] = False, self.DS.artists[key][0], self.DS.artists[key][1:]
+                retDict[key] = False, self.DS.artists[
+                    key][0], self.DS.artists[key][1:]
 
         return retDict
 
@@ -197,21 +205,23 @@ class Man_DS_Connector():
     def instruct(self, t, instr):
         if t == 'Manager':
             self.man.commQ.put(instr)
-        elif t =='Data Server':
+        elif t == 'Data Server':
             self.DS.commQ.put(instr)
-        elif t =='Both':
+        elif t == 'Both':
             self.man.commQ.put(instr)
             self.DS.commQ.put(instr)
 
-    def onClosedCallback(self,server):
-        print(server,server.type)
+    def onClosedCallback(self, server):
+        print(server, server.type)
         # perhaps use this to change some settings or whatnot
         self.AppCallBack(server.type)
+
 
 class ManagerConnector(Connector):
 
     def __init__(self, chan, callback, onCloseCallback, resumeScanCallback=None):
-        super(ManagerConnector, self).__init__(chan, callback, onCloseCallback, t='MGui_to_M')
+        super(ManagerConnector, self).__init__(
+            chan, callback, onCloseCallback, t='MGui_to_M')
         self.resumeSignal = ResumeScanSignal()
         self.resumeSignal.resumescan.connect(resumeScanCallback)
         self.progress = 0
@@ -232,7 +242,8 @@ class ManagerConnector(Connector):
                 self.scanning, self.progress, self.format = info
             elif message == 'resumemessage':
                 smin, smax, sl, curpos, tPerStep, name = data
-                self.resumeSignal.resumescan.emit((smin, smax, sl, curpos, tPerStep, name))
+                self.resumeSignal.resumescan.emit(
+                    (smin, smax, sl, curpos, tPerStep, name))
             else:
                 pass
 
@@ -243,13 +254,15 @@ class ManagerConnector(Connector):
         except:
             self.send_next()
 
+
 class DataServerConnector(Connector):
 
     def __init__(self, chan, callback, onCloseCallback):
-        super(DataServerConnector, self).__init__(chan, callback, onCloseCallback, t='MGui_to_DS')
+        super(DataServerConnector, self).__init__(
+            chan, callback, onCloseCallback, t='MGui_to_DS')
 
         self.artists = {}
-        
+
         self.send_next()
 
     def found_terminator(self):

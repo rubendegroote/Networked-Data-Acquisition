@@ -1,10 +1,12 @@
-from PyQt4 import QtCore,QtGui
+from PyQt4 import QtCore, QtGui
 import os
 import configparser
 
+
 class Man_DS_ConnectionDialog(QtGui.QDialog):
-    def __init__(self, parent=None,message = ''):
-        super(Man_DS_ConnectionDialog,self).__init__(parent)
+
+    def __init__(self, parent=None, message=''):
+        super(Man_DS_ConnectionDialog, self).__init__(parent)
         if os.path.isfile('ManagerDSConnections.ini'):
             config = configparser.ConfigParser()
             config.read('ManagerDSConnections.ini')
@@ -24,61 +26,62 @@ class Man_DS_ConnectionDialog(QtGui.QDialog):
             QtCore.Qt.Horizontal)
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
-        self.layout.addWidget(buttons,500,1,1,2)
+        self.layout.addWidget(buttons, 500, 1, 1, 2)
 
-        self.layout.addWidget(QtGui.QLabel(message),0,0,1,1)
+        self.layout.addWidget(QtGui.QLabel(message), 0, 0, 1, 1)
 
-        self.layout.addWidget(QtGui.QLabel('Channel'),1,1,1,1)
-        self.ManChannelBox = QtGui.QLineEdit(self,text=ManChannelBoxtext)
-        self.layout.addWidget(self.ManChannelBox,2,1,1,1)
-        self.layout.addWidget(QtGui.QLabel('Port'),1,2,1,1)
-        self.ManPortBox = QtGui.QLineEdit(self,text=ManPortBoxtext)
-        self.layout.addWidget(self.ManPortBox,2,2,1,1)
+        self.layout.addWidget(QtGui.QLabel('Channel'), 1, 1, 1, 1)
+        self.ManChannelBox = QtGui.QLineEdit(self, text=ManChannelBoxtext)
+        self.layout.addWidget(self.ManChannelBox, 2, 1, 1, 1)
+        self.layout.addWidget(QtGui.QLabel('Port'), 1, 2, 1, 1)
+        self.ManPortBox = QtGui.QLineEdit(self, text=ManPortBoxtext)
+        self.layout.addWidget(self.ManPortBox, 2, 2, 1, 1)
 
-        self.layout.addWidget(QtGui.QLabel('Channel'),3,1,1,1)
-        self.DSChannelBox = QtGui.QLineEdit(self,text=DSChannelBoxtext)
-        self.layout.addWidget(self.DSChannelBox,4,1,1,1)
-        self.layout.addWidget(QtGui.QLabel('Port'),3,2,1,1)
-        self.DSPortBox = QtGui.QLineEdit(self,text=DSPortBoxtext)
-        self.layout.addWidget(self.DSPortBox,4,2,1,1)
+        self.layout.addWidget(QtGui.QLabel('Channel'), 3, 1, 1, 1)
+        self.DSChannelBox = QtGui.QLineEdit(self, text=DSChannelBoxtext)
+        self.layout.addWidget(self.DSChannelBox, 4, 1, 1, 1)
+        self.layout.addWidget(QtGui.QLabel('Port'), 3, 2, 1, 1)
+        self.DSPortBox = QtGui.QLineEdit(self, text=DSPortBoxtext)
+        self.layout.addWidget(self.DSPortBox, 4, 2, 1, 1)
 
     def getData(self):
-        return (self.ManChannelBox.text(),self.ManPortBox.text(),
-                self.DSChannelBox.text(),self.DSPortBox.text())
-                
+        return (self.ManChannelBox.text(), self.ManPortBox.text(),
+                self.DSChannelBox.text(), self.DSPortBox.text())
+
     @staticmethod
-    def getInfo(parent = None,message=''):
-        dialog = Man_DS_ConnectionDialog(parent,message)
+    def getInfo(parent=None, message=''):
+        dialog = Man_DS_ConnectionDialog(parent, message)
         result = dialog.exec_()
         data = dialog.getData()
         return (data, result == QtGui.QDialog.Accepted)
 
+
 class ConnectionDialog(QtGui.QDialog):
+
     def __init__(self, parent=None):
-        super(ConnectionDialog,self).__init__(parent)
+        super(ConnectionDialog, self).__init__(parent)
         self.layout = QtGui.QGridLayout(self)
         buttons = QtGui.QDialogButtonBox(
             QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel,
             QtCore.Qt.Horizontal)
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
-        self.layout.addWidget(buttons,500,1,1,2)
+        self.layout.addWidget(buttons, 500, 1, 1, 2)
 
-        self.layout.addWidget(QtGui.QLabel('Channel'),1,0,1,1)  
-        self.channelBox = QtGui.QLineEdit(self,text='127.0.0.1')
-        self.layout.addWidget(self.channelBox,2,0,1,1)
-        
-        self.layout.addWidget(QtGui.QLabel('Port'),1,1,1,1)
-        self.portBox = QtGui.QLineEdit(self,text='5005')
-        self.layout.addWidget(self.portBox,2,1,1,1)
+        self.layout.addWidget(QtGui.QLabel('Channel'), 1, 0, 1, 1)
+        self.channelBox = QtGui.QLineEdit(self, text='127.0.0.1')
+        self.layout.addWidget(self.channelBox, 2, 0, 1, 1)
 
+        self.layout.addWidget(QtGui.QLabel('Port'), 1, 1, 1, 1)
+        self.portBox = QtGui.QLineEdit(self, text='5005')
+        self.layout.addWidget(self.portBox, 2, 1, 1, 1)
 
     def getData(self):
         return (self.channelBox.text(),
                 self.portBox.text())
-                
+
     @staticmethod
-    def getInfo(parent = None):
+    def getInfo(parent=None):
         dialog = ConnectionDialog(parent)
         result = dialog.exec_()
         data = dialog.getData()
@@ -86,7 +89,7 @@ class ConnectionDialog(QtGui.QDialog):
 
 
 class FieldAdditionDialog(QtGui.QDialog):
-    
+
     def __init__(self, parent=None):
         super(FieldAdditionDialog, self).__init__(parent)
         self.layout = QtGui.QGridLayout(self)
@@ -97,17 +100,16 @@ class FieldAdditionDialog(QtGui.QDialog):
         buttons.rejected.connect(self.reject)
         self.layout.addWidget(buttons, 500, 1, 1, 2)
 
-        self.layout.addWidget(QtGui.QLabel('Field name'), 1, 0, 1, 1)  
+        self.layout.addWidget(QtGui.QLabel('Field name'), 1, 0, 1, 1)
         self.fieldBox = QtGui.QLineEdit(self, text='')
         self.layout.addWidget(self.fieldBox, 2, 0, 1, 1)
-        
+
     def getData(self):
         return self.fieldBox.text()
-                
+
     @staticmethod
-    def getInfo(parent = None):
+    def getInfo(parent=None):
         dialog = FieldAdditionDialog(parent)
         result = dialog.exec_()
         data = dialog.getData()
         return (data, result == QtGui.QDialog.Accepted)
-        

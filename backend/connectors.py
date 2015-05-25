@@ -10,7 +10,7 @@ from collections import deque
 class Connector(asynchat.async_chat):
 
     def __init__(self, chan, callback, onCloseCallback=None, t=''):
-        super(Connector,self).__init__()
+        super(Connector, self).__init__()
         self.type = t
         self.callback = callback
         self.onCloseCallback = onCloseCallback
@@ -41,7 +41,7 @@ class Connector(asynchat.async_chat):
             except:
                 pass
         if not success:
-            raise 
+            raise
 
         return mes
 
@@ -101,4 +101,4 @@ class Acceptor(asynchat.async_chat):
             self.onCloseCallback(self)
         except AttributeError:
             pass
-        super(Acceptor, self).handle_close() 
+        super(Acceptor, self).handle_close()

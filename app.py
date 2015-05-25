@@ -1,4 +1,4 @@
-from PyQt4 import QtCore,QtGui
+from PyQt4 import QtCore, QtGui
 import threading as th
 import asyncore
 import time
@@ -13,6 +13,7 @@ from backend.Manager import Manager
 
 
 class Application(QtGui.QMainWindow):
+
     def __init__(self):
         super(Application, self).__init__()
         self.init_UI()
@@ -54,27 +55,27 @@ class Application(QtGui.QMainWindow):
             asyncore.loop(count=1)
             time.sleep(0.01)
 
-    def addConnection(self,data):
+    def addConnection(self, data):
         if data[0] == 'Radio':
-            self.radio = Radio(IP=data[1],PORT=int(data[2]))
+            self.radio = Radio(IP=data[1], PORT=int(data[2]))
         elif data[0] == 'FileServer':
-            self.fileServer = FileServer(artists=[(data[1],data[2])], 
-                                      save=False, remember=True)
+            self.fileServer = FileServer(artists=[(data[1], data[2])],
+                                         save=False, remember=True)
         elif data[0] == 'Manager':
-            self.manager = Manager(artists=[(data[1],data[2])])
+            self.manager = Manager(artists=[(data[1], data[2])])
 
     def plot(self):
         try:
             for g in self.centralDock.graphDocks:
                 g.graph.setXYOptions(list(self.radio.format))
                 g.graph.plot(self.radio.data)
-                self.radio.xy = [g.graph.xkey,g.graph.ykey]
+                self.radio.xy = [g.graph.xkey, g.graph.ykey]
         except AttributeError as e:
             pass
 
-    def startScan(self,scanInfo):
+    def startScan(self, scanInfo):
         self.manager.scan(scanInfo)
 
-    def closeEvent(self,event):
+    def closeEvent(self, event):
         self.stopIOLoop()
         event.accept()

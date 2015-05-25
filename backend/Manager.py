@@ -56,6 +56,7 @@ class Manager(asyncore.dispatcher):
             self.logbook = []
         logbooks.saveLogbook(self.logbookPath, self.logbook)
         self.startMessage = 'Started scanning Artist {} from {:.2f} to {:.2f} V, in {:.0f} steps with {:.2f} seconds per step.'
+        self.setpointMessage = 'Set Artist {} to {:.2f} V.'
         self.resumeMessage = 'Resumed scanning Artist {} from {:.2f} to {:.2f} V, in {:.0f} steps with {:.2f} seconds per step at step {:.0f}.'
         if os.path.isfile('ManagerScan.ini'):
             self.scanParser.read('ManagerScan.ini')
@@ -88,7 +89,8 @@ class Manager(asyncore.dispatcher):
                                      callback=self.processInformation,
                                      onCloseCallback=self.instructorClosed)
             self._instructors[instr.artistName] = instr
-            self._instructorInfo[instr.artistName] = (True, instr.chan[0], instr.chan[1])
+            self._instructorInfo[instr.artistName] = (
+                True, instr.chan[0], instr.chan[1])
             for c in self.acceptors:
                 c.commQ.put(self._instructorInfo)
             logging.info('Connected to ' + instr.artistName)
@@ -124,10 +126,14 @@ class Manager(asyncore.dispatcher):
             self.addInstructor(data[1])
             if os.path.isfile('scanprogress.ini'):
                 self.progressParser.read('scanprogress.ini')
-                self.curPos = ast.literal_eval(self.progressParser['progress']['curpos'])
-                self.tPerStep = ast.literal_eval(self.progressParser['progress']['tperstep'])
-                smin = ast.literal_eval(self.progressParser['progress']['scanmin'])
-                smax = ast.literal_eval(self.progressParser['progress']['scanmax'])
+                self.curPos = ast.literal_eval(
+                    self.progressParser['progress']['curpos'])
+                self.tPerStep = ast.literal_eval(
+                    self.progressParser['progress']['tperstep'])
+                smin = ast.literal_eval(
+                    self.progressParser['progress']['scanmin'])
+                smax = ast.literal_eval(
+                    self.progressParser['progress']['scanmax'])
                 sl = self.progressParser['progress']['scanlength']
                 self.resumeName = self.progressParser['progress']['name']
                 self.scanRange = np.linspace(smin, smax, sl)
@@ -146,6 +152,9 @@ class Manager(asyncore.dispatcher):
         elif data[0] == 'Resume Scan':
             self.resumeScan()
             return None
+        elif data[0] == 'Setpoint':
+            self.setpoint(data[1])
+            return None
         elif data == 'info':
             try:
                 return sender.commQ.get_nowait()
@@ -159,7 +168,8 @@ class Manager(asyncore.dispatcher):
             try:
                 return sender.commQ.get_nowait()
             except:
-                logs = set([f.split('entry')[0].split('\\')[1] for f in glob.glob(SAVE_PATH + '\*_raw')])
+                logs = set([f.split('entry')[0].split('\\')[1]
+                            for f in glob.glob(SAVE_PATH + '\*_raw')])
                 return ['Choices', tuple(logs)]
 
         elif data[0] == 'Get Logbook':
@@ -172,7 +182,8 @@ class Manager(asyncore.dispatcher):
             newEntry = {key: '' for key in self.logbook[-1][-1].keys()}
             logbooks.addEntry(self.logbook, **newEntry)
             logbooks.saveEntry(self.logbookPath, self.logbook, -1)
-            self.notifyAllLogs(['Notify', self.logbook[-1], len(self.logbook) - 1])
+            self.notifyAllLogs(
+                ['Notify', self.logbook[-1], len(self.logbook) - 1])
         elif data[0] == 'Add Field To Logbook':
             field = data[1]
             for i, entry in enumerate(self.logbook):
@@ -185,7 +196,8 @@ class Manager(asyncore.dispatcher):
             return None
 
     def instructorClosed(self, instr):
-        self._instructorInfo[instr.artistName] = (False, instr.chan[0], instr.chan[1])
+        self._instructorInfo[instr.artistName] = (
+            False, instr.chan[0], instr.chan[1])
         for c in self.acceptors:
             c.commQ.put(self._instructorInfo)
 
@@ -204,8 +216,10 @@ class Manager(asyncore.dispatcher):
         logbooks.addEntry(self.logbook, **{'Scan Number': self.scanNo,
                                            'Author': 'Automatic Entry',
                                            'Text': self.resumeMessage.format(name,
-                                                                             self.scanRange[0],
-                                                                             self.scanRange[-1],
+                                                                             self.scanRange[
+                                                                                 0],
+                                                                             self.scanRange[
+                                                                                 -1],
                                                                              len(self.scanRange),
                                                                              self.tPerStep,
                                                                              self.curPos)})
@@ -230,8 +244,10 @@ class Manager(asyncore.dispatcher):
         logbooks.addEntry(self.logbook, **{'Scan Number': self.scanNo,
                                            'Author': 'Automatic Entry',
                                            'Text': self.startMessage.format(name,
-                                                                            self.scanRange[0],
-                                                                            self.scanRange[-1],
+                                                                            self.scanRange[
+                                                                                0],
+                                                                            self.scanRange[
+                                                                                -1],
                                                                             len(self.scanRange),
                                                                             self.tPerStep,
                                                                             self.curPos)})
@@ -239,6 +255,17 @@ class Manager(asyncore.dispatcher):
         with open('ManagerScan.ini', 'w') as scanfile:
             self.scanParser.write(scanfile)
         self.scanToNext()
+
+    def setpoint(self, setpointInfo):
+        name, self.scanPar = scanInfo[0].split(':')
+        self.scanner = self._instructors[name]
+        value = scanInfo[1]
+        logbooks.addEntry(self.logbook, **{'Author': 'Automatic Entry',
+                                           'Text': self.setpointMessage.format(name,
+                                                                               value)})
+        logbooks.saveEntry(self.logbookPath, self.logbook, -1)
+        self.scanner.send_instruction(
+            ["Change", self.scanPar, value])
 
     def stopScan(self):
         self.scanning = False
@@ -278,7 +305,7 @@ class Manager(asyncore.dispatcher):
         with open('scanprogress.ini', 'w') as scanprogressfile:
             self.progressParser.write(scanprogressfile)
         self.curPos += 1
-        self.progress =  int(self.curPos / len(self.scanRange) * 100)
+        self.progress = int(self.curPos / len(self.scanRange) * 100)
 
     def writeable(self):
         return False
@@ -307,7 +334,8 @@ class Manager(asyncore.dispatcher):
                                              onCloseCallback=self.viewClosed,
                                              t='LGui_to_M'))
             else:
-                logging.error('Sender {} named {} not understood'.format(addr, sender))
+                logging.error(
+                    'Sender {} named {} not understood'.format(addr, sender))
                 return
             logging.info('Accepted {} as {}'.format(addr, sender))
 
@@ -333,7 +361,8 @@ class ArtistInstructor(Connector):
     """docstring for ArtistInstructor"""
 
     def __init__(self, chan, callback, onCloseCallback):
-        super(ArtistInstructor, self).__init__(chan, callback, onCloseCallback, t='M_to_A')
+        super(ArtistInstructor, self).__init__(
+            chan, callback, onCloseCallback, t='M_to_A')
         self.scanning = False
         self.artistName = self.acceptorName
 
@@ -369,8 +398,10 @@ class ArtistInstructor(Connector):
         self.push(pickle.dumps(instruction))
         self.push('END_MESSAGE'.encode('UTF-8'))
 
+
 def makeManager(PORT=5007):
     return Manager(PORT=PORT)
+
 
 def main():
     PORT = input('PORT?')

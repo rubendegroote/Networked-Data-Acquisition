@@ -17,14 +17,14 @@ import pandas as pd
 from bokeh.embed import autoload_server
 try:
     from Helpers import *
-    from connectors import Connector,Acceptor
+    from connectors import Connector, Acceptor
 except:
     from backend.Helpers import *
-    from backend.connectors import Connector,Acceptor
+    from backend.connectors import Connector, Acceptor
 
 GET_INTERVAL = 0.05
 SAVE_INTERVAL = 2
-SHARED = ['scan','time']
+SHARED = ['scan', 'time']
 
 
 class DataServer(asyncore.dispatcher):
@@ -73,7 +73,7 @@ class DataServer(asyncore.dispatcher):
         if address is None:
             logging.warning('provide IP address and PORT')
             return
-        for name,add in self._readers.items():
+        for name, add in self._readers.items():
             if address == (add.chan[0], str(add.chan[1])):
                 if self._readerInfo[name][0]:
                     return
@@ -83,7 +83,8 @@ class DataServer(asyncore.dispatcher):
                                   onCloseCallback=self.readerClosed)
             self._readers[reader.artistName] = reader
             self.dQs[reader.artistName] = reader.dQ
-            self._readerInfo[reader.artistName] = (True, reader.chan[0], reader.chan[1])
+            self._readerInfo[reader.artistName] = (
+                True, reader.chan[0], reader.chan[1])
             for c in self.acceptors:
                 c.commQ.put(self._readerInfo)
             logging.info('Connected to ' + reader.artistName)
@@ -92,7 +93,7 @@ class DataServer(asyncore.dispatcher):
 
     def removeReader(self, address=None):
         toRemove = []
-        for name,prop in self._readerInfo.items():
+        for name, prop in self._readerInfo.items():
             if address == (prop[1], str(prop[2])):
                 self._readers[name].close()
                 toRemove.append(name)
@@ -121,7 +122,8 @@ class DataServer(asyncore.dispatcher):
                 return (self._readerInfo, self.bitrates)
 
     def readerClosed(self, reader):
-        self._readerInfo[reader.artistName] = (False, reader.chan[0], reader.chan[1])
+        self._readerInfo[reader.artistName] = (
+            False, reader.chan[0], reader.chan[1])
         for c in self.acceptors:
             c.commQ.put(self._readerInfo)
 
@@ -145,7 +147,6 @@ class DataServer(asyncore.dispatcher):
                     except KeyError:
                         self.toSave[name] = data
                     self.lock.release()
-                    
 
         if not len(new_data) == 0:
             if self.remember:
@@ -164,16 +165,16 @@ class DataServer(asyncore.dispatcher):
         toSave = deepcopy(self.toSave)
         self.toSave = {}
         self.lock.release()
-        for key,val in toSave.items():
+        for key, val in toSave.items():
             save(val, self.saveDir, key)
 
     def extractMemory(self, new_data):
         self._data = self._data.append(new_data)
-        
+
         # save the current scan in memory
         m = self._data['scan'].max()
         self._data_current_scan = self._data[self._data['scan'] == m]
-                
+
         # save last 5000 data points
         self._data = self._data[-5000:]
 
@@ -182,7 +183,7 @@ class DataServer(asyncore.dispatcher):
             if perScan:
                 return self._data_current_scan[columns]
             else:
-                return self._data[columns] 
+                return self._data[columns]
         except:
             return pd.DataFrame()
 
@@ -237,8 +238,9 @@ class DataServer(asyncore.dispatcher):
 
 class ArtistReader(Connector):
 
-    def __init__(self,chan, callback, onCloseCallback):
-        super(ArtistReader, self).__init__(chan, callback, onCloseCallback, t='DS_to_A')
+    def __init__(self, chan, callback, onCloseCallback):
+        super(ArtistReader, self).__init__(
+            chan, callback, onCloseCallback, t='DS_to_A')
         self.dQ = deque()
 
         self.artistName = self.acceptorName
@@ -249,12 +251,12 @@ class ArtistReader(Connector):
         data = pickle.loads(self.buff)
         self.buff = b''
         if type(data) == dict:
-            self._format = tuple([self.artistName + ': ' + f 
-                if f not in SHARED else f for f in data['format']])
+            self._format = tuple([self.artistName + ': ' + f
+                                  if f not in SHARED else f for f in data['format']])
             d = data['data']
             if not data == []:
                 self.dQ.append(d)
-        
+
         self.send_next()
 
     def send_next(self):
@@ -265,10 +267,11 @@ class ArtistReader(Connector):
 def makeServer(PORT=5006, save=True, remember=True):
     return DataServer([], PORT, save, remember)
 
+
 def main():
     PORT = input('PORT?')
-    save = int(input('save?'))==1
-    rem = int(input('remember?'))==1
+    save = int(input('save?')) == 1
+    rem = int(input('remember?')) == 1
     d = makeServer(int(PORT), save=save, remember=rem)
 
 if __name__ == '__main__':

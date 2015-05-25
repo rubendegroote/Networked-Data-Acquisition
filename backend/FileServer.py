@@ -16,6 +16,7 @@ HTTP_SERVER_PORT = 5010
 
 
 class FileServer(asyncore.dispatcher):
+
     def __init__(self):
         super(FileServer, self).__init__()
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -49,15 +50,16 @@ class FileHandler(asynchat.async_chat):
         self.end_data = 'END_RESPONSE'.encode('UTF-8')
         self.mQ = mp.Queue()
 
-        self.feedbackTimer = th.Timer(0.5,self.send_feedback).start()
+        self.feedbackTimer = th.Timer(0.5, self.send_feedback).start()
 
     def found_terminator(self):
         request = self.decode_request()
         files = next(os.walk(os.getcwd()))[2]
-        files = [f for f in files if '.h5' in f or '.csv' in f]    
+        files = [f for f in files if '.h5' in f or '.csv' in f]
         req = request[0]
         if req == "GET_FILE_LIST":
-            files_with_size = [f+': {} bytes'.format(os.path.getsize(f)) for f in files]
+            files_with_size = [
+                f + ': {} bytes'.format(os.path.getsize(f)) for f in files]
             self.mQ.put("Found {} files:".format(str(len(files_with_size))))
             self.mQ.put(files_with_size)
         elif "SEND" in req:
@@ -74,11 +76,11 @@ class FileHandler(asynchat.async_chat):
                         self.mQ.put(["File found", [f]])
                     elif "SEND_FILE_H5_AS_CSV" in req:
                         if req == "SEND_FILE_H5_AS_CSV_PLUS_SCANS":
-                            newF = convert(f,self.mQ,full=True,groups=True)
+                            newF = convert(f, self.mQ, full=True, groups=True)
                         elif req == "SEND_FILE_H5_AS_CSV_ONLY_SCANS":
-                            newF = convert(f,self.mQ,full=False,groups=True)
+                            newF = convert(f, self.mQ, full=False, groups=True)
                         else:
-                            newF = convert(f,self.mQ,full=True,groups=False)
+                            newF = convert(f, self.mQ, full=True, groups=False)
                         self.mQ.put(["File converted", newF])
         self.mQ.put('DONE')
 
@@ -87,8 +89,7 @@ class FileHandler(asynchat.async_chat):
         self.push(pickle.dumps(feedback))
         self.push(self.end_data)
 
-        self.feedbackTimer = th.Timer(0.5,self.send_feedback).start()
-        
+        self.feedbackTimer = th.Timer(0.5, self.send_feedback).start()
 
     def decode_request(self):
         req = pickle.loads(self.request)

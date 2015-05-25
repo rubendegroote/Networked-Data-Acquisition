@@ -1,4 +1,4 @@
-from PyQt4 import QtCore,QtGui
+from PyQt4 import QtCore, QtGui
 import threading as th
 import asyncore
 import time
@@ -20,7 +20,7 @@ class RadioApp(QtGui.QMainWindow):
         t = th.Thread(target=self.startIOLoop).start()
 
         self.init_UI()
-        
+
     def init_UI(self):
 
         self.connectToolBar = QtGui.QToolBar('Connections')
@@ -32,7 +32,8 @@ class RadioApp(QtGui.QMainWindow):
         self.connectToolBar.addWidget(self.connectionsWidget)
 
         self.centralDock = CentralDock()
-        self.centralDock.graphDocks[0].graph.dataRequested.connect(self.changeDataType)
+        self.centralDock.graphDocks[
+            0].graph.dataRequested.connect(self.changeDataType)
         self.setCentralWidget(self.centralDock)
 
         self.show()
@@ -60,7 +61,7 @@ class RadioApp(QtGui.QMainWindow):
         self.radio = RadioConnector(chan=(data[0], int(data[1])),
                                     callback=None,
                                     onCloseCallback=self.connLost)
-        
+
     def connLost(self):
         pass
 
@@ -73,6 +74,6 @@ class RadioApp(QtGui.QMainWindow):
         except AttributeError as e:
             pass
 
-    def closeEvent(self,event):
+    def closeEvent(self, event):
         self.stopIOLoop()
         event.accept()

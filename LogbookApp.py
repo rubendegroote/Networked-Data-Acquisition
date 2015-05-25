@@ -1,4 +1,4 @@
-from PyQt4 import QtCore,QtGui
+from PyQt4 import QtCore, QtGui
 import threading as th
 import multiprocessing as mp
 import time
@@ -12,7 +12,7 @@ from logviewerwidgets import LogEntryWidget
 
 
 class PassToLogbookApp(QtCore.QObject):
-    
+
     changeOptions = QtCore.pyqtSignal(object)
     displayLog = QtCore.pyqtSignal(object)
     changeEntry = QtCore.pyqtSignal(object)
@@ -23,7 +23,7 @@ class LogbookApp(QtGui.QMainWindow):
     def __init__(self):
 
         super(LogbookApp, self).__init__()
-        
+
         self.logbook = []
 
         self.looping = True
@@ -67,7 +67,8 @@ class LogbookApp(QtGui.QMainWindow):
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         layout.addWidget(self.scrollArea)
 
-        self.entryContainersLayout = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
+        self.entryContainersLayout = QtGui.QVBoxLayout(
+            self.scrollAreaWidgetContents)
         self.entryContainers = []
         self.newEntryContainer()
 
@@ -113,10 +114,12 @@ class LogbookApp(QtGui.QMainWindow):
             self.logEntryWidgets[key] = LogEntryWidget(text='Entry ' + str(int(key)),
                                                        entry=entry, number=key)
             self.logEntryWidgets[key].createFrame()
-            self.entryContainers[-1].addWidget(self.logEntryWidgets[key], key, 0)
+            self.entryContainers[-
+                                 1].addWidget(self.logEntryWidgets[key], key, 0)
             self.logEntryWidgets[key].updated.connect(self.editEntry)
             self.logEntryWidgets[key].renew.connect(self.changeEntry)
-            self.logEntryWidgets[key].addFieldButton.clicked.connect(self.addField)
+            self.logEntryWidgets[
+                key].addFieldButton.clicked.connect(self.addField)
 
             QtGui.QApplication.processEvents()
 
@@ -148,10 +151,12 @@ class LogbookApp(QtGui.QMainWindow):
             self.logEntryWidgets[key] = LogEntryWidget(text='Entry ' + str(int(key)),
                                                        entry=entry, number=key)
             self.logEntryWidgets[key].createFrame()
-            self.entryContainers[-1].addWidget(self.logEntryWidgets[key], key, 0)
+            self.entryContainers[-
+                                 1].addWidget(self.logEntryWidgets[key], key, 0)
             self.logEntryWidgets[key].updated.connect(self.editEntry)
             self.logEntryWidgets[key].renew.connect(self.changeEntry)
-            self.logEntryWidgets[key].addFieldButton.clicked.connect(self.addField)
+            self.logEntryWidgets[
+                key].addFieldButton.clicked.connect(self.addField)
             self.logEntryWidgets[key].showNew()
 
             QtGui.QApplication.processEvents()
@@ -185,7 +190,7 @@ class LogbookApp(QtGui.QMainWindow):
     def getLogbook(self):
         self.man.send_instruction('info')
 
-    def closeEvent(self,event):
+    def closeEvent(self, event):
         self.timer.stop()
         self.stopIOLoop()
         event.accept()
@@ -194,7 +199,8 @@ class LogbookApp(QtGui.QMainWindow):
 class ManagerConnector(Connector):
 
     def __init__(self, chan, callback, onCloseCallback, choicesCallback, logbookCallback, changeCallback):
-        super(ManagerConnector, self).__init__(chan, callback, onCloseCallback, t='LGui_to_M')
+        super(ManagerConnector, self).__init__(
+            chan, callback, onCloseCallback, t='LGui_to_M')
 
         self.logbookSignal = PassToLogbookApp()
         self.logbookSignal.changeOptions.connect(choicesCallback)

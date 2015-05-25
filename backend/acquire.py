@@ -13,12 +13,13 @@ except IOError:
 # developing a general acquisition function, to get a feel for the data
 # standard we would like
 
+
 def acquire(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     """ This is the function that will be the target function of a Process.
 
     VERY IMPORTANT: the type of the data that is put on the data queue MUST be
     consistent! E.g. do not start with sending an initial value of an integer 0,
-    and then start sending floats! 
+    and then start sending floats!
 
     Parameters:
 
@@ -92,7 +93,7 @@ def acquire(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
 
     # Initialize the counters
     lastCount = uInt32(0)
-    countData = uInt32(0) # the counter
+    countData = uInt32(0)  # the counter
 
     # Check how many channels have to be created
     AIChannels = settings['noOfAi']
@@ -113,7 +114,8 @@ def acquire(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     # Create the format
     ns.format = ('time', 'scan', 'Counts', 'AOV')
     # Add an entry for each channel
-    ns.format = ns.format + tuple(['AIChannel' + str(i + 1) for i in range(AIChannels)])
+    ns.format = ns.format + \
+        tuple(['AIChannel' + str(i + 1) for i in range(AIChannels)])
     print(ns.format)
 
     i = 0
@@ -121,7 +123,8 @@ def acquire(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     got_instr = False
 
     contFlag.wait()  # Wait until the boolean for continuing is set to True
-    while not stopFlag.is_set():  # Continue the acquisition loop while the stop flag is False
+    # Continue the acquisition loop while the stop flag is False
+    while not stopFlag.is_set():
         try:
             # if the contFlag is set: wait for it to be unset
             contFlag.wait()
@@ -139,12 +142,13 @@ def acquire(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
                 if instr[0] == 'Change':
                     # instr[1] holds the parameter name to change. With the current architecture,
                     # and the current acquire loop, this is not feasible. In this case,
-                    # the parameter to be scanned will always be the one input parameter.
+                    # the parameter to be scanned will always be the one input
+                    # parameter.
                     p = instr[2]
                     tPerStep = instr[3]
                     DAQmxWriteAnalogScalarF64(aoTaskHandle,
-                                      True, timeout,
-                                      p, None)
+                                              True, timeout,
+                                              p, None)
                     # I assume the next line was a dummy line to simulate the writing
                     # of the scanning voltage. I couldn't find it in the original code.
                     # Nevertheless, it has been preserved.
@@ -152,12 +156,11 @@ def acquire(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
 
                     ns.measuring = True
                     # initial guess of when scanNo will be set to the current scan value. This
-                    # is not a perfect guess because there is some time required for the 
+                    # is not a perfect guess because there is some time required for the
                     # change in ns.measuring to propagate to the manager and back.
                     # This initial guess will later be modified by the Artist to the actual time
                     # it received the 'Measuring' instruction.
                     ns.t0 = time.time()
-
 
             # get data fom the hardware
             DAQmxReadCounterScalarU32(countTaskHandle,
@@ -179,7 +182,8 @@ def acquire(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
             # Does each value have to be an array in and of itself?
             # For now, it is. The data from aiData is converted to
             # arrays with a single value, and added to the tuple created
-            # from the other data (timestamp, scanNo, counts and scanningvoltage)
+            # from the other data (timestamp, scanNo, counts and
+            # scanningvoltage)
             dQ.send((
                     np.array([datetime.datetime.now()]),
                     np.array([ns.scanNo]),
@@ -191,7 +195,6 @@ def acquire(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
 
             if ns.measuring and time.time() - ns.t0 >= tPerStep:
                 ns.measuring = False
-                   
 
         except Exception as e:
             mQ.put(e)

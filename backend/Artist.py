@@ -1,4 +1,3 @@
-import asynchat
 import asyncore
 import socket
 import multiprocessing as mp
@@ -7,17 +6,16 @@ logging.basicConfig(filename='Artist.log',
                     format='%(asctime)s: %(message)s',
                     level=logging.INFO)
 import threading as th
-import pickle
 import pandas as pd
 import time
 from collections import deque
 
 try:
     from Helpers import *
-    from connectors import Connector,Acceptor
+    from connectors import Connector, Acceptor
 except:
     from backend.Helpers import *
-    from backend.connectors import Connector,Acceptor
+    from backend.connectors import Connector, Acceptor
 from acquire import acquire
 
 SAVE_INTERVAL = 2
@@ -262,11 +260,11 @@ class Artist(asyncore.dispatcher):
                 logging.warn('Sender {} did not send proper ID'.format(addr))
                 return
             if sender == 'M_to_A':
-                self.receiver = Acceptor(sock, 
+                self.receiver = Acceptor(sock,
                     callback = self.processRequests,onCloseCallback=self.removeReceiver,
                     t=self.name)
             elif sender == 'DS_to_A':
-                self.transmitters.append(Acceptor(sock, 
+                self.transmitters.append(Acceptor(sock,
                     callback = self.processRequests,onCloseCallback=self.removeTransmitter,
                     t=self.name))
             else:
@@ -277,7 +275,7 @@ class Artist(asyncore.dispatcher):
 
     def removeReceiver(self,receiver):
         self.receiver = None
-    
+
     def removeTransmitter(self,transmitter):
         self.transmitters.remove(transmitter)
 
