@@ -1,5 +1,8 @@
 To Do
 
+Highest priority:
+1. Radio GUI: show stream or last scan
+2. Radio or Manager: edit memory size of stream on data server, empty on command
 
 High priority:
 1. Manager (GUI): add the option to just send one setpoint to the scanning computer (not as part of a scan) DONE

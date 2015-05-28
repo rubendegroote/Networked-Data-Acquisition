@@ -71,15 +71,15 @@ class Artist(asyncore.dispatcher):
         self.transmitters = []
 
         # dictionary holding the initial settings for the hardware
-        self.settings = dict(counterChannel = "/Dev1/ctr1", # corresponds to PFI3
-                             aoChannel = "/Dev1/ao0",
-                             aiChannel = "/Dev1/ai1,/Dev1/ai2",
-                             noOfAi = 2,
-                             clockChannel = "/Dev1/PFI1",
-                             timePerStep = 1,
-                             laser = 'CW Laser Voltage Scan',
-                             cristalMode = True,
-                             clearMode = True)
+        self.settings = dict(counterChannel= "/Dev1/ctr1", # corresponds to PFI3
+                             aoChannel="/Dev1/ao0",
+                             aiChannel="/Dev1/ai1,/Dev1/ai2",
+                             noOfAi=2,
+                             clockChannel="/Dev1/PFI1",
+                             timePerStep=1,
+                             laser='CW Laser Voltage Scan',
+                             cristalMode=True,
+                             clearMode=True)
         self.format = ('',)
         self.data = pd.DataFrame()
 
@@ -126,9 +126,9 @@ class Artist(asyncore.dispatcher):
     def InitializeScanning(self):
         self.ns.scanning = False
 
-    def processRequests(self,sender,data):
+    def processRequests(self, sender, data):
         if data == 'info':
-            info = {'format':self.format,'measuring':self.ns.measuring}
+            info = {'format': self.format, 'measuring': self.ns.measuring}
             return info
 
         elif data == 'data':
@@ -136,7 +136,7 @@ class Artist(asyncore.dispatcher):
             l = len(sender.dataDQ)
             if not l == 0:
                 data = [sender.dataDQ.popleft() for i in range(l)]
-            return {'data':data,'format':self.format,'measuring':self.ns.measuring}
+            return {'data':data, 'format': self.format, 'measuring': self.ns.measuring}
 
         else:
             logging.info('Got "{}" instruction'.format(data))
@@ -172,7 +172,7 @@ class Artist(asyncore.dispatcher):
         self.InitializeScanning()
         self.DAQProcess = mp.Process(target=acquire,
                                      args=(self.settings,
-                                           self.acquire_dQ,self.iQ,self.mQ,
+                                           self.acquire_dQ, self.iQ, self.mQ,
                                            self.contFlag, self.stopFlag,
                                            self.IStoppedFlag, self.ns))
         self.DAQProcess.start()
@@ -261,22 +261,24 @@ class Artist(asyncore.dispatcher):
                 return
             if sender == 'M_to_A':
                 self.receiver = Acceptor(sock,
-                    callback = self.processRequests,onCloseCallback=self.removeReceiver,
-                    t=self.name)
+                                         callback=self.processRequests,
+                                         onCloseCallback=self.removeReceiver,
+                                         t=self.name)
             elif sender == 'DS_to_A':
                 self.transmitters.append(Acceptor(sock,
-                    callback = self.processRequests,onCloseCallback=self.removeTransmitter,
-                    t=self.name))
+                                                  callback=self.processRequests,
+                                                  onCloseCallback=self.removeTransmitter,
+                                                  t=self.name))
             else:
                 logging.error('Sender {} named {} not understood'
                               .format(addr, sender))
                 return
             logging.info('Accepted {} as {}'.format(addr, sender))
 
-    def removeReceiver(self,receiver):
+    def removeReceiver(self, receiver):
         self.receiver = None
 
-    def removeTransmitter(self,transmitter):
+    def removeTransmitter(self, transmitter):
         self.transmitters.remove(transmitter)
 
     def get_sender_ID(self, sock):
@@ -295,13 +297,16 @@ class Artist(asyncore.dispatcher):
         logging.info('Closing Artist')
         super(Artist, self).handle_close()
 
+
 def makeArtist(name='test1', PORT=5005, save_data=True):
     return Artist(name=name, PORT=PORT, save_data=save_data)
+
 
 def start():
     while True:
         asyncore.loop(count=1)
         time.sleep(0.01)
+
 
 def main():
     port = int(input('PORT?'))
