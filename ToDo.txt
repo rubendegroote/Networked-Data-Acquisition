@@ -19,6 +19,7 @@ High priority:
     - e.g. 'Left multiplet', 'Brol', etc.
     - Should also be included in the search functionality
 5. GUI launcher for ARTIST/Data Server/Manager/Logbook configuration - in case we are not there ;)
+6. Radio: Radio should transmit how much data it has, so the data server doesn't need to send it all each time.
 
 Medium priority:
 1. Radio (GUI): Multiple data streams. Two options here: one is to just launch several radios, the other is to add multiple plots to one radio. I prefer the former.
