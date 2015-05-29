@@ -3,12 +3,9 @@ import threading as th
 import asyncore
 import time
 
-from scanner import ScannerWidget
 from connect import ConnectionsWidget
 from central import CentralDock
 
-from backend.DataServer import DataServer
-from backend.Manager import Manager
 from backend.Radio import RadioConnector
 
 

@@ -37,6 +37,8 @@ class DataServer(asyncore.dispatcher):
         self.listen(5)
         logging.info('Listening on port {}'.format(self.port))
 
+        self.memory = 5000
+        self.savedScan = -np.inf
         self._readers = {}
         self._readerInfo = {}
         self.bitrates = []
@@ -108,6 +110,7 @@ class DataServer(asyncore.dispatcher):
     def processRequests(self, sender, data):
         if data[0] == 'data':
             perScan, columns = data[1]
+            print(perScan, columns)
             return {'data': self.getData(perScan, columns), 'format': tuple(self._data.columns.values)}
         elif data[0] == 'Add Artist':
             self.addReader(data[1])
@@ -169,14 +172,20 @@ class DataServer(asyncore.dispatcher):
             save(val, self.saveDir, key)
 
     def extractMemory(self, new_data):
-        self._data = self._data.append(new_data)
+        m = new_data['scan'].max()
+        if m == self.savedScan + 1:
+            self._data_previous_scan = self._data
+            self._data_current_scan = new_data
+            self.savedScan = m
+        else:
+            self._data_current_scan = self._data_current_scan.append(new_data)
 
         # save the current scan in memory
         m = self._data['scan'].max()
         self._data_current_scan = self._data[self._data['scan'] == m]
 
         # save last 5000 data points
-        self._data = self._data[-5000:]
+        self._data = self._data[-self.memory:]
 
     def getData(self, perScan, columns):
         try:
