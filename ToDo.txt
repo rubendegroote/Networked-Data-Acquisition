@@ -1,8 +1,8 @@
 To Do
 
 Highest priority:
-1. Radio GUI: show stream or last scan
-2. Radio or Manager: edit memory size of stream on data server, empty on command
+1. Radio GUI: show stream, last scan or previous scan DONE
+2. Radio or Manager: edit memory size of stream on data server, empty on command DONE
 
 High priority:
 1. Manager (GUI): add the option to just send one setpoint to the scanning computer (not as part of a scan) DONE
@@ -25,6 +25,7 @@ Medium priority:
 1. Radio (GUI): Multiple data streams. Two options here: one is to just launch several radios, the other is to add multiple plots to one radio. I prefer the former.
     - Implement a Radio launcher app to make this easier (very simple GUI that remembers the PORT/IP of the dataserver and launches a connected radio with 1 click of a button)
 2. Write help/user documentation
+3. Network hiccup thingie solving
 
 Low priority:
 1. Manager (GUI): add the option to ask the user for input for every setpoint of the scan. So, wait for a user-upplied setpoint every time

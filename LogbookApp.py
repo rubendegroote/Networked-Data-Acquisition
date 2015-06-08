@@ -7,6 +7,7 @@ import asyncore
 from backend.connectors import Connector
 from connectiondialogs import ConnectionDialog, FieldAdditionDialog
 from logviewerwidgets import LogEntryWidget
+from backend.Filereader import FileReader
 
 
 class PassToLogbookApp(QtCore.QObject):
@@ -42,9 +43,13 @@ class LogbookApp(QtGui.QMainWindow):
         layout = QtGui.QGridLayout(self.central)
         self.setCentralWidget(self.central)
 
+        self.addFileServer = QtGui.QPushButton('Add File server')
+        self.addFileServer.clicked.connect(self.addFileConnection)
+        layout.addWidget(self.addFileServer, 0, 0, 1, 2)
+
         self.addManager = QtGui.QPushButton('Add Manager')
         self.addManager.clicked.connect(self.addConnection)
-        layout.addWidget(self.addManager, 0, 0, 1, 2)
+        layout.addWidget(self.addManager, 1, 0, 1, 2)
 
         self.getLogbook = QtGui.QPushButton('Get Logbook')
         self.getLogbook.clicked.connect(self.getLog)
@@ -105,6 +110,14 @@ class LogbookApp(QtGui.QMainWindow):
                                         choicesCallback=self.changeLogbooks,
                                         logbookCallback=self.saveLog,
                                         changeCallback=self.changeEntry)
+            self.getLog()
+
+    def addFileConnection(self):
+        respons = ConnectionDialog.getInfo(self)
+        if respons[1]:
+            chan, port = respons[0]
+            port = int(port)
+            self.fileServ = FileReader(IP=chan, PORT=port)
 
     def saveLog(self, log):
         self.logbook = sorted(log, key=lambda entry: entry[0]['Time'])
@@ -132,11 +145,18 @@ class LogbookApp(QtGui.QMainWindow):
                 self.logEntryWidgets[key].renew.connect(self.changeEntry)
                 self.logEntryWidgets[key].fieldAdded.connect(self.addField)
                 self.logEntryWidgets[key].tagAdded.connect(self.addTag)
+                self.logEntryWidgets[key].dataRequest.connect(self.getData)
 
                 QtGui.QApplication.processEvents()
 
                 if self.entryContainers[-1].count() > 100:
                     self.newEntryContainer()
+
+    def getData(self, value):
+        try:
+            self.fileserv.send_request(['SEND_FILE', 'Server_scan_{}.h5'.format(value)])
+        except AttributeError:
+            pass
 
     def filterLogbookOnString(self):
         filterString = str(self.searchStringEdit.text())
@@ -263,7 +283,6 @@ class ManagerConnector(Connector):
             message = data[0]
             data = data[1:]
             if message == 'Choices':
-                # self.logbookSignal.changeOptions.emit(data[0])
                 pass
             elif message == 'Logbook':
                 self.logbookSignal.displayLog.emit(data[0])

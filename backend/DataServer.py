@@ -7,6 +7,7 @@ import logging
 logging.basicConfig(filename='DataServer.log',
                     format='%(asctime)s: %(message)s',
                     level=logging.INFO)
+import os
 import pickle
 import socket
 import threading as th
@@ -37,7 +38,7 @@ class DataServer(asyncore.dispatcher):
         self.listen(5)
         logging.info('Listening on port {}'.format(self.port))
 
-        self.memory = 5000
+        self.memory = 50000
         self.savedScan = -np.inf
         self._readers = {}
         self._readerInfo = {}
@@ -57,8 +58,9 @@ class DataServer(asyncore.dispatcher):
 
         self.remember = remember
         if remember:
-            self._data = pd.DataFrame()
+            self._data_previous_scan = pd.DataFrame()
             self._data_current_scan = pd.DataFrame()
+            self._data_current_stream = pd.DataFrame()
 
         self.looping = True
         t = th.Thread(target=self.start).start()
@@ -111,12 +113,24 @@ class DataServer(asyncore.dispatcher):
         if data[0] == 'data':
             perScan, columns = data[1]
             print(perScan, columns)
-            return {'data': self.getData(perScan, columns), 'format': tuple(self._data.columns.values)}
+            return {'data': self.getData(perScan, None, columns), 'format': tuple(self._data_current_stream.columns.values)}
         elif data[0] == 'Add Artist':
             self.addReader(data[1])
             return None
         elif data[0] == 'Remove Artist':
             self.removeReader(data[1])
+            return None
+        elif data[0] == 'Clear Memory':
+            logging.info('Memory cleared')
+            self._data_current_stream = pd.DataFrame()
+            return None
+        elif data[0] == 'Set Memory Size':
+            try:
+                mem = np.abs(int(data[1]))
+                logging.info('Memory size changed from {} to {}'.format(self.memory, mem))
+                self.memory = mem
+            except:
+                logging.warn('Tried setting memory to invalid value {}'.format(data[1]))
             return None
         elif data == 'info':
             try:
@@ -173,26 +187,41 @@ class DataServer(asyncore.dispatcher):
 
     def extractMemory(self, new_data):
         m = new_data['scan'].max()
-        if m == self.savedScan + 1:
-            self._data_previous_scan = self._data
-            self._data_current_scan = new_data
-            self.savedScan = m
-        else:
-            self._data_current_scan = self._data_current_scan.append(new_data)
+        self._data_current_stream = self._data_current_stream.append(new_data)
+        if m > -1:
+            if self._data_current_scan.empty:
+                self._data_current_scan = new_data[new_data['scan'] == m]
+            else:
+                if m > self._data_current_scan['scan'][-1]:
+                    self._data_previous_scan, self._data_current_scan = self._data_current_scan, new_data[new_data['scan'] == m]
+                else:
+                    self._data_current_scan = self._data_current_scan.append(new_data[new_data['scan'] == m])
 
         # save the current scan in memory
-        m = self._data['scan'].max()
-        self._data_current_scan = self._data[self._data['scan'] == m]
+        # m = self._data['scan'].max()
+        # self._data_current_scan = self._data[self._data['scan'] == m]
 
         # save last 5000 data points
-        self._data = self._data[-self.memory:]
+        self._data_current_stream = self._data_current_stream[-self.memory:]
 
-    def getData(self, perScan, columns):
+    def getData(self, perScan, latest, columns):
         try:
-            if perScan:
-                return self._data_current_scan[columns]
+            if perScan[0]:
+                if perScan[1]:
+                    if latest is None:
+                        return self._data_current_scan[columns]
+                    else:
+                        return self._data_current_scan.loc[latest:, columns]
+                else:
+                    if latest is None:
+                        return self._data_previous_scan[columns]
+                    else:
+                        return self._data_previous_scan.loc[latest:, columns]
             else:
-                return self._data[columns]
+                if latest is None:
+                    return self._data_current_stream[columns]
+                else:
+                    return self._data_current_stream.loc[latest:, columns]
         except:
             return pd.DataFrame()
 
@@ -275,7 +304,6 @@ class ArtistReader(Connector):
 
 def makeServer(PORT=5006, save=True, remember=True):
     return DataServer([], PORT, save, remember)
-
 
 def main():
     PORT = input('PORT?')

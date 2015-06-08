@@ -192,6 +192,7 @@ class LogEntryWidget(FrameLayout):
     renew = QtCore.pyqtSignal(object)
     fieldAdded = QtCore.pyqtSignal()
     tagAdded = QtCore.pyqtSignal()
+    dataRequest = QtCore.pyqtSignal(int)
 
     def __init__(self, text='Placeholder text', entry=None, number=0):
         super(LogEntryWidget, self).__init__(text=text, path='')
@@ -282,17 +283,14 @@ class LogEntryWidget(FrameLayout):
         self.editButton.clicked.connect(self.editEntry)
         self.grid.addWidget(self.editButton, teller, 1)
 
+        if 'Scan Number' in self.entry[-1].keys():
+            self.getDataButton = QtGui.QPushButton(text='Get Scan Data')
+            self.getDataButton.setToolTip('Click here to get the data from this scan.')
+            self.getDataButton.clicked.connect(lambda x: self.dataRequest.emit(self.entry[-1]['Scan Number']))
+            self.grid.addWidget(self.getDataButton, teller + 1, 1)
+
         for (key, textItem) in self.texts.items():
             textItem.setDisabled(True)
-            # try:
-            #     newText = textItem.text()
-            # except AttributeError:
-            #     newText = textItem.toPlainText()
-
-            # if key == 'Time':
-            #     pass
-            # else:
-            #     self.entry[-1][key] = newText
 
         self.confirmed = True
 
@@ -373,8 +371,8 @@ class LogEntryWidget(FrameLayout):
         QFrame:hover {background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #43aa44, stop: 1 #66cc66);\
         }")
 
-        self.arrow.arrowNameTrue = imagePath + 'minimizeBlue.png'
-        self.arrow.arrowNameFalse = imagePath + 'maximizeBlue.png'
+        self.arrow.arrowNameTrue = imagePath + 'minimizeGreen.png'
+        self.arrow.arrowNameFalse = imagePath + 'maximizeGreen.png'
 
     def showNew(self):
         self.titleFrame.newLabel.setVisible(True)

@@ -234,6 +234,8 @@ class Manager(asyncore.dispatcher):
                                                                              self.tPerStep,
                                                                              self.curPos)})
         logbooks.saveEntry(self.logbookPath, self.logbook, -1)
+        self.notifyAllLogs(
+                ['Notify', self.logbook[-1], len(self.logbook) - 1])
         self.scanParser['scanprogress'] = {'scanno': self.scanNo}
         self.progressParser['progress'] = {'name': self.resumeName}
         with open('ManagerScan.ini', 'w') as scanfile:
@@ -262,20 +264,22 @@ class Manager(asyncore.dispatcher):
                                                                             self.tPerStep,
                                                                             self.curPos)})
         logbooks.saveEntry(self.logbookPath, self.logbook, -1)
+        self.notifyAllLogs(
+                ['Notify', self.logbook[-1], len(self.logbook) - 1])
         with open('ManagerScan.ini', 'w') as scanfile:
             self.scanParser.write(scanfile)
         self.scanToNext()
 
     def setpoint(self, setpointInfo):
-        name, self.scanPar = scanInfo[0].split(':')
+        name, self.scanPar = setpointInfo[0].split(':')
         self.scanner = self._instructors[name]
-        value = scanInfo[1]
+        value = setpointInfo[1]
         logbooks.addEntry(self.logbook, **{'Author': 'Automatic Entry',
                                            'Text': self.setpointMessage.format(name,
                                                                                value)})
         logbooks.saveEntry(self.logbookPath, self.logbook, -1)
         self.scanner.send_instruction(
-            ["Change", self.scanPar, value])
+            ["Setpoint Change", self.scanPar, value])
 
     def stopScan(self):
         self.scanning = False
@@ -304,7 +308,7 @@ class Manager(asyncore.dispatcher):
             return
 
         self.scanner.send_instruction(
-            ["Change", self.scanPar, self.scanRange[self.curPos], self.tPerStep])
+            ["Scan Change", self.scanPar, self.scanRange[self.curPos], self.tPerStep])
         name = self.progressParser['progress']['name']
         self.progressParser['progress'] = {'curpos': self.curPos,
                                            'scanmin': self.scanRange[0],

@@ -119,7 +119,6 @@ class Artist(asyncore.dispatcher):
         self.ns.scanNo = -1
         self.ns.measuring = False
         self.ns.format = ('time', 'scan', 'Counts', 'AOV', 'AIChannel1', 'AIChannel2')
-
         self.save_data = save_data
         self._saveThread = th.Timer(1, self.save).start()
 
@@ -220,6 +219,7 @@ class Artist(asyncore.dispatcher):
                              .format(message))
             ret = emptyPipe(self.dQ)
             if not ret == []:
+                print('Got data')
                 if self.save_data:
                     self.saveQ.append(ret)
                 for t in self.transmitters:
@@ -297,7 +297,6 @@ class Artist(asyncore.dispatcher):
         logging.info('Closing Artist')
         super(Artist, self).handle_close()
 
-
 def makeArtist(name='test1', PORT=5005, save_data=True):
     return Artist(name=name, PORT=PORT, save_data=save_data)
 
@@ -308,13 +307,12 @@ def start():
         time.sleep(0.01)
 
 
-def main():
-    port = int(input('PORT?'))
-    name = input('Name?')
+def main(port,name):
     a = makeArtist(name=name, PORT=port, save_data=True)
     t0 = th.Timer(1, a.StartDAQ).start()
     asyncore.loop(0.001)
 
 
 if __name__ == '__main__':
-    main()
+    main(5005,'ABU')
+    

@@ -62,18 +62,23 @@ class ScannerWidget(QtGui.QWidget):
         self.layout.addWidget(self.timeEdit, 2, 4, 1, 1)
 
         self.setpointlabel = QtGui.QLabel('Setpoint controls')
-        self.layout.addWidget(self.setpointlabel, 3, 0, 1, 1)
+        self.layout.addWidget(self.setpointlabel, 4, 0, 1, 1)
 
         self.setpointCombo = QtGui.QComboBox()
-        self.layout.addWidget(self.setpointCombo, 4, 0, 1, 1)
+        self.layout.addWidget(self.setpointCombo, 5, 0, 1, 1)
         self.setpointEdit = QtGui.QLineEdit('0')
-        self.layout.addWidget(self.setpointEdit, 4, 1, 1, 4)
+        self.layout.addWidget(self.setpointEdit, 5, 1, 1, 4)
 
         self.setpointButton = PicButton('manual',
                                         checkable=False,
                                         size=100)
-        self.layout.addWidget(self.setpointButton, 4, 5, 1, 1)
+        self.layout.addWidget(self.setpointButton, 5, 5, 1, 1)
         self.setpointButton.clicked.connect(self.makeSetpoint)
+
+        self.repeatLabel = QtGui.QLabel('Repeats')
+        self.layout.addWidget(self.repeatLabel, 3, 1, 1, 1)
+        self.repeatBox = QtGui.QLineEdit("1")
+        self.layout.addWidget(self.repeatBox, 3, 2, 1, 3)
 
     def control(self):
         if self.state == "START":
@@ -106,17 +111,30 @@ class ScannerWidget(QtGui.QWidget):
         start = float(self.startEdit.text())
         stop = float(self.stopEdit.text())
         steps = float(self.stepsBox.text())
-        rng = np.linspace(start, stop, steps)
+        times = int(self.repeatBox.text())
+
+        if times == 0:
+            times == 1
+
+        rng = np.linspace(start,stop,steps)
+        newRng = rng
+        if times > 1:
+            for t in range(times-1):
+                if t%2==0:
+                    newRng = np.concatenate((newRng,rng[::-1]))
+                else:
+                    newRng = np.concatenate((newRng,rng))
+        rng = newRng
 
         dt = float(self.timeEdit.text())
 
-        self.scanInfoSig.emit((par, rng, dt))
+        self.scanInfoSig.emit((par,rng,dt))
 
     def makeSetpoint(self):
         par = self.setpointCombo.currentText()
         value = float(self.setpointEdit.text())
 
-        self.setPointSig.emit((par, value, 0.050))
+        self.setPointSig.emit((par, value))
 
     def stopScan(self):
         self.stopScanSig.emit(True)

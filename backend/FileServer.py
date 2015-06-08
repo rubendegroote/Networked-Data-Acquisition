@@ -74,14 +74,14 @@ class FileHandler(asynchat.async_chat):
                 else:
                     if req == "SEND_FILE":
                         self.mQ.put(["File found", [f]])
-                    elif "SEND_FILE_H5_AS_CSV" in req:
-                        if req == "SEND_FILE_H5_AS_CSV_PLUS_SCANS":
-                            newF = convert(f, self.mQ, full=True, groups=True)
-                        elif req == "SEND_FILE_H5_AS_CSV_ONLY_SCANS":
-                            newF = convert(f, self.mQ, full=False, groups=True)
-                        else:
-                            newF = convert(f, self.mQ, full=True, groups=False)
-                        self.mQ.put(["File converted", newF])
+##                    elif "SEND_FILE_H5_AS_CSV" in req:
+##                        if req == "SEND_FILE_H5_AS_CSV_PLUS_SCANS":
+##                            newF = convert(f, self.mQ, full=True, groups=True)
+##                        elif req == "SEND_FILE_H5_AS_CSV_ONLY_SCANS":
+##                            newF = convert(f, self.mQ, full=False, groups=True)
+##                        else:
+##                            newF = convert(f, self.mQ, full=True, groups=False)
+##                        self.mQ.put(["File converted", newF])
         self.mQ.put('DONE')
 
     def send_feedback(self):
@@ -114,6 +114,7 @@ def run():
 
 
 def main():
+    port_file = input('File server port?')
     f = FileServer()
     t = th.Thread(target=start).start()
     t = mp.Process(target=run).start()

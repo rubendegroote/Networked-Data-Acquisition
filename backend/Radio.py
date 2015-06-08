@@ -10,8 +10,13 @@ class RadioConnector(Connector):
 
         self.format = tuple()
         self.xy = ['time', 'Rubeny']
-        self.perScan = True
+        self.giveScan = True
+        self.currentScan = True
+        self.format = ()
         self.data = pd.DataFrame()
+        self.data_stream = pd.DataFrame()
+        self.data_current_scan = pd.DataFrame()
+        self.data_previous_scan = pd.DataFrame()
 
         self.send_next()
 
@@ -19,13 +24,30 @@ class RadioConnector(Connector):
         data = pickle.loads(self.buff)
         self.buff = b''
 
-        self.format = data['format']
-        if not len(data) == 0:
-            self.data = data['data']
+        try:
+            if self.format is ():
+                self.format = data['format']
+            if not len(data) == 0:
+                self.data = data['data']
+                print(self.data.head())
+        except TypeError:
+            pass
 
         self.send_next()
 
+    def changeMemory(self, value):
+        self.push(pickle.dumps(['Set Memory Size', value]))
+        self.push('END_MESSAGE'.encode('UTF-8'))
+
+    def clearMemory(self):
+        self.push(pickle.dumps(['Clear Memory']))
+        self.push('END_MESSAGE'.encode('UTF-8'))
+
     def send_next(self):
         cols = [xy for xy in self.xy if not xy == 'time']
-        self.push(pickle.dumps(['data', (self.perScan, cols)]))
+        try:
+            latest = self.data.index.values[-1]
+        except:
+            latest = None
+        self.push(pickle.dumps(['data', ([self.giveScan, self.currentScan], cols)]))
         self.push('END_MESSAGE'.encode('UTF-8'))

@@ -1,11 +1,14 @@
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtCore,QtGui
 import threading as th
 import asyncore
 import time
 
+from scanner import ScannerWidget
 from connect import ConnectionsWidget
 from central import CentralDock
 
+from backend.DataServer import DataServer
+from backend.Manager import Manager
 from backend.Radio import RadioConnector
 
 
@@ -17,7 +20,7 @@ class RadioApp(QtGui.QMainWindow):
         t = th.Thread(target=self.startIOLoop).start()
 
         self.init_UI()
-
+        
     def init_UI(self):
 
         self.connectToolBar = QtGui.QToolBar('Connections')
@@ -29,8 +32,8 @@ class RadioApp(QtGui.QMainWindow):
         self.connectToolBar.addWidget(self.connectionsWidget)
 
         self.centralDock = CentralDock()
-        self.centralDock.graphDocks[
-            0].graph.dataRequested.connect(self.changeDataType)
+        self.centralDock.graphDocks[0].graph.dataRequested.connect(self.changeDataType)
+        self.centralDock.graphDocks[0].graph.scanRequested.connect(self.changeCurrentScan)
         self.setCentralWidget(self.centralDock)
 
         self.show()
@@ -48,16 +51,26 @@ class RadioApp(QtGui.QMainWindow):
             time.sleep(0.03)
 
     def changeDataType(self, value):
-        if value == 'Per Scan':
+        if value == 'Give Scan':
             value = True
         else:
             value = False
-        self.radio.perScan = value
+        self.radio.giveScan = value
+
+    def changeCurrentScan(self, value):
+        if value == 'Current Scan':
+            value = True
+        else:
+            value = False
+        self.radio.currentScan = value
 
     def addConnection(self, data):
         self.radio = RadioConnector(chan=(data[0], int(data[1])),
                                     callback=None,
                                     onCloseCallback=self.connLost)
+        self.centralDock.graphDocks[0].graph.memoryClear.connect(self.radio.clearMemory)
+        self.centralDock.graphDocks[0].graph.memoryChanged.connect(self.radio.changeMemory)
+        self.connectToolBar.setHidden(True)
 
     def connLost(self):
         pass
@@ -68,9 +81,12 @@ class RadioApp(QtGui.QMainWindow):
                 g.graph.setXYOptions(list(self.radio.format))
                 g.graph.plot(self.radio.data)
                 self.radio.xy = [g.graph.xkey, g.graph.ykey]
+
+                # self.statusBar().showMessage('Laser Wavelength: '+ str(self.radio.data['laser: wavenumber'][-1]) +  ' cm-1')
+
         except AttributeError as e:
             pass
 
-    def closeEvent(self, event):
+    def closeEvent(self,event):
         self.stopIOLoop()
         event.accept()

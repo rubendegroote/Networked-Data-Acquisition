@@ -25,13 +25,14 @@ HTTP_SERVER_PORT = 5010
 
 class FileReader(asynchat.async_chat):
 
-    def __init__(self, IP='KSF402', PORT=5009):
+    def __init__(self, IP='KSF402', PORT=5009, filegot=None):
         super(FileReader, self).__init__()
         self.IP, self.PORT = IP, PORT
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self.connect((IP, PORT))
         self.response = b""
+        self.signal = filegot
 
         self.mode = ''
         self.ready = True
@@ -57,6 +58,8 @@ class FileReader(asynchat.async_chat):
                 print("Fetching file \"{}\"...".format(url))
                 urllib.request.urlretrieve(url, "copy_of_" + r)
                 print("File saved as \"copy_of_{}\".".format(r))
+                if self.signal is not None:
+                    self.signal.emit(r)
 
     def send_request(self, request):
         self.push(pickle.dumps(request))

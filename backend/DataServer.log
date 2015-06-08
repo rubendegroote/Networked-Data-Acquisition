@@ -492,3 +492,467 @@
 2015-05-25 12:28:10,329: MGui_to_DS
 2015-05-25 12:28:10,329: Accepted ('127.0.0.1', 49701) as MGui_to_DS
 2015-05-25 12:32:20,726: Closing Acceptor MGui_to_DS
+2015-06-01 13:54:01,960: Listening on port 5005
+2015-06-01 13:54:43,063: MGui_to_DS
+2015-06-01 13:54:43,063: Accepted ('127.0.0.1', 63802) as MGui_to_DS
+2015-06-01 13:54:48,770: Connecting to DS_to_A...
+2015-06-01 13:54:48,832: Connected to ABU
+2015-06-01 13:55:09,557: R_to_DS
+2015-06-01 13:55:09,557: Accepted ('127.0.0.1', 63806) as R_to_DS
+2015-06-01 13:57:21,480: R_to_DS
+2015-06-01 13:57:21,480: Accepted ('137.138.32.86', 63156) as R_to_DS
+2015-06-01 14:00:51,843: Closing Acceptor MGui_to_DS
+2015-06-01 14:13:17,101: Closing Acceptor R_to_DS
+2015-06-01 14:13:26,927: R_to_DS
+2015-06-01 14:13:26,927: Accepted ('127.0.0.1', 63845) as R_to_DS
+2015-06-01 14:13:59,479: Closing Acceptor R_to_DS
+2015-06-01 14:15:29,990: R_to_DS
+2015-06-01 14:15:29,990: Accepted ('127.0.0.1', 63849) as R_to_DS
+2015-06-01 14:15:46,885: Closing Acceptor R_to_DS
+2015-06-01 14:16:01,126: R_to_DS
+2015-06-01 14:16:01,126: Accepted ('127.0.0.1', 63850) as R_to_DS
+2015-06-01 14:16:18,814: Closing Acceptor R_to_DS
+2015-06-01 14:27:20,810: MGui_to_DS
+2015-06-01 14:27:20,810: Accepted ('127.0.0.1', 63925) as MGui_to_DS
+2015-06-01 14:29:10,163: Connecting to DS_to_A...
+2015-06-01 14:29:10,288: Connected to laser
+2015-06-01 14:30:31,364: R_to_DS
+2015-06-01 14:30:31,364: Accepted ('127.0.0.1', 63940) as R_to_DS
+2015-06-01 14:30:31,473: Closing Acceptor R_to_DS
+2015-06-01 14:31:14,221: R_to_DS
+2015-06-01 14:31:14,221: Accepted ('127.0.0.1', 63942) as R_to_DS
+2015-06-01 15:17:41,538: Listening on port 5005
+2015-06-01 15:18:24,972: MGui_to_DS
+2015-06-01 15:18:24,987: Accepted ('127.0.0.1', 64064) as MGui_to_DS
+2015-06-01 15:18:33,738: Connecting to DS_to_A...
+2015-06-01 15:18:33,800: Connected to ABU
+2015-06-01 15:18:43,322: Connecting to DS_to_A...
+2015-06-01 15:18:43,385: Connected to laser
+2015-06-01 15:20:38,194: R_to_DS
+2015-06-01 15:20:38,194: Accepted ('127.0.0.1', 64074) as R_to_DS
+2015-06-01 15:20:38,303: Closing Acceptor R_to_DS
+2015-06-01 15:23:05,063: Closing Acceptor MGui_to_DS
+2015-06-01 15:23:24,899: Listening on port 5005
+2015-06-01 15:23:42,447: MGui_to_DS
+2015-06-01 15:23:42,447: Accepted ('127.0.0.1', 64079) as MGui_to_DS
+2015-06-01 15:23:47,049: Connecting to DS_to_A...
+2015-06-01 15:23:47,112: Connected to ABU
+2015-06-01 15:23:57,523: Connecting to DS_to_A...
+2015-06-01 15:23:57,586: Connected to laser
+2015-06-01 15:26:35,822: R_to_DS
+2015-06-01 15:26:35,822: Accepted ('127.0.0.1', 64084) as R_to_DS
+2015-06-01 16:40:31,903: R_to_DS
+2015-06-01 16:40:31,918: Accepted ('137.138.32.86', 63597) as R_to_DS
+2015-06-01 17:02:53,346: Closing Acceptor MGui_to_DS
+2015-06-01 17:03:04,878: Closing Acceptor R_to_DS
+2015-06-01 17:03:37,077: MGui_to_DS
+2015-06-01 17:03:37,077: Accepted ('127.0.0.1', 64636) as MGui_to_DS
+2015-06-01 17:05:11,206: R_to_DS
+2015-06-01 17:05:11,221: Accepted ('127.0.0.1', 64644) as R_to_DS
+2015-06-01 17:43:41,488: Listening on port 5005
+2015-06-01 17:43:48,572: MGui_to_DS
+2015-06-01 17:43:48,572: Accepted ('127.0.0.1', 64759) as MGui_to_DS
+2015-06-01 17:44:03,136: MGui_to_DS
+2015-06-01 17:44:03,136: Accepted ('127.0.0.1', 64761) as MGui_to_DS
+2015-06-01 17:44:08,928: M_to_A
+2015-06-01 17:44:08,928: Sender ('127.0.0.1', 64762) named M_to_A not understood
+2015-06-01 17:44:09,037: Connecting to DS_to_A...
+2015-06-01 17:44:10,102: Connection failed
+2015-06-01 17:44:10,211: DS_to_A
+2015-06-01 17:44:10,211: Sender ('127.0.0.1', 64763) named DS_to_A not understood
+2015-06-01 17:44:10,321: Closing DS_to_A Connector
+2015-06-01 17:44:16,884: Connecting to DS_to_A...
+2015-06-01 17:44:16,946: Connected to ABU
+2015-06-01 17:44:22,521: Connecting to DS_to_A...
+2015-06-01 17:44:22,584: Connected to laser
+2015-06-01 17:45:04,201: R_to_DS
+2015-06-01 17:45:04,201: Accepted ('127.0.0.1', 64770) as R_to_DS
+2015-06-01 17:48:06,616: Listening on port 5005
+2015-06-01 17:48:21,038: MGui_to_DS
+2015-06-01 17:48:21,038: Accepted ('127.0.0.1', 64785) as MGui_to_DS
+2015-06-01 17:48:23,460: Connecting to DS_to_A...
+2015-06-01 17:48:23,522: Connected to ABU
+2015-06-01 17:48:25,210: Connecting to DS_to_A...
+2015-06-01 17:48:25,288: Connected to laser
+2015-06-01 17:48:41,364: R_to_DS
+2015-06-01 17:48:41,364: Accepted ('127.0.0.1', 64788) as R_to_DS
+2015-06-01 17:56:26,801: Closing Acceptor R_to_DS
+2015-06-01 17:56:56,273: Listening on port 5005
+2015-06-01 17:56:58,492: MGui_to_DS
+2015-06-01 17:56:58,492: Accepted ('127.0.0.1', 64806) as MGui_to_DS
+2015-06-01 17:56:59,929: Connecting to DS_to_A...
+2015-06-01 17:56:59,992: Connected to ABU
+2015-06-01 17:57:00,867: Connecting to DS_to_A...
+2015-06-01 17:57:00,929: Connected to laser
+2015-06-01 17:57:20,960: R_to_DS
+2015-06-01 17:57:20,960: Accepted ('127.0.0.1', 64809) as R_to_DS
+2015-06-01 18:00:01,865: Closing Acceptor R_to_DS
+2015-06-01 18:00:12,129: Listening on port 5005
+2015-06-01 18:00:16,879: MGui_to_DS
+2015-06-01 18:00:16,879: Accepted ('127.0.0.1', 64818) as MGui_to_DS
+2015-06-01 18:00:21,160: Connecting to DS_to_A...
+2015-06-01 18:00:21,238: Connected to laser
+2015-06-01 18:00:27,139: Connecting to DS_to_A...
+2015-06-01 18:00:27,210: Connected to ABU
+2015-06-01 18:01:07,969: Listening on port 5005
+2015-06-01 18:01:10,422: MGui_to_DS
+2015-06-01 18:01:10,422: Accepted ('127.0.0.1', 64831) as MGui_to_DS
+2015-06-01 18:01:11,860: Connecting to DS_to_A...
+2015-06-01 18:01:11,922: Connected to ABU
+2015-06-01 18:01:15,106: Connecting to DS_to_A...
+2015-06-01 18:01:15,189: Connected to laser
+2015-06-01 18:06:14,360: Listening on port 5005
+2015-06-01 18:06:22,329: MGui_to_DS
+2015-06-01 18:06:22,329: Accepted ('127.0.0.1', 64846) as MGui_to_DS
+2015-06-01 18:06:27,924: Connecting to DS_to_A...
+2015-06-01 18:06:27,986: Connected to ABU
+2015-06-01 18:06:29,433: Connecting to DS_to_A...
+2015-06-01 18:06:29,652: Connected to laser
+2015-06-01 18:06:47,324: R_to_DS
+2015-06-01 18:06:47,324: Accepted ('127.0.0.1', 64851) as R_to_DS
+2015-06-01 18:08:31,811: Closing Acceptor R_to_DS
+2015-06-01 18:08:45,815: R_to_DS
+2015-06-01 18:08:45,815: Accepted ('127.0.0.1', 64852) as R_to_DS
+2015-06-01 18:08:51,831: Closing Acceptor R_to_DS
+2015-06-01 18:09:01,972: R_to_DS
+2015-06-01 18:09:01,972: Accepted ('127.0.0.1', 64853) as R_to_DS
+2015-06-01 18:13:27,393: R_to_DS
+2015-06-01 18:13:27,393: Accepted ('137.138.32.86', 63884) as R_to_DS
+2015-06-01 18:14:20,358: Listening on port 5005
+2015-06-01 18:14:25,453: MGui_to_DS
+2015-06-01 18:14:25,453: Accepted ('127.0.0.1', 64865) as MGui_to_DS
+2015-06-01 18:14:27,000: Connecting to DS_to_A...
+2015-06-01 18:14:27,062: Connected to ABU
+2015-06-01 18:14:28,047: Connecting to DS_to_A...
+2015-06-01 18:14:29,109: Connection failed
+2015-06-01 18:14:30,313: Closing DS_to_A Connector
+2015-06-01 18:14:35,453: Connecting to DS_to_A...
+2015-06-01 18:14:35,625: Connected to laser
+2015-06-01 18:14:47,608: R_to_DS
+2015-06-01 18:14:47,608: Accepted ('127.0.0.1', 64869) as R_to_DS
+2015-06-01 18:17:13,254: Closing Acceptor R_to_DS
+2015-06-01 18:17:33,501: R_to_DS
+2015-06-01 18:17:33,501: Accepted ('127.0.0.1', 64912) as R_to_DS
+2015-06-01 18:21:37,158: R_to_DS
+2015-06-01 18:21:37,174: Accepted ('137.138.32.86', 63891) as R_to_DS
+2015-06-01 21:10:04,198: Listening on port 5005
+2015-06-01 21:10:11,363: MGui_to_DS
+2015-06-01 21:10:11,379: Accepted ('127.0.0.1', 65426) as MGui_to_DS
+2015-06-01 21:10:13,129: Connecting to DS_to_A...
+2015-06-01 21:10:13,191: Connected to ABU
+2015-06-01 21:10:14,942: Connecting to DS_to_A...
+2015-06-01 21:10:15,113: Connected to laser
+2015-06-01 21:10:52,881: R_to_DS
+2015-06-01 21:10:52,881: Accepted ('127.0.0.1', 65430) as R_to_DS
+2015-06-01 21:12:07,678: Memory cleared
+2015-06-01 21:12:09,866: Memory cleared
+2015-06-01 21:12:41,847: Closing Acceptor R_to_DS
+2015-06-01 21:13:51,382: Listening on port 5005
+2015-06-01 21:13:54,070: MGui_to_DS
+2015-06-01 21:13:54,070: Accepted ('127.0.0.1', 65436) as MGui_to_DS
+2015-06-01 21:13:59,769: Connecting to DS_to_A...
+2015-06-01 21:13:59,832: Connected to ABU
+2015-06-01 21:15:25,926: Closing DS_to_A Connector
+2015-06-01 21:21:02,904: Connecting to DS_to_A...
+2015-06-01 21:21:02,967: Connected to ABU
+2015-06-01 21:21:37,613: R_to_DS
+2015-06-01 21:21:37,613: Accepted ('127.0.0.1', 65461) as R_to_DS
+2015-06-01 21:22:18,994: Memory size changed from 50000 to 1000
+2015-06-01 21:22:26,836: Memory cleared
+2015-06-01 21:24:02,917: Closing Acceptor R_to_DS
+2015-06-01 21:24:17,036: R_to_DS
+2015-06-01 21:24:17,036: Accepted ('127.0.0.1', 65465) as R_to_DS
+2015-06-01 21:24:48,261: Memory cleared
+2015-06-01 21:24:55,076: Closing Acceptor R_to_DS
+2015-06-01 21:26:54,611: R_to_DS
+2015-06-01 21:26:54,611: Accepted ('127.0.0.1', 65476) as R_to_DS
+2015-06-01 21:27:00,673: Closing Acceptor R_to_DS
+2015-06-01 21:28:30,763: R_to_DS
+2015-06-01 21:28:30,763: Accepted ('127.0.0.1', 65477) as R_to_DS
+2015-06-01 21:29:05,547: Memory cleared
+2015-06-01 21:29:23,612: Closing Acceptor R_to_DS
+2015-06-01 21:30:22,677: R_to_DS
+2015-06-01 21:30:22,677: Accepted ('127.0.0.1', 65481) as R_to_DS
+2015-06-01 21:30:43,850: Memory cleared
+2015-06-01 21:30:56,364: Memory size changed from 1000 to 100
+2015-06-01 21:31:42,983: Memory size changed from 100 to 5000
+2015-06-01 21:32:31,517: Memory size changed from 5000 to 50000
+2015-06-01 21:33:31,611: Closing Acceptor R_to_DS
+2015-06-01 21:34:32,738: R_to_DS
+2015-06-01 21:34:32,738: Accepted ('127.0.0.1', 65492) as R_to_DS
+2015-06-01 21:34:57,023: Memory size changed from 50000 to 1000
+2015-06-01 21:35:11,204: Memory size changed from 1000 to 10000
+2015-06-01 21:35:52,047: Memory cleared
+2015-06-01 21:36:10,088: Closing Acceptor R_to_DS
+2015-06-02 09:39:55,422: Listening on port 5005
+2015-06-02 09:40:17,775: MGui_to_DS
+2015-06-02 09:40:17,775: Accepted ('127.0.0.1', 56731) as MGui_to_DS
+2015-06-02 09:40:25,776: Connecting to DS_to_A...
+2015-06-02 09:40:25,838: Connected to ABU
+2015-06-02 09:40:33,052: Connecting to DS_to_A...
+2015-06-02 09:40:34,114: Connection failed
+2015-06-02 09:40:35,536: Closing DS_to_A Connector
+2015-06-02 09:40:50,518: Connecting to DS_to_A...
+2015-06-02 09:40:50,580: Connected to laser
+2015-06-02 09:48:48,381: Closing DS_to_A Connector
+2015-06-02 10:00:23,226: Connecting to DS_to_A...
+2015-06-02 10:00:23,289: Connected to laser
+2015-06-02 10:00:52,624: R_to_DS
+2015-06-02 10:00:52,624: Accepted ('127.0.0.1', 56821) as R_to_DS
+2015-06-02 10:01:11,558: Memory cleared
+2015-06-02 10:02:43,642: Memory size changed from 50000 to 50000
+2015-06-02 10:39:52,443: Memory cleared
+2015-06-02 11:05:17,807: Memory cleared
+2015-06-02 11:32:10,375: Memory cleared
+2015-06-02 11:32:23,996: Memory cleared
+2015-06-02 11:55:52,297: Memory cleared
+2015-06-02 12:23:54,295: Memory cleared
+2015-06-02 12:51:54,229: Memory cleared
+2015-06-02 13:21:36,182: Memory cleared
+2015-06-02 13:53:47,541: Memory cleared
+2015-06-02 14:30:04,616: Memory cleared
+2015-06-02 14:32:00,312: R_to_DS
+2015-06-02 14:32:00,312: Accepted ('137.138.32.86', 56474) as R_to_DS
+2015-06-02 14:38:09,924: Memory cleared
+2015-06-02 14:39:23,273: Memory cleared
+2015-06-02 16:11:40,687: Closing DS_to_A Connector
+2015-06-02 16:11:41,094: Closing Acceptor R_to_DS
+2015-06-02 20:22:13,472: Memory cleared
+2015-06-02 20:22:13,628: Memory cleared
+2015-06-02 20:22:25,963: Memory cleared
+2015-06-02 20:22:44,861: Connecting to DS_to_A...
+2015-06-02 20:22:44,924: Closing DS_to_A Connector
+2015-06-02 20:22:45,924: Connection failed
+2015-06-02 20:24:28,652: Closing Acceptor R_to_DS
+2015-06-02 20:24:36,248: Connecting to DS_to_A...
+2015-06-02 20:24:36,311: Connected to ABU
+2015-06-02 20:24:54,316: R_to_DS
+2015-06-02 20:24:54,316: Accepted ('127.0.0.1', 62021) as R_to_DS
+2015-06-02 20:32:12,619: Memory cleared
+2015-06-02 20:42:05,265: Memory size changed from 50000 to 50000
+2015-06-02 21:08:47,569: Memory cleared
+2015-06-02 21:40:19,449: Memory cleared
+2015-06-02 22:00:38,979: Memory cleared
+2015-06-02 22:25:24,353: Memory cleared
+2015-06-02 22:50:56,701: Memory cleared
+2015-06-02 22:51:35,672: Memory cleared
+2015-06-02 23:17:14,332: Memory cleared
+2015-06-02 23:17:22,708: Memory cleared
+2015-06-02 23:44:28,280: Memory cleared
+2015-06-02 23:44:36,377: Memory cleared
+2015-06-03 00:13:16,515: Memory cleared
+2015-06-03 00:48:21,273: Memory cleared
+2015-06-03 00:48:32,380: Memory cleared
+2015-06-03 00:48:32,490: Memory cleared
+2015-06-03 00:48:32,787: Memory cleared
+2015-06-03 00:48:32,834: Memory cleared
+2015-06-03 00:48:32,912: Memory cleared
+2015-06-03 00:48:33,146: Memory cleared
+2015-06-03 00:48:33,224: Memory cleared
+2015-06-03 00:48:33,310: Memory cleared
+2015-06-03 01:14:52,077: Memory cleared
+2015-06-03 01:14:55,593: Memory cleared
+2015-06-03 01:14:55,655: Memory cleared
+2015-06-03 01:14:55,874: Memory cleared
+2015-06-03 01:14:55,952: Memory cleared
+2015-06-03 01:48:45,477: Memory cleared
+2015-06-03 01:48:59,619: Memory cleared
+2015-06-03 01:49:17,596: Memory cleared
+2015-06-03 01:49:24,153: Memory cleared
+2015-06-03 01:49:24,444: Memory cleared
+2015-06-03 01:49:24,515: Memory cleared
+2015-06-03 01:49:24,668: Memory cleared
+2015-06-03 01:49:25,072: Memory cleared
+2015-06-03 09:00:18,642: Closing DS_to_A Connector
+2015-06-03 09:00:34,231: Closing DS_to_A Connector
+2015-06-03 10:14:12,302: Connecting to DS_to_A...
+2015-06-03 10:14:12,709: Connected to laser
+2015-06-03 10:29:25,232: Connecting to DS_to_A...
+2015-06-03 10:29:25,326: Connected to ABU
+2015-06-03 10:29:55,354: Closing DS_to_A Connector
+2015-06-03 10:33:29,955: Closing Acceptor MGui_to_DS
+2015-06-03 10:34:55,303: MGui_to_DS
+2015-06-03 10:34:55,303: Accepted ('127.0.0.1', 61304) as MGui_to_DS
+2015-06-03 10:35:07,766: Connecting to DS_to_A...
+2015-06-03 10:35:07,829: Connected to ABU
+2015-06-03 10:35:28,662: Closing Acceptor R_to_DS
+2015-06-03 10:35:46,492: R_to_DS
+2015-06-03 10:35:46,492: Accepted ('127.0.0.1', 61313) as R_to_DS
+2015-06-03 10:35:53,553: Memory cleared
+2015-06-03 10:36:32,644: Closing Acceptor MGui_to_DS
+2015-06-03 10:36:55,475: Memory cleared
+2015-06-03 10:37:00,334: Memory size changed from 50000 to 500
+2015-06-03 10:41:59,371: MGui_to_DS
+2015-06-03 10:41:59,371: Accepted ('127.0.0.1', 61318) as MGui_to_DS
+2015-06-03 10:43:14,667: Closing Acceptor MGui_to_DS
+2015-06-03 10:43:14,786: MGui_to_DS
+2015-06-03 10:43:14,786: Accepted ('127.0.0.1', 61322) as MGui_to_DS
+2015-06-03 10:43:28,523: Memory cleared
+2015-06-03 10:43:42,212: Memory cleared
+2015-06-03 10:43:46,025: Memory size changed from 500 to 5000
+2015-06-03 10:43:55,034: Memory cleared
+2015-06-03 10:44:07,611: Closing Acceptor MGui_to_DS
+2015-06-03 10:44:38,428: MGui_to_DS
+2015-06-03 10:44:38,443: Accepted ('127.0.0.1', 61327) as MGui_to_DS
+2015-06-03 10:44:53,852: Memory cleared
+2015-06-03 10:45:00,855: Memory cleared
+2015-06-03 10:45:07,308: Memory size changed from 5000 to 1000
+2015-06-03 10:47:13,887: Closing DS_to_A Connector
+2015-06-03 10:47:36,756: Connecting to DS_to_A...
+2015-06-03 10:47:36,819: Connected to ABU
+2015-06-03 10:47:40,038: Memory cleared
+2015-06-03 10:48:01,639: Closing Acceptor R_to_DS
+2015-06-03 10:48:14,004: R_to_DS
+2015-06-03 10:48:14,004: Accepted ('127.0.0.1', 61342) as R_to_DS
+2015-06-03 10:48:26,446: Memory cleared
+2015-06-03 10:48:30,747: Memory size changed from 1000 to 500
+2015-06-03 10:51:46,747: Memory size changed from 500 to 50000
+2015-06-03 10:52:16,428: Memory size changed from 50000 to 5000
+2015-06-03 10:52:18,678: Memory cleared
+2015-06-03 10:52:40,825: Memory size changed from 5000 to 2000
+2015-06-03 10:54:15,217: Memory cleared
+2015-06-03 10:54:18,155: Memory cleared
+2015-06-03 10:54:21,127: Memory cleared
+2015-06-03 10:54:45,047: Closing Acceptor R_to_DS
+2015-06-03 10:54:55,777: R_to_DS
+2015-06-03 10:54:55,777: Accepted ('127.0.0.1', 61346) as R_to_DS
+2015-06-03 10:55:23,445: Memory cleared
+2015-06-03 10:57:39,167: Closing DS_to_A Connector
+2015-06-03 10:57:58,340: Connecting to DS_to_A...
+2015-06-03 10:57:58,402: Connected to ABU
+2015-06-03 11:10:12,585: Memory size changed from 2000 to 500
+2015-06-03 11:10:48,980: Closing Acceptor R_to_DS
+2015-06-03 11:11:04,001: R_to_DS
+2015-06-03 11:11:04,001: Accepted ('127.0.0.1', 61385) as R_to_DS
+2015-06-03 11:11:22,524: Memory cleared
+2015-06-03 11:11:40,684: Closing Acceptor R_to_DS
+2015-06-03 11:13:10,814: R_to_DS
+2015-06-03 11:13:10,814: Accepted ('127.0.0.1', 61391) as R_to_DS
+2015-06-03 11:14:02,591: Memory cleared
+2015-06-03 11:14:42,122: Memory size changed from 500 to 500
+2015-06-03 11:16:32,806: Closing Acceptor R_to_DS
+2015-06-03 11:19:05,722: Closing Acceptor MGui_to_DS
+2015-06-03 11:19:05,847: MGui_to_DS
+2015-06-03 11:19:05,847: Accepted ('127.0.0.1', 61410) as MGui_to_DS
+2015-06-03 12:16:26,433: Listening on port 5005
+2015-06-03 12:16:51,342: MGui_to_DS
+2015-06-03 12:16:51,342: Accepted ('127.0.0.1', 61667) as MGui_to_DS
+2015-06-03 12:16:56,594: Connecting to DS_to_A...
+2015-06-03 12:16:56,657: Connected to ABU
+2015-06-03 13:07:47,475: Closing Acceptor MGui_to_DS
+2015-06-03 13:08:04,234: Listening on port 5005
+2015-06-03 13:08:20,790: MGui_to_DS
+2015-06-03 13:08:20,802: Accepted ('127.0.0.1', 60798) as MGui_to_DS
+2015-06-03 13:08:27,125: Connection failed
+2015-06-03 13:08:35,750: Connecting to DS_to_A...
+2015-06-03 13:08:35,813: Connected to laser
+2015-06-03 13:09:54,125: Closing DS_to_A Connector
+2015-06-03 13:12:07,254: Connecting to DS_to_A...
+2015-06-03 13:12:07,333: Connected to laser
+2015-06-03 13:14:53,871: Connecting to DS_to_A...
+2015-06-03 13:14:53,933: Connected to ABU
+2015-06-03 13:15:22,579: R_to_DS
+2015-06-03 13:15:22,579: Accepted ('127.0.0.1', 60810) as R_to_DS
+2015-06-03 13:16:02,936: Memory size changed from 50000 to 10
+2015-06-03 13:16:33,730: Memory size changed from 10 to 5000
+2015-06-03 13:19:43,127: Memory size changed from 5000 to 2500
+2015-06-03 13:19:48,511: Memory size changed from 2500 to 2000
+2015-06-03 13:19:51,978: Memory size changed from 2000 to 1000
+2015-06-03 13:19:55,370: Memory size changed from 1000 to 2000
+2015-06-03 13:21:05,164: Memory size changed from 2000 to 5000
+2015-06-03 13:27:38,677: R_to_DS
+2015-06-03 13:27:38,677: Accepted ('137.138.32.86', 58506) as R_to_DS
+2015-06-03 13:29:13,539: Memory size changed from 5000 to 2000
+2015-06-03 13:29:26,747: Memory size changed from 2000 to 5000
+2015-06-03 14:18:21,401: Closing Acceptor R_to_DS
+2015-06-03 14:18:35,453: Closing Acceptor MGui_to_DS
+2015-06-03 14:36:46,649: Closing DS_to_A Connector
+2015-06-03 14:36:46,868: Closing Acceptor R_to_DS
+2015-06-03 15:55:20,906: Listening on port 5005
+2015-06-03 15:55:39,238: MGui_to_DS
+2015-06-03 15:55:39,238: Accepted ('127.0.0.1', 61480) as MGui_to_DS
+2015-06-03 15:55:44,845: Connecting to DS_to_A...
+2015-06-03 15:55:44,908: Closing DS_to_A Connector
+2015-06-03 15:55:45,923: Connection failed
+2015-06-03 15:55:57,642: Connecting to DS_to_A...
+2015-06-03 15:55:58,436: Connected to laser
+2015-06-03 15:56:18,700: R_to_DS
+2015-06-03 15:56:18,700: Accepted ('127.0.0.1', 61486) as R_to_DS
+2015-06-03 15:56:41,931: Closing Acceptor R_to_DS
+2015-06-03 15:56:55,969: R_to_DS
+2015-06-03 15:56:55,969: Accepted ('127.0.0.1', 61490) as R_to_DS
+2015-06-03 15:57:30,874: Memory cleared
+2015-06-03 15:58:19,714: Memory size changed from 50000 to 500
+2015-06-03 15:58:34,544: Memory size changed from 500 to 50
+2015-06-03 15:58:37,613: Memory size changed from 50 to 500
+2015-06-03 16:14:24,345: Memory size changed from 500 to 400
+2015-06-03 16:16:51,461: Memory size changed from 400 to 5000
+2015-06-03 16:24:47,960: Memory cleared
+2015-06-03 16:28:59,078: Closing Acceptor MGui_to_DS
+2015-06-03 16:29:02,450: Closing Acceptor R_to_DS
+2015-06-03 16:31:38,132: Listening on port 5005
+2015-06-03 16:49:20,307: R_to_DS
+2015-06-03 16:49:20,323: Accepted ('127.0.0.1', 61592) as R_to_DS
+2015-06-03 16:49:39,997: MGui_to_DS
+2015-06-03 16:49:39,997: Accepted ('127.0.0.1', 61594) as MGui_to_DS
+2015-06-03 16:49:47,887: Connecting to DS_to_A...
+2015-06-03 16:49:47,949: Connected to laser
+2015-06-03 16:52:10,385: Connecting to DS_to_A...
+2015-06-03 16:52:10,447: Closing DS_to_A Connector
+2015-06-03 16:52:11,447: Connection failed
+2015-06-03 16:52:16,915: Connecting to DS_to_A...
+2015-06-03 16:52:16,978: Closing DS_to_A Connector
+2015-06-03 16:52:17,978: Connection failed
+2015-06-03 16:52:23,781: Connecting to DS_to_A...
+2015-06-03 16:52:23,843: Connected to ABU
+2015-06-03 16:53:14,655: Closing Acceptor R_to_DS
+2015-06-03 16:53:29,555: R_to_DS
+2015-06-03 16:53:29,555: Accepted ('127.0.0.1', 61617) as R_to_DS
+2015-06-03 16:53:46,778: Closing Acceptor R_to_DS
+2015-06-03 16:54:41,081: Connecting to DS_to_A...
+2015-06-03 16:54:41,143: Connected to ABU
+2015-06-03 16:54:52,887: R_to_DS
+2015-06-03 16:54:52,902: Accepted ('127.0.0.1', 61620) as R_to_DS
+2015-06-03 17:02:35,100: Memory cleared
+2015-06-03 17:06:54,484: Memory cleared
+2015-06-03 17:07:00,079: Closing Acceptor R_to_DS
+2015-06-03 17:07:13,236: R_to_DS
+2015-06-03 17:07:13,236: Accepted ('127.0.0.1', 61671) as R_to_DS
+2015-06-03 17:07:57,948: Closing Acceptor R_to_DS
+2015-06-03 17:08:02,207: Closing Acceptor MGui_to_DS
+2015-06-03 17:08:02,316: MGui_to_DS
+2015-06-03 17:08:02,316: Accepted ('127.0.0.1', 61674) as MGui_to_DS
+2015-06-03 17:08:08,650: Connecting to DS_to_A...
+2015-06-03 17:08:08,713: Connected to ABU
+2015-06-03 17:08:16,389: Connecting to DS_to_A...
+2015-06-03 17:08:16,452: Connected to laser
+2015-06-03 17:08:45,012: R_to_DS
+2015-06-03 17:08:45,012: Accepted ('127.0.0.1', 61704) as R_to_DS
+2015-06-03 17:09:27,867: Closing Acceptor R_to_DS
+2015-06-03 17:09:37,276: R_to_DS
+2015-06-03 17:09:37,276: Accepted ('127.0.0.1', 61705) as R_to_DS
+2015-06-03 17:09:45,365: Closing Acceptor R_to_DS
+2015-06-03 17:10:17,269: Closing Acceptor MGui_to_DS
+2015-06-03 17:10:44,718: Listening on port 5005
+2015-06-03 17:11:01,422: MGui_to_DS
+2015-06-03 17:11:01,422: Accepted ('127.0.0.1', 61710) as MGui_to_DS
+2015-06-03 17:11:08,537: Connecting to DS_to_A...
+2015-06-03 17:11:08,599: Connected to laser
+2015-06-03 17:11:14,524: Connecting to DS_to_A...
+2015-06-03 17:11:14,586: Connected to ABU
+2015-06-03 17:11:54,055: R_to_DS
+2015-06-03 17:11:54,055: Accepted ('127.0.0.1', 61718) as R_to_DS
+2015-06-03 17:26:24,595: Closing DS_to_A Connector
+2015-06-03 17:28:36,756: Memory size changed from 50000 to 500
+2015-06-03 17:28:51,252: Closing Acceptor R_to_DS
+2015-06-03 17:31:52,617: Connecting to DS_to_A...
+2015-06-03 17:31:52,679: Connected to ABU
+2015-06-03 17:32:03,883: R_to_DS
+2015-06-03 17:32:03,883: Accepted ('127.0.0.1', 61806) as R_to_DS
+2015-06-03 17:32:34,561: Memory size changed from 500 to 50000
+2015-06-03 17:32:45,686: Memory cleared
+2015-06-03 18:17:42,536: Memory cleared
+2015-06-03 18:17:57,466: Memory size changed from 50000 to 5000
+2015-06-03 19:29:02,761: Closing Acceptor R_to_DS
+2015-06-03 19:29:05,887: Closing Acceptor MGui_to_DS
+2015-06-04 09:08:14,558: Closing DS_to_A Connector
