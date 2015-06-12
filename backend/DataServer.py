@@ -4,9 +4,6 @@ from collections import deque
 from datetime import datetime
 from copy import deepcopy
 import logging
-logging.basicConfig(filename='DataServer.log',
-                    format='%(asctime)s: %(message)s',
-                    level=logging.INFO)
 import os
 import pickle
 import socket
@@ -22,6 +19,9 @@ try:
 except:
     from backend.Helpers import *
     from backend.connectors import Connector, Acceptor
+logging.basicConfig(filename='DataServer.log',
+                    format='%(asctime)s: %(message)s',
+                    level=logging.INFO)
 
 GET_INTERVAL = 0.05
 SAVE_INTERVAL = 2
@@ -57,10 +57,14 @@ class DataServer(asyncore.dispatcher):
             self.toSave = {}
 
         self.remember = remember
+        self.previous_scan_lock = th.Lock()
+        self.current_scan_lock = th.Lock()
+        self.stream_lock = th.Lock()
         if remember:
             self._data_previous_scan = pd.DataFrame()
             self._data_current_scan = pd.DataFrame()
             self._data_current_stream = pd.DataFrame()
+        self._clear_memory = False
 
         self.looping = True
         t = th.Thread(target=self.start).start()
@@ -111,9 +115,8 @@ class DataServer(asyncore.dispatcher):
 
     def processRequests(self, sender, data):
         if data[0] == 'data':
-            perScan, columns = data[1]
-            print(perScan, columns)
-            return {'data': self.getData(perScan, None, columns), 'format': tuple(self._data_current_stream.columns.values)}
+            perScan, latest, columns = data[1]
+            return {'data': self.getData(perScan, latest, columns), 'format': tuple(self._data_current_stream.columns.values)}
         elif data[0] == 'Add Artist':
             self.addReader(data[1])
             return None
@@ -122,7 +125,7 @@ class DataServer(asyncore.dispatcher):
             return None
         elif data[0] == 'Clear Memory':
             logging.info('Memory cleared')
-            self._data_current_stream = pd.DataFrame()
+            self._clear_memory = True
             return None
         elif data[0] == 'Set Memory Size':
             try:
@@ -163,7 +166,8 @@ class DataServer(asyncore.dispatcher):
                         self.toSave[name] = self.toSave[name].append(data)
                     except KeyError:
                         self.toSave[name] = data
-                    self.lock.release()
+                    finally:
+                        self.lock.release()
 
         if not len(new_data) == 0:
             if self.remember:
@@ -187,22 +191,48 @@ class DataServer(asyncore.dispatcher):
 
     def extractMemory(self, new_data):
         m = new_data['scan'].max()
-        self._data_current_stream = self._data_current_stream.append(new_data)
+        self.stream_lock.acquire()
+        try:
+            self._data_current_stream = self._data_current_stream.append(new_data)
+        finally:
+            self.stream_lock.release()
         if m > -1:
             if self._data_current_scan.empty:
-                self._data_current_scan = new_data[new_data['scan'] == m]
+                self.current_scan_lock.acquire()
+                try:
+                    self._data_current_scan = new_data[new_data['scan'] == m]
+                finally:
+                    self.current_scan_lock.release()
             else:
                 if m > self._data_current_scan['scan'][-1]:
-                    self._data_previous_scan, self._data_current_scan = self._data_current_scan, new_data[new_data['scan'] == m]
+                    self.previous_scan_lock.acquire()
+                    self.current_scan_lock.acquire()
+                    try:
+                        self._data_previous_scan, self._data_current_scan = self._data_current_scan, new_data[new_data['scan'] == m]
+                    finally:
+                        self.previous_scan_lock.release()
+                        self.current_scan_lock.release()
                 else:
-                    self._data_current_scan = self._data_current_scan.append(new_data[new_data['scan'] == m])
+                    self.current_scan_lock.acquire()
+                    try:
+                        self._data_current_scan = self._data_current_scan.append(new_data[new_data['scan'] == m])
+                    finally:
+                        self.current_scan_lock.release()
 
         # save the current scan in memory
         # m = self._data['scan'].max()
         # self._data_current_scan = self._data[self._data['scan'] == m]
 
         # save last 5000 data points
-        self._data_current_stream = self._data_current_stream[-self.memory:]
+        self.stream_lock.acquire()
+        try:
+            if not self._clear_memory:
+                self._data_current_stream = self._data_current_stream[-self.memory:]
+            else:
+                self._clear_memory = False
+                self._data_current_stream = self._data_current_stream[-10:]
+        finally:
+            self.stream_lock.release()
 
     def getData(self, perScan, latest, columns):
         try:
@@ -211,17 +241,17 @@ class DataServer(asyncore.dispatcher):
                     if latest is None:
                         return self._data_current_scan[columns]
                     else:
-                        return self._data_current_scan.loc[latest:, columns]
+                        return self._data_current_scan.loc[latest:, columns][1:]
                 else:
                     if latest is None:
                         return self._data_previous_scan[columns]
                     else:
-                        return self._data_previous_scan.loc[latest:, columns]
+                        return self._data_previous_scan.loc[latest:, columns][1:]
             else:
                 if latest is None:
                     return self._data_current_stream[columns]
                 else:
-                    return self._data_current_stream.loc[latest:, columns]
+                    return self._data_current_stream.loc[latest:, columns][1:]
         except:
             return pd.DataFrame()
 

@@ -20,7 +20,7 @@ class RadioApp(QtGui.QMainWindow):
         t = th.Thread(target=self.startIOLoop).start()
 
         self.init_UI()
-        
+
     def init_UI(self):
 
         self.connectToolBar = QtGui.QToolBar('Connections')
@@ -78,11 +78,22 @@ class RadioApp(QtGui.QMainWindow):
     def plot(self):
         try:
             for g in self.centralDock.graphDocks:
+                if g.graph.xkey == 'time':
+                    selected = [g.graph.ykey]
+                elif g.graph.ykey == 'time':
+                    selected = [g.graph.xkey]
+                else:
+                    selected = [g.graph.xkey, g.graph.ykey]
                 g.graph.setXYOptions(list(self.radio.format))
-                g.graph.plot(self.radio.data)
-                self.radio.xy = [g.graph.xkey, g.graph.ykey]
+                if all([s in self.radio.data.columns for s in selected]):
+                    # print(self.radio.data[selected])
+                    g.graph.plot(self.radio.data[selected])
+                self.radio.xy = list(self.radio.format)
 
-                # self.statusBar().showMessage('Laser Wavelength: '+ str(self.radio.data['laser: wavenumber'][-1]) +  ' cm-1')
+                try:
+                    self.statusBar().showMessage('Laser Wavelength: '+ str(self.radio.data['laser: wavenumber'][-1]) +  ' cm-1')
+                except:
+                    pass
 
         except AttributeError as e:
             pass

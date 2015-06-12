@@ -8,9 +8,9 @@ from picbutton import PicButton
 
 
 class GraphDock(pg.dockarea.Dock):
-    
+
     def __init__(self, name):
-        super(GraphDock,self).__init__(name)
+        super(GraphDock, self).__init__(name)
         self.graph = MyGraph(name)
         self.layout.addWidget(self.graph)
 
@@ -21,9 +21,9 @@ class MyGraph(QtGui.QWidget):
     scanRequested = QtCore.pyqtSignal(str)
     memoryChanged = QtCore.pyqtSignal(int)
     memoryClear = QtCore.pyqtSignal()
-    
+
     def __init__(self, name):
-        super(QtGui.QWidget,self).__init__()
+        super(QtGui.QWidget, self).__init__()
 
         self.options = []
         self.name = name
@@ -54,7 +54,7 @@ class MyGraph(QtGui.QWidget):
         self.sublayout.addWidget(self.comboY, 0, 1)
 
         label = QtGui.QLabel('vs')
-        label.setStyleSheet("border: 0px;");
+        label.setStyleSheet("border: 0px;")
         self.sublayout.addWidget(label, 0, 2)
 
         self.comboX = QtGui.QComboBox(parent=None)
@@ -72,7 +72,7 @@ class MyGraph(QtGui.QWidget):
         self.freqUnitSelector = QtGui.QComboBox(parent=None)
         self.freqUnitSelector.setToolTip('Choose the units you want to\
  display the frequency in.')
-        self.freqUnitSelector.addItems(['Frequency','Wavelength','Wavenumber'])
+        self.freqUnitSelector.addItems(['Frequency', 'Wavelength', 'Wavenumber'])
         # self.freqUnitSelector.currentIndexChanged.connect(self.updatePlot)
         self.sublayout.addWidget(self.freqUnitSelector, 0, 5)
 
@@ -81,7 +81,7 @@ class MyGraph(QtGui.QWidget):
         self.meanBox.setToolTip('Choose how you want to combine data\
  from all of the scans in the captures this graph plots.')
         self.meanBox.addItems(self.meanStyles)
-        self.meanBox.setCurrentIndex(1)
+        self.meanBox.setCurrentIndex(0)
         self.meanBox.setMaximumWidth(110)
         self.meanBox.currentIndexChanged.connect(lambda: self.dataRequested.emit(str(self.meanBox.currentText())))
         self.dataRequested.emit(str(self.meanBox.currentText()))
@@ -90,7 +90,7 @@ class MyGraph(QtGui.QWidget):
         self.scanStyles = ['Current Scan', 'Previous Scan']
         self.scanBox = QtGui.QComboBox(self)
         self.scanBox.addItems(self.scanStyles)
-        self.scanBox.setCurrentIndex(1)
+        self.scanBox.setCurrentIndex(0)
         self.scanBox.setMaximumWidth(110)
         self.scanBox.currentIndexChanged.connect(lambda: self.scanRequested.emit(str(self.scanBox.currentText())))
         self.dataRequested.emit(str(self.scanBox.currentText()))
@@ -115,7 +115,7 @@ class MyGraph(QtGui.QWidget):
  used to bin the data.')
         self.binSpinBox.setMaximumWidth(110)
         # self.binSpinBox.sigValueChanged.connect(self.updatePlot)
-        
+
         self.sublayout.addWidget(self.binLabel, 2, 4)
         self.sublayout.addWidget(self.binSpinBox, 2, 5)
 
@@ -150,7 +150,7 @@ class MyGraph(QtGui.QWidget):
 
         # self.settingsWidget = GraphSettingsWidget()
         # self.settingsWidget.updatePlot.connect(self.updatePlot)
-        # self.meanBox.currentIndexChanged.connect(self.settingsWidget.onStyleChanged) 
+        # self.meanBox.currentIndexChanged.connect(self.settingsWidget.onStyleChanged)
             #line above is MEGAHACK to have updating results table in analysiswidget
         # self.settingsWidget.setVisible(False)
 
@@ -177,7 +177,7 @@ class MyGraph(QtGui.QWidget):
         bin_means = bin_means / scale
         errors = errors / scale
 
-        return edges,bin_means,errors
+        return edges, bin_means, errors
 
     def plot(self, data):
 
@@ -194,7 +194,7 @@ class MyGraph(QtGui.QWidget):
                 if histmode:
                     binsize = self.binSpinBox.value()
                     x, y, errors = self.calcHist(x, y, binsize)
-                   
+
                 self.curve.setData(x, y,
                                    pen='r',
                                    # fillLevel=0,

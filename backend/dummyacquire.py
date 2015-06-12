@@ -11,7 +11,7 @@ def acquire(settings,dQ,iQ,mQ,contFlag,stopFlag,IStoppedFlag,ns):
 
     VERY IMPORTANT: the type of the data that is put on the data queue MUST be
     consistent! E.g. do not start with sending an initial value of an integer 0,
-    and then start sending floats! 
+    and then start sending floats!
 
     Parameters:
 
@@ -62,13 +62,13 @@ def acquire(settings,dQ,iQ,mQ,contFlag,stopFlag,IStoppedFlag,ns):
             dQ.send((
                     np.array([datetime.datetime.now()]),
                     np.array([ns.scanNo]),
-                    np.array([p]), 
-                    np.random.rand(1), 
+                    np.array([p]),
+                    np.random.rand(1),
                     np.random.rand(1)
                    ))
             i += 1
 
-            while time.time() - now < 0.05:
+            while time.time() - now < 0.5:
                 time.sleep(0.001)
 
             # get instructions from the instructions queue
@@ -81,16 +81,15 @@ def acquire(settings,dQ,iQ,mQ,contFlag,stopFlag,IStoppedFlag,ns):
                 pass
 
             if got_instr:
-                if instr[0] == 'Change':
+                if instr[0] == 'Scan Change':
                     par = instr[1]
                     tPerStep = instr[3]
                     ## setting parameter in hardware somewhere
-                    p = instr[2] 
-                    time.sleep(0.5)
-                    
+                    p = instr[2]
+
                     ns.measuring = True
                     # initial guess of when scanNo will be set to the current scan value. This
-                    # is not a perfect guess because there is some time required for the 
+                    # is not a perfect guess because there is some time required for the
                     # change in ns.measuring to propagate to the manager and back.
                     # This initial guess will later be modified by the Artist to the actual time
                     # it received the 'Measuring' instruction.
@@ -98,7 +97,7 @@ def acquire(settings,dQ,iQ,mQ,contFlag,stopFlag,IStoppedFlag,ns):
 
             if ns.measuring and time.time() - ns.t0 >= tPerStep:
                 ns.measuring = False
-                   
+
 
         except Exception as e:
             mQ.put(e)

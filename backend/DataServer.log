@@ -956,3 +956,692 @@
 2015-06-03 19:29:02,761: Closing Acceptor R_to_DS
 2015-06-03 19:29:05,887: Closing Acceptor MGui_to_DS
 2015-06-04 09:08:14,558: Closing DS_to_A Connector
+2015-06-11 14:29:06,717: Listening on port 5006
+2015-06-11 14:30:04,844: MGui_to_DS
+2015-06-11 14:30:04,851: Accepted ('127.0.0.1', 54825) as MGui_to_DS
+2015-06-11 14:30:09,354: Connecting to DS_to_A...
+2015-06-11 14:30:09,406: Connected to ABU
+2015-06-11 14:31:11,303: R_to_DS
+2015-06-11 14:31:11,303: Accepted ('127.0.0.1', 54831) as R_to_DS
+2015-06-11 14:31:33,160: Memory size changed from 50000 to 1000
+2015-06-11 14:31:39,164: Memory size changed from 1000 to 100
+2015-06-11 15:03:12,795: Closing Acceptor R_to_DS
+2015-06-11 15:03:34,010: R_to_DS
+2015-06-11 15:03:34,010: Accepted ('127.0.0.1', 55813) as R_to_DS
+2015-06-11 15:03:49,540: Closing Acceptor R_to_DS
+2015-06-11 15:05:01,499: R_to_DS
+2015-06-11 15:05:01,499: Accepted ('127.0.0.1', 55828) as R_to_DS
+2015-06-11 15:05:03,101: Closing Acceptor R_to_DS
+2015-06-11 15:36:40,932: R_to_DS
+2015-06-11 15:36:40,932: Accepted ('127.0.0.1', 56141) as R_to_DS
+2015-06-11 15:37:01,445: Closing Acceptor R_to_DS
+2015-06-11 15:37:19,149: R_to_DS
+2015-06-11 15:37:19,149: Accepted ('127.0.0.1', 56143) as R_to_DS
+2015-06-11 15:37:33,108: Memory size changed from 100 to 10
+2015-06-11 15:37:36,681: Closing Acceptor R_to_DS
+2015-06-11 15:37:49,785: R_to_DS
+2015-06-11 15:37:49,785: Accepted ('127.0.0.1', 56144) as R_to_DS
+2015-06-11 15:37:56,493: Closing Acceptor R_to_DS
+2015-06-11 15:38:11,406: R_to_DS
+2015-06-11 15:38:11,406: Accepted ('127.0.0.1', 56147) as R_to_DS
+2015-06-11 15:38:12,208: Closing Acceptor R_to_DS
+2015-06-11 15:39:40,474: R_to_DS
+2015-06-11 15:39:40,474: Accepted ('127.0.0.1', 56149) as R_to_DS
+2015-06-11 15:40:05,788: Closing Acceptor R_to_DS
+2015-06-11 15:40:53,610: R_to_DS
+2015-06-11 15:40:53,610: Accepted ('127.0.0.1', 56158) as R_to_DS
+2015-06-11 15:41:04,944: Closing Acceptor R_to_DS
+2015-06-11 15:41:33,655: R_to_DS
+2015-06-11 15:41:33,656: Accepted ('127.0.0.1', 56164) as R_to_DS
+2015-06-11 15:41:50,866: Closing Acceptor R_to_DS
+2015-06-11 15:41:58,210: R_to_DS
+2015-06-11 15:41:58,210: Accepted ('127.0.0.1', 56165) as R_to_DS
+2015-06-11 15:42:19,242: Closing Acceptor R_to_DS
+2015-06-11 15:42:55,449: R_to_DS
+2015-06-11 15:42:55,449: Accepted ('127.0.0.1', 56168) as R_to_DS
+2015-06-11 15:43:33,261: Closing Acceptor R_to_DS
+2015-06-11 15:44:13,721: R_to_DS
+2015-06-11 15:44:13,721: Accepted ('127.0.0.1', 56169) as R_to_DS
+2015-06-11 15:45:26,060: Closing Acceptor R_to_DS
+2015-06-11 15:45:45,764: R_to_DS
+2015-06-11 15:45:45,765: Accepted ('127.0.0.1', 56177) as R_to_DS
+2015-06-11 15:46:06,105: Closing Acceptor R_to_DS
+2015-06-11 15:46:13,409: R_to_DS
+2015-06-11 15:46:13,409: Accepted ('127.0.0.1', 56192) as R_to_DS
+2015-06-11 15:48:15,923: Closing Acceptor R_to_DS
+2015-06-11 15:48:29,530: R_to_DS
+2015-06-11 15:48:29,530: Accepted ('127.0.0.1', 56196) as R_to_DS
+2015-06-11 15:49:02,042: Closing Acceptor R_to_DS
+2015-06-11 15:49:38,659: R_to_DS
+2015-06-11 15:49:38,659: Accepted ('127.0.0.1', 56199) as R_to_DS
+2015-06-11 15:51:07,411: Closing Acceptor R_to_DS
+2015-06-11 15:51:14,518: R_to_DS
+2015-06-11 15:51:14,518: Accepted ('127.0.0.1', 56210) as R_to_DS
+2015-06-11 15:52:00,184: Memory size changed from 10 to 100
+2015-06-11 15:52:08,349: Memory size changed from 100 to 1000
+2015-06-11 15:52:10,499: Memory cleared
+2015-06-11 15:52:12,370: Memory cleared
+2015-06-11 15:52:14,044: Memory cleared
+2015-06-11 15:52:15,512: Memory cleared
+2015-06-11 15:52:25,945: Memory size changed from 1000 to 5
+2015-06-11 15:52:30,266: Memory size changed from 5 to 10
+2015-06-11 15:52:33,995: Memory size changed from 10 to 100
+2015-06-11 15:52:36,817: Memory size changed from 100 to 10
+2015-06-11 16:18:12,436: Closing Acceptor R_to_DS
+2015-06-11 16:19:46,510: Listening on port 5006
+2015-06-11 16:20:00,761: MGui_to_DS
+2015-06-11 16:20:00,767: Accepted ('127.0.0.1', 56667) as MGui_to_DS
+2015-06-11 16:20:03,273: Connecting to DS_to_A...
+2015-06-11 16:20:03,324: Connected to ABU
+2015-06-11 16:20:19,346: R_to_DS
+2015-06-11 16:20:19,347: Accepted ('127.0.0.1', 56670) as R_to_DS
+2015-06-11 16:20:19,448: Closing Acceptor R_to_DS
+2015-06-11 16:20:55,677: R_to_DS
+2015-06-11 16:20:55,678: Accepted ('127.0.0.1', 56671) as R_to_DS
+2015-06-11 16:20:55,779: Closing Acceptor R_to_DS
+2015-06-11 16:21:26,320: R_to_DS
+2015-06-11 16:21:26,321: Accepted ('127.0.0.1', 56677) as R_to_DS
+2015-06-11 16:21:26,422: Closing Acceptor R_to_DS
+2015-06-11 16:22:32,806: R_to_DS
+2015-06-11 16:22:32,807: Accepted ('127.0.0.1', 56692) as R_to_DS
+2015-06-11 16:22:32,908: Closing Acceptor R_to_DS
+2015-06-11 16:23:14,658: R_to_DS
+2015-06-11 16:23:14,664: Accepted ('127.0.0.1', 56693) as R_to_DS
+2015-06-11 16:23:45,198: Memory size changed from 50000 to 1000
+2015-06-11 16:23:49,638: Memory cleared
+2015-06-11 16:24:12,142: Closing Acceptor R_to_DS
+2015-06-11 16:58:17,548: R_to_DS
+2015-06-11 16:58:17,548: Accepted ('127.0.0.1', 57212) as R_to_DS
+2015-06-11 16:59:36,326: Closing Acceptor R_to_DS
+2015-06-11 16:59:48,928: R_to_DS
+2015-06-11 16:59:48,929: Accepted ('127.0.0.1', 57216) as R_to_DS
+2015-06-11 16:59:57,731: Closing Acceptor R_to_DS
+2015-06-11 17:00:53,403: R_to_DS
+2015-06-11 17:00:53,404: Accepted ('127.0.0.1', 57223) as R_to_DS
+2015-06-11 17:01:18,827: Memory size changed from 1000 to 1000
+2015-06-11 17:01:26,040: Memory size changed from 1000 to 100
+2015-06-11 17:01:41,778: Memory cleared
+2015-06-11 17:01:49,037: Closing Acceptor R_to_DS
+2015-06-11 17:02:13,371: R_to_DS
+2015-06-11 17:02:13,371: Accepted ('127.0.0.1', 57237) as R_to_DS
+2015-06-11 17:02:29,308: Memory cleared
+2015-06-11 17:03:14,830: Closing Acceptor R_to_DS
+2015-06-11 17:04:59,112: Closing Acceptor MGui_to_DS
+2015-06-11 17:05:01,913: Closing DS_to_A Connector
+2015-06-11 17:05:36,179: Listening on port 5006
+2015-06-11 17:05:38,410: MGui_to_DS
+2015-06-11 17:05:38,417: Accepted ('127.0.0.1', 57262) as MGui_to_DS
+2015-06-11 17:05:41,217: Connecting to DS_to_A...
+2015-06-11 17:05:41,268: Connected to ABU
+2015-06-11 17:06:02,589: R_to_DS
+2015-06-11 17:06:02,590: Accepted ('127.0.0.1', 57265) as R_to_DS
+2015-06-11 17:06:22,124: Closing Acceptor R_to_DS
+2015-06-11 17:06:29,550: R_to_DS
+2015-06-11 17:06:29,550: Accepted ('127.0.0.1', 57267) as R_to_DS
+2015-06-11 17:06:49,176: Memory size changed from 50000 to 100
+2015-06-11 17:06:54,525: Memory size changed from 100 to 2
+2015-06-11 17:06:59,131: Memory size changed from 2 to 10
+2015-06-11 17:07:05,172: Closing Acceptor R_to_DS
+2015-06-11 17:07:12,901: R_to_DS
+2015-06-11 17:07:12,901: Accepted ('127.0.0.1', 57269) as R_to_DS
+2015-06-11 17:08:00,050: Closing Acceptor R_to_DS
+2015-06-11 17:08:11,367: R_to_DS
+2015-06-11 17:08:11,367: Accepted ('127.0.0.1', 57276) as R_to_DS
+2015-06-11 17:08:40,582: Closing Acceptor R_to_DS
+2015-06-11 17:08:49,228: R_to_DS
+2015-06-11 17:08:49,228: Accepted ('127.0.0.1', 57277) as R_to_DS
+2015-06-11 17:09:26,763: R_to_DS
+2015-06-11 17:09:26,763: Accepted ('127.0.0.1', 57278) as R_to_DS
+2015-06-11 17:09:31,875: Closing Acceptor R_to_DS
+2015-06-11 17:09:41,291: R_to_DS
+2015-06-11 17:09:41,291: Accepted ('127.0.0.1', 57279) as R_to_DS
+2015-06-11 17:10:13,757: Memory cleared
+2015-06-11 17:10:17,974: Closing Acceptor R_to_DS
+2015-06-11 17:10:19,288: Closing Acceptor R_to_DS
+2015-06-11 17:11:25,322: R_to_DS
+2015-06-11 17:11:25,322: Accepted ('127.0.0.1', 57301) as R_to_DS
+2015-06-11 17:11:27,126: Closing Acceptor R_to_DS
+2015-06-11 17:11:34,226: R_to_DS
+2015-06-11 17:11:34,226: Accepted ('127.0.0.1', 57302) as R_to_DS
+2015-06-11 17:11:36,132: Closing Acceptor R_to_DS
+2015-06-11 17:11:43,585: R_to_DS
+2015-06-11 17:11:43,585: Accepted ('127.0.0.1', 57303) as R_to_DS
+2015-06-11 17:11:54,294: Memory cleared
+2015-06-11 17:11:56,747: Closing Acceptor R_to_DS
+2015-06-11 17:12:33,264: Closing DS_to_A Connector
+2015-06-11 17:12:47,424: Listening on port 5006
+2015-06-11 17:12:56,082: MGui_to_DS
+2015-06-11 17:12:56,090: Accepted ('127.0.0.1', 57306) as MGui_to_DS
+2015-06-11 17:12:57,091: Connecting to DS_to_A...
+2015-06-11 17:12:57,142: Connected to ABU
+2015-06-11 17:13:11,299: R_to_DS
+2015-06-11 17:13:11,299: Accepted ('127.0.0.1', 57309) as R_to_DS
+2015-06-11 17:13:47,290: Memory size changed from 50000 to 500
+2015-06-11 17:13:56,220: Memory size changed from 500 to 10
+2015-06-11 17:14:08,513: Memory size changed from 10 to 100
+2015-06-11 17:14:22,965: Memory size changed from 100 to 10
+2015-06-11 17:14:30,832: Memory size changed from 10 to 5
+2015-06-11 17:14:33,271: Memory cleared
+2015-06-11 17:14:35,203: Memory cleared
+2015-06-11 17:14:36,066: Memory cleared
+2015-06-11 17:14:36,715: Memory cleared
+2015-06-11 17:14:37,367: Memory cleared
+2015-06-11 17:14:37,812: Memory cleared
+2015-06-11 17:14:37,920: Memory cleared
+2015-06-11 17:14:38,029: Memory cleared
+2015-06-11 17:14:38,140: Memory cleared
+2015-06-11 17:14:38,351: Memory cleared
+2015-06-11 17:14:38,464: Memory cleared
+2015-06-11 17:14:38,586: Memory cleared
+2015-06-11 17:14:38,696: Memory cleared
+2015-06-11 17:14:38,806: Memory cleared
+2015-06-11 17:14:39,019: Memory cleared
+2015-06-11 17:14:39,021: Closing Acceptor R_to_DS
+2015-06-12 10:18:23,716: Listening on port 5006
+2015-06-12 10:18:40,884: MGui_to_DS
+2015-06-12 10:18:40,886: Accepted ('127.0.0.1', 60518) as MGui_to_DS
+2015-06-12 10:18:43,186: Connecting to DS_to_A...
+2015-06-12 10:18:43,238: Connected to ABU
+2015-06-12 10:19:03,861: R_to_DS
+2015-06-12 10:19:03,861: Accepted ('127.0.0.1', 60523) as R_to_DS
+2015-06-12 10:19:27,167: Closing Acceptor R_to_DS
+2015-06-12 10:21:12,331: R_to_DS
+2015-06-12 10:21:12,331: Accepted ('127.0.0.1', 60551) as R_to_DS
+2015-06-12 10:21:32,573: Closing Acceptor R_to_DS
+2015-06-12 10:21:42,476: R_to_DS
+2015-06-12 10:21:42,476: Accepted ('127.0.0.1', 60553) as R_to_DS
+2015-06-12 10:21:44,483: Closing Acceptor R_to_DS
+2015-06-12 10:21:52,739: R_to_DS
+2015-06-12 10:21:52,739: Accepted ('127.0.0.1', 60554) as R_to_DS
+2015-06-12 10:22:30,962: Memory cleared
+2015-06-12 10:22:43,218: Memory cleared
+2015-06-12 10:22:49,854: Memory cleared
+2015-06-12 10:22:51,151: Memory cleared
+2015-06-12 10:22:52,262: Memory cleared
+2015-06-12 10:22:53,588: Memory cleared
+2015-06-12 10:22:54,795: Memory cleared
+2015-06-12 10:22:55,996: Memory cleared
+2015-06-12 10:22:57,219: Memory cleared
+2015-06-12 10:22:58,194: Memory cleared
+2015-06-12 10:23:06,576: Memory cleared
+2015-06-12 10:23:08,274: Memory cleared
+2015-06-12 10:23:09,717: Memory cleared
+2015-06-12 10:23:14,855: Memory cleared
+2015-06-12 10:23:18,527: Memory cleared
+2015-06-12 10:23:40,369: Memory cleared
+2015-06-12 10:23:52,322: Memory cleared
+2015-06-12 10:23:54,690: Memory cleared
+2015-06-12 10:24:23,204: Memory cleared
+2015-06-12 10:24:28,556: Closing Acceptor R_to_DS
+2015-06-12 10:25:15,737: Listening on port 5006
+2015-06-12 10:25:24,494: MGui_to_DS
+2015-06-12 10:25:24,496: Accepted ('127.0.0.1', 60584) as MGui_to_DS
+2015-06-12 10:25:25,796: Connecting to DS_to_A...
+2015-06-12 10:25:25,847: Connected to ABU
+2015-06-12 10:25:41,499: R_to_DS
+2015-06-12 10:25:41,499: Accepted ('127.0.0.1', 60592) as R_to_DS
+2015-06-12 10:25:43,602: Closing Acceptor R_to_DS
+2015-06-12 10:26:00,208: R_to_DS
+2015-06-12 10:26:00,209: Accepted ('127.0.0.1', 60596) as R_to_DS
+2015-06-12 10:26:56,843: Closing Acceptor R_to_DS
+2015-06-12 10:27:05,448: R_to_DS
+2015-06-12 10:27:05,448: Accepted ('127.0.0.1', 60597) as R_to_DS
+2015-06-12 10:27:24,826: Memory cleared
+2015-06-12 10:27:42,940: Closing Acceptor R_to_DS
+2015-06-12 10:29:09,675: R_to_DS
+2015-06-12 10:29:09,675: Accepted ('127.0.0.1', 60613) as R_to_DS
+2015-06-12 10:30:39,294: Memory cleared
+2015-06-12 10:30:59,605: Closing Acceptor R_to_DS
+2015-06-12 10:31:36,531: R_to_DS
+2015-06-12 10:31:36,531: Accepted ('127.0.0.1', 60621) as R_to_DS
+2015-06-12 10:31:38,538: Closing Acceptor R_to_DS
+2015-06-12 10:31:47,144: R_to_DS
+2015-06-12 10:31:47,145: Accepted ('127.0.0.1', 60622) as R_to_DS
+2015-06-12 10:32:04,399: Memory cleared
+2015-06-12 10:32:10,224: Closing Acceptor R_to_DS
+2015-06-12 10:33:19,861: Listening on port 5006
+2015-06-12 10:33:27,356: MGui_to_DS
+2015-06-12 10:33:27,359: Accepted ('127.0.0.1', 60626) as MGui_to_DS
+2015-06-12 10:33:28,259: Connecting to DS_to_A...
+2015-06-12 10:33:28,311: Connected to ABU
+2015-06-12 10:33:40,949: R_to_DS
+2015-06-12 10:33:40,949: Accepted ('127.0.0.1', 60629) as R_to_DS
+2015-06-12 10:33:58,387: Memory cleared
+2015-06-12 10:34:04,121: Closing Acceptor R_to_DS
+2015-06-12 10:34:57,242: Closing Acceptor MGui_to_DS
+2015-06-12 10:35:00,144: Closing DS_to_A Connector
+2015-06-12 10:35:09,251: Listening on port 5006
+2015-06-12 10:35:16,278: MGui_to_DS
+2015-06-12 10:35:16,281: Accepted ('127.0.0.1', 60660) as MGui_to_DS
+2015-06-12 10:35:17,381: Connecting to DS_to_A...
+2015-06-12 10:35:17,432: Connected to ABU
+2015-06-12 10:35:30,744: R_to_DS
+2015-06-12 10:35:30,744: Accepted ('127.0.0.1', 60664) as R_to_DS
+2015-06-12 10:35:34,247: Closing Acceptor R_to_DS
+2015-06-12 10:35:42,551: R_to_DS
+2015-06-12 10:35:42,552: Accepted ('127.0.0.1', 60665) as R_to_DS
+2015-06-12 10:36:49,490: Memory cleared
+2015-06-12 10:37:27,320: Closing Acceptor R_to_DS
+2015-06-12 10:37:30,122: Closing DS_to_A Connector
+2015-06-12 10:38:41,267: Listening on port 5006
+2015-06-12 10:38:48,812: MGui_to_DS
+2015-06-12 10:38:48,814: Accepted ('127.0.0.1', 60721) as MGui_to_DS
+2015-06-12 10:38:49,815: Connecting to DS_to_A...
+2015-06-12 10:38:49,867: Connected to ABU
+2015-06-12 10:39:02,970: R_to_DS
+2015-06-12 10:39:02,971: Accepted ('127.0.0.1', 60724) as R_to_DS
+2015-06-12 10:39:31,293: Memory size changed from 50000 to 100
+2015-06-12 10:39:45,111: Memory cleared
+2015-06-12 10:40:01,528: Memory cleared
+2015-06-12 10:40:26,093: Closing Acceptor R_to_DS
+2015-06-12 10:40:47,309: R_to_DS
+2015-06-12 10:40:47,309: Accepted ('127.0.0.1', 60734) as R_to_DS
+2015-06-12 10:40:49,115: Closing Acceptor R_to_DS
+2015-06-12 10:40:56,235: R_to_DS
+2015-06-12 10:40:56,236: Accepted ('127.0.0.1', 60735) as R_to_DS
+2015-06-12 10:40:57,945: Closing Acceptor R_to_DS
+2015-06-12 10:41:05,392: R_to_DS
+2015-06-12 10:41:05,392: Accepted ('127.0.0.1', 60737) as R_to_DS
+2015-06-12 10:41:07,097: Closing Acceptor R_to_DS
+2015-06-12 10:41:15,149: R_to_DS
+2015-06-12 10:41:15,149: Accepted ('127.0.0.1', 60744) as R_to_DS
+2015-06-12 10:41:32,148: Memory size changed from 100 to 10
+2015-06-12 10:41:44,274: Memory size changed from 10 to 1000
+2015-06-12 10:41:55,967: Memory size changed from 1000 to 10
+2015-06-12 10:44:09,214: Closing Acceptor R_to_DS
+2015-06-12 10:46:10,361: Closing Acceptor MGui_to_DS
+2015-06-12 10:46:11,065: Closing DS_to_A Connector
+2015-06-12 10:46:22,568: Listening on port 5006
+2015-06-12 10:46:29,778: MGui_to_DS
+2015-06-12 10:46:29,780: Accepted ('127.0.0.1', 60764) as MGui_to_DS
+2015-06-12 10:46:30,880: Connecting to DS_to_A...
+2015-06-12 10:46:30,931: Connected to ABU
+2015-06-12 10:46:41,935: R_to_DS
+2015-06-12 10:46:41,936: Accepted ('127.0.0.1', 60767) as R_to_DS
+2015-06-12 10:46:45,236: Closing Acceptor R_to_DS
+2015-06-12 10:46:54,050: R_to_DS
+2015-06-12 10:46:54,051: Accepted ('127.0.0.1', 60768) as R_to_DS
+2015-06-12 10:46:56,363: Closing Acceptor R_to_DS
+2015-06-12 10:47:04,371: R_to_DS
+2015-06-12 10:47:04,372: Accepted ('127.0.0.1', 60769) as R_to_DS
+2015-06-12 10:47:20,983: Memory size changed from 50000 to 100
+2015-06-12 10:47:57,465: Memory size changed from 100 to 1000
+2015-06-12 10:47:59,456: Memory cleared
+2015-06-12 10:48:07,080: Memory cleared
+2015-06-12 10:48:09,345: Memory cleared
+2015-06-12 10:48:15,957: Memory cleared
+2015-06-12 10:48:22,076: Memory cleared
+2015-06-12 10:48:25,003: Memory cleared
+2015-06-12 10:48:36,167: Memory cleared
+2015-06-12 10:51:12,637: Closing Acceptor MGui_to_DS
+2015-06-12 10:51:15,199: Closing Acceptor R_to_DS
+2015-06-12 10:51:16,224: Closing DS_to_A Connector
+2015-06-12 10:51:27,886: Listening on port 5006
+2015-06-12 10:51:37,301: MGui_to_DS
+2015-06-12 10:51:37,303: Accepted ('127.0.0.1', 60820) as MGui_to_DS
+2015-06-12 10:51:38,203: Connecting to DS_to_A...
+2015-06-12 10:51:38,255: Connected to ABU
+2015-06-12 10:51:49,909: R_to_DS
+2015-06-12 10:51:49,909: Accepted ('127.0.0.1', 60825) as R_to_DS
+2015-06-12 10:52:05,645: Memory cleared
+2015-06-12 10:52:10,750: Memory cleared
+2015-06-12 10:52:18,432: Memory size changed from 50000 to 100
+2015-06-12 10:52:27,037: Memory cleared
+2015-06-12 10:52:53,929: Memory cleared
+2015-06-12 10:52:57,426: Memory cleared
+2015-06-12 10:54:36,323: Closing Acceptor R_to_DS
+2015-06-12 10:55:50,555: R_to_DS
+2015-06-12 10:55:50,556: Accepted ('127.0.0.1', 60864) as R_to_DS
+2015-06-12 10:55:53,157: Closing Acceptor R_to_DS
+2015-06-12 10:56:02,457: R_to_DS
+2015-06-12 10:56:02,458: Accepted ('127.0.0.1', 60865) as R_to_DS
+2015-06-12 10:57:30,600: Memory cleared
+2015-06-12 10:58:28,335: Closing Acceptor R_to_DS
+2015-06-12 11:18:31,122: R_to_DS
+2015-06-12 11:18:31,123: Accepted ('127.0.0.1', 61463) as R_to_DS
+2015-06-12 11:21:22,969: Closing DS_to_A Connector
+2015-06-12 11:21:25,822: Closing Acceptor R_to_DS
+2015-06-12 11:21:46,769: Listening on port 5006
+2015-06-12 11:21:55,472: MGui_to_DS
+2015-06-12 11:21:55,474: Accepted ('127.0.0.1', 61514) as MGui_to_DS
+2015-06-12 11:21:57,177: Connecting to DS_to_A...
+2015-06-12 11:21:57,228: Connected to ABU
+2015-06-12 11:22:28,341: R_to_DS
+2015-06-12 11:22:28,342: Accepted ('127.0.0.1', 61517) as R_to_DS
+2015-06-12 11:22:41,819: Memory size changed from 50000 to 100
+2015-06-12 11:22:53,204: Memory cleared
+2015-06-12 11:23:09,907: Memory cleared
+2015-06-12 11:25:10,513: Memory cleared
+2015-06-12 11:25:13,423: Memory cleared
+2015-06-12 11:25:18,510: Memory cleared
+2015-06-12 11:25:45,274: Closing Acceptor R_to_DS
+2015-06-12 13:38:20,871: Listening on port 5006
+2015-06-12 13:38:33,830: MGui_to_DS
+2015-06-12 13:38:33,832: Accepted ('127.0.0.1', 63505) as MGui_to_DS
+2015-06-12 13:38:43,377: MGui_to_DS
+2015-06-12 13:38:43,377: Accepted ('127.0.0.1', 63507) as MGui_to_DS
+2015-06-12 13:38:44,877: Connecting to DS_to_A...
+2015-06-12 13:38:44,929: Connected to ABU
+2015-06-12 13:39:17,561: R_to_DS
+2015-06-12 13:39:17,562: Accepted ('127.0.0.1', 63515) as R_to_DS
+2015-06-12 13:45:35,643: Closing Acceptor R_to_DS
+2015-06-12 13:46:30,251: R_to_DS
+2015-06-12 13:46:30,251: Accepted ('127.0.0.1', 63557) as R_to_DS
+2015-06-12 13:46:57,609: Closing Acceptor R_to_DS
+2015-06-12 13:52:09,121: Closing DS_to_A Connector
+2015-06-12 13:52:12,723: Closing Acceptor MGui_to_DS
+2015-06-12 13:52:12,723: Closing Acceptor MGui_to_DS
+2015-06-12 13:52:23,233: Listening on port 5006
+2015-06-12 13:52:31,443: MGui_to_DS
+2015-06-12 13:52:31,445: Accepted ('127.0.0.1', 63644) as MGui_to_DS
+2015-06-12 13:52:32,747: Connecting to DS_to_A...
+2015-06-12 13:52:32,798: Connected to ABU
+2015-06-12 13:52:50,341: R_to_DS
+2015-06-12 13:52:50,341: Accepted ('127.0.0.1', 63647) as R_to_DS
+2015-06-12 13:57:08,876: Closing Acceptor R_to_DS
+2015-06-12 13:58:33,430: R_to_DS
+2015-06-12 13:58:33,430: Accepted ('127.0.0.1', 63661) as R_to_DS
+2015-06-12 13:59:19,476: Closing Acceptor R_to_DS
+2015-06-12 14:00:35,122: R_to_DS
+2015-06-12 14:00:35,122: Accepted ('127.0.0.1', 63665) as R_to_DS
+2015-06-12 14:00:37,127: Closing Acceptor R_to_DS
+2015-06-12 14:00:44,529: R_to_DS
+2015-06-12 14:00:44,530: Accepted ('127.0.0.1', 63667) as R_to_DS
+2015-06-12 14:00:46,734: Closing Acceptor R_to_DS
+2015-06-12 14:00:54,357: R_to_DS
+2015-06-12 14:00:54,358: Accepted ('127.0.0.1', 63674) as R_to_DS
+2015-06-12 14:00:56,762: Closing Acceptor R_to_DS
+2015-06-12 14:01:03,694: R_to_DS
+2015-06-12 14:01:03,694: Accepted ('127.0.0.1', 63675) as R_to_DS
+2015-06-12 14:04:25,965: Closing Acceptor R_to_DS
+2015-06-12 14:07:10,242: R_to_DS
+2015-06-12 14:07:10,242: Accepted ('127.0.0.1', 63687) as R_to_DS
+2015-06-12 14:07:12,249: Closing Acceptor R_to_DS
+2015-06-12 14:07:19,050: R_to_DS
+2015-06-12 14:07:19,050: Accepted ('127.0.0.1', 63688) as R_to_DS
+2015-06-12 14:10:44,719: Closing Acceptor R_to_DS
+2015-06-12 14:58:59,441: R_to_DS
+2015-06-12 14:58:59,441: Accepted ('127.0.0.1', 64310) as R_to_DS
+2015-06-12 14:59:22,729: Memory size changed from 50000 to 100
+2015-06-12 14:59:27,787: Memory cleared
+2015-06-12 15:01:04,943: Closing Acceptor R_to_DS
+2015-06-12 15:01:38,366: R_to_DS
+2015-06-12 15:01:38,366: Accepted ('127.0.0.1', 64325) as R_to_DS
+2015-06-12 15:01:40,069: Closing Acceptor R_to_DS
+2015-06-12 15:01:46,607: R_to_DS
+2015-06-12 15:01:46,607: Accepted ('127.0.0.1', 64333) as R_to_DS
+2015-06-12 15:03:26,937: Memory cleared
+2015-06-12 15:04:03,576: Closing Acceptor R_to_DS
+2015-06-12 15:04:13,185: R_to_DS
+2015-06-12 15:04:13,185: Accepted ('127.0.0.1', 64339) as R_to_DS
+2015-06-12 15:05:43,282: Memory cleared
+2015-06-12 15:05:47,965: Memory cleared
+2015-06-12 15:05:48,704: Memory cleared
+2015-06-12 15:05:48,807: Memory cleared
+2015-06-12 15:05:49,022: Memory cleared
+2015-06-12 15:05:49,037: Memory cleared
+2015-06-12 15:05:49,148: Memory cleared
+2015-06-12 15:05:49,360: Memory cleared
+2015-06-12 15:05:49,489: Memory cleared
+2015-06-12 15:05:49,597: Memory cleared
+2015-06-12 15:05:49,722: Memory cleared
+2015-06-12 15:05:49,846: Memory cleared
+2015-06-12 15:05:49,979: Memory cleared
+2015-06-12 15:05:50,101: Memory cleared
+2015-06-12 15:05:50,237: Memory cleared
+2015-06-12 15:05:50,362: Memory cleared
+2015-06-12 15:05:50,491: Memory cleared
+2015-06-12 15:05:50,726: Memory cleared
+2015-06-12 15:05:50,847: Memory cleared
+2015-06-12 15:05:50,870: Memory cleared
+2015-06-12 15:05:50,983: Memory cleared
+2015-06-12 15:05:51,113: Memory cleared
+2015-06-12 15:05:51,238: Memory cleared
+2015-06-12 15:05:51,359: Memory cleared
+2015-06-12 15:05:51,486: Memory cleared
+2015-06-12 15:05:51,620: Memory cleared
+2015-06-12 15:05:51,750: Memory cleared
+2015-06-12 15:06:23,057: Closing Acceptor R_to_DS
+2015-06-12 15:14:32,772: Listening on port 5006
+2015-06-12 15:14:42,616: MGui_to_DS
+2015-06-12 15:14:42,619: Accepted ('127.0.0.1', 64369) as MGui_to_DS
+2015-06-12 15:14:43,820: Connecting to DS_to_A...
+2015-06-12 15:14:43,871: Connected to ABU
+2015-06-12 15:14:51,472: R_to_DS
+2015-06-12 15:14:51,473: Accepted ('127.0.0.1', 64371) as R_to_DS
+2015-06-12 15:14:53,478: Closing Acceptor R_to_DS
+2015-06-12 15:15:02,313: R_to_DS
+2015-06-12 15:15:02,313: Accepted ('127.0.0.1', 64376) as R_to_DS
+2015-06-12 15:15:04,616: Closing Acceptor R_to_DS
+2015-06-12 15:15:11,418: R_to_DS
+2015-06-12 15:15:11,419: Accepted ('127.0.0.1', 64377) as R_to_DS
+2015-06-12 15:15:13,325: Closing Acceptor R_to_DS
+2015-06-12 15:15:19,866: R_to_DS
+2015-06-12 15:15:19,867: Accepted ('127.0.0.1', 64378) as R_to_DS
+2015-06-12 15:15:21,370: Closing Acceptor R_to_DS
+2015-06-12 15:15:28,272: R_to_DS
+2015-06-12 15:15:28,273: Accepted ('127.0.0.1', 64379) as R_to_DS
+2015-06-12 15:15:31,279: Closing Acceptor R_to_DS
+2015-06-12 15:16:44,147: R_to_DS
+2015-06-12 15:16:44,147: Accepted ('127.0.0.1', 64381) as R_to_DS
+2015-06-12 15:16:49,961: Closing Acceptor R_to_DS
+2015-06-12 15:17:16,568: R_to_DS
+2015-06-12 15:17:16,568: Accepted ('127.0.0.1', 64388) as R_to_DS
+2015-06-12 15:18:14,547: Closing Acceptor R_to_DS
+2015-06-12 15:18:53,519: R_to_DS
+2015-06-12 15:18:53,519: Accepted ('127.0.0.1', 64389) as R_to_DS
+2015-06-12 15:20:26,619: Closing Acceptor R_to_DS
+2015-06-12 15:20:44,928: R_to_DS
+2015-06-12 15:20:44,928: Accepted ('127.0.0.1', 64406) as R_to_DS
+2015-06-12 15:20:54,522: Memory size changed from 50000 to 100
+2015-06-12 15:20:59,431: Memory cleared
+2015-06-12 15:21:19,350: Memory cleared
+2015-06-12 15:23:03,833: Memory cleared
+2015-06-12 15:23:08,422: Memory cleared
+2015-06-12 15:23:08,534: Memory cleared
+2015-06-12 15:23:08,647: Memory cleared
+2015-06-12 15:23:08,760: Memory cleared
+2015-06-12 15:23:08,873: Memory cleared
+2015-06-12 15:23:09,088: Memory cleared
+2015-06-12 15:23:09,210: Memory cleared
+2015-06-12 15:23:09,324: Memory cleared
+2015-06-12 15:23:09,466: Memory cleared
+2015-06-12 15:23:09,572: Memory cleared
+2015-06-12 15:23:09,697: Memory cleared
+2015-06-12 15:23:09,823: Memory cleared
+2015-06-12 15:23:09,969: Memory cleared
+2015-06-12 15:23:10,077: Memory cleared
+2015-06-12 15:23:10,202: Memory cleared
+2015-06-12 15:23:10,346: Memory cleared
+2015-06-12 15:23:10,465: Memory cleared
+2015-06-12 15:23:10,490: Memory cleared
+2015-06-12 15:23:10,613: Memory cleared
+2015-06-12 15:23:10,739: Memory cleared
+2015-06-12 15:23:10,865: Memory cleared
+2015-06-12 15:23:10,996: Memory cleared
+2015-06-12 15:23:11,107: Memory cleared
+2015-06-12 15:23:11,252: Memory cleared
+2015-06-12 15:23:11,380: Memory cleared
+2015-06-12 15:23:11,500: Memory cleared
+2015-06-12 15:23:11,627: Memory cleared
+2015-06-12 15:23:11,758: Memory cleared
+2015-06-12 15:23:11,878: Memory cleared
+2015-06-12 15:23:11,910: Memory cleared
+2015-06-12 15:23:12,054: Memory cleared
+2015-06-12 15:23:12,185: Memory cleared
+2015-06-12 15:23:12,286: Memory cleared
+2015-06-12 15:25:28,762: Closing Acceptor R_to_DS
+2015-06-12 15:26:32,993: Closing DS_to_A Connector
+2015-06-12 15:26:36,695: Closing Acceptor MGui_to_DS
+2015-06-12 15:27:51,858: Listening on port 5006
+2015-06-12 15:28:01,508: MGui_to_DS
+2015-06-12 15:28:01,510: Accepted ('127.0.0.1', 64435) as MGui_to_DS
+2015-06-12 15:28:02,413: Connecting to DS_to_A...
+2015-06-12 15:28:02,464: Connected to ABU
+2015-06-12 15:28:16,385: R_to_DS
+2015-06-12 15:28:16,385: Accepted ('127.0.0.1', 64438) as R_to_DS
+2015-06-12 15:31:47,409: Closing Acceptor R_to_DS
+2015-06-12 15:31:55,332: R_to_DS
+2015-06-12 15:31:55,332: Accepted ('127.0.0.1', 64447) as R_to_DS
+2015-06-12 15:54:18,985: Closing Acceptor R_to_DS
+2015-06-12 15:54:26,236: R_to_DS
+2015-06-12 15:54:26,236: Accepted ('127.0.0.1', 64671) as R_to_DS
+2015-06-12 15:54:59,219: Memory cleared
+2015-06-12 15:56:07,719: Memory cleared
+2015-06-12 15:56:14,555: Closing Acceptor R_to_DS
+2015-06-12 15:56:21,205: R_to_DS
+2015-06-12 15:56:21,205: Accepted ('127.0.0.1', 64678) as R_to_DS
+2015-06-12 15:56:50,952: Closing Acceptor R_to_DS
+2015-06-12 15:57:52,178: R_to_DS
+2015-06-12 15:57:52,179: Accepted ('127.0.0.1', 64679) as R_to_DS
+2015-06-12 15:57:53,982: Closing Acceptor R_to_DS
+2015-06-12 15:58:00,600: R_to_DS
+2015-06-12 15:58:00,600: Accepted ('127.0.0.1', 64680) as R_to_DS
+2015-06-12 15:59:00,581: Closing Acceptor R_to_DS
+2015-06-12 16:24:23,833: Listening on port 5006
+2015-06-12 16:24:32,872: MGui_to_DS
+2015-06-12 16:24:32,874: Accepted ('127.0.0.1', 65094) as MGui_to_DS
+2015-06-12 16:24:33,875: Connecting to DS_to_A...
+2015-06-12 16:24:33,926: Connected to ABU
+2015-06-12 16:24:52,530: R_to_DS
+2015-06-12 16:24:52,531: Accepted ('127.0.0.1', 65096) as R_to_DS
+2015-06-12 16:26:04,504: Closing Acceptor MGui_to_DS
+2015-06-12 16:26:04,604: MGui_to_DS
+2015-06-12 16:26:04,604: Accepted ('127.0.0.1', 65104) as MGui_to_DS
+2015-06-12 16:28:35,448: Memory cleared
+2015-06-12 16:29:24,804: Memory cleared
+2015-06-12 16:31:25,914: Memory cleared
+2015-06-12 16:35:15,333: Memory cleared
+2015-06-12 16:36:04,352: Closing Acceptor R_to_DS
+2015-06-12 16:36:48,723: R_to_DS
+2015-06-12 16:36:48,723: Accepted ('127.0.0.1', 65122) as R_to_DS
+2015-06-12 16:36:51,024: Closing Acceptor R_to_DS
+2015-06-12 16:36:58,328: R_to_DS
+2015-06-12 16:36:58,328: Accepted ('127.0.0.1', 65123) as R_to_DS
+2015-06-12 16:37:18,490: Closing Acceptor R_to_DS
+2015-06-12 16:37:52,617: R_to_DS
+2015-06-12 16:37:52,617: Accepted ('127.0.0.1', 65125) as R_to_DS
+2015-06-12 16:39:48,316: Memory cleared
+2015-06-12 16:39:54,076: Memory cleared
+2015-06-12 16:40:19,593: Closing Acceptor R_to_DS
+2015-06-12 16:40:51,647: R_to_DS
+2015-06-12 16:40:51,647: Accepted ('127.0.0.1', 65141) as R_to_DS
+2015-06-12 16:40:53,950: Closing Acceptor R_to_DS
+2015-06-12 16:41:00,597: R_to_DS
+2015-06-12 16:41:00,599: Accepted ('127.0.0.1', 65142) as R_to_DS
+2015-06-12 16:41:02,903: Closing Acceptor R_to_DS
+2015-06-12 16:41:09,738: R_to_DS
+2015-06-12 16:41:09,739: Accepted ('127.0.0.1', 65143) as R_to_DS
+2015-06-12 16:41:11,643: Closing Acceptor R_to_DS
+2015-06-12 16:41:22,650: R_to_DS
+2015-06-12 16:41:22,650: Accepted ('127.0.0.1', 65148) as R_to_DS
+2015-06-12 16:41:30,766: Closing Acceptor R_to_DS
+2015-06-12 16:41:47,981: R_to_DS
+2015-06-12 16:41:47,981: Accepted ('127.0.0.1', 65149) as R_to_DS
+2015-06-12 16:42:03,798: Closing Acceptor R_to_DS
+2015-06-12 16:42:14,811: R_to_DS
+2015-06-12 16:42:14,812: Accepted ('127.0.0.1', 65156) as R_to_DS
+2015-06-12 16:43:43,454: Closing Acceptor R_to_DS
+2015-06-12 16:43:54,861: R_to_DS
+2015-06-12 16:43:54,862: Accepted ('127.0.0.1', 65158) as R_to_DS
+2015-06-12 16:43:56,563: Closing Acceptor R_to_DS
+2015-06-12 16:44:02,964: R_to_DS
+2015-06-12 16:44:02,964: Accepted ('127.0.0.1', 65160) as R_to_DS
+2015-06-12 16:44:04,767: Closing Acceptor R_to_DS
+2015-06-12 16:44:13,195: R_to_DS
+2015-06-12 16:44:13,195: Accepted ('127.0.0.1', 65161) as R_to_DS
+2015-06-12 16:44:15,897: Closing Acceptor R_to_DS
+2015-06-12 16:44:25,500: R_to_DS
+2015-06-12 16:44:25,500: Accepted ('127.0.0.1', 65162) as R_to_DS
+2015-06-12 16:44:27,404: Closing Acceptor R_to_DS
+2015-06-12 16:44:33,550: R_to_DS
+2015-06-12 16:44:33,550: Accepted ('127.0.0.1', 65163) as R_to_DS
+2015-06-12 16:49:43,198: Memory cleared
+2015-06-12 16:55:29,469: Memory cleared
+2015-06-12 16:56:46,657: Closing Acceptor R_to_DS
+2015-06-12 16:56:59,368: R_to_DS
+2015-06-12 16:56:59,369: Accepted ('127.0.0.1', 65275) as R_to_DS
+2015-06-12 16:57:19,387: Memory cleared
+2015-06-12 16:57:36,474: Memory cleared
+2015-06-12 16:59:00,293: Memory cleared
+2015-06-12 17:00:57,601: Closing Acceptor R_to_DS
+2015-06-12 17:01:09,145: Listening on port 5006
+2015-06-12 17:01:12,937: MGui_to_DS
+2015-06-12 17:01:12,939: Accepted ('127.0.0.1', 65292) as MGui_to_DS
+2015-06-12 17:01:14,139: Connecting to DS_to_A...
+2015-06-12 17:01:14,190: Connected to ABU
+2015-06-12 17:01:30,493: R_to_DS
+2015-06-12 17:01:30,494: Accepted ('127.0.0.1', 65299) as R_to_DS
+2015-06-12 17:02:24,527: Memory cleared
+2015-06-12 17:02:38,542: Memory cleared
+2015-06-12 17:03:44,230: Closing Acceptor R_to_DS
+2015-06-12 17:05:03,698: R_to_DS
+2015-06-12 17:05:03,698: Accepted ('127.0.0.1', 65311) as R_to_DS
+2015-06-12 17:05:16,836: Memory cleared
+2015-06-12 17:05:49,949: Memory cleared
+2015-06-12 17:06:28,923: Closing Acceptor R_to_DS
+2015-06-12 17:06:40,449: R_to_DS
+2015-06-12 17:06:40,449: Accepted ('127.0.0.1', 65313) as R_to_DS
+2015-06-12 17:06:42,756: Closing Acceptor R_to_DS
+2015-06-12 17:06:48,808: R_to_DS
+2015-06-12 17:06:48,808: Accepted ('127.0.0.1', 65314) as R_to_DS
+2015-06-12 17:07:37,576: Memory cleared
+2015-06-12 17:07:50,466: Memory cleared
+2015-06-12 17:08:18,516: Closing Acceptor R_to_DS
+2015-06-12 17:09:17,774: R_to_DS
+2015-06-12 17:09:17,774: Accepted ('127.0.0.1', 65318) as R_to_DS
+2015-06-12 17:09:35,234: Memory cleared
+2015-06-12 17:09:50,938: Memory cleared
+2015-06-12 17:11:13,419: Memory cleared
+2015-06-12 17:12:07,348: Closing Acceptor R_to_DS
+2015-06-12 17:12:13,952: R_to_DS
+2015-06-12 17:12:13,952: Accepted ('127.0.0.1', 65336) as R_to_DS
+2015-06-12 17:12:15,554: Closing Acceptor R_to_DS
+2015-06-12 17:12:22,357: R_to_DS
+2015-06-12 17:12:22,358: Accepted ('127.0.0.1', 65337) as R_to_DS
+2015-06-12 17:15:45,879: Closing Acceptor R_to_DS
+2015-06-12 17:16:49,327: R_to_DS
+2015-06-12 17:16:49,328: Accepted ('127.0.0.1', 65354) as R_to_DS
+2015-06-12 17:16:53,998: Memory size changed from 50000 to 500
+2015-06-12 17:17:07,421: Memory cleared
+2015-06-12 17:17:54,183: Memory cleared
+2015-06-12 17:18:08,586: Memory size changed from 500 to 100
+2015-06-12 17:18:10,704: Memory cleared
+2015-06-12 17:18:16,072: Memory size changed from 100 to 10
+2015-06-12 17:18:17,062: Memory cleared
+2015-06-12 17:18:37,880: Memory size changed from 10 to 1000
+2015-06-12 17:18:41,104: Memory cleared
+2015-06-12 17:19:17,575: Memory cleared
+2015-06-12 17:19:29,236: Closing Acceptor R_to_DS
+2015-06-12 17:19:58,485: R_to_DS
+2015-06-12 17:19:58,485: Accepted ('127.0.0.1', 65371) as R_to_DS
+2015-06-12 17:20:26,856: Memory cleared
+2015-06-12 17:20:43,967: Closing Acceptor R_to_DS
+2015-06-12 17:20:53,271: R_to_DS
+2015-06-12 17:20:53,271: Accepted ('127.0.0.1', 65373) as R_to_DS
+2015-06-12 17:21:13,349: Closing Acceptor R_to_DS
+2015-06-12 17:22:17,981: R_to_DS
+2015-06-12 17:22:17,981: Accepted ('127.0.0.1', 65382) as R_to_DS
+2015-06-12 17:22:20,084: Closing Acceptor R_to_DS
+2015-06-12 17:22:26,602: R_to_DS
+2015-06-12 17:22:26,602: Accepted ('127.0.0.1', 65383) as R_to_DS
+2015-06-12 17:22:46,049: Closing Acceptor R_to_DS
+2015-06-12 17:23:49,782: Listening on port 5006
+2015-06-12 17:23:52,496: MGui_to_DS
+2015-06-12 17:23:52,498: Accepted ('127.0.0.1', 65393) as MGui_to_DS
+2015-06-12 17:23:53,998: Connecting to DS_to_A...
+2015-06-12 17:23:54,050: Connected to ABU
+2015-06-12 17:24:09,474: R_to_DS
+2015-06-12 17:24:09,474: Accepted ('127.0.0.1', 65396) as R_to_DS
+2015-06-12 17:25:04,643: Closing Acceptor MGui_to_DS
+2015-06-12 17:25:04,746: MGui_to_DS
+2015-06-12 17:25:04,746: Accepted ('127.0.0.1', 65411) as MGui_to_DS
+2015-06-12 17:25:26,910: Closing Acceptor MGui_to_DS
+2015-06-12 17:25:27,020: MGui_to_DS
+2015-06-12 17:25:27,020: Accepted ('127.0.0.1', 65414) as MGui_to_DS
+2015-06-12 17:25:31,388: MGui_to_DS
+2015-06-12 17:25:31,388: Accepted ('127.0.0.1', 65416) as MGui_to_DS
+2015-06-12 17:26:40,723: Memory cleared
+2015-06-12 17:27:18,199: Closing Acceptor R_to_DS
+2015-06-12 17:27:19,399: Closing Acceptor MGui_to_DS
+2015-06-12 17:27:19,399: Closing Acceptor MGui_to_DS
