@@ -3,6 +3,8 @@ import threading as th
 import time
 import pickle
 import asyncore
+import os
+import ScanViewer
 
 from backend.connectors import Connector
 from connectiondialogs import ConnectionDialog, FieldAdditionDialog
@@ -153,10 +155,11 @@ class LogbookApp(QtGui.QMainWindow):
                     self.newEntryContainer()
 
     def getData(self, value):
-        try:
-            self.fileserv.send_request(['SEND_FILE', 'Server_scan_{}.h5'.format(value)])
-        except AttributeError:
-            pass
+        filename = 'Artist_ABU_scan_{}.h5'.format(value)
+        if not os.path.isfile('copy_of_' + filename):
+            self.fileServ.send_request(['SEND_FILE', filename])
+        ScanViewer.ScanDisplayApp('copy_of_' + filename, self)
+
 
     def filterLogbookOnString(self):
         filterString = str(self.searchStringEdit.text())

@@ -56,6 +56,7 @@ class FileHandler(asynchat.async_chat):
         request = self.decode_request()
         files = next(os.walk(os.getcwd()))[2]
         files = [f for f in files if '.h5' in f or '.csv' in f]
+        print(request)
         req = request[0]
         if req == "GET_FILE_LIST":
             files_with_size = [
@@ -114,6 +115,7 @@ def run():
 
 
 def main():
+    os.chdir('C:/Data/')
     port_file = input('File server port?')
     f = FileServer()
     t = th.Thread(target=start).start()

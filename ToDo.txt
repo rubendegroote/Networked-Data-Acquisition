@@ -10,7 +10,6 @@ High priority:
         - Add a checkbox to the logbook entry if you want it plotted
         - Add options to plot them separately or to combine the statistics into one plot (+ save as csv/h5 feature? This is lower priority.)
 2. GUI launcher for ARTIST/Data Server/Manager/Logbook/Radio configuration - in case we are not there ;)
-3. Radio: Radio should transmit how much data it has, so the data server doesn't need to send it all each time.
 4. Manager: set hard limits on parameters for setting to say in the safe zone (eg. no ridiculously high voltage because of an accidental switch from laser wavelength, no ridiculously small wavelength because of an accidental switch from voltage)
 5. Logbook viewer: Retrieve the data for a requested scan from the dataserver, save it locally and display it. If it is already saved locally, don't retrieve it.
 

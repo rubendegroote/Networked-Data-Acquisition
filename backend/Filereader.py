@@ -62,6 +62,7 @@ class FileReader(asynchat.async_chat):
                     self.signal.emit(r)
 
     def send_request(self, request):
+        print(request)
         self.push(pickle.dumps(request))
         self.push('END_REQUEST'.encode('UTF-8'))
         self.ready = False
