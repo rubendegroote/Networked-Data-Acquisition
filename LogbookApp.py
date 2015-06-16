@@ -155,7 +155,7 @@ class LogbookApp(QtGui.QMainWindow):
                     self.newEntryContainer()
 
     def getData(self, value):
-        filename = 'Artist_ABU_scan_{}.h5'.format(value)
+        filename = 'Server_scan_{}.h5'.format(value)
         if not os.path.isfile('copy_of_' + filename):
             self.fileServ.send_request(['SEND_FILE', filename])
         ScanViewer.ScanDisplayApp('copy_of_' + filename, self)
