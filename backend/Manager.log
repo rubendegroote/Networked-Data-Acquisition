@@ -886,3 +886,55 @@
 2015-06-16 16:38:24,381: LGui_to_M
 2015-06-16 16:38:24,381: Accepted ('127.0.0.1', 61533) as LGui_to_M
 2015-06-16 16:44:54,412: Closing Acceptor LGui_to_M
+2015-06-16 17:08:04,629: LGui_to_M
+2015-06-16 17:08:04,629: Accepted ('127.0.0.1', 61727) as LGui_to_M
+2015-06-16 17:09:20,455: Closing Acceptor LGui_to_M
+2015-06-16 17:09:25,969: LGui_to_M
+2015-06-16 17:09:25,969: Accepted ('127.0.0.1', 61729) as LGui_to_M
+2015-06-16 17:09:43,732: Closing Acceptor LGui_to_M
+2015-06-16 17:10:14,702: LGui_to_M
+2015-06-16 17:10:14,702: Accepted ('127.0.0.1', 61735) as LGui_to_M
+2015-06-16 17:10:34,590: Closing Acceptor LGui_to_M
+2015-06-16 17:10:49,629: LGui_to_M
+2015-06-16 17:10:49,629: Accepted ('127.0.0.1', 61737) as LGui_to_M
+2015-06-16 17:12:09,267: Closing Acceptor LGui_to_M
+2015-06-17 11:53:53,132: Listening on port 5007
+2015-06-17 11:54:09,636: LGui_to_M
+2015-06-17 11:54:09,641: Accepted ('127.0.0.1', 65113) as LGui_to_M
+2015-06-17 11:55:16,755: Closing Acceptor LGui_to_M
+2015-06-17 11:56:01,038: LGui_to_M
+2015-06-17 11:56:01,038: Accepted ('127.0.0.1', 65122) as LGui_to_M
+2015-06-17 14:25:59,276: Closing Acceptor LGui_to_M
+2015-06-17 14:26:07,901: LGui_to_M
+2015-06-17 14:26:07,901: Accepted ('127.0.0.1', 49646) as LGui_to_M
+2015-06-17 14:27:23,435: Closing Acceptor LGui_to_M
+2015-06-17 14:27:28,501: LGui_to_M
+2015-06-17 14:27:28,501: Accepted ('127.0.0.1', 49652) as LGui_to_M
+2015-06-17 14:28:39,610: Closing Acceptor LGui_to_M
+2015-06-17 14:28:44,293: LGui_to_M
+2015-06-17 14:28:44,293: Accepted ('127.0.0.1', 49663) as LGui_to_M
+2015-06-17 14:28:52,853: Closing Acceptor LGui_to_M
+2015-06-17 14:30:01,409: LGui_to_M
+2015-06-17 14:30:01,409: Accepted ('127.0.0.1', 49670) as LGui_to_M
+2015-06-17 14:40:21,125: Closing Acceptor LGui_to_M
+2015-06-17 14:40:38,074: LGui_to_M
+2015-06-17 14:40:38,074: Accepted ('127.0.0.1', 49716) as LGui_to_M
+2015-06-17 16:58:52,101: Closing Acceptor LGui_to_M
+2015-06-17 16:59:00,494: LGui_to_M
+2015-06-17 16:59:00,494: Accepted ('127.0.0.1', 51256) as LGui_to_M
+2015-06-17 17:00:09,051: Closing Acceptor LGui_to_M
+2015-06-17 17:00:19,343: LGui_to_M
+2015-06-17 17:00:19,343: Accepted ('127.0.0.1', 51263) as LGui_to_M
+2015-06-17 17:04:42,265: Closing Acceptor LGui_to_M
+2015-06-17 17:04:49,022: LGui_to_M
+2015-06-17 17:04:49,022: Accepted ('127.0.0.1', 51266) as LGui_to_M
+2015-06-17 17:22:35,794: Closing Acceptor LGui_to_M
+2015-06-17 17:22:42,822: LGui_to_M
+2015-06-17 17:22:42,822: Accepted ('127.0.0.1', 51505) as LGui_to_M
+2015-06-17 17:31:20,395: Closing Acceptor LGui_to_M
+2015-06-17 17:31:26,843: LGui_to_M
+2015-06-17 17:31:26,843: Accepted ('127.0.0.1', 51535) as LGui_to_M
+2015-06-17 17:32:00,553: Closing Acceptor LGui_to_M
+2015-06-17 17:32:25,464: LGui_to_M
+2015-06-17 17:32:25,464: Accepted ('127.0.0.1', 51538) as LGui_to_M
+2015-06-17 17:41:25,454: Closing Acceptor LGui_to_M

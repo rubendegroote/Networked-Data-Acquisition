@@ -4,7 +4,7 @@ import time
 import pickle
 import asyncore
 import os
-import ScanViewer
+# import ScanViewer
 
 from backend.connectors import Connector
 from connectiondialogs import ConnectionDialog, FieldAdditionDialog
@@ -156,9 +156,12 @@ class LogbookApp(QtGui.QMainWindow):
 
     def getData(self, value):
         filename = 'Server_scan_{}.h5'.format(value)
+        # filename = 'Artist_ABU_scan_{}.h5'.format(value)
         if not os.path.isfile('copy_of_' + filename):
             self.fileServ.send_request(['SEND_FILE', filename])
-        ScanViewer.ScanDisplayApp('copy_of_' + filename, self)
+        else:
+            import ScanViewer
+            ScanViewer.ScanDisplayApp('copy_of_' + filename, self)
 
 
     def filterLogbookOnString(self):

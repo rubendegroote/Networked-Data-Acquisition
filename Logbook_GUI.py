@@ -5,6 +5,9 @@ from multiprocessing import freeze_support
 import sys
 from backend.logbook import *
 
+pg.setConfigOption('background', 'w')
+pg.setConfigOption('foreground', 'k')
+
 if __name__ == "__main__":
     # add freeze support
     freeze_support()

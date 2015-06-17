@@ -5,8 +5,8 @@ import time
 import numpy as np
 import pandas as pd
 import pyqtgraph as pg
+import pyqtgraph.dockarea as dock
 
-from central import CentralDock
 from picbutton import PicButton
 
 
@@ -15,8 +15,14 @@ class ScanDisplayApp(QtGui.QMainWindow):
     def __init__(self, data, parent):
         super(ScanDisplayApp, self).__init__(parent)
         self.looping = True
-
-        self.data = pd.read_hdf(data, key='ABU')
+        self.name = data[:-4]
+        self.data = pd.DataFrame()
+        store = pd.HDFStore(data, mode='r')
+        keys = store.keys()
+        store.close()
+        for key in keys:
+            d = pd.read_hdf(data, key=key)
+            self.data = self.data.append(d)
 
         self.init_UI()
         self.show()
@@ -24,19 +30,21 @@ class ScanDisplayApp(QtGui.QMainWindow):
     def init_UI(self):
 
         self.options = self.data.columns.tolist() + ['time']
-        print(self.options)
-        print(self.data.head())
 
-        self.central = QtGui.QWidget()
-        # self.layout = QtGui.QGridLayout(self.central)
-        self.layout = pg.LayoutWidget(self.central)
+        # self.central = QtGui.QWidget()
+        self.central = dock.DockArea()
         self.setCentralWidget(self.central)
+        self.dock = dock.Dock(self.name, size=(1, 1))
+        self.central.addDock(self.dock, 'left')
+        # self.layout = QtGui.QGridLayout(self.central)
+        # self.layout = pg.LayoutWidget(self.central)
+        self.layout = pg.LayoutWidget()
 
         self.labelStyle = {'font-size': '18pt'}
 
         self.graph = pg.PlotWidget()
         self.graph.showGrid(x=True, y=True, alpha=0.2)
-        self.layout.addWidget(self.graph)
+        self.layout.addWidget(self.graph, colspan=4)
         self.layout.nextRow()
 
         self.curve = pg.PlotCurveItem()
@@ -55,15 +63,15 @@ class ScanDisplayApp(QtGui.QMainWindow):
         self.comboX.setToolTip('Choose the variable you want to put\
  on the X-axis.')
         self.comboX.addItems(self.options)
-        self.layout.addWidget(self.comboX)
+        self.layout.addWidget(self.comboX, colspan=2)
         self.layout.nextRow()
 
- #        self.freqUnitSelector = QtGui.QComboBox(parent=None)
- #        self.freqUnitSelector.setToolTip('Choose the units you want to\
- # display the frequency in.')
- #        self.freqUnitSelector.addItems(['Frequency', 'Wavelength', 'Wavenumber'])
- #        self.freqUnitSelector.currentIndexChanged.connect(self.updatePlot)
- #        self.sublayout.addWidget(self.freqUnitSelector, 0, 5)
+        self.freqUnitSelector = QtGui.QComboBox(parent=None)
+        self.freqUnitSelector.setToolTip('Choose the units you want to\
+ display the frequency in.')
+        self.freqUnitSelector.addItems(['Frequency', 'Wavelength', 'Wavenumber'])
+        self.freqUnitSelector.currentIndexChanged.connect(self.newXY)
+        self.layout.addWidget(self.freqUnitSelector)
 
         self.graphStyles = ['Step (histogram)', 'Line']#, 'Point']
 
@@ -102,10 +110,12 @@ class ScanDisplayApp(QtGui.QMainWindow):
         self.comboY.currentIndexChanged.connect(self.newXY)
         self.comboX.currentIndexChanged.connect(self.newXY)
         for i, opt in enumerate(self.options):
-            if 'wavenumber' in opt:
+            if 'wavenumber' in opt.lower() and not 'hene' in opt.lower():
                 self.comboX.setCurrentIndex(i)
-            elif 'count' in opt:
+            elif 'count' in opt.lower():
                 self.comboY.setCurrentIndex(i)
+
+        self.dock.addWidget(self.layout)
 
     def calcHist(self, x, y, binsize):
 
@@ -149,6 +159,16 @@ class ScanDisplayApp(QtGui.QMainWindow):
                     data[columns[0]].fillna(method='bfill', inplace=True)
                     data.dropna(inplace=True)
                     x = data[columns[0]].values
+                    if 'wavenumber' in self.xkey:
+                        selected = str(self.freqUnitSelector.currentText())
+                        if selected.lower() == 'frequency':
+                            c = 299792458.0
+                            x = x * 100.0 * c * 10 ** -6
+                        elif selected.lower() == 'wavelength':
+                            x = ((x * 100.0) ** -1) * (10 ** 9)
+                        else:
+                            pass
+
                     y = data[columns[1]].values
                     if histmode:
                         binsize = self.binSpinBox.value()
