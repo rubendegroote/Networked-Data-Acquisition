@@ -15,7 +15,7 @@ class ScanDisplayApp(QtGui.QMainWindow):
     def __init__(self, data, parent):
         super(ScanDisplayApp, self).__init__(parent)
         self.looping = True
-        self.name = data[:-4]
+        self.name = data[:-3]
         self.data = pd.DataFrame()
         store = pd.HDFStore(data, mode='r')
         keys = store.keys()

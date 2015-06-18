@@ -46,3 +46,6 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+*.log
+backend/Manager.log
+*.pyc
