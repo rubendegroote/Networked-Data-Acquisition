@@ -23,15 +23,16 @@ class ScannerWidget(QtGui.QWidget):
 
         self.parCombo = QtGui.QComboBox()
         self.pars = {}
-        self.layout.addWidget(self.parCombo, 2, 0, 1, 1)
+        # self.layout.addWidget(self.parCombo, 2, 0, 1, 1)
 
-        self.startEdit = QtGui.QLineEdit("0")
+        self.startEdit = QtGui.QLineEdit("15407.3")
         self.layout.addWidget(self.startEdit, 2, 1, 1, 1)
         self.stepsBox = PicSpinBox(iconName='step.png',
                                    step=1,
+                                   value=10,
                                    integer=True)
         self.layout.addWidget(self.stepsBox, 2, 2, 1, 1)
-        self.stopEdit = QtGui.QLineEdit("1")
+        self.stopEdit = QtGui.QLineEdit("15407.35")
         self.layout.addWidget(self.stopEdit, 2, 3, 1, 1)
 
         self.controlButton = PicButton('start',
@@ -54,7 +55,7 @@ class ScannerWidget(QtGui.QWidget):
 
         self.timeEdit = PicSpinBox(value=10,
                                    step=1,
-                                   integer=True,
+                                   integer=False,
                                    iconName='time')
         self.timeEdit.setToolTip('Use this to specify the waiting\
  information per step for the chosen criterium (see combobox above).')
@@ -62,23 +63,31 @@ class ScannerWidget(QtGui.QWidget):
         self.layout.addWidget(self.timeEdit, 2, 4, 1, 1)
 
         self.setpointlabel = QtGui.QLabel('Setpoint controls')
-        self.layout.addWidget(self.setpointlabel, 4, 0, 1, 1)
+        self.layout.addWidget(self.setpointlabel, 5, 0, 1, 1)
 
         self.setpointCombo = QtGui.QComboBox()
-        self.layout.addWidget(self.setpointCombo, 5, 0, 1, 1)
-        self.setpointEdit = QtGui.QLineEdit('0')
-        self.layout.addWidget(self.setpointEdit, 5, 1, 1, 4)
+        # self.layout.addWidget(self.setpointCombo, 6, 0, 1, 1)
+        self.setpointEdit = QtGui.QLineEdit('15407.31')
+        self.layout.addWidget(self.setpointEdit, 6, 1, 1, 4)
 
         self.setpointButton = PicButton('manual',
                                         checkable=False,
                                         size=100)
-        self.layout.addWidget(self.setpointButton, 5, 5, 1, 1)
+        self.layout.addWidget(self.setpointButton, 6, 5, 1, 1)
         self.setpointButton.clicked.connect(self.makeSetpoint)
 
         self.repeatLabel = QtGui.QLabel('Repeats')
         self.layout.addWidget(self.repeatLabel, 3, 1, 1, 1)
         self.repeatBox = QtGui.QLineEdit("1")
         self.layout.addWidget(self.repeatBox, 3, 2, 1, 3)
+
+        self.scanLabel = QtGui.QLabel('Scan number')
+        self.layout.addWidget(self.scanLabel, 4, 1, 1, 1)
+        self.scanNumberLabel = QtGui.QLabel(str(-1))
+        self.layout.addWidget(self.scanNumberLabel, 4, 2, 1, 1)
+
+    def updateScanNumber(self, scanNo):
+        self.scanNumberLabel.setText(str(scanNo))
 
     def control(self):
         if self.state == "START":
@@ -87,11 +96,6 @@ class ScannerWidget(QtGui.QWidget):
             self.stopScan()
 
     def changeControl(self):
-        # if self.state == "NEW":
-        #     self.state = "START"
-        #     self.controlButton.setIcon('start.png')
-        #     self.controlButton.setToolTip('Click here to initialize start the capture.')
-
         if self.state == "START":
             self.state = "STOP"
             self.controlButton.setIcon('stop.png')
@@ -106,7 +110,7 @@ class ScannerWidget(QtGui.QWidget):
             self.setpointButton.setCheckable(True)
 
     def makeScan(self):
-        par = self.parCombo.currentText()
+        par = 'laser: wavenumber'
 
         start = float(self.startEdit.text())
         stop = float(self.stopEdit.text())
@@ -131,7 +135,7 @@ class ScannerWidget(QtGui.QWidget):
         self.scanInfoSig.emit((par,rng,dt))
 
     def makeSetpoint(self):
-        par = self.setpointCombo.currentText()
+        par = 'laser: wavenumber'
         value = float(self.setpointEdit.text())
 
         self.setPointSig.emit((par, value))
@@ -140,7 +144,8 @@ class ScannerWidget(QtGui.QWidget):
         self.stopScanSig.emit(True)
 
     def update(self, info):
-        format, progress, artists = info
+        scanNo, format, progress, artists = info
+        self.updateScanNumber(scanNo)
         self.updateProgress(progress)
         try:
             form = {}

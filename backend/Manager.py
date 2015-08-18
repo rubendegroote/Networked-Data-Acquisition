@@ -1,6 +1,7 @@
 import asyncore
 import asynchat
 import socket
+import sys
 import multiprocessing as mp
 import ast
 from collections import OrderedDict
@@ -56,9 +57,9 @@ class Manager(asyncore.dispatcher):
         except:
             self.logbook = []
         logbooks.saveLogbook(self.logbookPath, self.logbook)
-        self.startMessage = 'Started scanning Artist {} from {:.2f} to {:.2f} V, in {:.0f} steps with {:.2f} seconds per step.'
-        self.setpointMessage = 'Set Artist {} to {:.2f} V.'
-        self.resumeMessage = 'Resumed scanning Artist {} from {:.2f} to {:.2f} V, in {:.0f} steps with {:.2f} seconds per step at step {:.0f}.'
+        self.startMessage = 'Started scanning Artist {} from {:.8f} to {:.8f} cm-1, in {:.0f} steps with {:.8f} seconds per step.'
+        self.setpointMessage = 'Set Artist {} to {:.8f} cm-1.'
+        self.resumeMessage = 'Resumed scanning Artist {} from {:.8f} to {:.8f} cm-1, in {:.0f} steps with {:.8f} seconds per step at step {:.0f}.'
         if os.path.isfile('ManagerScan.ini'):
             self.scanParser.read('ManagerScan.ini')
             self.scanNo = int(self.scanParser['scanprogress']['scanno'])
@@ -138,11 +139,26 @@ class Manager(asyncore.dispatcher):
                 sl = self.progressParser['progress']['scanlength']
                 self.resumeName = self.progressParser['progress']['name']
                 self.scanRange = np.linspace(smin, smax, sl)
+                try:
+                    os.remove('scanprogress.ini')
+                except FileNotFoundError:
+                    pass
                 return ['resumemessage', (smin, smax, sl, self.curPos, self.tPerStep, self.resumeName)]
             else:
                 return None
         elif data[0] == 'Remove Artist':
             self.removeInstructor(data[1])
+            return None
+        elif data[0] == 'Remove All Artists':
+            toRemove = []
+            for name, prop in self._instructorInfo.items():
+                self._instructors[name].close()
+                toRemove.append(name)
+            for name in toRemove:
+                del self._instructors[name]
+                del self._instructorInfo[name]
+            for c in self.acceptors:
+                c.commQ.put(self._instructorInfo)
             return None
         elif data[0] == 'Scan':
             self.scan(data[1])
@@ -160,7 +176,7 @@ class Manager(asyncore.dispatcher):
             try:
                 return sender.commQ.get_nowait()
             except:
-                return ['infomessage', (self._instructorInfo, [self.scanning, self.progress, self.format])]
+                return ['infomessage', (self._instructorInfo, [self.scanNo, self.scanning, self.progress, self.format])]
         else:
             return None
 
@@ -180,7 +196,11 @@ class Manager(asyncore.dispatcher):
             logbooks.saveEntry(self.logbookPath, self.logbook, data[1])
             self.notifyAllLogs(['Notify', self.logbook[data[1]], data[1]])
         elif data[0] == 'Add To Logbook':
-            newEntry = {key: '' for key in self.logbook[-1][-1].keys()}
+            newEntry = {key: '' for key in self.logbook[-1][-1].keys() if not key == 'Scan Number'}
+            if 'Tags' in self.logbook[-1][-1].keys():
+                newEntry['Tags'] = OrderedDict()
+                for t in self.logbook[-1][-1]['Tags'].keys():
+                    newEntry['Tags'][t] = False
             logbooks.addEntry(self.logbook, **newEntry)
             logbooks.saveEntry(self.logbookPath, self.logbook, -1)
             self.notifyAllLogs(
@@ -223,16 +243,25 @@ class Manager(asyncore.dispatcher):
         self.scanPar = 'A0V'
         self.scanning = True
         self.scanNo += 1
-        logbooks.addEntry(self.logbook, **{'Scan Number': self.scanNo,
-                                           'Author': 'Automatic Entry',
-                                           'Text': self.resumeMessage.format(name,
-                                                                             self.scanRange[
-                                                                                 0],
-                                                                             self.scanRange[
-                                                                                 -1],
-                                                                             len(self.scanRange),
-                                                                             self.tPerStep,
-                                                                             self.curPos)})
+        try:
+            newEntry = {key: '' for key in self.logbook[-1][-1].keys()}
+            if 'Tags' in self.logbook[-1][-1].keys():
+                newEntry['Tags'] = OrderedDict()
+                for t in self.logbook[-1][-1]['Tags'].keys():
+                    newEntry['Tags'][t] = False
+        except:
+            newEntry = {}
+        entry = {'Scan Number': self.scanNo,
+                 'Author': 'Automatic Entry',
+                 'Text': self.resumeMessage.format(name,
+                                                   self.scanRange[0],
+                                                   self.scanRange[-1],
+                                                   len(self.scanRange),
+                                                   self.tPerStep,
+                                                   self.curPos)}
+        for key in entry.keys():
+            newEntry[key] = entry[key]
+        logbooks.addEntry(self.logbook, **newEntry)
         logbooks.saveEntry(self.logbookPath, self.logbook, -1)
         self.notifyAllLogs(
                 ['Notify', self.logbook[-1], len(self.logbook) - 1])
@@ -243,8 +272,11 @@ class Manager(asyncore.dispatcher):
         self.scanToNext()
 
     def scan(self, scanInfo):
-        name, self.scanPar = scanInfo[0].split(':')
-        self.scanner = self._instructors[name]
+        try:
+            name, self.scanPar = scanInfo[0].split(':')
+            self.scanner = self._instructors[name]
+        except:
+            logging.error('Could not start scan, no connection with Artist')
         self.scanner.scanning = True
         self.curPos = 0
         self.scanRange = scanInfo[1]
@@ -253,16 +285,24 @@ class Manager(asyncore.dispatcher):
         self.scanNo += 1
         self.scanParser['scanprogress'] = {'scanno': self.scanNo}
         self.progressParser['progress'] = {'name': name}
-        logbooks.addEntry(self.logbook, **{'Scan Number': self.scanNo,
-                                           'Author': 'Automatic Entry',
-                                           'Text': self.startMessage.format(name,
-                                                                            self.scanRange[
-                                                                                0],
-                                                                            self.scanRange[
-                                                                                -1],
-                                                                            len(self.scanRange),
-                                                                            self.tPerStep,
-                                                                            self.curPos)})
+        try:
+            newEntry = {key: '' for key in self.logbook[-1][-1].keys()}
+            if 'Tags' in self.logbook[-1][-1].keys():
+                newEntry['Tags'] = OrderedDict()
+                for t in self.logbook[-1][-1]['Tags'].keys():
+                    newEntry['Tags'][t] = False
+        except:
+            newEntry = {}
+        entry = {'Scan Number': self.scanNo,
+                 'Author': 'Automatic Entry',
+                 'Text': self.startMessage.format(name,
+                                                   self.scanRange[0],
+                                                   self.scanRange[-1],
+                                                   len(self.scanRange),
+                                                   self.tPerStep)}
+        for key in entry.keys():
+            newEntry[key] = entry[key]
+        logbooks.addEntry(self.logbook, **newEntry)
         logbooks.saveEntry(self.logbookPath, self.logbook, -1)
         self.notifyAllLogs(
                 ['Notify', self.logbook[-1], len(self.logbook) - 1])
@@ -274,16 +314,29 @@ class Manager(asyncore.dispatcher):
         name, self.scanPar = setpointInfo[0].split(':')
         self.scanner = self._instructors[name]
         value = setpointInfo[1]
-        logbooks.addEntry(self.logbook, **{'Author': 'Automatic Entry',
-                                           'Text': self.setpointMessage.format(name,
-                                                                               value)})
+        try:
+            newEntry = {key: '' for key in self.logbook[-1][-1].keys()}
+            if 'Tags' in self.logbook[-1][-1].keys():
+                newEntry['Tags'] = OrderedDict()
+                for t in self.logbook[-1][-1]['Tags'].keys():
+                    newEntry['Tags'][t] = False
+        except:
+            newEntry = {}
+        entry = {'Author': 'Automatic Entry',
+                 'Text': self.setpointMessage.format(name, value)}
+        for key in entry.keys():
+            newEntry[key] = entry[key]
+        logbooks.addEntry(self.logbook, **newEntry)
         logbooks.saveEntry(self.logbookPath, self.logbook, -1)
+        self.notifyAllLogs(
+                ['Notify', self.logbook[-1], len(self.logbook) - 1])
         self.scanner.send_instruction(
             ["Setpoint Change", self.scanPar, value])
 
     def stopScan(self):
         self.scanning = False
         self.scanner.scanning = False
+        self.notifyAll(['idling'])
 
     def notifyAll(self, instruction):
         for instr in self._instructors.values():
@@ -418,8 +471,27 @@ def makeManager(PORT=5007):
 
 
 def main():
-    PORT = input('PORT?')
-    d = makeManager(int(PORT))
+    try:
+        m = makeManager(5004)
+        style = "QLabel { background-color: green }"
+        e=''
+    except Exception as e:
+        style = "QLabel { background-color: red }"
+
+    from PyQt4 import QtCore,QtGui
+    # Small visual indicator that this is running
+    app = QtGui.QApplication(sys.argv)
+    w = QtGui.QWidget()
+
+    w.setWindowTitle('Manager')
+    layout = QtGui.QGridLayout(w)
+    label = QtGui.QLabel(e)
+    label.setStyleSheet(style)
+    layout.addWidget(label)
+    w.show()
+    
+    sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     main()

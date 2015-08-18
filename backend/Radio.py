@@ -16,6 +16,7 @@ class RadioConnector(Connector):
         self._currentScan = True
         self.format = ()
         self._clear_memory = False
+        self.memory_size = 5000
         self.data_lock = th.Lock()
         self.data = pd.DataFrame()
         self.data_stream = pd.DataFrame()
@@ -54,7 +55,6 @@ class RadioConnector(Connector):
         else:
             self.data = self.data_stream
 
-
     def found_terminator(self):
         data = pickle.loads(self.buff)
         self.buff = b''
@@ -64,58 +64,37 @@ class RadioConnector(Connector):
                 self.format = data['format']
             if not len(data) == 0 and not data['data'].empty:
                 new_data = data['data']
-                # if not data['data'].empty:
-                #     self.data_lock.acquire()
-                #     try:
-                #         self.data_stream = self.data_stream.append(data['data'])
-                #         if self.giveScan:
-                #             if self.currentScan:
-                #                 try:
-                #                     if not data['data']['scan'][-1] == self.data_current_scan['scan'][-1]:
-                #                         self.data_previous_scan = self.data_current_scan
-                #                         self.data_current_scan = pd.DataFrame()
-                #                 except:
-                #                     pass
-                #                 self.data_current_scan = self.data_current_scan.append(data['data'])
-                #                 self.data = self.data_current_scan
-                #             else:
-                #                 try:
-                #                     if not data['data']['scan'][-1] == self.data_previous_scan['scan'][-1]:
-                #                         self.data_previous_scan = pd.DataFrame()
-                #                 except:
-                #                     pass
-                #                 self.data_previous_scan = self.data_previous_scan.append(data['data'])
-                #                 self.data = self.data_previous_scan
-                #         else:
-                #             self.data = self.data_stream
-                #         if self._clear_memory:
-                #             self.data_stream = self.data_stream[-10:]
-                #             self._clear_memory = False
-                #     finally:
-                #         self.data_lock.release()
-                self.data_lock.acquire()
+                # self.data_lock.acquire()
                 m = new_data['scan'].max()
                 self.data_stream = self.data_stream.append(new_data)
-                self.data_stream.drop_duplicates(inplace=True)
+                # self.data_stream.sort_index(inplace=True)
+                print(len(new_data))
                 if m > -1:
                     if self.data_current_scan.empty:
-                        self.data_current_scan = new_data[new_data['scan'] == m]
+                        self.data_current_scan = new_data[
+                            new_data['scan'] == m]
                     else:
                         if m > self.data_current_scan['scan'][-1]:
-                            self.data_previous_scan, self.data_current_scan = self.data_current_scan, new_data[new_data['scan'] == m]
+                            self.data_previous_scan, self.data_current_scan = self.data_current_scan, new_data[
+                                new_data['scan'] == m]
                         else:
                             if m == self.data_current_scan['scan'][-1]:
-                                self.data_current_scan = self.data_current_scan.append(new_data[new_data['scan'] == m])
-                                self.data_current_scan.drop_duplicates(inplace=True)
+                                self.data_current_scan = self.data_current_scan.append(
+                                    new_data[new_data['scan'] == m])
+                                self.data_current_scan.drop_duplicates(
+                                    inplace=True)
                             else:
-                                self.data_previous_scan = self.data_previous_scan.append(new_data[new_data['scan'] == m])
-                                self.data_previous_scan.drop_duplicates(inplace=True)
+                                self.data_previous_scan = self.data_previous_scan.append(
+                                    new_data[new_data['scan'] == m])
+                                self.data_previous_scan.drop_duplicates(
+                                    inplace=True)
 
                 if not self._clear_memory:
                     pass
                 else:
-                    self.data_stream = self.data_stream[-10:]
+                    self.data_stream = self.data_stream[-100:]
                     self._clear_memory = False
+                self.data_stream = self.data_stream[-self.memory_size:]
                 if self.giveScan:
                     if self.currentScan:
                         self.data = self.data_current_scan
@@ -123,34 +102,44 @@ class RadioConnector(Connector):
                         self.data = self.data_previous_scan
                 else:
                     self.data = self.data_stream
-                self.data_lock.release()
+                # self.data_lock.release()
         except TypeError:
             pass
 
-        self.send_next()
+        try:
+            info = self.commQ.get_nowait()
+            self.push(pickle.dumps(info))
+            self.push('END_MESSAGE'.encode('UTF-8'))
+        except:
+            self.send_next()
 
     def changeMemory(self, value):
-        self.push(pickle.dumps(['Set Memory Size', value]))
-        self.push('END_MESSAGE'.encode('UTF-8'))
+        self.memory_size = value
+        self.commQ.put(['Set Memory Size', value])
 
     def clearMemory(self):
         self._clear_memory = True
-        self.push(pickle.dumps(['Clear Memory']))
-        self.push('END_MESSAGE'.encode('UTF-8'))
+        # self.commQ.put(['Clear Memory'])
 
     def send_next(self):
         cols = [xy for xy in self.xy if not xy == 'time']
-        self.data_lock.acquire()
+        # self.data_lock.acquire()
         try:
-            if self.giveScan:
-                if self.currentScan:
-                    latest = self.data_current_scan.index.values[-1]
-                else:
-                    latest = self.data_previous_scan.index.values[-1]
-            else:
-                latest = self.data_stream.index.values[-1]
-        except:
+            # latest = self.data_stream.index.values.max()
+            dum = self.data_stream.copy()
+            dum = dum.fillna(method='ffill')
+            latest = dum.tail(1)
+            # print(latest)
+            # print(latest.empty)
+            if latest.empty:
+                latest = None
+        except Exception as e:
+            print(e)
             latest = None
-        self.data_lock.release()
-        self.push(pickle.dumps(['data', ([self.giveScan, self.currentScan], latest, cols)]))
+        print(latest)
+        # print('Radio:', latest)
+        # self.data_lock.release()
+        # self.push(pickle.dumps(['data', ([self.giveScan, self.currentScan], latest, cols)]))
+        self.push(
+            pickle.dumps(['data', ([False, self.currentScan], latest, cols)]))
         self.push('END_MESSAGE'.encode('UTF-8'))

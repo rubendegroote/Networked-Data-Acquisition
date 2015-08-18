@@ -12,11 +12,16 @@ from collections import deque
 
 try:
     from Helpers import *
-    from connectors import Connector, Acceptor
 except:
     from backend.Helpers import *
+try:
+    from acquire import *
+except:
+    from backend.acquire import *
+try:
+    from connectors import Connector, Acceptor
+except:
     from backend.connectors import Connector, Acceptor
-from acquire import acquire
 
 SAVE_INTERVAL = 2
 
@@ -70,18 +75,13 @@ class Artist(asyncore.dispatcher):
         self.saveDir = "Artist_" + name
         self.transmitters = []
 
-        # dictionary holding the initial settings for the hardware
-        self.settings = dict(counterChannel= "/Dev1/ctr1", # corresponds to PFI3
+        self.data = pd.DataFrame()
+
+        self.settings = dict(counterChannel="/Dev1/ctr1",  # corresponds to PFI3
                              aoChannel="/Dev1/ao0",
                              aiChannel="/Dev1/ai1,/Dev1/ai2",
                              noOfAi=2,
-                             clockChannel="/Dev1/PFI1",
-                             timePerStep=1,
-                             laser='CW Laser Voltage Scan',
-                             cristalMode=True,
-                             clearMode=True)
-        self.format = ('',)
-        self.data = pd.DataFrame()
+                             clockChannel="/Dev1/PFI1")
 
         # instructions queue:
         # Manager -> InstructionReceiver -> acquire
@@ -118,7 +118,6 @@ class Artist(asyncore.dispatcher):
         self.ns.t0 = time.time()
         self.ns.scanNo = -1
         self.ns.measuring = False
-        self.ns.format = ('time', 'scan', 'Counts', 'AOV', 'AIChannel1', 'AIChannel2')
         self.save_data = save_data
         self._saveThread = th.Timer(1, self.save).start()
 
@@ -135,10 +134,10 @@ class Artist(asyncore.dispatcher):
             l = len(sender.dataDQ)
             if not l == 0:
                 data = [sender.dataDQ.popleft() for i in range(l)]
-            return {'data':data, 'format': self.format, 'measuring': self.ns.measuring}
+            return {'data': data, 'format': self.ns.format, 'measuring': self.ns.measuring}
 
         else:
-            logging.info('Got "{}" instruction'.format(data))
+            logging.info('Got "{}" instruction from "{}"'.format(data, sender))
             if data[0] == 'STOP':
                 self.StopDAQ()
             elif data[0] == 'START':
@@ -169,7 +168,7 @@ class Artist(asyncore.dispatcher):
         self.stopFlag.clear()
 
         self.InitializeScanning()
-        self.DAQProcess = mp.Process(target=acquire,
+        self.DAQProcess = mp.Process(target=self.acquireFunction,
                                      args=(self.settings,
                                            self.acquire_dQ, self.iQ, self.mQ,
                                            self.contFlag, self.stopFlag,
@@ -219,7 +218,7 @@ class Artist(asyncore.dispatcher):
                              .format(message))
             ret = emptyPipe(self.dQ)
             if not ret == []:
-                print('Got data')
+                print(len(ret))
                 if self.save_data:
                     self.saveQ.append(ret)
                 for t in self.transmitters:
@@ -235,10 +234,11 @@ class Artist(asyncore.dispatcher):
         if not l == 0:
             data = [self.saveQ.popleft() for i in range(l)]
             data = convert(data, self.format)
+            print(self.name)
             save(data, self.saveDir, self.name)
 
-        # # slightly more stable if the save runs every 0.5 seconds,
-        # # regardless of how long the previous saving took
+        # slightly more stable if the save runs every 0.5 seconds,
+        # regardless of how long the previous saving took
         wait = abs(min(0, time.time() - now - SAVE_INTERVAL))
         if self.save:
             self._saveThread = th.Timer(wait, self.save).start()
@@ -297,22 +297,45 @@ class Artist(asyncore.dispatcher):
         logging.info('Closing Artist')
         super(Artist, self).handle_close()
 
-def makeArtist(name='test1', PORT=5005, save_data=True):
-    return Artist(name=name, PORT=PORT, save_data=save_data)
 
-
-def start():
-    while True:
-        asyncore.loop(count=1)
-        time.sleep(0.01)
-
-
-def main(port,name):
-    a = makeArtist(name=name, PORT=port, save_data=True)
-    t0 = th.Timer(1, a.StartDAQ).start()
-    asyncore.loop(0.001)
-
+def makeArtist(name='test'):
+    if name == 'ABU':
+        artist = Artist(PORT=5005, name='ABU', save_data=True)
+        artist.ns.format = (
+            'time', 'scan', 'Counts', 'AOV', 'AIChannel1', 'AIChannel2')
+        artist.acquireFunction = acquire
+        artist.settings = dict(counterChannel="/Dev1/ctr1",  # corresponds to PFI3
+                               aoChannel="/Dev1/ao0",
+                               aiChannel="/Dev1/ai1,/Dev1/ai2",
+                               noOfAi=2,
+                               clockChannel="/Dev1/PFI1")
+    elif name == 'CRIS':
+        artist = Artist(PORT=5005, name='CRIS', save_data=True)
+        artist.ns.format = (
+            'time', 'scan', 'Counts', 'AOV', 'AIChannel1', 'AIChannel2')
+        artist.acquireFunction = acquire
+        artist.settings = dict(counterChannel="/Dev1/ctr1",  # corresponds to PFI3
+                               aoChannel="/Dev1/ao0",
+                               aiChannel="/Dev1/ai1,/Dev1/ai2",
+                               noOfAi=2,
+                               clockChannel="/Dev1/PFI1")
+    elif name == 'laser':
+        artist = Artist(PORT=5004, name='laser', save_data=True)
+        artist.ns.format = (
+            'time', 'scan', 'setpoint', 'wavenumber', 'wavenumber HeNe')
+        artist.acquireFunction = acquireLaser
+    elif name == 'diodes':
+        artist = Artist(PORT=5003, name='diodes', save_data=True)
+        artist.ns.format = (
+            'time', 'scan', 'AIChannel1', 'AIChannel2', 'AIChannel3')
+        artist.acquireFunction = acquireDiodes
+        artist.settings = dict(aiChannel="/Dev1/ai1,/Dev1/ai2,/Dev1/ai3",
+                               noOfAi=3)
+    return artist
 
 if __name__ == '__main__':
-    main(5005,'ABU')
-    
+
+    name = input('Name?')
+    artist = makeArtist(name=name)
+    t0 = th.Timer(1, artist.StartDAQ).start()
+    asyncore.loop(0.001)

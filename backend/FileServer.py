@@ -114,13 +114,12 @@ def run():
     httpd.serve_forever()
 
 
-def main():
+def makeServer():
     os.chdir('C:/Data/')
-    port_file = input('File server port?')
     f = FileServer()
     t = th.Thread(target=start).start()
     t = mp.Process(target=run).start()
 
 
 if __name__ == '__main__':
-    main()
+    makeServer()

@@ -1,9 +1,13 @@
 import asynchat
 import asyncore
+import sys
 from collections import deque
 from datetime import datetime
 from copy import deepcopy
 import logging
+logging.basicConfig(filename='DataServer.log',
+                    format='%(asctime)s: %(message)s',
+                    level=logging.INFO)
 import os
 import pickle
 import socket
@@ -19,9 +23,6 @@ try:
 except:
     from backend.Helpers import *
     from backend.connectors import Connector, Acceptor
-logging.basicConfig(filename='DataServer.log',
-                    format='%(asctime)s: %(message)s',
-                    level=logging.INFO)
 
 GET_INTERVAL = 0.05
 SAVE_INTERVAL = 2
@@ -38,7 +39,7 @@ class DataServer(asyncore.dispatcher):
         self.listen(5)
         logging.info('Listening on port {}'.format(self.port))
 
-        self.memory = 50000
+        self.memory = 5000
         self.savedScan = -np.inf
         self._readers = {}
         self._readerInfo = {}
@@ -116,12 +117,37 @@ class DataServer(asyncore.dispatcher):
     def processRequests(self, sender, data):
         if data[0] == 'data':
             perScan, latest, columns = data[1]
-            return {'data': self.getData(perScan, latest, columns), 'format': tuple(self._data_current_stream.columns.values)}
+            dat = self.getData(perScan, latest, columns)
+            try:
+                print('Latest:      ', latest.index.values[0])
+                print('Stream begin:', self._data_current_stream.index.values[0])
+                print('Stream end:  ', self._data_current_stream.index.values[-1])
+                print('Sent begin:', dat.index.values[0])
+                print('Sent end:  ', dat.index.values[-1])
+            except:
+                pass
+            form = tuple(self._data_current_stream.columns.values)
+            # print(len(dat))
+            # print(dat.head(1))
+            return {'data': dat, 'format': form}
         elif data[0] == 'Add Artist':
             self.addReader(data[1])
             return None
         elif data[0] == 'Remove Artist':
             self.removeReader(data[1])
+            return None
+        elif data[0] == 'Remove All Artists':
+            toRemove = []
+            for name, prop in self._readerInfo.items():
+                self._readers[name].close()
+                toRemove.append(name)
+
+            for name in toRemove:
+                del self._readers[name]
+                del self._readerInfo[name]
+
+            for c in self.acceptors:
+                c.commQ.pu(self._readerInfo)
             return None
         elif data[0] == 'Clear Memory':
             logging.info('Memory cleared')
@@ -130,10 +156,12 @@ class DataServer(asyncore.dispatcher):
         elif data[0] == 'Set Memory Size':
             try:
                 mem = np.abs(int(data[1]))
-                logging.info('Memory size changed from {} to {}'.format(self.memory, mem))
+                logging.info(
+                    'Memory size changed from {} to {}'.format(self.memory, mem))
                 self.memory = mem
             except:
-                logging.warn('Tried setting memory to invalid value {}'.format(data[1]))
+                logging.warn(
+                    'Tried setting memory to invalid value {}'.format(data[1]))
             return None
         elif data == 'info':
             try:
@@ -186,38 +214,52 @@ class DataServer(asyncore.dispatcher):
         toSave = deepcopy(self.toSave)
         self.toSave = {}
         self.lock.release()
+        # try:
+        #     a = sum([len(toSave[key]) for key in toSave.keys()])
+        #     print('saving:', a)
+        # except:
+        #     print('saving:', len(toSave))
         for key, val in toSave.items():
             save(val, self.saveDir, key)
 
     def extractMemory(self, new_data):
+        # print('extract:', len(new_data))
+        new_data = new_data.sort_index()
         m = new_data['scan'].max()
         self.stream_lock.acquire()
         try:
-            self._data_current_stream = self._data_current_stream.append(new_data)
+            self._data_current_stream = self._data_current_stream.append(
+                new_data)
         finally:
+            pass
             self.stream_lock.release()
-        if m > -1:
-            if self._data_current_scan.empty:
-                self.current_scan_lock.acquire()
-                try:
-                    self._data_current_scan = new_data[new_data['scan'] == m]
-                finally:
-                    self.current_scan_lock.release()
-            else:
-                if m > self._data_current_scan['scan'][-1]:
-                    self.previous_scan_lock.acquire()
-                    self.current_scan_lock.acquire()
-                    try:
-                        self._data_previous_scan, self._data_current_scan = self._data_current_scan, new_data[new_data['scan'] == m]
-                    finally:
-                        self.previous_scan_lock.release()
-                        self.current_scan_lock.release()
-                else:
-                    self.current_scan_lock.acquire()
-                    try:
-                        self._data_current_scan = self._data_current_scan.append(new_data[new_data['scan'] == m])
-                    finally:
-                        self.current_scan_lock.release()
+        # if m > -1:
+        #     if self._data_current_scan.empty:
+        #         # self.current_scan_lock.acquire()
+        #         try:
+        #             self._data_current_scan = new_data[new_data['scan'] == m]
+        #         finally:
+        #             pass
+        #             # self.current_scan_lock.release()
+        #     else:
+        #         if m > self._data_current_scan['scan'][-1]:
+        #             # self.previous_scan_lock.acquire()
+        #             # self.current_scan_lock.acquire()
+        #             try:
+        #                 self._data_previous_scan, self._data_current_scan = self._data_current_scan, new_data[
+        #                     new_data['scan'] == m]
+        #             finally:
+        #                 pass
+        #                 # self.previous_scan_lock.release()
+        #                 # self.current_scan_lock.release()
+        #         else:
+        #             # self.current_scan_lock.acquire()
+        #             try:
+        #                 self._data_current_scan = self._data_current_scan.append(
+        #                     new_data[new_data['scan'] == m])
+        #             finally:
+        #                 pass
+        #                 # self.current_scan_lock.release()
 
         # save the current scan in memory
         # m = self._data['scan'].max()
@@ -227,31 +269,62 @@ class DataServer(asyncore.dispatcher):
         self.stream_lock.acquire()
         try:
             if not self._clear_memory:
-                self._data_current_stream = self._data_current_stream[-self.memory:]
+                self._data_current_stream = self._data_current_stream[
+                    -self.memory:]
             else:
                 self._clear_memory = False
-                self._data_current_stream = self._data_current_stream[-10:]
+                self._data_current_stream = self._data_current_stream[-1:]
         finally:
+            pass
             self.stream_lock.release()
 
     def getData(self, perScan, latest, columns):
         try:
             if perScan[0]:
                 if perScan[1]:
-                    if latest is None:
-                        return self._data_current_scan[columns]
-                    else:
-                        return self._data_current_scan.loc[latest:, columns][1:]
+                    # self.current_scan_lock.acquire()
+                    try:
+                        if latest is None:
+                            returnData = self._data_current_scan
+                        else:
+                            d = self._data_current_stream.index.values
+                            indices = d > latest
+                            returnData = self._data_current_scan[indices]
+                    except:
+                        raise
+                    finally:
+                        pass
+                        # self.current_scan_lock.release()
                 else:
-                    if latest is None:
-                        return self._data_previous_scan[columns]
-                    else:
-                        return self._data_previous_scan.loc[latest:, columns][1:]
+                    # self.previous_scan_lock.acquire()
+                    try:
+                        if latest is None:
+                            returnData = self._data_previous_scan
+                        else:
+                            d = self._data_current_stream.index.values
+                            indices = d > latest
+                            returnData = self._data_previous_scan[indices]
+                    except:
+                        raise
+                    finally:
+                        pass
+                        # self.previous_scan_lock.release()
             else:
-                if latest is None:
-                    return self._data_current_stream[columns]
-                else:
-                    return self._data_current_stream.loc[latest:, columns][1:]
+                self.stream_lock.acquire()
+                try:
+                    dummy = self._data_current_stream.copy()
+                    if latest is None:
+                        returnData = dummy
+                    else:
+                        dummy = dummy.fillna(method='ffill')
+                        mask = dummy.isin(latest).all(1)
+                        indices = np.cumsum(mask.values, dtype=bool)
+                        returnData = self._data_current_stream[indices]
+                except:
+                    pass
+                finally:
+                    self.stream_lock.release()
+            return returnData
         except:
             return pd.DataFrame()
 
@@ -282,8 +355,8 @@ class DataServer(asyncore.dispatcher):
                                                onCloseCallback=self.accClosed,
                                                t='MGui_to_DS'))
             else:
-                logging.error('Sender {} named {} not understood'
-                              .format(addr, sender))
+                logging.error('Sender {} named {} on socket {} not understood'
+                              .format(addr, sender, sock))
                 return
             logging.info('Accepted {} as {}'.format(addr, sender))
 
@@ -335,11 +408,29 @@ class ArtistReader(Connector):
 def makeServer(PORT=5006, save=True, remember=True):
     return DataServer([], PORT, save, remember)
 
+
 def main():
-    PORT = input('PORT?')
-    save = int(input('save?')) == 1
-    rem = int(input('remember?')) == 1
-    d = makeServer(int(PORT), save=save, remember=rem)
+    try:
+        d = makeServer(5005, save=1, remember=1)
+        style = "QLabel { background-color: green }"
+        e = ''
+    except Exception as error:
+        e = str(error)
+        style = "QLabel { background-color: red }"
+
+    from PyQt4 import QtCore, QtGui
+    # Small visual indicator that this is running
+    app = QtGui.QApplication(sys.argv)
+    w = QtGui.QWidget()
+
+    w.setWindowTitle('Data Server')
+    layout = QtGui.QGridLayout(w)
+    label = QtGui.QLabel(e)
+    label.setStyleSheet(style)
+    layout.addWidget(label)
+    w.show()
+
+    sys.exit(app.exec_())
 
 if __name__ == '__main__':
     main()

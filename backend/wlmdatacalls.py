@@ -16,6 +16,6 @@ while True:
         # Execute function calls
         wavenumber = wlmdata.GetFrequencyNum(1, 0)/ 0.0299792458
         expos      = wlmdata.GetExposureNum(1,1,0),wlmdata.GetExposureNum(1,2,0)
-        print wavenumber
+        print(wavenumber)
 
         time.sleep(0.001*max(expos))

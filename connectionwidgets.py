@@ -13,20 +13,32 @@ class ArtistConnections(QtGui.QWidget):
         self.l = 0
         self.layout = QtGui.QGridLayout(self)
 
+        self.options = ['ABU', 'CRIS', 'Laser', 'Diodes']
+        self.address = {'ABU': ('PCCRIS15', 5005),
+                        'CRIS': ('PCCRIS6', 5005),
+                        'Laser': ('PCCRIS15', 5004),
+                        'Diodes': ('PCCRIS15', 5003)}
+        self.artistSelection = QtGui.QComboBox()
+        self.artistSelection.addItems(self.options)
+        self.artistSelection.setCurrentIndex(0)
+        self.layout.addWidget(self.artistSelection, 100, 1, 1, 1)
         self.addArtistButton = QtGui.QPushButton('Add Artist')
         self.addArtistButton.clicked.connect(lambda: self.addConnection())
         self.layout.addWidget(self.addArtistButton, 100, 0, 1, 1)
+        self.removeArtistsButton = QtGui.QPushButton('Remove All Artists')
+        self.removeArtistsButton.clicked.connect(lambda: self.removeAll())
+        self.layout.addWidget(self.removeArtistsButton, 101, 0, 1, 2)
 
     def addConnection(self):
-        respons = ConnectionDialog.getInfo(self)
-        if respons[1]:
-            self.connectSig.emit(('Both', respons[0]))
+        selection = self.artistSelection.currentText()
+        respons = self.address[selection]
+        self.connectSig.emit(('Both', respons))
 
     def addConnectionWidget(self, name='', IP='KSF402', PORT='5004'):
         self.connections[name] = ConnectionWidget(self, name, IP, PORT)
         self.connections[name].removeSig.connect(self.remove)
         self.connections[name].reconnectSig.connect(self.reconnect)
-        self.layout.addWidget(self.connections[name], self.l, 0, 1, 1)
+        self.layout.addWidget(self.connections[name], self.l, 0, 1, 2)
         config = configparser.ConfigParser()
         for key in self.connections.keys():
             config[key] = {'IP': self.connections[name].IP,
@@ -38,6 +50,10 @@ class ArtistConnections(QtGui.QWidget):
 
     def remove(self, connWidget):
         self.removeSig.emit((connWidget.IP, connWidget.PORT))
+
+    def removeAll(self):
+        for name in self.connections:
+            self.connections[name].removeArtist()
 
     def reconnect(self, info):
         self.connectSig.emit(info)

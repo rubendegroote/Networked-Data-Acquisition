@@ -1,5 +1,4 @@
 from PyQt4 import QtCore, QtGui
-import threading as th
 import asyncore
 import time
 
@@ -7,7 +6,6 @@ from scanner import ScannerWidget
 from connect import ConnectionsWidget
 from central import CentralDock
 
-from backend.DataServer import DataServer
 from backend.Radio import Radio
 from backend.Manager import Manager
 

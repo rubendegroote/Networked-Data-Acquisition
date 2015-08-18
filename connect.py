@@ -22,9 +22,9 @@ class ConnectionsWidget(QtGui.QWidget):
         if respons[1]:
             self.newConn.emit(respons[0])
 
-        self.addConButton.setText('Add Artist')
-        self.addConButton.clicked.disconnect(self.addConn)
-        self.addConButton.clicked.connect(self.addArtist)
+        # self.addConButton.setText('Add Artist')
+        # self.addConButton.clicked.disconnect(self.addConn)
+        # self.addConButton.clicked.connect(self.addArtist)
 
     def addArtist(self):
         respons = ConnectionDialog.getInfo(self)

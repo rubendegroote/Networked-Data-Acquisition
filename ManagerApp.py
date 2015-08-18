@@ -51,6 +51,7 @@ class ManagerApp(QtGui.QMainWindow):
         self.connWidget = ArtistConnections()
         self.connWidget.connectSig.connect(self.addArtist)
         self.connWidget.removeSig.connect(self.removeArtist)
+        # self.connWidget.removeAll.connect(self.removeAll)
         layout.addWidget(self.connWidget, 1, 0, 1, 1)
 
         self.serverButton = QtGui.QPushButton('Connect to Servers')
@@ -120,6 +121,9 @@ class ManagerApp(QtGui.QMainWindow):
 
     def removeArtist(self, address):
         self.Man_DS_Connector.instruct('Both', ['Remove Artist', address])
+
+    # def removeAll(self):
+    #     self.Man_DS_Connector.instruct('Both', ['Remove All Artists'])
 
     def update(self):
         try:
@@ -197,7 +201,7 @@ class Man_DS_Connector():
         return retDict
 
     def getScanInfo(self):
-        return self.man.format, self.man.progress, self.man.artists
+        return self.man.scanNo, self.man.format, self.man.progress, self.man.artists
 
     def scanning(self):
         return self.man.scanning
@@ -224,6 +228,7 @@ class ManagerConnector(Connector):
             chan, callback, onCloseCallback, t='MGui_to_M')
         self.resumeSignal = ResumeScanSignal()
         self.resumeSignal.resumescan.connect(resumeScanCallback)
+        self.scanNo = -1
         self.progress = 0
         self.scanning = False
         self.format = {}
@@ -239,7 +244,7 @@ class ManagerConnector(Connector):
             message, data = data
             if message == 'infomessage':
                 self.artists, info = data
-                self.scanning, self.progress, self.format = info
+                self.scanNo, self.scanning, self.progress, self.format = info
             elif message == 'resumemessage':
                 smin, smax, sl, curpos, tPerStep, name = data
                 self.resumeSignal.resumescan.emit(

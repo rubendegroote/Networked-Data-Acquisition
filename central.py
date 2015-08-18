@@ -1,5 +1,4 @@
 import pyqtgraph as pg
-from PyQt4 import QtCore, QtGui
 from graph import GraphDock
 
 

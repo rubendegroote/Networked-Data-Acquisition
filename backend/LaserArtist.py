@@ -1,4 +1,4 @@
-import asynchat
+ asynchat
 import asyncore
 import socket
 import multiprocessing as mp
@@ -117,7 +117,7 @@ class LaserArtist(asyncore.dispatcher):
         self.ns.t0 = time.time()
         self.ns.scanNo = -1
         self.ns.measuring = False
-        self.ns.format = ('time', 'scan', 'wavenumber')
+        self.ns.format = ('time', 'scan', 'setpoint', 'wavenumber','wavenumber HeNe')
         self.save_data = save_data
         self._saveThread = th.Timer(1, self.save).start()
 
@@ -218,8 +218,8 @@ class LaserArtist(asyncore.dispatcher):
                 logging.warn("Received message \"{}\" from acquire."
                              .format(message))
             ret = emptyPipe(self.dQ)
+            print(len(ret))
             if not ret == []:
-                print('Got data')
                 now = time.time()
                 if self.save_data:
                     self.saveQ.append(ret)
@@ -311,4 +311,4 @@ def main(port,name):
 
 
 if __name__ == '__main__':
-    main(5005,'laser')
+    main(5004, 'laser')

@@ -1,4 +1,7 @@
+
+import pandas as pd
 from PyQt4 import QtCore, QtGui
+import tables
 import threading as th
 import time
 import pickle
@@ -10,6 +13,7 @@ from backend.connectors import Connector
 from connectiondialogs import ConnectionDialog, FieldAdditionDialog
 from logviewerwidgets import LogEntryWidget
 from backend.Filereader import FileReader
+SAVE_DIR = 'C:/Data/'
 
 
 class PassToLogbookApp(QtCore.QObject):
@@ -29,10 +33,10 @@ class LogbookApp(QtGui.QMainWindow):
 
         self.looping = True
         t = th.Thread(target=self.startIOLoop).start()
+        self.man = None
         self.init_UI()
         self.options = tuple()
 
-        self.man = None
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update)
@@ -45,45 +49,73 @@ class LogbookApp(QtGui.QMainWindow):
         layout = QtGui.QGridLayout(self.central)
         self.setCentralWidget(self.central)
 
+        self.fileServerInfo = ('PCCRIS17', 5009)
+        self.managerInfo = ('PCCRIS13', 5004)
+
+        self.connectionLabel = QtGui.QLabel('Connections:')
+        layout.addWidget(self.connectionLabel, 0, 0, 1, 1)
+
+        self.managerLabel = QtGui.QLabel('Manager')
+        self.managerLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.managerLabel.setMinimumWidth(50)
+        self.managerLabel.setMinimumHeight(25)
+        self.managerLabel.setStyleSheet("QLabel { background-color: red }")
+        layout.addWidget(self.managerLabel, 1, 0, 1, 2)
+
         self.addFileServer = QtGui.QPushButton('Add File server')
         self.addFileServer.clicked.connect(self.addFileConnection)
-        layout.addWidget(self.addFileServer, 0, 0, 1, 2)
+        layout.addWidget(self.addFileServer, 2, 0, 1, 1)
 
-        self.addManager = QtGui.QPushButton('Add Manager')
+        self.fileServerLabel = QtGui.QLabel('File Server')
+        self.fileServerLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.fileServerLabel.setMinimumWidth(50)
+        self.fileServerLabel.setStyleSheet("QLabel { background-color: red }")
+        layout.addWidget(self.fileServerLabel, 2, 1, 1, 1)
+
+        self.addManager = QtGui.QPushButton('Reconnect to Manager')
         self.addManager.clicked.connect(self.addConnection)
         layout.addWidget(self.addManager, 1, 0, 1, 2)
 
-        self.getLogbook = QtGui.QPushButton('Get Logbook')
+        self.editLabel = QtGui.QLabel('Logbook:')
+        layout.addWidget(self.editLabel, 3, 0, 1, 1)
+
+        self.getLogbook = QtGui.QPushButton('Renew Logbook')
         self.getLogbook.clicked.connect(self.getLog)
-        layout.addWidget(self.getLogbook, 2, 0, 1, 2)
+        self.getLogbook.setDisabled(True)
+        layout.addWidget(self.getLogbook, 4, 0, 1, 2)
 
         self.addEntryButton = QtGui.QPushButton('Add entry')
         self.addEntryButton.clicked.connect(self.addEntryToLog)
         self.addEntryButton.setDisabled(True)
-        layout.addWidget(self.addEntryButton, 3, 0, 1, 2)
+        layout.addWidget(self.addEntryButton, 5, 0, 1, 2)
 
         self.searchStringLabel = QtGui.QPushButton('String search')
         self.searchStringLabel.clicked.connect(self.filterLogbookOnString)
+        self.searchStringLabel.setDisabled(True)
         self.searchStringEdit = QtGui.QLineEdit('')
-        layout.addWidget(self.searchStringLabel, 4, 0)
-        layout.addWidget(self.searchStringEdit, 4, 1)
+        layout.addWidget(self.searchStringLabel, 6, 0)
+        layout.addWidget(self.searchStringEdit, 6, 1)
 
         self.searchTagLabel = QtGui.QPushButton('Tag search')
         self.searchTagLabel.clicked.connect(self.filterLogbookOnTag)
+        self.searchTagLabel.setDisabled(True)
         self.searchTagEdit = QtGui.QLineEdit('')
-        layout.addWidget(self.searchTagLabel, 5, 0)
-        layout.addWidget(self.searchTagEdit, 5, 1)
+        layout.addWidget(self.searchTagLabel, 7, 0)
+        layout.addWidget(self.searchTagEdit, 7, 1)
 
         self.scrollArea = QtGui.QScrollArea(self)
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QtGui.QWidget()
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        layout.addWidget(self.scrollArea, 6, 0, 1, 2)
+        layout.addWidget(self.scrollArea, 8, 0, 1, 2)
 
         self.entryContainersLayout = QtGui.QVBoxLayout(
             self.scrollAreaWidgetContents)
         self.entryContainers = []
         self.newEntryContainer()
+
+        self.addConnection()
+        self.addFileConnection(auto=True)
 
     def newEntryContainer(self):
         entryContainer = QtGui.QGridLayout()
@@ -92,34 +124,57 @@ class LogbookApp(QtGui.QMainWindow):
         self.entryContainers.append(entryContainer)
 
     def getLog(self):
-        # log = str(self.logSelect.currentText())
-        # self.selectedLog = log
-        self.man.send_instruction(['Get Logbook', 'dummy'])
+        self.man.send_instruction(['Get Logbook'])
         self.addEntryButton.setEnabled(True)
 
     def addEntryToLog(self):
-        self.man.send_instruction(['Add To Logbook', self.selectedLog])
-        self.man.send_instruction(['Get Logbook', self.selectedLog])
+        self.man.send_instruction(['Add To Logbook'])
 
     def addConnection(self):
-        respons = ConnectionDialog.getInfo(self)
-        if respons[1]:
-            chan, port = respons[0]
-            port = int(port)
+        # respons = ConnectionDialog.getInfo(self)
+        # if respons[1]:
+        #     chan, port = respons[0]
+        #     port = int(port)
+        #     self.man = ManagerConnector((chan, port),
+        #                                 callback=None,
+        #                                 onCloseCallback=self.onClosedCallback,
+        #                                 choicesCallback=self.changeLogbooks,
+        #                                 logbookCallback=self.saveLog,
+        #                                 changeCallback=self.changeEntry)
+        #     self.getLog()
+        chan, port = self.managerInfo
+        port = int(port)
+        try:
             self.man = ManagerConnector((chan, port),
                                         callback=None,
-                                        onCloseCallback=self.onClosedCallback,
+                                        onCloseCallback=self.closedManager,
                                         choicesCallback=self.changeLogbooks,
                                         logbookCallback=self.saveLog,
                                         changeCallback=self.changeEntry)
+            self.managerLabel.setStyleSheet("QLabel { background-color: green }")
+            self.getLogbook.setEnabled(True)
+            self.searchStringLabel.setEnabled(True)
+            self.searchTagLabel.setEnabled(True)
+            self.addManager.setHidden(True)
             self.getLog()
+        except:
+            self.addConnection()
 
-    def addFileConnection(self):
-        respons = ConnectionDialog.getInfo(self)
-        if respons[1]:
-            chan, port = respons[0]
+    def addFileConnection(self, auto=False):
+        if not auto:
+            respons = ConnectionDialog.getInfo(self)
+            if respons[1]:
+                chan, port = respons[0]
+                port = int(port)
+                self.fileServ = FileReader(IP=chan, PORT=port)
+        else:
+            chan, port = self.fileServerInfo
             port = int(port)
-            self.fileServ = FileReader(IP=chan, PORT=port)
+            try:
+                self.fileServ = FileReader(IP=chan, PORT=port)
+                self.fileServerLabel.setStyleSheet("QLabel { background-color: green }")
+            except:
+                pass
 
     def saveLog(self, log):
         self.logbook = sorted(log, key=lambda entry: entry[0]['Time'])
@@ -142,7 +197,8 @@ class LogbookApp(QtGui.QMainWindow):
                                                            entry=entry,
                                                            number=key)
                 self.logEntryWidgets[key].createFrame()
-                self.entryContainers[-1].addWidget(self.logEntryWidgets[key], key, 0)
+                self.entryContainers[-
+                                     1].addWidget(self.logEntryWidgets[key], key, 0)
                 self.logEntryWidgets[key].updated.connect(self.editEntry)
                 self.logEntryWidgets[key].renew.connect(self.changeEntry)
                 self.logEntryWidgets[key].fieldAdded.connect(self.addField)
@@ -156,13 +212,14 @@ class LogbookApp(QtGui.QMainWindow):
 
     def getData(self, value):
         filename = 'Server_scan_{}.h5'.format(value)
+        print(value)
         # filename = 'Artist_ABU_scan_{}.h5'.format(value)
-        if not os.path.isfile('copy_of_' + filename):
-            self.fileServ.send_request(['SEND_FILE', filename])
-        else:
-            import ScanViewer
-            ScanViewer.ScanDisplayApp('copy_of_' + filename, self)
-
+        # if not os.path.isfile(SAVE_DIR + 'copy_of_' + filename):
+        self.fileServ.send_request(['SEND_FILE', filename])
+        # else:
+        time.sleep(3)
+        import ScanViewer
+        ScanViewer.ScanDisplayApp('copy_of_' + filename, self)
 
     def filterLogbookOnString(self):
         filterString = str(self.searchStringEdit.text())
@@ -225,11 +282,13 @@ class LogbookApp(QtGui.QMainWindow):
                                                        entry=entry,
                                                        number=key)
             self.logEntryWidgets[key].createFrame()
-            self.entryContainers[-1].addWidget(self.logEntryWidgets[key], key, 0)
+            self.entryContainers[-
+                                 1].addWidget(self.logEntryWidgets[key], key, 0)
             self.logEntryWidgets[key].updated.connect(self.editEntry)
             self.logEntryWidgets[key].renew.connect(self.changeEntry)
             self.logEntryWidgets[key].fieldAdded.connect(self.addField)
             self.logEntryWidgets[key].tagAdded.connect(self.addTag)
+            self.logEntryWidgets[key].dataRequest.connect(self.getData)
 
             QtGui.QApplication.processEvents()
 
@@ -238,6 +297,15 @@ class LogbookApp(QtGui.QMainWindow):
 
     def onClosedCallback(self, server):
         print(server, server.type)
+        self.AppCallBack(server.type)
+
+    def closedManager(self, server):
+        self.managerLabel.setStyleSheet("QLabel { background-color: red }")
+        self.addManager.setVisible(True)
+        self.AppCallBack(server.type)
+
+    def closedFileserver(self, server):
+        self.fileServerLabel.setStyleSheet("QLabel { background-color: red }")
         self.AppCallBack(server.type)
 
     def changeLogbooks(self, options):
