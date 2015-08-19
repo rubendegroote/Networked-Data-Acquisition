@@ -938,3 +938,97 @@
 2015-06-17 17:32:25,464: LGui_to_M
 2015-06-17 17:32:25,464: Accepted ('127.0.0.1', 51538) as LGui_to_M
 2015-06-17 17:41:25,454: Closing Acceptor LGui_to_M
+2015-08-19 14:30:36,119: Connecting to M_to_A...
+2015-08-19 14:30:36,182: Connected to M2
+2015-08-19 14:34:46,234: Closing M_to_A Connector
+2015-08-19 14:49:19,237: Listening on port 5004
+2015-08-19 14:49:40,809: MGui_to_M
+2015-08-19 14:49:40,809: Accepted ('127.0.0.1', 52033) as MGui_to_M
+2015-08-19 14:49:42,013: Connecting to M_to_A...
+2015-08-19 14:49:42,075: Closing M_to_A Connector
+2015-08-19 14:49:43,080: Connection failed
+2015-08-19 14:49:44,064: Connecting to M_to_A...
+2015-08-19 14:49:44,127: Connected to M2
+2015-08-19 14:50:57,832: Closing M_to_A Connector
+2015-08-19 14:51:16,499: Connecting to M_to_A...
+2015-08-19 14:51:16,561: Connected to M2
+2015-08-19 14:54:20,151: Closing M_to_A Connector
+2015-08-19 17:37:19,084: Closing Acceptor MGui_to_M
+2015-08-19 17:39:47,306: Listening on port 5004
+2015-08-19 17:43:54,478: Listening on port 5004
+2015-08-19 17:44:06,369: MGui_to_M
+2015-08-19 17:44:06,369: Accepted ('127.0.0.1', 52694) as MGui_to_M
+2015-08-19 17:45:06,913: Closing Acceptor MGui_to_M
+2015-08-19 17:45:14,366: MGui_to_M
+2015-08-19 17:45:14,366: Accepted ('127.0.0.1', 52700) as MGui_to_M
+2015-08-19 17:45:44,807: Closing Acceptor MGui_to_M
+2015-08-19 18:49:36,493: Listening on port 5004
+2015-08-19 18:49:50,939: MGui_to_M
+2015-08-19 18:49:50,986: Accepted ('127.0.0.1', 52852) as MGui_to_M
+2015-08-19 18:51:47,250: MGui_to_M
+2015-08-19 18:51:47,250: Accepted ('127.0.0.1', 54398) as MGui_to_M
+2015-08-19 18:51:51,579: Closing Acceptor MGui_to_M
+2015-08-19 18:51:52,563: Closing Acceptor MGui_to_M
+2015-08-19 18:52:19,534: MGui_to_M
+2015-08-19 18:52:19,534: Accepted ('127.0.0.1', 54426) as MGui_to_M
+2015-08-19 18:52:49,945: Closing Acceptor MGui_to_M
+2015-08-19 18:53:21,410: MGui_to_M
+2015-08-19 18:53:21,410: Accepted ('127.0.0.1', 54435) as MGui_to_M
+2015-08-19 18:54:05,433: Closing Acceptor MGui_to_M
+2015-08-19 18:54:17,121: MGui_to_M
+2015-08-19 18:54:17,121: Accepted ('127.0.0.1', 54436) as MGui_to_M
+2015-08-19 18:54:17,340: Closing Acceptor MGui_to_M
+2015-08-19 18:54:29,114: MGui_to_M
+2015-08-19 18:54:29,114: Accepted ('127.0.0.1', 54439) as MGui_to_M
+2015-08-19 18:54:29,223: Closing Acceptor MGui_to_M
+2015-08-19 18:56:55,015: Listening on port 5004
+2015-08-19 18:57:25,468: MGui_to_M
+2015-08-19 18:57:25,484: Accepted ('127.0.0.1', 54444) as MGui_to_M
+2015-08-19 18:57:25,593: Closing Acceptor MGui_to_M
+2015-08-19 19:02:14,305: Listening on port 5004
+2015-08-19 19:02:22,203: MGui_to_M
+2015-08-19 19:02:22,203: Accepted ('127.0.0.1', 54470) as MGui_to_M
+2015-08-19 19:02:22,312: Closing Acceptor MGui_to_M
+2015-08-19 19:05:28,081: Listening on port 5004
+2015-08-19 19:05:31,960: MGui_to_M
+2015-08-19 19:05:31,960: Accepted ('127.0.0.1', 54543) as MGui_to_M
+2015-08-19 19:05:32,179: Closing Acceptor MGui_to_M
+2015-08-19 19:08:13,954: Listening on port 5004
+2015-08-19 19:08:18,678: MGui_to_M
+2015-08-19 19:08:18,678: Accepted ('127.0.0.1', 54549) as MGui_to_M
+2015-08-19 19:08:18,897: Closing Acceptor MGui_to_M
+2015-08-19 19:15:50,796: Listening on port 5004
+2015-08-19 19:16:01,594: MGui_to_M
+2015-08-19 19:16:01,610: Accepted ('127.0.0.1', 54565) as MGui_to_M
+2015-08-19 19:16:01,719: Closing Acceptor MGui_to_M
+2015-08-19 19:17:15,758: Listening on port 5004
+2015-08-19 19:17:20,743: MGui_to_M
+2015-08-19 19:17:20,743: Accepted ('127.0.0.1', 54567) as MGui_to_M
+2015-08-19 19:17:20,853: Closing Acceptor MGui_to_M
+2015-08-19 19:18:18,155: Listening on port 5004
+2015-08-19 19:18:24,687: MGui_to_M
+2015-08-19 19:18:24,687: Accepted ('127.0.0.1', 54572) as MGui_to_M
+2015-08-19 19:18:24,905: Closing Acceptor MGui_to_M
+2015-08-19 19:21:41,640: MGui_to_M
+2015-08-19 19:21:41,640: Accepted ('127.0.0.1', 54585) as MGui_to_M
+2015-08-19 19:56:03,524: Closing Acceptor MGui_to_M
+2015-08-19 19:56:15,178: Listening on port 5004
+2015-08-19 19:56:21,969: MGui_to_M
+2015-08-19 19:56:21,974: Accepted ('127.0.0.1', 54736) as MGui_to_M
+2015-08-19 19:56:48,719: Closing Acceptor MGui_to_M
+2015-08-19 19:57:46,331: Listening on port 5004
+2015-08-19 19:57:51,222: MGui_to_M
+2015-08-19 19:57:51,222: Accepted ('127.0.0.1', 54743) as MGui_to_M
+2015-08-19 19:58:35,088: Listening on port 5004
+2015-08-19 19:58:39,010: MGui_to_M
+2015-08-19 19:58:39,010: Accepted ('127.0.0.1', 54745) as MGui_to_M
+2015-08-19 19:58:41,721: Closing Acceptor MGui_to_M
+2015-08-19 20:00:37,462: Listening on port 5004
+2015-08-19 20:00:42,228: MGui_to_M
+2015-08-19 20:00:42,228: Accepted ('127.0.0.1', 54753) as MGui_to_M
+2015-08-19 20:00:46,361: Closing Acceptor MGui_to_M
+2015-08-19 20:01:41,429: MGui_to_M
+2015-08-19 20:01:41,429: Accepted ('127.0.0.1', 54762) as MGui_to_M
+2015-08-19 20:01:48,854: Connecting to M_to_A...
+2015-08-19 20:01:48,917: Connection failed
+2015-08-19 20:01:49,276: Closing M_to_A Connector

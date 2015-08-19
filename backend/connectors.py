@@ -1,33 +1,45 @@
 import asynchat
 import socket
 import multiprocessing as mp
-import pickle
+import json
 import time
 import logging
 from collections import deque
+try:
+    from .Helpers import track
+except:
+    from Helpers import track
+
 
 
 class Connector(asynchat.async_chat):
 
-    def __init__(self, chan, callback, onCloseCallback=None, t=''):
+    def __init__(self, chan, callback, onCloseCallback=None, t='', defaultRequest='info'):
         super(Connector, self).__init__()
         self.type = t
         self.callback = callback
         self.onCloseCallback = onCloseCallback
         self.chan = chan
+        self.defaultRequest = defaultRequest
 
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         # self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self.connect(chan)
         logging.info('Connecting to {}...'.format(self.type))
         time.sleep(0.05)
+
         self.send(self.type.encode('UTF-8'))
+
         self.acceptorName = self.wait_for_connection()
 
         self.set_terminator('STOP_DATA'.encode('UTF-8'))
         self.buff = b''
 
         self.commQ = mp.Queue()
+        self.requestQ = mp.Queue()
+
+
+        self.send_request()
 
     def wait_for_connection(self):
         # Wait for connection to be made with timeout
@@ -49,11 +61,27 @@ class Connector(asynchat.async_chat):
         self.buff += data
 
     def found_terminator(self):
-        pass
+        message = json.loads(self.buff.decode('UTF-8'))
+        self.buff = b""
 
-    def send_next(self):
-        self.push(pickle.dumps('info'))
-        self.push('END_MESSAGE'.encode('UTF-8'))
+        self.callback(sender=self, data=message)
+        
+        self.send_request()
+
+    def add_request(self, request):
+        self.requestQ.put(request)
+
+    def send_request(self):
+        try:
+            instr = self.requestQ.get_nowait()
+            self.push(instr)
+        except:
+            self.push({'op':self.defaultRequest, 'parameters':{} })
+
+    @track
+    def push(self,message):
+        super(Connector, self).push(json.dumps(message).encode('UTF-8'))
+        super(Connector, self).push('END_MESSAGE'.encode('UTF-8'))
 
     def handle_close(self):
         logging.info('Closing {} Connector'.format(self.type))
@@ -77,23 +105,23 @@ class Acceptor(asynchat.async_chat):
         self.commQ = mp.Queue()
         self.dataDQ = deque()
 
-        self.push(self.type.encode('UTF-8'))
+        super(Acceptor, self).push(self.type.encode('UTF-8'))
 
     def collect_incoming_data(self, data):
         self.buff += data
 
     def found_terminator(self):
-        data = pickle.loads(self.buff)
+        message = json.loads(self.buff.decode('UTF-8'))
         self.buff = b""
 
-        ret = self.callback(sender=self, data=data)
+        ret = self.callback(sender=self, message=message)
         if not ret == None:
-            self.push(pickle.dumps(ret))
-            self.push('STOP_DATA'.encode('UTF-8'))
-        else:
-            info = self.callback(sender=self, data='info')
-            self.push(pickle.dumps(info))
-            self.push('STOP_DATA'.encode('UTF-8'))
+            self.push(json.dumps(ret))
+
+    @track
+    def push(self,message):
+        super(Acceptor, self).push(json.dumps(message).encode('UTF-8'))
+        super(Acceptor, self).push('STOP_DATA'.encode('UTF-8'))
 
     def handle_close(self):
         logging.info('Closing Acceptor {}'.format(self.type))

@@ -86,19 +86,18 @@ class DataServer(asyncore.dispatcher):
             if address == (add.chan[0], str(add.chan[1])):
                 if self._readerInfo[name][0]:
                     return
-        try:
-            reader = ArtistReader(chan=(address[0], int(address[1])),
-                                  callback=None,
-                                  onCloseCallback=self.readerClosed)
-            self._readers[reader.artistName] = reader
-            self.dQs[reader.artistName] = reader.dQ
-            self._readerInfo[reader.artistName] = (
-                True, reader.chan[0], reader.chan[1])
-            for c in self.acceptors:
-                c.commQ.put(self._readerInfo)
-            logging.info('Connected to ' + reader.artistName)
-        except Exception as e:
-            logging.info('Connection failed')
+        reader = Connector(chan=(address[0], int(address[1])),
+                              callback=self.processData,
+                              onCloseCallback=self.readerClosed,
+                              t='DS_to_A',
+                              defaultRequest='data')
+        self._readers[reader.artistName] = reader
+        self.dQs[reader.artistName] = reader.dQ
+        self._readerInfo[reader.artistName] = (
+            True, reader.chan[0], reader.chan[1])
+        for c in self.acceptors:
+            c.commQ.put(self._readerInfo)
+        logging.info('Connected to ' + reader.artistName)
 
     def removeReader(self, address=None):
         toRemove = []
@@ -114,8 +113,11 @@ class DataServer(asyncore.dispatcher):
         for c in self.acceptors:
             c.commQ.put(self._readerInfo)
 
-    def processRequests(self, sender, data):
-        if data[0] == 'data':
+    def processData(self, sender, data):
+        pass
+
+    def processRequests(self, sender, message):
+        if message['message']['op'] == 'data':
             perScan, latest, columns = data[1]
             dat = self.getData(perScan, latest, columns)
             try:
@@ -130,13 +132,19 @@ class DataServer(asyncore.dispatcher):
             # print(len(dat))
             # print(dat.head(1))
             return {'data': dat, 'format': form}
-        elif data[0] == 'Add Artist':
-            self.addReader(data[1])
-            return None
-        elif data[0] == 'Remove Artist':
+        elif message['message']['op'] == 'add_artist':
+            try:
+                self.addReader(message['message']['parameters']['address'])
+                params = {'status': 0}
+            except Exception as e:
+                logging.info('Connection failed')
+                params = {'status': 1, 'exception': e}
+            message = add_reply(message, params)
+            return message
+        elif message['message']['op'] == 'Remove Artist':
             self.removeReader(data[1])
             return None
-        elif data[0] == 'Remove All Artists':
+        elif message['message']['op'] == 'Remove All Artists':
             toRemove = []
             for name, prop in self._readerInfo.items():
                 self._readers[name].close()
@@ -149,11 +157,11 @@ class DataServer(asyncore.dispatcher):
             for c in self.acceptors:
                 c.commQ.pu(self._readerInfo)
             return None
-        elif data[0] == 'Clear Memory':
+        elif message['message']['op'] == 'Clear Memory':
             logging.info('Memory cleared')
             self._clear_memory = True
             return None
-        elif data[0] == 'Set Memory Size':
+        elif message['message']['op'] == 'Set Memory Size':
             try:
                 mem = np.abs(int(data[1]))
                 logging.info(
@@ -163,11 +171,12 @@ class DataServer(asyncore.dispatcher):
                 logging.warn(
                     'Tried setting memory to invalid value {}'.format(data[1]))
             return None
-        elif data == 'info':
-            try:
-                return sender.commQ.get_nowait()
-            except:
-                return (self._readerInfo, self.bitrates)
+        elif message['message']['op'] == 'info':
+            params = {'reader_info': self._readerInfo,
+                      'bit_rates': self.bitrates}
+
+            message = add_reply(message, params)
+            return message
 
     def readerClosed(self, reader):
         self._readerInfo[reader.artistName] = (
@@ -375,34 +384,6 @@ class DataServer(asyncore.dispatcher):
     def handle_close(self):
         logging.info('Closing DataServer')
         super(DataServer, self).handle_close()
-
-
-class ArtistReader(Connector):
-
-    def __init__(self, chan, callback, onCloseCallback):
-        super(ArtistReader, self).__init__(
-            chan, callback, onCloseCallback, t='DS_to_A')
-        self.dQ = deque()
-
-        self.artistName = self.acceptorName
-
-        self.send_next()
-
-    def found_terminator(self):
-        data = pickle.loads(self.buff)
-        self.buff = b''
-        if type(data) == dict:
-            self._format = tuple([self.artistName + ': ' + f
-                                  if f not in SHARED else f for f in data['format']])
-            d = data['data']
-            if not data == []:
-                self.dQ.append(d)
-
-        self.send_next()
-
-    def send_next(self):
-        self.push(pickle.dumps('data'))
-        self.push('END_MESSAGE'.encode('UTF-8'))
 
 
 def makeServer(PORT=5006, save=True, remember=True):

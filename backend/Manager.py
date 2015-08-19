@@ -21,7 +21,7 @@ except:
 from datetime import datetime
 import configparser
 import threading as th
-import pickle
+import json
 import numpy as np
 import pandas as pd
 import os
@@ -87,9 +87,9 @@ class Manager(asyncore.dispatcher):
                 if self._instructorInfo[name][0]:
                     return
         try:
-            instr = ArtistInstructor(chan=(address[0], int(address[1])),
+            instr = Connector(chan=(address[0], int(address[1])),
                                      callback=self.processInformation,
-                                     onCloseCallback=self.instructorClosed)
+                                     onCloseCallback=self.instructorClosed, t='M_to_A')
             self._instructors[instr.artistName] = instr
             self._instructorInfo[instr.artistName] = (
                 True, instr.chan[0], instr.chan[1])
@@ -113,43 +113,51 @@ class Manager(asyncore.dispatcher):
         for c in self.acceptors:
             c.commQ.put(self._instructorInfo)
 
-    def processInformation(self, sender, data):
-        self.format[sender.artistName] = data['format']
-        if sender.scanning and data['measuring'] != self.measuring:
-            self.measuring = data['measuring']
-            if data['measuring']:
+    def processInformation(self, sender, message):
+        reply_params = message['reply']['parameters']
+        self.format[sender.artistName] = reply_params['format']
+        if sender.scanning and reply_params['measuring'] != self.measuring:
+            self.measuring = reply_params['measuring']
+            if message['reply']['parameters']['measuring']:
                 self.notifyAll(['Measuring', self.scanNo])
             else:
                 self.notifyAll(['idling'])
                 self.scanToNext()
 
-    def processRequests(self, sender, data):
-        if data[0] == 'Add Artist':
-            self.addInstructor(data[1])
-            if os.path.isfile('scanprogress.ini'):
-                self.progressParser.read('scanprogress.ini')
-                self.curPos = ast.literal_eval(
-                    self.progressParser['progress']['curpos'])
-                self.tPerStep = ast.literal_eval(
-                    self.progressParser['progress']['tperstep'])
-                smin = ast.literal_eval(
-                    self.progressParser['progress']['scanmin'])
-                smax = ast.literal_eval(
-                    self.progressParser['progress']['scanmax'])
-                sl = self.progressParser['progress']['scanlength']
-                self.resumeName = self.progressParser['progress']['name']
-                self.scanRange = np.linspace(smin, smax, sl)
-                try:
-                    os.remove('scanprogress.ini')
-                except FileNotFoundError:
-                    pass
-                return ['resumemessage', (smin, smax, sl, self.curPos, self.tPerStep, self.resumeName)]
-            else:
-                return None
-        elif data[0] == 'Remove Artist':
+    def processRequests(self, sender, message):
+        if message['message']['op'] == 'add_artist':
+            try:
+                self.addInstructor(message['message']['parameters']['address'])
+                params = {'status': 0}
+            except Exception as e:
+                logging.info('Connection failed')
+                params = {'status': 1, 'exception': e}
+            message = add_reply(message, params)
+            return message
+            # if os.path.isfile('scanprogress.ini'):
+            #     self.progressParser.read('scanprogress.ini')
+            #     self.curPos = ast.literal_eval(
+            #         self.progressParser['progress']['curpos'])
+            #     self.tPerStep = ast.literal_eval(
+            #         self.progressParser['progress']['tperstep'])
+            #     smin = ast.literal_eval(
+            #         self.progressParser['progress']['scanmin'])
+            #     smax = ast.literal_eval(
+            #         self.progressParser['progress']['scanmax'])
+            #     sl = self.progressParser['progress']['scanlength']
+            #     self.resumeName = self.progressParser['progress']['name']
+            #     self.scanRange = np.linspace(smin, smax, sl)
+            #     try:
+            #         os.remove('scanprogress.ini')
+            #     except FileNotFoundError:
+            #         pass
+            #     return ['resumemessage', (smin, smax, sl, self.curPos, self.tPerStep, self.resumeName)]
+            # else:
+            #     return None
+        elif message['message']['op'] == 'Remove Artist':
             self.removeInstructor(data[1])
             return None
-        elif data[0] == 'Remove All Artists':
+        elif message['message']['op'] == 'Remove All Artists':
             toRemove = []
             for name, prop in self._instructorInfo.items():
                 self._instructors[name].close()
@@ -160,23 +168,29 @@ class Manager(asyncore.dispatcher):
             for c in self.acceptors:
                 c.commQ.put(self._instructorInfo)
             return None
-        elif data[0] == 'Scan':
+        elif message['message']['op'] == 'Scan':
             self.scan(data[1])
             return None
-        elif data[0] == 'Stop Scan':
+        elif message['message']['op'] == 'Stop Scan':
             self.stopScan()
             return None
-        elif data[0] == 'Resume Scan':
+        elif message['message']['op'] == 'Resume Scan':
             self.resumeScan()
             return None
-        elif data[0] == 'Setpoint':
+        elif message['message']['op'] == 'Setpoint':
             self.setpoint(data[1])
             return None
-        elif data == 'info':
-            try:
-                return sender.commQ.get_nowait()
-            except:
-                return ['infomessage', (self._instructorInfo, [self.scanNo, self.scanning, self.progress, self.format])]
+        elif message['message']['op'] == 'info':
+            params = {'instructor_info': self._instructorInfo,
+                      'scan_number': self.scanNo,
+                      'scanning': self.scanning,
+                      'progress': self.progress,
+                      'format': self.format}
+
+            message['reply'] = {}
+            message['reply']['op'] = message['message']['op'] + '_reply'
+            message['reply']['parameters'] = params
+            return message
         else:
             return None
 
@@ -330,7 +344,7 @@ class Manager(asyncore.dispatcher):
         logbooks.saveEntry(self.logbookPath, self.logbook, -1)
         self.notifyAllLogs(
                 ['Notify', self.logbook[-1], len(self.logbook) - 1])
-        self.scanner.send_instruction(
+        self.scanner.add_instruction(
             ["Setpoint Change", self.scanPar, value])
 
     def stopScan(self):
@@ -340,7 +354,7 @@ class Manager(asyncore.dispatcher):
 
     def notifyAll(self, instruction):
         for instr in self._instructors.values():
-            instr.send_instruction(instruction)
+            instr.add_instruction(instruction)
 
     def notifyAllLogs(self, instruction):
         for viewer in self.viewers:
@@ -360,7 +374,7 @@ class Manager(asyncore.dispatcher):
                 pass
             return
 
-        self.scanner.send_instruction(
+        self.scanner.add_instruction(
             ["Scan Change", self.scanPar, self.scanRange[self.curPos], self.tPerStep])
         name = self.progressParser['progress']['name']
         self.progressParser['progress'] = {'curpos': self.curPos,
@@ -421,50 +435,6 @@ class Manager(asyncore.dispatcher):
     def handle_close(self):
         logging.info('Closing Manager')
         super(Manager, self).handle_close()
-
-
-class ArtistInstructor(Connector):
-
-    """docstring for ArtistInstructor"""
-
-    def __init__(self, chan, callback, onCloseCallback):
-        super(ArtistInstructor, self).__init__(
-            chan, callback, onCloseCallback, t='M_to_A')
-        self.scanning = False
-        self.artistName = self.acceptorName
-
-        self.send_next()
-
-    def found_terminator(self):
-        message = pickle.loads(self.buff)
-        self.buff = b""
-        self.callback(sender=self, data=message)
-        self.send_next()
-
-    def send_instruction(self, instruction):
-        """
-        Some additional info on the instructions options and syntax
-
-        Changing a paramter:
-            instruction = ["Change", parameter name, value]
-        Scanning a paramter:
-            instruction = ["Scan", parameter name, range, time per step]
-        Stopping the DAQ loop:
-            instruction = ["STOP"]
-        Starting the DAQ loop:
-            instruction = ["START"]
-        Restarting the DAQ loop:
-            instruction = ["RESTART"]
-        Pauzing the DAQ loop:
-            instruction = ["PAUZE"]
-        Resuming the DAQ loop:
-            instruction = ["RESUME"]
-        Changing hardware settings:
-            instruction = ["CHANGE SETTINGS",Dict with settings]
-        """
-        self.push(pickle.dumps(instruction))
-        self.push('END_MESSAGE'.encode('UTF-8'))
-
 
 def makeManager(PORT=5007):
     return Manager(PORT=PORT)

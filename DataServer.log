@@ -1751,3 +1751,10 @@
 2015-06-12 17:22:17,983: Closing R_to_DS Connector
 2015-06-12 17:22:26,552: Connecting to R_to_DS...
 2015-06-12 17:24:09,424: Connecting to R_to_DS...
+2015-08-19 11:38:07,166: Listening on port 5005
+2015-08-19 11:38:21,225: MGui_to_M
+2015-08-19 11:38:21,225: Sender ('127.0.0.1', 51012) named MGui_to_M on socket <socket.socket fd=976, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 5005), raddr=('127.0.0.1', 51012)> not understood
+2015-08-19 11:40:20,628: MGui_to_M
+2015-08-19 11:40:20,628: Sender ('127.0.0.1', 51037) named MGui_to_M on socket <socket.socket fd=972, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 5005), raddr=('127.0.0.1', 51037)> not understood
+2015-08-19 11:40:42,407: MGui_to_M
+2015-08-19 11:40:42,407: Sender ('127.0.0.1', 51039) named MGui_to_M on socket <socket.socket fd=1000, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 5005), raddr=('127.0.0.1', 51039)> not understood

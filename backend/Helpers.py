@@ -2,6 +2,8 @@ import pandas as pd
 import time
 import numpy as np
 import logging
+from collections import OrderedDict
+import copy
 
 SAVE_PATH = 'C:/Data/'
 
@@ -73,3 +75,23 @@ def save_csv(data, name, artist=''):
         else:
             with open(SAVE_PATH + name + '_scan' + str(int(n)) + '.csv', 'a') as f:
                 group.to_csv(f, na_rep='nan')
+
+
+def track(func):
+    def func_wrapper(self,message):
+        try:
+            track = message['track'] # if succeeds: message was already tracked
+            track.append(self.type)
+            message['track'] = track
+        except:
+            message = {'message': message, 'track': [self.type]}
+        return func(self, message)
+    return func_wrapper
+
+
+def add_reply(message, params):
+    new_message = copy.deepcopy(message)
+    new_message['reply'] = {}
+    new_message['reply']['op'] = new_message['message']['op'] + '_reply'
+    new_message['reply']['parameters'] = params
+    return new_message

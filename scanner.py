@@ -135,7 +135,7 @@ class ScannerWidget(QtGui.QWidget):
         self.scanInfoSig.emit((par,rng,dt))
 
     def makeSetpoint(self):
-        par = 'laser: wavenumber'
+        par = 'M2: wavenumber'
         value = float(self.setpointEdit.text())
 
         self.setPointSig.emit((par, value))

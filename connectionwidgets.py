@@ -13,11 +13,12 @@ class ArtistConnections(QtGui.QWidget):
         self.l = 0
         self.layout = QtGui.QGridLayout(self)
 
-        self.options = ['ABU', 'CRIS', 'Laser', 'Diodes']
+        self.options = ['ABU', 'CRIS', 'Laser', 'Diodes','M2']
         self.address = {'ABU': ('PCCRIS15', 5005),
                         'CRIS': ('PCCRIS6', 5005),
                         'Laser': ('PCCRIS15', 5004),
-                        'Diodes': ('PCCRIS15', 5003)}
+                        'Diodes': ('PCCRIS15', 5003),
+                        'M2': ('PCCRIS13', 5002)}
         self.artistSelection = QtGui.QComboBox()
         self.artistSelection.addItems(self.options)
         self.artistSelection.setCurrentIndex(0)

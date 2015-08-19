@@ -14,10 +14,7 @@ try:
     from Helpers import *
 except:
     from backend.Helpers import *
-try:
-    from acquire import *
-except:
-    from backend.acquire import *
+
 try:
     from connectors import Connector, Acceptor
 except:
@@ -124,41 +121,52 @@ class Artist(asyncore.dispatcher):
     def InitializeScanning(self):
         self.ns.scanning = False
 
-    def processRequests(self, sender, data):
-        if data == 'info':
-            info = {'format': self.format, 'measuring': self.ns.measuring}
-            return info
+    def processRequests(self, sender, message):
+        if message['message']['op'] == 'info':
+            params = {'format': self.format, 'measuring': self.ns.measuring}
 
-        elif data == 'data':
-            data = []
-            l = len(sender.dataDQ)
-            if not l == 0:
-                data = [sender.dataDQ.popleft() for i in range(l)]
-            return {'data': data, 'format': self.ns.format, 'measuring': self.ns.measuring}
-
+            message['reply'] = {}
+            message['reply']['op'] = message['message']['op'] + '_reply'
+            message['reply']['parameters'] = params
         else:
-            logging.info('Got "{}" instruction from "{}"'.format(data, sender))
-            if data[0] == 'STOP':
-                self.StopDAQ()
-            elif data[0] == 'START':
-                self.StartDAQ()
-            elif data[0] == 'RESTART':
-                self.RestartDAQ()
-            elif data[0] == 'PAUZE':
-                self.PauzeDAQ()
-            elif data[0] == 'RESUME':
-                self.ResumeDAQ()
-            elif data[0] == 'CHANGE SETTINGS':
-                self.changeSet(data[1])
-            elif data[0] == 'idling':
-                self.ns.scanNo = -1
-            elif data[0] == 'Measuring':
-                self.ns.t0 = time.time()
-                self.ns.scanNo = data[1]
-            else:
-                self.iQ.put(data)
+            print(message['message'])
 
-            return None
+        return message
+
+        # if data == 'info':
+        #     info = {'format': self.format, 'measuring': self.ns.measuring}
+        #     return info
+
+        # elif data == 'data':
+        #     data = []
+        #     l = len(sender.dataDQ)
+        #     if not l == 0:
+        #         data = [sender.dataDQ.popleft() for i in range(l)]
+        #     return {'data': data, 'format': self.ns.format, 'measuring': self.ns.measuring}
+
+        # else:
+        #     logging.info('Got "{}" instruction from "{}"'.format(data, sender))
+        #     if data[0] == 'STOP':
+        #         self.StopDAQ()
+        #     elif data[0] == 'START':
+        #         self.StartDAQ()
+        #     elif data[0] == 'RESTART':
+        #         self.RestartDAQ()
+        #     elif data[0] == 'PAUZE':
+        #         self.PauzeDAQ()
+        #     elif data[0] == 'RESUME':
+        #         self.ResumeDAQ()
+        #     elif data[0] == 'CHANGE SETTINGS':
+        #         self.changeSet(data[1])
+        #     elif data[0] == 'idling':
+        #         self.ns.scanNo = -1
+        #     elif data[0] == 'Measuring':
+        #         self.ns.t0 = time.time()
+        #         self.ns.scanNo = data[1]
+        #     else:
+        #         self.iQ.put(data)
+
+        #     return None
 
     def StartDAQ(self):
         if not self.stopFlag.is_set():
@@ -300,6 +308,7 @@ class Artist(asyncore.dispatcher):
 
 def makeArtist(name='test'):
     if name == 'ABU':
+        from acquire.acquire import acquire
         artist = Artist(PORT=5005, name='ABU', save_data=True)
         artist.ns.format = (
             'time', 'scan', 'Counts', 'AOV', 'AIChannel1', 'AIChannel2')
@@ -310,6 +319,7 @@ def makeArtist(name='test'):
                                noOfAi=2,
                                clockChannel="/Dev1/PFI1")
     elif name == 'CRIS':
+        from acquire.acquire import acquire
         artist = Artist(PORT=5005, name='CRIS', save_data=True)
         artist.ns.format = (
             'time', 'scan', 'Counts', 'AOV', 'AIChannel1', 'AIChannel2')
@@ -320,17 +330,24 @@ def makeArtist(name='test'):
                                noOfAi=2,
                                clockChannel="/Dev1/PFI1")
     elif name == 'laser':
+        from acquire.acquireMatisse import acquireMatisse
         artist = Artist(PORT=5004, name='laser', save_data=True)
         artist.ns.format = (
             'time', 'scan', 'setpoint', 'wavenumber', 'wavenumber HeNe')
-        artist.acquireFunction = acquireLaser
+        artist.acquireFunction = acquireMatisse
     elif name == 'diodes':
+        from acquire.acquireDiodes import acquireDiodes
         artist = Artist(PORT=5003, name='diodes', save_data=True)
         artist.ns.format = (
             'time', 'scan', 'AIChannel1', 'AIChannel2', 'AIChannel3')
         artist.acquireFunction = acquireDiodes
         artist.settings = dict(aiChannel="/Dev1/ai1,/Dev1/ai2,/Dev1/ai3",
                                noOfAi=3)
+    elif name == 'M2':
+        from acquire_files.acquireM2 import acquireM2
+        artist = Artist(PORT=5002, name='M2', save_data=True)
+        artist.ns.format = ()
+        artist.acquireFunction = acquireM2
     return artist
 
 if __name__ == '__main__':

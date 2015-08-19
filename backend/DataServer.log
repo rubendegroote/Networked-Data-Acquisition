@@ -1645,3 +1645,94 @@
 2015-06-12 17:27:18,199: Closing Acceptor R_to_DS
 2015-06-12 17:27:19,399: Closing Acceptor MGui_to_DS
 2015-06-12 17:27:19,399: Closing Acceptor MGui_to_DS
+2015-08-19 14:30:37,041: Connecting to DS_to_A...
+2015-08-19 14:30:37,104: Connected to M2
+2015-08-19 14:34:46,218: Closing DS_to_A Connector
+2015-08-19 14:49:30,425: Listening on port 5005
+2015-08-19 14:49:40,872: MGui_to_DS
+2015-08-19 14:49:40,872: Accepted ('127.0.0.1', 52034) as MGui_to_DS
+2015-08-19 14:49:41,966: Connecting to DS_to_A...
+2015-08-19 14:49:42,028: Closing DS_to_A Connector
+2015-08-19 14:49:43,033: Connection failed
+2015-08-19 14:49:44,017: Connecting to DS_to_A...
+2015-08-19 14:49:44,080: Connected to M2
+2015-08-19 14:50:57,832: Closing DS_to_A Connector
+2015-08-19 14:51:17,921: Connecting to DS_to_A...
+2015-08-19 14:51:17,983: Connected to M2
+2015-08-19 14:54:20,151: Closing DS_to_A Connector
+2015-08-19 17:37:19,084: Closing Acceptor MGui_to_DS
+2015-08-19 17:39:37,214: Listening on port 5005
+2015-08-19 17:44:06,432: MGui_to_DS
+2015-08-19 17:44:06,432: Accepted ('127.0.0.1', 52695) as MGui_to_DS
+2015-08-19 17:45:06,913: Closing Acceptor MGui_to_DS
+2015-08-19 17:45:14,429: MGui_to_DS
+2015-08-19 17:45:14,429: Accepted ('127.0.0.1', 52701) as MGui_to_DS
+2015-08-19 17:45:44,807: Closing Acceptor MGui_to_DS
+2015-08-19 18:49:16,319: Listening on port 5005
+2015-08-19 18:49:51,064: MGui_to_DS
+2015-08-19 18:49:51,064: Accepted ('127.0.0.1', 52853) as MGui_to_DS
+2015-08-19 18:51:47,328: MGui_to_DS
+2015-08-19 18:51:47,328: Accepted ('127.0.0.1', 54399) as MGui_to_DS
+2015-08-19 18:51:51,579: Closing Acceptor MGui_to_DS
+2015-08-19 18:51:52,563: Closing Acceptor MGui_to_DS
+2015-08-19 18:52:19,597: MGui_to_DS
+2015-08-19 18:52:19,597: Accepted ('127.0.0.1', 54427) as MGui_to_DS
+2015-08-19 18:52:49,945: Closing Acceptor MGui_to_DS
+2015-08-19 18:54:17,183: MGui_to_DS
+2015-08-19 18:54:17,183: Accepted ('127.0.0.1', 54437) as MGui_to_DS
+2015-08-19 18:54:17,293: Closing Acceptor MGui_to_DS
+2015-08-19 18:54:29,176: MGui_to_DS
+2015-08-19 18:54:29,176: Accepted ('127.0.0.1', 54440) as MGui_to_DS
+2015-08-19 18:54:29,395: Closing Acceptor MGui_to_DS
+2015-08-19 18:56:50,890: Listening on port 5005
+2015-08-19 18:57:25,546: MGui_to_DS
+2015-08-19 18:57:25,546: Accepted ('127.0.0.1', 54445) as MGui_to_DS
+2015-08-19 18:57:25,656: Closing Acceptor MGui_to_DS
+2015-08-19 19:02:11,836: Listening on port 5005
+2015-08-19 19:02:22,265: MGui_to_DS
+2015-08-19 19:02:22,265: Accepted ('127.0.0.1', 54471) as MGui_to_DS
+2015-08-19 19:02:22,375: Closing Acceptor MGui_to_DS
+2015-08-19 19:05:25,141: Listening on port 5005
+2015-08-19 19:05:32,022: MGui_to_DS
+2015-08-19 19:05:32,022: Accepted ('127.0.0.1', 54544) as MGui_to_DS
+2015-08-19 19:05:32,132: Closing Acceptor MGui_to_DS
+2015-08-19 19:08:09,842: Listening on port 5005
+2015-08-19 19:08:18,740: MGui_to_DS
+2015-08-19 19:08:18,740: Accepted ('127.0.0.1', 54550) as MGui_to_DS
+2015-08-19 19:08:18,850: Closing Acceptor MGui_to_DS
+2015-08-19 19:15:47,593: Listening on port 5005
+2015-08-19 19:16:01,672: MGui_to_DS
+2015-08-19 19:16:01,672: Accepted ('127.0.0.1', 54566) as MGui_to_DS
+2015-08-19 19:16:01,797: Closing Acceptor MGui_to_DS
+2015-08-19 19:17:11,906: Listening on port 5005
+2015-08-19 19:17:20,806: MGui_to_DS
+2015-08-19 19:17:20,806: Accepted ('127.0.0.1', 54568) as MGui_to_DS
+2015-08-19 19:17:21,024: Closing Acceptor MGui_to_DS
+2015-08-19 19:18:10,852: Listening on port 5005
+2015-08-19 19:18:24,749: MGui_to_DS
+2015-08-19 19:18:24,749: Accepted ('127.0.0.1', 54573) as MGui_to_DS
+2015-08-19 19:18:25,077: Closing Acceptor MGui_to_DS
+2015-08-19 19:21:41,718: MGui_to_DS
+2015-08-19 19:21:41,718: Accepted ('127.0.0.1', 54586) as MGui_to_DS
+2015-08-19 19:56:03,524: Closing Acceptor MGui_to_DS
+2015-08-19 19:56:10,709: Listening on port 5005
+2015-08-19 19:56:22,042: MGui_to_DS
+2015-08-19 19:56:22,042: Accepted ('127.0.0.1', 54737) as MGui_to_DS
+2015-08-19 19:56:48,719: Closing Acceptor MGui_to_DS
+2015-08-19 19:57:42,912: Listening on port 5005
+2015-08-19 19:57:51,284: MGui_to_DS
+2015-08-19 19:57:51,284: Accepted ('127.0.0.1', 54744) as MGui_to_DS
+2015-08-19 19:58:25,831: Closing Acceptor MGui_to_DS
+2015-08-19 19:58:31,523: Listening on port 5005
+2015-08-19 19:58:39,072: MGui_to_DS
+2015-08-19 19:58:39,072: Accepted ('127.0.0.1', 54746) as MGui_to_DS
+2015-08-19 19:58:41,690: Closing Acceptor MGui_to_DS
+2015-08-19 20:00:32,993: Listening on port 5005
+2015-08-19 20:00:42,322: MGui_to_DS
+2015-08-19 20:00:42,322: Accepted ('127.0.0.1', 54754) as MGui_to_DS
+2015-08-19 20:00:46,251: Closing Acceptor MGui_to_DS
+2015-08-19 20:01:41,554: MGui_to_DS
+2015-08-19 20:01:41,554: Accepted ('127.0.0.1', 54763) as MGui_to_DS
+2015-08-19 20:01:48,745: Connecting to DS_to_A...
+2015-08-19 20:01:48,808: Connection failed
+2015-08-19 20:01:48,808: Closing Acceptor MGui_to_DS

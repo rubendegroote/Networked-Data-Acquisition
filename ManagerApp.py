@@ -61,11 +61,11 @@ class ManagerApp(QtGui.QMainWindow):
         self.disable()
 
     def addConnection(self, data):
-        try:
-            self.Man_DS_Connector.man.handle_close()
-            self.Man_DS_Connector.DS.handle_close()
-        except:
-            pass
+        # try:
+        #     self.Man_DS_Connector.man.handle_close()
+        #     self.Man_DS_Connector.DS.handle_close()
+        # except:
+        #     pass
         ManChan = data[0], int(data[1])
         DSChan = data[2], int(data[3])
         self.Man_DS_Connector = Man_DS_Connector(ManChan, DSChan,
@@ -109,15 +109,15 @@ class ManagerApp(QtGui.QMainWindow):
         self.Man_DS_Connector.instruct('Manager', ['Scan', scanInfo])
 
     def setPoint(self, setpointInfo):
-        print(setpointInfo)
         self.Man_DS_Connector.instruct('Manager', ['Setpoint', setpointInfo])
 
     def stopScan(self):
         self.Man_DS_Connector.instruct('Manager', ['Stop Scan'])
 
     def addArtist(self, info):
-        sender, address = info
-        self.Man_DS_Connector.instruct(sender, ['Add Artist', address])
+        receiver, address = info
+        message = {'op': 'add_artist', 'parameters': {'address': address}}
+        self.Man_DS_Connector.instruct(receiver, message)
 
     def removeArtist(self, address):
         self.Man_DS_Connector.instruct('Both', ['Remove Artist', address])
@@ -164,22 +164,22 @@ class Man_DS_Connector():
 
     def __init__(self, ManChan, DSChan, callBack, resumeScanCallback):
         self.AppCallBack = callBack
-        try:
-            self.man = ManagerConnector(ManChan,
-                                        callback=None,
-                                        onCloseCallback=self.onClosedCallback,
-                                        resumeScanCallback=resumeScanCallback)
-        except Exception as e:
-            print(e)
-            self.man = None
+        # try:
+        self.man = ManagerConnector(ManChan,
+                                    callback=None,
+                                    onCloseCallback=self.onClosedCallback,
+                                    resumeScanCallback=resumeScanCallback)
+        # except Exception as e:
+        #     print(e)
+        #     self.man = None
 
-        try:
-            self.DS = DataServerConnector(DSChan,
-                                          callback=None,
-                                          onCloseCallback=self.onClosedCallback)
-        except Exception as e:
-            print(e)
-            self.DS = None
+        # try:
+        self.DS = DataServerConnector(DSChan,
+                                      callback=None,
+                                      onCloseCallback=self.onClosedCallback)
+        # except Exception as e:
+            # print(e)
+            # self.DS = None
 
     def getArtistInfo(self):
         retDict = {}
@@ -206,14 +206,14 @@ class Man_DS_Connector():
     def scanning(self):
         return self.man.scanning
 
-    def instruct(self, t, instr):
-        if t == 'Manager':
-            self.man.commQ.put(instr)
-        elif t == 'Data Server':
-            self.DS.commQ.put(instr)
-        elif t == 'Both':
-            self.man.commQ.put(instr)
-            self.DS.commQ.put(instr)
+    def instruct(self, receiver, instr):
+        if receiver == 'Manager':
+            self.man.add_request(instr)
+        elif receiver == 'Data Server':
+            self.DS.add_request(instr)
+        elif receiver == 'Both':
+            self.man.add_request(instr)
+            self.DS.add_request(instr)
 
     def onClosedCallback(self, server):
         print(server, server.type)
@@ -233,31 +233,35 @@ class ManagerConnector(Connector):
         self.scanning = False
         self.format = {}
         self.artists = {}
+        self.callback = self.dummy
 
-        self.send_next()
+        self.send_request()
 
-    def found_terminator(self):
-        buff = self.buff
-        self.buff = b''
-        data = pickle.loads(buff)
-        if type(data) == list:
-            message, data = data
-            if message == 'infomessage':
-                self.artists, info = data
-                self.scanNo, self.scanning, self.progress, self.format = info
-            elif message == 'resumemessage':
-                smin, smax, sl, curpos, tPerStep, name = data
-                self.resumeSignal.resumescan.emit(
-                    (smin, smax, sl, curpos, tPerStep, name))
-            else:
-                pass
+    def dummy(self, *args, **kwargs):
+        pass
 
-        try:
-            info = self.commQ.get_nowait()
-            self.push(pickle.dumps(info))
-            self.push('END_MESSAGE'.encode('UTF-8'))
-        except:
-            self.send_next()
+    # def found_terminator(self):
+    #     buff = self.buff
+    #     self.buff = b''
+    #     data = pickle.loads(buff)
+    #     if type(data) == list:
+    #         message, data = data
+    #         if message == 'infomessage':
+    #             self.artists, info = data
+    #             self.scanNo, self.scanning, self.progress, self.format = info
+    #         elif message == 'resumemessage':
+    #             smin, smax, sl, curpos, tPerStep, name = data
+    #             self.resumeSignal.resumescan.emit(
+    #                 (smin, smax, sl, curpos, tPerStep, name))
+    #         else:
+    #             pass
+
+    #     try:
+    #         info = self.commQ.get_nowait()
+    #         self.push(pickle.dumps(info))
+    #         self.push('END_MESSAGE'.encode('UTF-8'))
+    #     except:
+    #         self.send_next()
 
 
 class DataServerConnector(Connector):
@@ -267,18 +271,22 @@ class DataServerConnector(Connector):
             chan, callback, onCloseCallback, t='MGui_to_DS')
 
         self.artists = {}
+        self.callback = self.dummy
 
-        self.send_next()
+        self.send_request()
 
-    def found_terminator(self):
-        buff = self.buff
-        self.buff = b''
-        data = pickle.loads(buff)
-        if type(data) == tuple:
-            self.artists, bitrates = data
-        try:
-            info = self.commQ.get_nowait()
-            self.push(pickle.dumps(info))
-            self.push('END_MESSAGE'.encode('UTF-8'))
-        except:
-            self.send_next()
+    def dummy(self, *args, **kwargs):
+        pass
+
+    # def found_terminator(self):
+    #     buff = self.buff
+    #     self.buff = b''
+    #     data = pickle.loads(buff)
+    #     if type(data) == tuple:
+    #         self.artists, bitrates = data
+    #     try:
+    #         info = self.commQ.get_nowait()
+    #         self.push(pickle.dumps(info))
+    #         self.push('END_MESSAGE'.encode('UTF-8'))
+    #     except:
+    #         self.send_next()
