@@ -4,8 +4,9 @@ import asynchat
 
 
 class Dispatcher(asyncore.dispatcher):
-    def _init__(self):
+    def _init__(self,PORT):
         super(Dispatcher,self).__init__()
+        self.port = port
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         # self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self.bind(('', self.port))
@@ -41,9 +42,8 @@ class Dispatcher(asyncore.dispatcher):
                 if self.connInfo[name][0]:
                     return
         conn = Connector(chan=(address[0], int(address[1])),
-                              callback=self.connector_callback,
-                              onCloseCallback=self.connector_closed,
-                              t='DS_to_A',
+                              callback=self.connector_cb,
+                              onCloseCallback=self.connector_closed_cb,
                               defaultRequest='data')
         self.connectors[conn.artistName] = conn
         self.connInfo[conn.artistName] = (
@@ -62,7 +62,11 @@ class Dispatcher(asyncore.dispatcher):
             del self.connectors[name]
             del self.connInfo[name]
 
-    def acceptor_callback(self,message):
+    def remove_all_connectors(self):
+        ## to implement
+        pass
+
+    def acceptor_cb(self,message):
         function = message['message']['op']
         args = message['message']['parameters']
 
@@ -70,14 +74,15 @@ class Dispatcher(asyncore.dispatcher):
 
         return add_reply(message,params)
 
-    def acceptor_closed(self,acceptor):
+    def acceptor_closed_cb(self,acceptor):
         self.acceptors.remove(acceptor)
 
-    def connector_calback(self,message):
+    def connector_cb(self,message):
         ## deal with message
+        ## perhaps notify higher-ups
         pass # no return value needed!
 
-    def connector_closed(self,connector):
+    def connector_closed_cb(self,connector):
         self.connInfo[connector.artistName] = (
             False, connector.chan[0], connector.chan[1])
         for c in self.acceptors:
@@ -93,8 +98,8 @@ class Dispatcher(asyncore.dispatcher):
             except:
                 return
             self.acceptors.append(Acceptor(sock=sock,
-                               callback=self.acceptor_callback,
-                               onCloseCallback=self.acceptor_closed))
+                               callback=self.acceptor_cb,
+                               onCloseCallback=self.acceptor_closed_cb))
 
     def get_sender_ID(self, sock):
         now = time.time()
@@ -111,6 +116,3 @@ class Dispatcher(asyncore.dispatcher):
     def handle_close(self):
         super(Dispatcher, self).handle_close()
 
-d = Dispatcher()
-print(dir(d))
-print(getattr(d,'get_sender_ID'))
