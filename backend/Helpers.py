@@ -78,13 +78,13 @@ def save_csv(data, name, artist=''):
 
 
 def track(func):
-    def func_wrapper(self,message):
+    def func_wrapper(self, message):
         try:
             track = message['track'] # if succeeds: message was already tracked
-            track.append(self.type)
+            track.append(self.name)
             message['track'] = track
-        except:
-            message = {'message': message, 'track': [self.type]}
+        except KeyError as e:
+            message['track'] = [self.name]
         return func(self, message)
     return func_wrapper
 
@@ -95,3 +95,14 @@ def add_reply(message, params):
     new_message['reply']['op'] = new_message['message']['op'] + '_reply'
     new_message['reply']['parameters'] = params
     return new_message
+
+
+def try_call(func):
+    def func_wrapper(*args, **kwargs):
+        try:
+            reply_dict = func(*args, **kwargs)
+            reply_dict['status'] = 0
+        except Exception as e:
+            reply_dict = {'status': 1, 'exception': str(e)}
+        return reply_dict
+    return func_wrapper

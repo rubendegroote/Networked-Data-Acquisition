@@ -1736,3 +1736,173 @@
 2015-08-19 20:01:48,745: Connecting to DS_to_A...
 2015-08-19 20:01:48,808: Connection failed
 2015-08-19 20:01:48,808: Closing Acceptor MGui_to_DS
+2015-08-20 09:46:31,152: Closing DS_to_A Connector
+2015-08-20 09:46:56,677: Listening on port 5005
+2015-08-20 09:51:01,126: Listening on port 5005
+2015-08-20 09:56:39,081: Listening on port 5005
+2015-08-20 10:01:13,311: MGui_to_DS
+2015-08-20 10:01:13,311: Accepted ('127.0.0.1', 53521) as MGui_to_DS
+2015-08-20 10:01:41,780: MGui_to_DS
+2015-08-20 10:01:41,780: Accepted ('127.0.0.1', 53523) as MGui_to_DS
+2015-08-20 10:01:58,480: Closing Acceptor MGui_to_DS
+2015-08-20 10:01:58,590: Closing Acceptor MGui_to_DS
+2015-08-20 10:02:10,013: MGui_to_DS
+2015-08-20 10:02:10,013: Accepted ('127.0.0.1', 53525) as MGui_to_DS
+2015-08-20 10:05:10,921: Closing Acceptor MGui_to_DS
+2015-08-20 10:05:16,745: MGui_to_DS
+2015-08-20 10:05:16,745: Accepted ('127.0.0.1', 53539) as MGui_to_DS
+2015-08-20 10:07:47,577: Closing Acceptor MGui_to_DS
+2015-08-20 10:13:50,742: MGui_to_DS
+2015-08-20 10:13:50,742: Accepted ('127.0.0.1', 53564) as MGui_to_DS
+2015-08-20 10:14:51,201: Closing Acceptor MGui_to_DS
+2015-08-20 10:15:01,323: MGui_to_DS
+2015-08-20 10:15:01,323: Accepted ('127.0.0.1', 53567) as MGui_to_DS
+2015-08-20 10:16:01,329: Closing Acceptor MGui_to_DS
+2015-08-20 10:16:10,275: MGui_to_DS
+2015-08-20 10:16:10,275: Accepted ('127.0.0.1', 53570) as MGui_to_DS
+2015-08-20 10:18:26,136: Closing Acceptor MGui_to_DS
+2015-08-20 10:18:38,392: Listening on port 5005
+2015-08-20 10:18:49,737: MGui_to_DS
+2015-08-20 10:18:49,737: Accepted ('127.0.0.1', 53574) as MGui_to_DS
+2015-08-20 10:19:23,755: Closing Acceptor MGui_to_DS
+2015-08-20 10:19:29,192: Listening on port 5005
+2015-08-20 10:19:36,544: MGui_to_DS
+2015-08-20 10:19:36,544: Accepted ('127.0.0.1', 53583) as MGui_to_DS
+2015-08-20 10:20:15,941: Listening on port 5005
+2015-08-20 10:25:11,130: Listening on port 5005
+2015-08-20 10:25:19,216: MGui_to_DS
+2015-08-20 10:25:19,216: Accepted ('127.0.0.1', 53597) as MGui_to_DS
+2015-08-20 10:28:21,482: Listening on port 5005
+2015-08-20 10:28:32,010: MGui_to_DS
+2015-08-20 10:28:32,010: Accepted ('127.0.0.1', 53628) as MGui_to_DS
+2015-08-20 10:28:32,129: Closing Acceptor MGui_to_DS
+2015-08-20 10:29:38,194: Listening on port 5005
+2015-08-20 10:29:44,240: MGui_to_DS
+2015-08-20 10:29:44,240: Accepted ('127.0.0.1', 53633) as MGui_to_DS
+2015-08-20 10:29:44,459: Closing Acceptor MGui_to_DS
+2015-08-20 10:31:59,482: Listening on port 5005
+2015-08-20 10:32:28,665: MGui_to_DS
+2015-08-20 10:32:28,665: Accepted ('127.0.0.1', 53641) as MGui_to_DS
+2015-08-20 10:34:18,386: Closing Acceptor MGui_to_DS
+2015-08-20 10:34:23,643: MGui_to_DS
+2015-08-20 10:34:23,643: Accepted ('127.0.0.1', 53654) as MGui_to_DS
+2015-08-20 10:35:32,799: Listening on port 5005
+2015-08-20 10:35:45,215: MGui_to_DS
+2015-08-20 10:35:45,215: Accepted ('127.0.0.1', 53662) as MGui_to_DS
+2015-08-20 10:37:31,747: Closing Acceptor MGui_to_DS
+2015-08-20 10:37:41,441: Listening on port 5005
+2015-08-20 10:37:48,438: MGui_to_DS
+2015-08-20 10:37:48,438: Accepted ('127.0.0.1', 53703) as MGui_to_DS
+2015-08-20 10:39:03,295: Listening on port 5005
+2015-08-20 10:39:14,508: MGui_to_DS
+2015-08-20 10:39:14,508: Accepted ('127.0.0.1', 53709) as MGui_to_DS
+2015-08-20 10:41:48,289: Listening on port 5005
+2015-08-20 10:41:55,723: MGui_to_DS
+2015-08-20 10:41:55,723: Accepted ('127.0.0.1', 53724) as MGui_to_DS
+2015-08-20 10:48:38,632: Listening on port 5005
+2015-08-20 10:48:47,649: MGui_to_DS
+2015-08-20 10:48:47,649: Accepted ('127.0.0.1', 53733) as MGui_to_DS
+2015-08-20 10:49:14,025: MGui_to_DS
+2015-08-20 10:49:14,025: Accepted ('127.0.0.1', 53737) as MGui_to_DS
+2015-08-20 11:01:36,590: Closing Acceptor MGui_to_DS
+2015-08-20 11:01:36,699: Closing Acceptor MGui_to_DS
+2015-08-20 11:01:48,849: Listening on port 5005
+2015-08-20 11:02:02,166: MGui_to_DS
+2015-08-20 11:02:02,166: Accepted ('127.0.0.1', 53792) as MGui_to_DS
+2015-08-20 11:03:44,513: Listening on port 5005
+2015-08-20 11:03:57,246: test
+2015-08-20 11:03:57,246: Sender ('127.0.0.1', 53805) named test on socket <socket.socket fd=1012, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 5005), raddr=('127.0.0.1', 53805)> not understood
+2015-08-20 11:05:09,823: Listening on port 5005
+2015-08-20 11:05:25,512: MGui_to_DS
+2015-08-20 11:05:25,512: Accepted ('127.0.0.1', 53808) as MGui_to_DS
+2015-08-20 11:07:23,632: Listening on port 5005
+2015-08-20 11:07:30,197: MGui_to_DS
+2015-08-20 11:07:30,197: Accepted ('127.0.0.1', 53813) as MGui_to_DS
+2015-08-20 11:08:48,676: Closing Acceptor MGui_to_DS
+2015-08-20 11:08:58,524: MGui_to_DS
+2015-08-20 11:08:58,524: Accepted ('127.0.0.1', 53822) as MGui_to_DS
+2015-08-20 11:11:06,906: Closing Acceptor MGui_to_DS
+2015-08-20 11:11:17,709: MGui_to_DS
+2015-08-20 11:11:17,709: Accepted ('127.0.0.1', 53826) as MGui_to_DS
+2015-08-20 11:11:31,465: Closing Acceptor MGui_to_DS
+2015-08-20 16:42:17,583: MGui_to_DS
+2015-08-20 16:42:20,956: Connecting to test...
+2015-08-20 16:42:21,347: Closing test Connector
+2015-08-20 16:44:25,852: MGui_to_DS
+2015-08-20 16:44:30,982: Connecting to test...
+2015-08-20 16:44:31,372: Closing test Connector
+2015-08-20 16:46:01,025: MGui_to_DS
+2015-08-20 16:46:04,288: Connecting to test...
+2015-08-20 16:46:07,621: Closing test Connector
+2015-08-20 16:46:10,356: Closing Acceptor test
+2015-08-20 17:38:07,937: MGui_to_DS
+2015-08-20 17:38:08,156: Closing Acceptor test
+2015-08-20 17:43:36,187: MGui_to_DS
+2015-08-20 17:46:04,441: MGui_to_DS
+2015-08-20 17:46:04,550: Closing Acceptor DataServer
+2015-08-20 17:47:34,649: MGui_to_DS
+2015-08-20 17:47:34,759: Closing Acceptor DataServer
+2015-08-20 17:50:48,913: MGui_to_DS
+2015-08-20 17:50:49,023: Closing Acceptor DataServer
+2015-08-20 17:53:25,248: MGui_to_DS
+2015-08-20 17:53:25,358: Closing Acceptor DataServer
+2015-08-20 17:54:50,754: MGui_to_DS
+2015-08-20 17:54:50,972: Closing Acceptor DataServer
+2015-08-20 18:00:51,435: MGui_to_DS
+2015-08-20 18:00:54,029: Closing Acceptor DataServer
+2015-08-20 18:46:23,738: MGui_to_DS
+2015-08-20 18:47:04,730: Closing Acceptor DataServer
+2015-08-20 18:49:35,833: MGui_to_DS
+2015-08-20 18:49:42,769: Closing Acceptor DataServer
+2015-08-20 18:53:20,887: MGui_to_DS
+2015-08-20 18:53:24,666: Connecting to DataServer...
+2015-08-20 18:53:33,875: Closing Acceptor DataServer
+2015-08-20 19:28:03,952: Closing DataServer Connector
+2015-08-20 19:28:28,102: MGui_to_DS
+2015-08-20 19:28:51,510: Connecting to DataServer...
+2015-08-20 19:28:56,932: Closing Acceptor DataServer
+2015-08-20 19:29:45,258: MGui_to_DS
+2015-08-20 19:31:28,772: MGui_to_DS
+2015-08-20 19:31:36,415: Connecting to DataServer...
+2015-08-20 19:31:38,884: Closing Acceptor DataServer
+2015-08-20 19:31:41,509: Closing DataServer Connector
+2015-08-20 19:38:21,427: MGui_to_DS
+2015-08-20 19:38:26,461: Connecting to DataServer...
+2015-08-20 19:38:30,242: Closing Acceptor DataServer
+2015-08-20 19:40:04,818: Closing DataServer Connector
+2015-08-20 19:41:20,984: MGui_to_DS
+2015-08-20 19:41:46,365: Connecting to DataServer...
+2015-08-20 19:41:47,631: Closing Acceptor DataServer
+2015-08-20 19:42:04,647: Closing DataServer Connector
+2015-08-20 19:45:12,886: MGui_to_DS
+2015-08-20 19:45:15,724: Connecting to DataServer...
+2015-08-20 19:45:52,937: Closing DataServer Connector
+2015-08-20 19:46:28,363: Connecting to DataServer...
+2015-08-20 19:46:33,785: Closing DataServer Connector
+2015-08-20 19:48:27,514: Closing Acceptor DataServer
+2015-08-20 19:48:44,520: MGui_to_DS
+2015-08-20 19:48:47,572: Connecting to DataServer...
+2015-08-20 19:49:00,432: Closing DataServer Connector
+2015-08-20 19:49:51,302: Closing Acceptor DataServer
+2015-08-20 19:50:10,093: MGui_to_DS
+2015-08-20 19:50:12,709: Connecting to DataServer...
+2015-08-20 19:50:56,536: Connecting to DataServer...
+2015-08-20 19:52:21,708: Closing DataServer Connector
+2015-08-20 19:52:28,271: Closing DataServer Connector
+2015-08-20 19:56:00,011: Closing Acceptor DataServer
+2015-08-20 19:56:20,789: MGui_to_DS
+2015-08-20 19:56:24,387: Connecting to DataServer...
+2015-08-20 19:56:37,242: Closing DataServer Connector
+2015-08-20 19:58:43,530: Closing Acceptor DataServer
+2015-08-20 20:00:23,374: MGui_to_DS
+2015-08-20 20:00:29,488: Connecting to DataServer...
+2015-08-20 20:00:50,543: Connecting to DataServer...
+2015-08-20 20:01:04,732: Closing DataServer Connector
+2015-08-20 20:01:15,842: Closing DataServer Connector
+2015-08-20 20:01:20,217: Connecting to DataServer...
+2015-08-20 20:01:56,748: Closing DataServer Connector
+2015-08-20 20:08:24,124: Closing Acceptor DataServer
+2015-08-20 20:08:40,117: MGui_to_DS
+2015-08-20 20:08:49,406: Connecting to DataServer...
+2015-08-20 20:08:52,859: Closing DataServer Connector
+2015-08-20 20:08:55,016: Closing Acceptor DataServer

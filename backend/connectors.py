@@ -14,9 +14,9 @@ except:
 
 class Connector(asynchat.async_chat):
 
-    def __init__(self, chan, callback, onCloseCallback=None, t='', defaultRequest='info'):
+    def __init__(self, chan, callback, onCloseCallback=None, name='', defaultRequest='status'):
         super(Connector, self).__init__()
-        self.type = t
+        self.name = name
         self.callback = callback
         self.onCloseCallback = onCloseCallback
         self.chan = chan
@@ -25,10 +25,10 @@ class Connector(asynchat.async_chat):
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         # self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self.connect(chan)
-        logging.info('Connecting to {}...'.format(self.type))
+        logging.info('Connecting to {}...'.format(self.name))
         time.sleep(0.05)
 
-        self.send(self.type.encode('UTF-8'))
+        self.send(self.name.encode('UTF-8'))
 
         self.acceptorName = self.wait_for_connection()
 
@@ -50,7 +50,7 @@ class Connector(asynchat.async_chat):
                 mes = self.recv(1024).decode('UTF-8')
                 success = True
                 break
-            except:
+            except Exception as e:
                 pass
         if not success:
             raise
@@ -64,7 +64,7 @@ class Connector(asynchat.async_chat):
         message = json.loads(self.buff.decode('UTF-8'))
         self.buff = b""
 
-        self.callback(sender=self, data=message)
+        self.callback(message=message)
         
         self.send_request()
 
@@ -74,17 +74,21 @@ class Connector(asynchat.async_chat):
     def send_request(self):
         try:
             instr = self.requestQ.get_nowait()
-            self.push(instr)
+            self.push({'message': instr})
         except:
-            self.push({'op':self.defaultRequest, 'parameters':{} })
+            self.push({'message': {'op': self.defaultRequest, 'parameters': {}}})
 
     @track
     def push(self,message):
-        super(Connector, self).push(json.dumps(message).encode('UTF-8'))
-        super(Connector, self).push('END_MESSAGE'.encode('UTF-8'))
+        if message != '':
+            dump = json.dumps(message)
+            super(Connector, self).push(json.dumps(message).encode('UTF-8'))
+            super(Connector, self).push('END_MESSAGE'.encode('UTF-8'))
+        else:
+            print('Connector vomited')
 
     def handle_close(self):
-        logging.info('Closing {} Connector'.format(self.type))
+        logging.info('Closing {} Connector'.format(self.name))
         try:
             self.onCloseCallback(self)
         except AttributeError:
@@ -94,37 +98,45 @@ class Connector(asynchat.async_chat):
 
 class Acceptor(asynchat.async_chat):
 
-    def __init__(self, sock, callback=None, onCloseCallback=None, t=''):
+    def __init__(self, sock, callback=None, onCloseCallback=None, name=''):
         super(Acceptor, self).__init__(sock)
         self.set_terminator('END_MESSAGE'.encode('UTF-8'))
         self.callback = callback
         self.onCloseCallback = onCloseCallback
-        self.type = t
+        self.name = name
 
         self.buff = b""
         self.commQ = mp.Queue()
         self.dataDQ = deque()
 
-        super(Acceptor, self).push(self.type.encode('UTF-8'))
+        super(Acceptor, self).push(self.name.encode('UTF-8'))
 
     def collect_incoming_data(self, data):
         self.buff += data
 
     def found_terminator(self):
-        message = json.loads(self.buff.decode('UTF-8'))
+        try:
+            message = json.loads(self.buff.decode('UTF-8'))
+        except ValueError as e:
+            print(1, self.buff.decode('UTF-8'))
+            raise
         self.buff = b""
 
-        ret = self.callback(sender=self, message=message)
+        ret = self.callback(message=message)
         if not ret == None:
-            self.push(json.dumps(ret))
+            self.push(ret)
 
     @track
     def push(self,message):
-        super(Acceptor, self).push(json.dumps(message).encode('UTF-8'))
-        super(Acceptor, self).push('STOP_DATA'.encode('UTF-8'))
+        if message != '':
+            dump = json.dumps(message)
+            super(Acceptor, self).push(json.dumps(message).encode('UTF-8'))
+            super(Acceptor, self).push('STOP_DATA'.encode('UTF-8'))
+        else:
+            print('Acceptor vomited')
 
     def handle_close(self):
-        logging.info('Closing Acceptor {}'.format(self.type))
+        logging.info('Closing Acceptor {}'.format(self.name))
         try:
             self.onCloseCallback(self)
         except AttributeError:

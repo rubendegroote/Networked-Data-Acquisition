@@ -20,11 +20,13 @@ try:
 except:
     from backend.connectors import Connector, Acceptor
 
+from dispatcher import Dispatcher
+
 SAVE_INTERVAL = 2
 
 
 # Some exploratory code to understand a bit better how to make the ARTIST
-class Artist(asyncore.dispatcher):
+class Artist(Dispatcher):
 
     """
     Parameters
@@ -59,20 +61,12 @@ class Artist(asyncore.dispatcher):
     """
 
     def __init__(self, name='', settings={}, PORT=5005, save_data=True):
-        super(Artist, self).__init__()
-        self.port = PORT
-        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        # self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-        self.bind(('', self.port))
-        self.listen(5)
-        logging.info('Listening on port {}'.format(self.port))
-
-        self.name = name
-        self._data = []
-        self.saveDir = "Artist_" + name
+        super(Artist, self).__init__(PORT, name)
+        # self._data = []
+        self.saveDir = "Artist_" + self.name
         self.transmitters = []
 
-        self.data = pd.DataFrame()
+        # self.data = pd.DataFrame()
 
         self.settings = dict(counterChannel="/Dev1/ctr1",  # corresponds to PFI3
                              aoChannel="/Dev1/ao0",
@@ -114,35 +108,43 @@ class Artist(asyncore.dispatcher):
         self.ns = self.mgr.Namespace()
         self.ns.t0 = time.time()
         self.ns.scanNo = -1
-        self.ns.measuring = False
+        self.ns.on_setpoint = False
+        self.ns.scanning = False
         self.save_data = save_data
         self._saveThread = th.Timer(1, self.save).start()
 
     def InitializeScanning(self):
         self.ns.scanning = False
 
-    def processRequests(self, sender, message):
-        if message['message']['op'] == 'info':
-            params = {'format': self.format, 'measuring': self.ns.measuring}
+    @try_call
+    def status(self, params):
+        return {'format': self.format, 'scanning': self.ns.scanning, 'on_setpoint': self.ns.on_setpoint}
 
-            message['reply'] = {}
-            message['reply']['op'] = message['message']['op'] + '_reply'
-            message['reply']['parameters'] = params
-        else:
-            print(message['message'])
+    @try_call
+    def data(self, params):
+        data = [1] * len(self.ns.format)
+        return {'data': data, 'format': self.format, 'scanning': self.ns.scanning, 'on_setpoint': self.ns.on_setpoint}
 
-        return message
+    @try_call
+    def set_scan_number(self, params):
+        self.ns.scanNo = params['scan_number'][0]
+        return {}
+
+    # def processRequests(self, message):
+    #     if message['message']['op'] == 'info':
+    #         params = {'format': self.format, 'measuring': self.ns.measuring}
+    #     elif message['message']['op'] == 'data':
+    #         data = [1] * len(self.ns.format)
+    #         params = {'data': data, 'format': self.format, 'measuring': self.ns.measuring}
+    #     return add_reply(message, params)
+        # else:
+        #     print(message['message'])
+
 
         # if data == 'info':
         #     info = {'format': self.format, 'measuring': self.ns.measuring}
         #     return info
 
-        # elif data == 'data':
-        #     data = []
-        #     l = len(sender.dataDQ)
-        #     if not l == 0:
-        #         data = [sender.dataDQ.popleft() for i in range(l)]
-        #     return {'data': data, 'format': self.ns.format, 'measuring': self.ns.measuring}
 
         # else:
         #     logging.info('Got "{}" instruction from "{}"'.format(data, sender))
@@ -250,60 +252,6 @@ class Artist(asyncore.dispatcher):
         wait = abs(min(0, time.time() - now - SAVE_INTERVAL))
         if self.save:
             self._saveThread = th.Timer(wait, self.save).start()
-
-    def writeable(self):
-        return False
-
-    def readable(self):
-        return True
-
-    def handle_accept(self):
-        pair = self.accept()
-        if pair is not None:
-            sock, addr = pair
-            try:
-                sender = self.get_sender_ID(sock)
-                logging.info(sender)
-            except:
-                logging.warn('Sender {} did not send proper ID'.format(addr))
-                return
-            if sender == 'M_to_A':
-                self.receiver = Acceptor(sock,
-                                         callback=self.processRequests,
-                                         onCloseCallback=self.removeReceiver,
-                                         t=self.name)
-            elif sender == 'DS_to_A':
-                self.transmitters.append(Acceptor(sock,
-                                                  callback=self.processRequests,
-                                                  onCloseCallback=self.removeTransmitter,
-                                                  t=self.name))
-            else:
-                logging.error('Sender {} named {} not understood'
-                              .format(addr, sender))
-                return
-            logging.info('Accepted {} as {}'.format(addr, sender))
-
-    def removeReceiver(self, receiver):
-        self.receiver = None
-
-    def removeTransmitter(self, transmitter):
-        self.transmitters.remove(transmitter)
-
-    def get_sender_ID(self, sock):
-        now = time.time()
-        while time.time() - now < 5:  # Tested; raises RunTimeError after 5 s
-            try:
-                sender = sock.recv(1024).decode('UTF-8')
-                break
-            except:
-                pass
-        else:
-            raise
-        return sender
-
-    def handle_close(self):
-        logging.info('Closing Artist')
-        super(Artist, self).handle_close()
 
 
 def makeArtist(name='test'):

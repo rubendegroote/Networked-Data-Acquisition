@@ -144,7 +144,7 @@ class ScannerWidget(QtGui.QWidget):
         self.stopScanSig.emit(True)
 
     def update(self, info):
-        scanNo, format, progress, artists = info
+        scanNo, format, progress, artists = info['scan_number'][0], info['format'], info['progress'][0], info['connector_info']
         self.updateScanNumber(scanNo)
         self.updateProgress(progress)
         try:

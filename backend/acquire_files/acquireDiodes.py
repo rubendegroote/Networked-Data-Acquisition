@@ -112,8 +112,8 @@ def acquireDiodes(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
                     tuple([np.array([val]) for val in aiData])
                     )
 
-            if ns.measuring and time.time() - ns.t0 >= tPerStep:
-                ns.measuring = False
+            if ns.on_setpoint and time.time() - ns.t0 >= tPerStep:
+                ns.on_setpoint = False
                    
 
         except Exception as e:

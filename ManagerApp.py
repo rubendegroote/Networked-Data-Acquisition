@@ -26,9 +26,9 @@ class ManagerApp(QtGui.QMainWindow):
         t = th.Thread(target=self.startIOLoop).start()
         self.init_UI()
 
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.update)
-        self.timer.start(50)
+        # self.timer = QtCore.QTimer()
+        # self.timer.timeout.connect(self.update)
+        # self.timer.start(50)
 
         self.show()
 
@@ -69,7 +69,7 @@ class ManagerApp(QtGui.QMainWindow):
         ManChan = data[0], int(data[1])
         DSChan = data[2], int(data[3])
         self.Man_DS_Connector = Man_DS_Connector(ManChan, DSChan,
-                                                 callBack=self.lostConn,
+                                                 callback=self.reply_cb,
                                                  resumeScanCallback=self.showResumeDialog)
         if self.Man_DS_Connector.man and self.Man_DS_Connector.DS:
             self.enable()
@@ -116,7 +116,7 @@ class ManagerApp(QtGui.QMainWindow):
 
     def addArtist(self, info):
         receiver, address = info
-        message = {'op': 'add_artist', 'parameters': {'address': address}}
+        message = {'op': 'add_connector', 'parameters': {'address': address}}
         self.Man_DS_Connector.instruct(receiver, message)
 
     def removeArtist(self, address):
@@ -125,18 +125,19 @@ class ManagerApp(QtGui.QMainWindow):
     # def removeAll(self):
     #     self.Man_DS_Connector.instruct('Both', ['Remove All Artists'])
 
-    def update(self):
-        try:
-            self.scanner.update(self.Man_DS_Connector.getScanInfo())
-            self.connWidget.update(self.Man_DS_Connector.getArtistInfo())
-            if self.scanner.state == 'START' and self.Man_DS_Connector.scanning():
-                self.scanner.changeControl()
-            elif self.scanner.state == 'STOP' and not self.Man_DS_Connector.scanning():
-                self.serverButton.setEnabled(True)
-                self.connWidget.setEnabled(True)
-                self.scanner.changeControl()
-        except AttributeError as e:
-            pass
+    # def update(self):
+    #     try:
+    #         self.scanner.update(self.Man_DS_Connector.getScanInfo())
+    #         self.connWidget.update(self.Man_DS_Connector.getArtistInfo())
+    #         if self.scanner.state == 'START' and self.Man_DS_Connector.scanning():
+    #             self.scanner.changeControl()
+    #         elif self.scanner.state == 'STOP' and not self.Man_DS_Connector.scanning():
+    #             self.serverButton.setEnabled(True)
+    #             self.connWidget.setEnabled(True)
+    #             self.scanner.changeControl()
+    #     except AttributeError as e:
+    #         print(e)
+    #         pass
 
     def showResumeDialog(self, data):
         smin, smax, sl, curpos, tPerStep, name = data
@@ -159,27 +160,59 @@ class ManagerApp(QtGui.QMainWindow):
         self.stopIOLoop()
         event.accept()
 
+    def reply_cb(self, message):
+        # print(message)
+        if message['reply']['parameters']['status'] == 0:
+            function = message['reply']['op']
+            args = message['reply']['parameters']
+            origin = message['track'][-1]
+
+            params = getattr(self, function)(origin, args)
+
+        else:
+
+            print(message['reply']['parameters']['exception'])
+
+    def status_reply(self, origin, params):
+        if origin == 'Manager':
+            self.scanner.update(params)
+            scanning = params['scanning']
+            if self.scanner.state == 'START' and scanning:
+                self.scanner.changeControl()
+            elif self.scanner.state == 'STOP' and not scanning:
+                self.serverButton.setEnabled(True)
+                self.connWidget.setEnabled(True)
+                self.scanner.changeControl()
+        elif origin == 'DataServer':
+            self.connWidget.update(params)
+
+    def add_connector_reply(self, origin, params):
+        pass
+
 
 class Man_DS_Connector():
 
-    def __init__(self, ManChan, DSChan, callBack, resumeScanCallback):
-        self.AppCallBack = callBack
+    def __init__(self, ManChan, DSChan, callback, resumeScanCallback):
         # try:
-        self.man = ManagerConnector(ManChan,
-                                    callback=None,
-                                    onCloseCallback=self.onClosedCallback,
-                                    resumeScanCallback=resumeScanCallback)
+        self.DS = DataServerConnector(DSChan,
+                                      callback=callback,
+                                      onCloseCallback=self.onClosedCallback,
+                                      name='MGui_to_DS')
+        self.man = Connector(ManChan,
+                             callback=callback,
+                             onCloseCallback=self.onClosedCallback,
+                             name='MGui_to_M')
         # except Exception as e:
         #     print(e)
         #     self.man = None
 
         # try:
-        self.DS = DataServerConnector(DSChan,
-                                      callback=None,
-                                      onCloseCallback=self.onClosedCallback)
         # except Exception as e:
             # print(e)
             # self.DS = None
+
+    def managerCallback(self):
+        pass
 
     def getArtistInfo(self):
         retDict = {}
@@ -223,9 +256,9 @@ class Man_DS_Connector():
 
 class ManagerConnector(Connector):
 
-    def __init__(self, chan, callback, onCloseCallback, resumeScanCallback=None):
+    def __init__(self, chan, callback, onCloseCallback, resumeScanCallback=None, name=None):
         super(ManagerConnector, self).__init__(
-            chan, callback, onCloseCallback, t='MGui_to_M')
+            chan, callback, onCloseCallback, name=name)
         self.resumeSignal = ResumeScanSignal()
         self.resumeSignal.resumescan.connect(resumeScanCallback)
         self.scanNo = -1
@@ -266,9 +299,9 @@ class ManagerConnector(Connector):
 
 class DataServerConnector(Connector):
 
-    def __init__(self, chan, callback, onCloseCallback):
+    def __init__(self, chan, callback, onCloseCallback, name):
         super(DataServerConnector, self).__init__(
-            chan, callback, onCloseCallback, t='MGui_to_DS')
+            chan, callback, onCloseCallback, name=name)
 
         self.artists = {}
         self.callback = self.dummy

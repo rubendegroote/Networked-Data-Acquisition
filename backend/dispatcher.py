@@ -1,12 +1,21 @@
-
+import threading as th
 import asyncore
 import asynchat
-
+import socket
+import time
+import logging
+try:
+    from Helpers import *
+    from connectors import Connector, Acceptor
+except:
+    from backend.Helpers import *
+    from backend.connectors import Connector, Acceptor
 
 class Dispatcher(asyncore.dispatcher):
-    def _init__(self,PORT):
+    def __init__(self, PORT, name, defaultRequest = 'status'):
         super(Dispatcher,self).__init__()
-        self.port = port
+        self.port = PORT
+        self.name = name
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         # self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self.bind(('', self.port))
@@ -16,6 +25,8 @@ class Dispatcher(asyncore.dispatcher):
 
         self.connectors = {}
         self.connInfo = {}
+
+        self.defaultRequest = defaultRequest
 
         self.looping = True
         t = th.Thread(target=self.start).start()
@@ -34,7 +45,9 @@ class Dispatcher(asyncore.dispatcher):
     def readable(self):
         return True
 
-    def add_connector(self,address = None):
+    @try_call
+    def add_connector(self, address=None):
+        address = address['address']
         if address is None:
             return
         for name, add in self.connectors.items():
@@ -44,12 +57,14 @@ class Dispatcher(asyncore.dispatcher):
         conn = Connector(chan=(address[0], int(address[1])),
                               callback=self.connector_cb,
                               onCloseCallback=self.connector_closed_cb,
-                              defaultRequest='data')
-        self.connectors[conn.artistName] = conn
-        self.connInfo[conn.artistName] = (
+                              defaultRequest=self.defaultRequest,
+                              name=self.name)
+        self.connectors[conn.acceptorName] = conn
+        self.connInfo[conn.acceptorName] = (
             True, conn.chan[0], conn.chan[1])
         for c in self.acceptors: # should be changed to use add_notification
             c.commQ.put(self.connInfo)
+        return {}
 
     def remove_connector(self,address):
         toRemove = []
@@ -66,21 +81,28 @@ class Dispatcher(asyncore.dispatcher):
         ## to implement
         pass
 
-    def acceptor_cb(self,message):
+    def acceptor_cb(self, message):
+        # print(message)
         function = message['message']['op']
         args = message['message']['parameters']
 
-        params = getattr(self,function)(args)
+        params = getattr(self, function)(args)
 
-        return add_reply(message,params)
+        return add_reply(message, params)
 
-    def acceptor_closed_cb(self,acceptor):
+    def acceptor_closed_cb(self, acceptor):
         self.acceptors.remove(acceptor)
 
-    def connector_cb(self,message):
-        ## deal with message
-        ## perhaps notify higher-ups
-        pass # no return value needed!
+    def connector_cb(self, message):
+        if message['reply']['parameters']['status'] == 0:
+            function = message['reply']['op']
+            args = message['reply']['parameters']
+            origin = message['track'][-1]
+
+            params = getattr(self, function)(origin, args)
+
+        else:
+            print(message['reply']['parameters']['exception'])
 
     def connector_closed_cb(self,connector):
         self.connInfo[connector.artistName] = (
@@ -95,11 +117,12 @@ class Dispatcher(asyncore.dispatcher):
             try:
                 sender = self.get_sender_ID(sock)
                 logging.info(sender)
-            except:
+            except Exception as e:
                 return
             self.acceptors.append(Acceptor(sock=sock,
                                callback=self.acceptor_cb,
-                               onCloseCallback=self.acceptor_closed_cb))
+                               onCloseCallback=self.acceptor_closed_cb,
+                               name=self.name))
 
     def get_sender_ID(self, sock):
         now = time.time()
@@ -107,7 +130,7 @@ class Dispatcher(asyncore.dispatcher):
             try:
                 sender = sock.recv(1024).decode('UTF-8')
                 break
-            except:
+            except Exception as e:
                 pass
         else:
             raise

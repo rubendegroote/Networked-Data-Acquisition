@@ -153,10 +153,10 @@ def acquire(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
                     # Nevertheless, it has been preserved.
                     # time.sleep(0.5)
 
-                    ns.measuring = True
+                    ns.on_setpoint = True
                     # initial guess of when scanNo will be set to the current scan value. This
                     # is not a perfect guess because there is some time required for the 
-                    # change in ns.measuring to propagate to the manager and back.
+                    # change in ns.on_setpoint to propagate to the manager and back.
                     # This initial guess will later be modified by the Artist to the actual time
                     # it received the 'Measuring' instruction.
                     ns.t0 = time.time()
@@ -198,8 +198,8 @@ def acquire(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
                     tuple([np.array([val]) for val in aiData])
                     )
 
-            if ns.measuring and time.time() - ns.t0 >= tPerStep:
-                ns.measuring = False
+            if ns.on_setpoint and time.time() - ns.t0 >= tPerStep:
+                ns.on_setpoint = False
                    
 
         except Exception as e:

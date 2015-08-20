@@ -59,7 +59,8 @@ class ArtistConnections(QtGui.QWidget):
     def reconnect(self, info):
         self.connectSig.emit(info)
 
-    def update(self, artistInfo):
+    def update(self, params):
+        artistInfo = params['connector_info']
         for key, val in artistInfo.items():
             if not key in self.connections.keys():
                 self.addConnectionWidget(name=key,
