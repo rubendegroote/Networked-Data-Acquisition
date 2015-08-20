@@ -18,7 +18,7 @@ class ArtistConnections(QtGui.QWidget):
                         'CRIS': ('PCCRIS6', 5005),
                         'Laser': ('PCCRIS15', 5004),
                         'Diodes': ('PCCRIS15', 5003),
-                        'M2': ('PCCRIS13', 5002)}
+                        'M2': ('127.0.0.1', 5002)}
         self.artistSelection = QtGui.QComboBox()
         self.artistSelection.addItems(self.options)
         self.artistSelection.setCurrentIndex(0)
@@ -59,18 +59,17 @@ class ArtistConnections(QtGui.QWidget):
     def reconnect(self, info):
         self.connectSig.emit(info)
 
-    def update(self, params):
-        artistInfo = params['connector_info']
-        for key, val in artistInfo.items():
+    def update(self, origin, params):
+        for key, val in params.items():
             if not key in self.connections.keys():
                 self.addConnectionWidget(name=key,
-                                         IP=str(val[2][0]), PORT=str(val[2][1]))
+                        IP=str(val[1]), PORT=str(val[2]))
             else:
-                self.connections[key].update(name=key, status=(val[0], val[1]))
+                self.connections[key].update(name = key, status = {origin:val[0]})
 
         toDelete = []
         for name in self.connections.keys():
-            if not name in artistInfo.keys():
+            if not name in params.keys():
                 toDelete.append(name)
 
         for name in toDelete:
@@ -136,17 +135,21 @@ class ConnectionWidget(QtGui.QWidget):
         self.reconnectSig.emit((sender, (self.IP, self.PORT)))
 
     def update(self, name, status):
+        ok = "QLabel { background-color: green }"
+        not_ok = "QLabel { background-color: red }"
         self.label.setText(' ' + name)
-        if status[0]:
-            self.ManLabel.setStyleSheet("QLabel { background-color: green }")
-            self.ManReconnectButton.setHidden(True)
-        else:
-            self.ManLabel.setStyleSheet("QLabel { background-color: red }")
-            self.ManReconnectButton.setVisible(True)
-
-        if status[1]:
-            self.DSLabel.setStyleSheet("QLabel { background-color: green }")
-            self.DSReconnectButton.setHidden(True)
-        else:
-            self.DSLabel.setStyleSheet("QLabel { background-color: red }")
-            self.DSReconnectButton.setVisible(True)
+        for key,val in status.items():
+            if key == 'Manager':
+                if val:
+                    self.ManLabel.setStyleSheet(ok)
+                    self.ManReconnectButton.setHidden(True)
+                else:
+                    self.ManLabel.setStyleSheet(not_ok)
+                    self.ManReconnectButton.setVisible(True)
+            else:
+                if val:
+                    self.DSLabel.setStyleSheet(ok)
+                    self.DSReconnectButton.setHidden(True)
+                else:
+                    self.DSLabel.setStyleSheet(not_ok)
+                    self.DSReconnectButton.setVisible(True)

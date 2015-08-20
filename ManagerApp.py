@@ -17,7 +17,7 @@ class ResumeScanSignal(QtCore.QObject):
 
 
 class ManagerApp(QtGui.QMainWindow):
-
+    updateSignal = QtCore.pyqtSignal(tuple)
     def __init__(self):
         super(ManagerApp, self).__init__()
         self.looping = True
@@ -29,6 +29,7 @@ class ManagerApp(QtGui.QMainWindow):
         # self.timer = QtCore.QTimer()
         # self.timer.timeout.connect(self.update)
         # self.timer.start(50)
+        self.updateSignal.connect(self.updateUI)
 
         self.show()
 
@@ -60,6 +61,11 @@ class ManagerApp(QtGui.QMainWindow):
 
         self.disable()
 
+    def updateUI(self,*args):
+        target,info_dict = args[0]
+        params,origin = info_dict['args'],info_dict['origin']
+        target(origin,params)
+
     def addConnection(self, data):
         # try:
         #     self.Man_DS_Connector.man.handle_close()
@@ -82,7 +88,6 @@ class ManagerApp(QtGui.QMainWindow):
                 config.write(configfile)
 
     def lostConn(self, server):
-        print(server)
         self.statusBar().showMessage(server + ' connection fail')
         self.serverButton.setEnabled(True)
         self.disable()
@@ -122,37 +127,11 @@ class ManagerApp(QtGui.QMainWindow):
     def removeArtist(self, address):
         self.Man_DS_Connector.instruct('Both', ['Remove Artist', address])
 
-    # def removeAll(self):
-    #     self.Man_DS_Connector.instruct('Both', ['Remove All Artists'])
-
-    # def update(self):
-    #     try:
-    #         self.scanner.update(self.Man_DS_Connector.getScanInfo())
-    #         self.connWidget.update(self.Man_DS_Connector.getArtistInfo())
-    #         if self.scanner.state == 'START' and self.Man_DS_Connector.scanning():
-    #             self.scanner.changeControl()
-    #         elif self.scanner.state == 'STOP' and not self.Man_DS_Connector.scanning():
-    #             self.serverButton.setEnabled(True)
-    #             self.connWidget.setEnabled(True)
-    #             self.scanner.changeControl()
-    #     except AttributeError as e:
-    #         print(e)
-    #         pass
-
     def showResumeDialog(self, data):
         smin, smax, sl, curpos, tPerStep, name = data
         resuming = QtGui.QMessageBox.question(None, 'Resume scan?',
                                               'An interrupted scan was found:\nScanning %s, %f to %f V, %f steps, on step %f, %f s per step\nResume this scan?' % (name,
-                                                                                                                                                                   float(
-                                                                                                                                                                       smin),
-                                                                                                                                                                   float(
-                                                                                                                                                                       smax),
-                                                                                                                                                                   float(
-                                                                                                                                                                       sl),
-                                                                                                                                                                   float(
-                                                                                                                                                                       curpos),
-                                                                                                                                                                   float(tPerStep)),
-                                              QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+                                        float(smin),float(smax),float(sl),float(curpos),float(tPerStep)),QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
         if resuming == QtGui.QMessageBox.Yes:
             self.Man_DS_Connector.instruct('Manager', ['Resume Scan'])
 
@@ -161,7 +140,6 @@ class ManagerApp(QtGui.QMainWindow):
         event.accept()
 
     def reply_cb(self, message):
-        # print(message)
         if message['reply']['parameters']['status'] == 0:
             function = message['reply']['op']
             args = message['reply']['parameters']
@@ -170,12 +148,14 @@ class ManagerApp(QtGui.QMainWindow):
             params = getattr(self, function)(origin, args)
 
         else:
-
-            print(message['reply']['parameters']['exception'])
-
+            print('ManagerApp received fail message', message)
+            
     def status_reply(self, origin, params):
         if origin == 'Manager':
-            self.scanner.update(params)
+            self.updateSignal.emit((self.scanner.update,
+                                    {'origin':origin,
+                                    'args':params}))
+
             scanning = params['scanning']
             if self.scanner.state == 'START' and scanning:
                 self.scanner.changeControl()
@@ -183,8 +163,10 @@ class ManagerApp(QtGui.QMainWindow):
                 self.serverButton.setEnabled(True)
                 self.connWidget.setEnabled(True)
                 self.scanner.changeControl()
-        elif origin == 'DataServer':
-            self.connWidget.update(params)
+
+        self.updateSignal.emit((self.connWidget.update,
+                                       {'origin':origin,
+                                       'args':params['connector_info']}))
 
     def add_connector_reply(self, origin, params):
         pass
@@ -194,50 +176,14 @@ class Man_DS_Connector():
 
     def __init__(self, ManChan, DSChan, callback, resumeScanCallback):
         # try:
-        self.DS = DataServerConnector(DSChan,
-                                      callback=callback,
-                                      onCloseCallback=self.onClosedCallback,
-                                      name='MGui_to_DS')
+        self.DS = Connector(DSChan,
+                          callback=callback,
+                          onCloseCallback=self.onClosedCallback,
+                          name='MGui_to_DS')
         self.man = Connector(ManChan,
-                             callback=callback,
-                             onCloseCallback=self.onClosedCallback,
-                             name='MGui_to_M')
-        # except Exception as e:
-        #     print(e)
-        #     self.man = None
-
-        # try:
-        # except Exception as e:
-            # print(e)
-            # self.DS = None
-
-    def managerCallback(self):
-        pass
-
-    def getArtistInfo(self):
-        retDict = {}
-        keys = set(self.DS.artists.keys()).union(set(self.man.artists.keys()))
-        for key in keys:
-            if key in self.man.artists.keys():
-                if key in self.DS.artists.keys():
-                    retDict[key] = (self.man.artists[key][0],
-                                    self.DS.artists[key][0],
-                                    self.man.artists[key][1:])
-                else:
-                    retDict[key] = (self.man.artists[key][0],
-                                    False,
-                                    self.man.artists[key][1:])
-            else:
-                retDict[key] = False, self.DS.artists[
-                    key][0], self.DS.artists[key][1:]
-
-        return retDict
-
-    def getScanInfo(self):
-        return self.man.scanNo, self.man.format, self.man.progress, self.man.artists
-
-    def scanning(self):
-        return self.man.scanning
+                          callback=callback,
+                          onCloseCallback=self.onClosedCallback,
+                          name='MGui_to_M')
 
     def instruct(self, receiver, instr):
         if receiver == 'Manager':
@@ -250,8 +196,6 @@ class Man_DS_Connector():
 
     def onClosedCallback(self, server):
         print(server, server.type)
-        # perhaps use this to change some settings or whatnot
-        self.AppCallBack(server.type)
 
 
 class ManagerConnector(Connector):
@@ -261,65 +205,3 @@ class ManagerConnector(Connector):
             chan, callback, onCloseCallback, name=name)
         self.resumeSignal = ResumeScanSignal()
         self.resumeSignal.resumescan.connect(resumeScanCallback)
-        self.scanNo = -1
-        self.progress = 0
-        self.scanning = False
-        self.format = {}
-        self.artists = {}
-        self.callback = self.dummy
-
-        self.send_request()
-
-    def dummy(self, *args, **kwargs):
-        pass
-
-    # def found_terminator(self):
-    #     buff = self.buff
-    #     self.buff = b''
-    #     data = pickle.loads(buff)
-    #     if type(data) == list:
-    #         message, data = data
-    #         if message == 'infomessage':
-    #             self.artists, info = data
-    #             self.scanNo, self.scanning, self.progress, self.format = info
-    #         elif message == 'resumemessage':
-    #             smin, smax, sl, curpos, tPerStep, name = data
-    #             self.resumeSignal.resumescan.emit(
-    #                 (smin, smax, sl, curpos, tPerStep, name))
-    #         else:
-    #             pass
-
-    #     try:
-    #         info = self.commQ.get_nowait()
-    #         self.push(pickle.dumps(info))
-    #         self.push('END_MESSAGE'.encode('UTF-8'))
-    #     except:
-    #         self.send_next()
-
-
-class DataServerConnector(Connector):
-
-    def __init__(self, chan, callback, onCloseCallback, name):
-        super(DataServerConnector, self).__init__(
-            chan, callback, onCloseCallback, name=name)
-
-        self.artists = {}
-        self.callback = self.dummy
-
-        self.send_request()
-
-    def dummy(self, *args, **kwargs):
-        pass
-
-    # def found_terminator(self):
-    #     buff = self.buff
-    #     self.buff = b''
-    #     data = pickle.loads(buff)
-    #     if type(data) == tuple:
-    #         self.artists, bitrates = data
-    #     try:
-    #         info = self.commQ.get_nowait()
-    #         self.push(pickle.dumps(info))
-    #         self.push('END_MESSAGE'.encode('UTF-8'))
-    #     except:
-    #         self.send_next()

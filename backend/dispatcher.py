@@ -46,8 +46,8 @@ class Dispatcher(asyncore.dispatcher):
         return True
 
     @try_call
-    def add_connector(self, address=None):
-        address = address['address']
+    def add_connector(self, **kwargs):
+        address = kwargs['address']
         if address is None:
             return
         for name, add in self.connectors.items():
@@ -78,11 +78,9 @@ class Dispatcher(asyncore.dispatcher):
             del self.connInfo[name]
 
     def remove_all_connectors(self):
-        ## to implement
         pass
 
     def acceptor_cb(self, message):
-        # print(message)
         function = message['message']['op']
         args = message['message']['parameters']
 
@@ -98,11 +96,10 @@ class Dispatcher(asyncore.dispatcher):
             function = message['reply']['op']
             args = message['reply']['parameters']
             origin = message['track'][-1]
-
             params = getattr(self, function)(origin, args)
 
         else:
-            print(message['reply']['parameters']['exception'])
+            print('Connector received fail message', message)
 
     def connector_closed_cb(self,connector):
         self.connInfo[connector.artistName] = (

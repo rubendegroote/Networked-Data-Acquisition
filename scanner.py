@@ -143,7 +143,7 @@ class ScannerWidget(QtGui.QWidget):
     def stopScan(self):
         self.stopScanSig.emit(True)
 
-    def update(self, info):
+    def update(self, origin, info):
         scanNo, format, progress, artists = info['scan_number'][0], info['format'], info['progress'][0], info['connector_info']
         self.updateScanNumber(scanNo)
         self.updateProgress(progress)
@@ -153,7 +153,7 @@ class ScannerWidget(QtGui.QWidget):
                 if v[0]:
                     form[k] = format[k]
             self.setParCombo(form)
-        except:
+        except Exception as e:
             pass
 
     def setParCombo(self, format):

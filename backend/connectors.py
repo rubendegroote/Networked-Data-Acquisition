@@ -13,7 +13,6 @@ except:
 
 
 class Connector(asynchat.async_chat):
-
     def __init__(self, chan, callback, onCloseCallback=None, name='', defaultRequest='status'):
         super(Connector, self).__init__()
         self.name = name
@@ -80,12 +79,9 @@ class Connector(asynchat.async_chat):
 
     @track
     def push(self,message):
-        if message != '':
-            dump = json.dumps(message)
-            super(Connector, self).push(json.dumps(message).encode('UTF-8'))
-            super(Connector, self).push('END_MESSAGE'.encode('UTF-8'))
-        else:
-            print('Connector vomited')
+        dump = json.dumps(message)
+        super(Connector, self).push(json.dumps(message).encode('UTF-8'))
+        super(Connector, self).push('END_MESSAGE'.encode('UTF-8'))
 
     def handle_close(self):
         logging.info('Closing {} Connector'.format(self.name))
@@ -118,7 +114,6 @@ class Acceptor(asynchat.async_chat):
         try:
             message = json.loads(self.buff.decode('UTF-8'))
         except ValueError as e:
-            print(1, self.buff.decode('UTF-8'))
             raise
         self.buff = b""
 
@@ -128,12 +123,9 @@ class Acceptor(asynchat.async_chat):
 
     @track
     def push(self,message):
-        if message != '':
-            dump = json.dumps(message)
-            super(Acceptor, self).push(json.dumps(message).encode('UTF-8'))
-            super(Acceptor, self).push('STOP_DATA'.encode('UTF-8'))
-        else:
-            print('Acceptor vomited')
+        dump = json.dumps(message)
+        super(Acceptor, self).push(json.dumps(message).encode('UTF-8'))
+        super(Acceptor, self).push('STOP_DATA'.encode('UTF-8'))
 
     def handle_close(self):
         logging.info('Closing Acceptor {}'.format(self.name))
