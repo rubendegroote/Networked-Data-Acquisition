@@ -140,10 +140,10 @@ class ManagerApp(QtGui.QMainWindow):
         event.accept()
 
     def reply_cb(self, message):
-        if message['reply']['parameters']['status'] == 0:
+        if message['reply']['parameters']['status'][0] == 0:
             function = message['reply']['op']
             args = message['reply']['parameters']
-            origin = message['track'][-1]
+            origin = message['track'][-1][0]
 
             params = getattr(self, function)(origin, args)
 

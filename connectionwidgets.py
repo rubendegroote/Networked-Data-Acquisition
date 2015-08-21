@@ -65,7 +65,7 @@ class ArtistConnections(QtGui.QWidget):
                 self.addConnectionWidget(name=key,
                         IP=str(val[1]), PORT=str(val[2]))
             else:
-                self.connections[key].update(name = key, status = {origin:val[0]})
+                self.connections[key].update(name = key, status = {origin: val[0]})
 
         toDelete = []
         for name in self.connections.keys():

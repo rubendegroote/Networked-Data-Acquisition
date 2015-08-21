@@ -46,8 +46,8 @@ class Dispatcher(asyncore.dispatcher):
         return True
 
     @try_call
-    def add_connector(self, **kwargs):
-        address = kwargs['address']
+    def add_connector(self, params):
+        address = params['address']
         if address is None:
             return
         for name, add in self.connectors.items():
@@ -92,10 +92,12 @@ class Dispatcher(asyncore.dispatcher):
         self.acceptors.remove(acceptor)
 
     def connector_cb(self, message):
-        if message['reply']['parameters']['status'] == 0:
+        with open(self.name + '_transmissionID.txt', 'a') as f:
+            f.write(str(message['track']))
+        if message['reply']['parameters']['status'][0] == 0:
             function = message['reply']['op']
             args = message['reply']['parameters']
-            origin = message['track'][-1]
+            origin = message['track'][-1][0]
             params = getattr(self, function)(origin, args)
 
         else:

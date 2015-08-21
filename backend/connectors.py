@@ -20,6 +20,7 @@ class Connector(asynchat.async_chat):
         self.onCloseCallback = onCloseCallback
         self.chan = chan
         self.defaultRequest = defaultRequest
+        self.counter = 0
 
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         # self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
@@ -36,7 +37,6 @@ class Connector(asynchat.async_chat):
 
         self.commQ = mp.Queue()
         self.requestQ = mp.Queue()
-
 
         self.send_request()
 
@@ -60,12 +60,16 @@ class Connector(asynchat.async_chat):
         self.buff += data
 
     def found_terminator(self):
-        message = json.loads(self.buff.decode('UTF-8'))
-        self.buff = b""
+        try:
+            message = json.loads(self.buff.decode('UTF-8'))
+            self.buff = b""
 
-        self.callback(message=message)
-        
-        self.send_request()
+            self.callback(message=message)
+        except Exception as e:
+            print(e)
+        finally:
+            self.send_request()
+
 
     def add_request(self, request):
         self.requestQ.put(request)
@@ -79,9 +83,9 @@ class Connector(asynchat.async_chat):
 
     @track
     def push(self,message):
-        dump = json.dumps(message)
-        super(Connector, self).push(json.dumps(message).encode('UTF-8'))
-        super(Connector, self).push('END_MESSAGE'.encode('UTF-8'))
+        dump = (json.dumps(message) + "END_MESSAGE").encode('UTF-8')
+        super(Connector, self).push(dump)
+        # super(Connector, self).push('END_MESSAGE'.encode('UTF-8'))
 
     def handle_close(self):
         logging.info('Closing {} Connector'.format(self.name))
@@ -100,6 +104,7 @@ class Acceptor(asynchat.async_chat):
         self.callback = callback
         self.onCloseCallback = onCloseCallback
         self.name = name
+        self.counter = 0
 
         self.buff = b""
         self.commQ = mp.Queue()
@@ -113,19 +118,22 @@ class Acceptor(asynchat.async_chat):
     def found_terminator(self):
         try:
             message = json.loads(self.buff.decode('UTF-8'))
+            ret = self.callback(message=message)
+            if not ret == None:
+                self.push(ret)
         except ValueError as e:
-            raise
-        self.buff = b""
-
-        ret = self.callback(message=message)
-        if not ret == None:
-            self.push(ret)
+            self.push({'reply': {'op': 'receive_fail', 'parameters': {'exception': str(e), 'status': [1],
+                'attempt': self.buff.decode('UTF-8')}}})
+        except Exception as e:
+            print(self.buff.decode('UTF-8'))
+        finally:
+            self.buff = b""
 
     @track
     def push(self,message):
-        dump = json.dumps(message)
-        super(Acceptor, self).push(json.dumps(message).encode('UTF-8'))
-        super(Acceptor, self).push('STOP_DATA'.encode('UTF-8'))
+        dump = (json.dumps(message) + "STOP_DATA").encode('UTF-8')
+        super(Acceptor, self).push(dump)
+        # super(Acceptor, self).push('STOP_DATA'.encode('UTF-8'))
 
     def handle_close(self):
         logging.info('Closing Acceptor {}'.format(self.name))

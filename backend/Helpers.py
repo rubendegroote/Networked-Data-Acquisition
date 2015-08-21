@@ -81,10 +81,11 @@ def track(func):
     def func_wrapper(self, message):
         try:
             track = message['track'] # if succeeds: message was already tracked
-            track.append(self.name)
+            track.append((self.name, self.counter))
             message['track'] = track
         except KeyError as e:
-            message['track'] = [self.name]
+            message['track'] = [(self.name, self.counter)]
+        self.counter += 1
         return func(self, message)
     return func_wrapper
 
@@ -101,8 +102,8 @@ def try_call(func):
     def func_wrapper(*args, **kwargs):
         try:
             reply_dict = func(*args, **kwargs)
-            reply_dict['status'] = 0
+            reply_dict['status'] = [0]
         except Exception as e:
-            reply_dict = {'status': 1, 'exception': str(e)}
+            reply_dict = {'status': [1], 'exception': str(e)}
         return reply_dict
     return func_wrapper

@@ -39,7 +39,7 @@ class DataServer(Dispatcher):
         self.bitrates = []
         self.saveDir = "Server"
         self.dQs = {}
-        self._getThread = th.Timer(1, self.getFromReader).start()
+        # self._getThread = th.Timer(1, self.getFromReader).start()
         self.save_data = save_data
         if save_data:
             self.lock = th.Lock()
@@ -79,8 +79,8 @@ class DataServer(Dispatcher):
         return {'connector_info': self.connInfo, 'bit_rates': self.bitrates}
 
     def connector_cb(self, message):
-        # print(message)
-        pass
+        with open(self.name + '_transmissionID.txt', 'a') as f:
+            f.write(str(message['track']))
 
     def getFromReader(self):
         now = time.time()
