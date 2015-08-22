@@ -39,7 +39,6 @@ class DataServer(Dispatcher):
         self.bitrates = []
         self.saveDir = "Server"
         self.dQs = {}
-        # self._getThread = th.Timer(1, self.getFromReader).start()
         self.save_data = save_data
         if save_data:
             self.lock = th.Lock()
@@ -55,6 +54,7 @@ class DataServer(Dispatcher):
             self._data_current_scan = pd.DataFrame()
             self._data_current_stream = pd.DataFrame()
         self._clear_memory = False
+        # self._getThread = th.Timer(1, self.getFromReader).start()
 
     @try_call
     def data(self, **kwargs):
@@ -79,9 +79,10 @@ class DataServer(Dispatcher):
         return {'connector_info': self.connInfo, 'bit_rates': self.bitrates}
 
     def connector_cb(self, message):
-        with open(self.name + '_transmissionID.txt', 'a') as f:
-            f.write(str(message['track']))
-
+        # with open(self.name + '_transmissionID.txt', 'a') as f:
+        #     f.write(str(message['track']))
+        pass
+        
     def getFromReader(self):
         now = time.time()
         new_data = pd.DataFrame()

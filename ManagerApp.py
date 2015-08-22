@@ -55,9 +55,9 @@ class ManagerApp(QtGui.QMainWindow):
         # self.connWidget.removeAll.connect(self.removeAll)
         layout.addWidget(self.connWidget, 1, 0, 1, 1)
 
-        self.serverButton = QtGui.QPushButton('Connect to Servers')
-        self.serverButton.clicked.connect(lambda: self.connectToServers())
-        layout.addWidget(self.serverButton, 2, 0, 1, 1)
+        self.dispatchButton = QtGui.QPushButton('Connect to Servers')
+        self.dispatchButton.clicked.connect(lambda: self.connectToServers())
+        layout.addWidget(self.dispatchButton, 2, 0, 1, 1)
 
         self.disable()
 
@@ -75,8 +75,9 @@ class ManagerApp(QtGui.QMainWindow):
         ManChan = data[0], int(data[1])
         DSChan = data[2], int(data[3])
         self.Man_DS_Connector = Man_DS_Connector(ManChan, DSChan,
-                                                 callback=self.reply_cb,
-                                                 resumeScanCallback=self.showResumeDialog)
+                                 callback=self.reply_cb,
+                                 onCloseCallback = self.lostConn)
+
         if self.Man_DS_Connector.man and self.Man_DS_Connector.DS:
             self.enable()
             self.statusBar().showMessage(
@@ -87,9 +88,15 @@ class ManagerApp(QtGui.QMainWindow):
             with open('ManagerDSConnections.ini', 'w') as configfile:
                 config.write(configfile)
 
-    def lostConn(self, server):
-        self.statusBar().showMessage(server + ' connection fail')
-        self.serverButton.setEnabled(True)
+            self.dispatchButton.setDisabled(True)
+        else:
+            self.statusBar().showMessage('Connection failure')
+
+    def lostConn(self, connector):
+        print('lostConn')
+        self.statusBar().showMessage(
+            connector.acceptorName + ' connection failure')
+        self.dispatchButton.setEnabled(True)
         self.disable()
 
     def disable(self):
@@ -110,7 +117,7 @@ class ManagerApp(QtGui.QMainWindow):
 
     def startScan(self, scanInfo):
         self.connWidget.setDisabled(True)
-        self.serverButton.setDisabled(True)
+        self.dispatchButton.setDisabled(True)
         self.Man_DS_Connector.instruct('Manager', ['Scan', scanInfo])
 
     def setPoint(self, setpointInfo):
@@ -160,7 +167,7 @@ class ManagerApp(QtGui.QMainWindow):
             if self.scanner.state == 'START' and scanning:
                 self.scanner.changeControl()
             elif self.scanner.state == 'STOP' and not scanning:
-                self.serverButton.setEnabled(True)
+                self.dispatchButton.setEnabled(True)
                 self.connWidget.setEnabled(True)
                 self.scanner.changeControl()
 
@@ -174,16 +181,28 @@ class ManagerApp(QtGui.QMainWindow):
 
 class Man_DS_Connector():
 
-    def __init__(self, ManChan, DSChan, callback, resumeScanCallback):
-        # try:
-        self.DS = Connector(DSChan,
+    def __init__(self, ManChan, DSChan, callback,onCloseCallback):
+    
+        try:
+            self.DS = Connector(DSChan,
                           callback=callback,
-                          onCloseCallback=self.onClosedCallback,
                           name='MGui_to_DS')
-        self.man = Connector(ManChan,
+            # by only adding this closeCallback now, it is not triggerd
+            # if the connection fails
+            # prevents an Exception in the GUI
+            self.DS.onCloseCallback = onCloseCallback
+        except:
+            self.DS = None
+        try:    
+            self.man = Connector(ManChan,
                           callback=callback,
-                          onCloseCallback=self.onClosedCallback,
+                          onCloseCallback=onCloseCallback,
                           name='MGui_to_M')
+            # same comment as for the DS closeCallback
+            self.man.onCloseCallback = onCloseCallback
+
+        except:
+            self.man = None
 
     def instruct(self, receiver, instr):
         if receiver == 'Manager':
@@ -193,15 +212,3 @@ class Man_DS_Connector():
         elif receiver == 'Both':
             self.man.add_request(instr)
             self.DS.add_request(instr)
-
-    def onClosedCallback(self, server):
-        print(server, server.type)
-
-
-class ManagerConnector(Connector):
-
-    def __init__(self, chan, callback, onCloseCallback, resumeScanCallback=None, name=None):
-        super(ManagerConnector, self).__init__(
-            chan, callback, onCloseCallback, name=name)
-        self.resumeSignal = ResumeScanSignal()
-        self.resumeSignal.resumescan.connect(resumeScanCallback)

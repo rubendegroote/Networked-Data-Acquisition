@@ -11,6 +11,7 @@ try:
 except Exception as e:
     print(e)
     
+FORMAT = tuple() # change this to actual format!
 def acquireDiodes(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     """ This is the function that will be the target function of a Process.
 

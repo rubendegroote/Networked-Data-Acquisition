@@ -17,7 +17,10 @@ class Connector(asynchat.async_chat):
         super(Connector, self).__init__()
         self.name = name
         self.callback = callback
-        self.onCloseCallback = onCloseCallback
+        if onCloseCallback == None:
+            self.onCloseCallback = lambda x: None
+        else:
+            self.onCloseCallback = onCloseCallback
         self.chan = chan
         self.defaultRequest = defaultRequest
         self.counter = 0
@@ -70,7 +73,6 @@ class Connector(asynchat.async_chat):
         finally:
             self.send_request()
 
-
     def add_request(self, request):
         self.requestQ.put(request)
 
@@ -89,10 +91,7 @@ class Connector(asynchat.async_chat):
 
     def handle_close(self):
         logging.info('Closing {} Connector'.format(self.name))
-        try:
-            self.onCloseCallback(self)
-        except AttributeError:
-            pass
+        self.onCloseCallback(self)
         super(Connector, self).handle_close()
 
 
@@ -137,8 +136,5 @@ class Acceptor(asynchat.async_chat):
 
     def handle_close(self):
         logging.info('Closing Acceptor {}'.format(self.name))
-        try:
-            self.onCloseCallback(self)
-        except AttributeError:
-            pass
+        self.onCloseCallback(self)
         super(Acceptor, self).handle_close()

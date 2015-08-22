@@ -46,6 +46,9 @@ mapping = {
     "Stop Fast Scan Without Return": comm.fast_scan_stop_nr
 }
 
+FORMAT = ('status', 'wavelength', 'temperature', 'temperature_status',
+                     'etalon_lock', 'etalon_voltage', 'ref_cavity_lock', 'resonator_voltage',
+                     'ecd_lock', 'ecd_voltage', 'output_monitor', 'etalon_pd_dc', 'dither')
 def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     """ This is the function that will be the target function of a Process.
 
@@ -120,11 +123,7 @@ def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     got_instr = False
 
     contFlag.wait()  # Wait until the boolean for continuing is set to True
-    data_channels = ['status', 'wavelength', 'temperature', 'temperature_status',
-                     'etalon_lock', 'etalon_voltage', 'ref_cavity_lock', 'resonator_voltage',
-                     'ecd_lock', 'ecd_voltage', 'output_monitor', 'etalon_pd_dc', 'dither']
-    ns.format = ns.format + tuple(data_channels)
-    print(ns.format)
+
     tPerStep = 0
     while not stopFlag.is_set():  # Continue the acquisition loop while the stop flag is False
         try:

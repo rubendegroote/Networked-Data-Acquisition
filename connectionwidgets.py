@@ -9,7 +9,7 @@ class ArtistConnections(QtGui.QWidget):
 
     def __init__(self, parent=None):
         super(ArtistConnections, self).__init__(parent)
-        self.connections = {}
+        self.artistWidgets = {}
         self.l = 0
         self.layout = QtGui.QGridLayout(self)
 
@@ -22,28 +22,33 @@ class ArtistConnections(QtGui.QWidget):
         self.artistSelection = QtGui.QComboBox()
         self.artistSelection.addItems(self.options)
         self.artistSelection.setCurrentIndex(0)
-        self.layout.addWidget(self.artistSelection, 100, 1, 1, 1)
+        self.layout.addWidget(self.artistSelection, 100, 0, 1, 1)
+
         self.addArtistButton = QtGui.QPushButton('Add Artist')
         self.addArtistButton.clicked.connect(lambda: self.addConnection())
-        self.layout.addWidget(self.addArtistButton, 100, 0, 1, 1)
+        self.layout.addWidget(self.addArtistButton, 100, 1, 1, 1)
+
         self.removeArtistsButton = QtGui.QPushButton('Remove All Artists')
         self.removeArtistsButton.clicked.connect(lambda: self.removeAll())
         self.layout.addWidget(self.removeArtistsButton, 101, 0, 1, 2)
+
+        self.ManArtists = []
+        self.DSArtists = []
 
     def addConnection(self):
         selection = self.artistSelection.currentText()
         respons = self.address[selection]
         self.connectSig.emit(('Both', respons))
 
-    def addConnectionWidget(self, name='', IP='KSF402', PORT='5004'):
-        self.connections[name] = ConnectionWidget(self, name, IP, PORT)
-        self.connections[name].removeSig.connect(self.remove)
-        self.connections[name].reconnectSig.connect(self.reconnect)
-        self.layout.addWidget(self.connections[name], self.l, 0, 1, 2)
+    def addArtistWidget(self, name='', IP='KSF402', PORT='5004'):
+        self.artistWidgets[name] = ArtistWidget(self, name, IP, PORT)
+        self.artistWidgets[name].removeSig.connect(self.remove)
+        self.artistWidgets[name].reconnectSig.connect(self.reconnect)
+        self.layout.addWidget(self.artistWidgets[name], self.l, 0, 1, 2)
         config = configparser.ConfigParser()
-        for key in self.connections.keys():
-            config[key] = {'IP': self.connections[name].IP,
-                           'Port': self.connections[name].PORT}
+        for key in self.artistWidgets.keys():
+            config[key] = {'IP': self.artistWidgets[name].IP,
+                           'Port': self.artistWidgets[name].PORT}
         with open('ManagerArtistConnections.ini', 'w') as configfile:
             config.write(configfile)
 
@@ -53,39 +58,58 @@ class ArtistConnections(QtGui.QWidget):
         self.removeSig.emit((connWidget.IP, connWidget.PORT))
 
     def removeAll(self):
-        for name in self.connections:
-            self.connections[name].removeArtist()
+        for name in self.artistWidgets:
+            self.artistWidgets[name].removeArtist()
 
     def reconnect(self, info):
         self.connectSig.emit(info)
 
     def update(self, origin, params):
-        for key, val in params.items():
-            if not key in self.connections.keys():
-                self.addConnectionWidget(name=key,
-                        IP=str(val[1]), PORT=str(val[2]))
+        print(origin,params)
+        # update list of existing connections
+        if origin == 'Manager':
+            self.ManArtists = params.keys()
+        elif origin == 'DataServer':
+            self.DSArtists = params.keys()
+
+        for key,val in params.items():
+            # if there is a new artist, create a new widget
+            if key not in self.artistWidgets.keys():
+                self.addArtistWidget(name=key,
+                    IP=str(val[1]), PORT=str(val[2]))
+            # if it is not new: check if origin is still connected 
+            # and update widget accordingly
             else:
-                self.connections[key].update(name = key, status = {origin: val[0]})
+                if not val[0]:
+                    self.artistWidgets[key].set_disconnected(origin)
 
+        # update the status of the widget, delete if needed
         toDelete = []
-        for name in self.connections.keys():
-            if not name in params.keys():
-                toDelete.append(name)
+        for key,val in self.artistWidgets.items():
+            if key not in self.ManArtists and key not in self.DSArtists:
+                toDelete.append(val)
+            else:
+                if key not in params.keys():
+                    val.set_disconnected(origin)
+                elif params[key][0]:
+                    val.set_connected(origin)
 
-        for name in toDelete:
-            self.connections[name].close()
-            del self.connections[name]
+        for key in toDelete:
+            self.artistWidgets[key].close()
+            del self.artistWidgets[key]     
 
-
-class ConnectionWidget(QtGui.QWidget):
+class ArtistWidget(QtGui.QWidget):
     removeSig = QtCore.Signal(object)
     reconnectSig = QtCore.Signal(object)
 
     def __init__(self, parent=None, name='', IP='KSF402', PORT='5004'):
-        super(ConnectionWidget, self).__init__(parent)
+        super(ArtistWidget, self).__init__(parent)
         self.IP = IP
         self.PORT = PORT
         self.name = name
+
+        self.not_ok = "QLabel { background-color: red }"
+        self.ok = "QLabel { background-color: green }"
 
         self.layout = QtGui.QGridLayout(self)
 
@@ -95,13 +119,13 @@ class ConnectionWidget(QtGui.QWidget):
         self.ManLabel = QtGui.QLabel('Manager')
         self.ManLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.ManLabel.setMinimumWidth(50)
-        self.ManLabel.setStyleSheet("QLabel { background-color: red }")
+        self.ManLabel.setStyleSheet(self.not_ok)
         self.layout.addWidget(self.ManLabel, 0, 1, 1, 1)
 
         self.DSLabel = QtGui.QLabel('Data Server')
         self.DSLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.DSLabel.setMinimumWidth(50)
-        self.DSLabel.setStyleSheet("QLabel { background-color: red }")
+        self.DSLabel.setStyleSheet(self.not_ok)
         self.layout.addWidget(self.DSLabel, 0, 2, 1, 1)
 
         self.channel = QtGui.QLabel(self, text='IP: ' + IP)
@@ -134,22 +158,21 @@ class ConnectionWidget(QtGui.QWidget):
         self.PORT = int(self.portlabel.text().split(': ')[-1])
         self.reconnectSig.emit((sender, (self.IP, self.PORT)))
 
-    def update(self, name, status):
-        ok = "QLabel { background-color: green }"
-        not_ok = "QLabel { background-color: red }"
-        self.label.setText(' ' + name)
-        for key,val in status.items():
-            if key == 'Manager':
-                if val:
-                    self.ManLabel.setStyleSheet(ok)
-                    self.ManReconnectButton.setHidden(True)
-                else:
-                    self.ManLabel.setStyleSheet(not_ok)
-                    self.ManReconnectButton.setVisible(True)
-            else:
-                if val:
-                    self.DSLabel.setStyleSheet(ok)
-                    self.DSReconnectButton.setHidden(True)
-                else:
-                    self.DSLabel.setStyleSheet(not_ok)
-                    self.DSReconnectButton.setVisible(True)
+    def set_disconnected(self,origin):
+        print(0,origin)
+        if origin == 'Manager':
+            self.ManLabel.setStyleSheet(self.not_ok)
+            self.ManReconnectButton.setVisible(True)
+        else:
+            self.DSLabel.setStyleSheet(self.not_ok)
+            self.DSReconnectButton.setVisible(True)
+            
+    def set_connected(self,origin):
+        print(1,origin)
+        if origin == 'Manager':
+            self.ManLabel.setStyleSheet(self.ok)
+            self.ManReconnectButton.setHidden(True)
+        else:
+            self.DSLabel.setStyleSheet(self.ok)
+            self.DSReconnectButton.setHidden(True)
+           

@@ -9,7 +9,7 @@ try:
 except:
     from backend.OpenOPC.OpenOPC import *
 
-
+FORMAT = ('time', 'scan', 'setpoint','wavenumber','wavenumber HeNe')
 def acquireMatisse(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     """ This is the function that will be the target function of a Process.
 
@@ -54,9 +54,6 @@ def acquireMatisse(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
 
     wlmdata.GetExposureNum.argtypes = [ctypes.c_long, ctypes.c_long, ctypes.c_long]
     wlmdata.GetExposureNum.restype  = ctypes.c_long
-
-    ns.format = ('time', 'scan', 'setpoint','wavenumber','wavenumber HeNe')
-    print(ns.format)
 
     got_instr = False
     contFlag.wait()  # Wait until the boolean for continuing is set to True

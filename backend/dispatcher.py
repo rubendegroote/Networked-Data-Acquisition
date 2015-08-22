@@ -89,25 +89,24 @@ class Dispatcher(asyncore.dispatcher):
         return add_reply(message, params)
 
     def acceptor_closed_cb(self, acceptor):
+        print(acceptor)
         self.acceptors.remove(acceptor)
 
     def connector_cb(self, message):
-        with open(self.name + '_transmissionID.txt', 'a') as f:
-            f.write(str(message['track']))
+        print(message)
         if message['reply']['parameters']['status'][0] == 0:
             function = message['reply']['op']
             args = message['reply']['parameters']
-            origin = message['track'][-1][0]
+            origin, tracker_id, = message['track'][-1]
             params = getattr(self, function)(origin, args)
 
         else:
             print('Connector received fail message', message)
 
     def connector_closed_cb(self,connector):
-        self.connInfo[connector.artistName] = (
+        print(connector)
+        self.connInfo[connector.acceptorName] = (
             False, connector.chan[0], connector.chan[1])
-        for c in self.acceptors:
-            c.commQ.put(self.connInfo)
 
     def handle_accept(self):
         pair = self.accept()
@@ -136,5 +135,6 @@ class Dispatcher(asyncore.dispatcher):
         return sender
 
     def handle_close(self):
+        self.stop()
         super(Dispatcher, self).handle_close()
 

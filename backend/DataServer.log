@@ -2107,3 +2107,128 @@
 2015-08-21 11:20:00,833: MGui_to_DS
 2015-08-21 11:20:03,353: Connecting to DataServer...
 2015-08-21 11:21:59,414: Closing Acceptor DataServer
+2015-08-21 14:59:03,006: MGui_to_DS
+2015-08-21 14:59:24,767: Closing Acceptor DataServer
+2015-08-21 15:00:08,041: MGui_to_DS
+2015-08-21 15:00:46,520: Closing Acceptor DataServer
+2015-08-21 15:03:03,618: MGui_to_DS
+2015-08-21 15:07:35,519: Closing Acceptor DataServer
+2015-08-21 15:08:15,035: MGui_to_DS
+2015-08-21 15:08:22,335: Closing Acceptor DataServer
+2015-08-21 15:09:40,415: MGui_to_DS
+2015-08-21 15:09:47,462: Closing Acceptor DataServer
+2015-08-21 15:11:39,205: MGui_to_DS
+2015-08-21 15:11:45,635: Closing Acceptor DataServer
+2015-08-21 15:14:28,110: MGui_to_DS
+2015-08-21 15:14:33,805: Connecting to DataServer...
+2015-08-21 15:14:55,057: Closing Acceptor DataServer
+2015-08-21 15:16:33,561: MGui_to_DS
+2015-08-21 15:16:36,830: Connecting to DataServer...
+2015-08-21 15:16:41,070: Closing Acceptor DataServer
+2015-08-21 16:00:48,204: MGui_to_DS
+2015-08-21 16:00:52,042: Connecting to DataServer...
+2015-08-21 16:06:26,074: Closing Acceptor DataServer
+2015-08-21 16:07:21,139: MGui_to_DS
+2015-08-21 16:07:34,092: MGui_to_DS
+2015-08-21 16:07:55,447: Closing Acceptor DataServer
+2015-08-21 16:07:55,447: Closing Acceptor DataServer
+2015-08-21 16:08:52,492: Closing DataServer Connector
+2015-08-21 16:09:59,915: MGui_to_DS
+2015-08-21 16:10:12,151: Connecting to DataServer...
+2015-08-21 16:10:28,151: Closing Acceptor DataServer
+2015-08-21 16:26:28,338: MGui_to_DS
+2015-08-21 16:26:32,500: Connecting to DataServer...
+2015-08-21 16:30:42,196: Closing Acceptor DataServer
+2015-08-21 16:30:46,904: MGui_to_DS
+2015-08-21 16:32:36,766: MGui_to_DS
+2015-08-21 16:33:34,993: Closing Acceptor DataServer
+2015-08-22 14:49:22,581: MGui_to_DS
+2015-08-22 14:49:26,737: Connecting to DataServer...
+2015-08-22 14:49:43,919: Closing DataServer Connector
+2015-08-22 14:50:11,710: Connecting to DataServer...
+2015-08-22 14:50:29,258: Closing Acceptor DataServer
+2015-08-22 14:52:07,242: MGui_to_DS
+2015-08-22 14:52:22,464: Closing Acceptor DataServer
+2015-08-22 14:52:27,605: MGui_to_DS
+2015-08-22 14:52:31,120: Closing Acceptor DataServer
+2015-08-22 15:12:01,853: GUI Dispatcher
+2015-08-22 15:12:18,155: Closing Acceptor DataServer
+2015-08-22 15:16:17,589: GUI Dispatcher
+2015-08-22 15:18:54,396: Closing Acceptor DataServer
+2015-08-22 15:20:40,890: GUI Dispatcher
+2015-08-22 15:20:57,618: Closing Acceptor DataServer
+2015-08-22 15:21:56,245: GUI Dispatcher
+2015-08-22 15:22:05,545: Closing Acceptor DataServer
+2015-08-22 15:27:56,622: GUI Dispatcher
+2015-08-22 15:28:06,791: Closing Acceptor DataServer
+2015-08-22 15:32:34,908: GUI Dispatcher
+2015-08-22 15:32:46,499: Closing Acceptor DataServer
+2015-08-22 15:34:05,975: GUI Dispatcher
+2015-08-22 15:34:32,224: Closing Acceptor DataServer
+2015-08-22 15:39:20,261: GUI
+2015-08-22 15:43:50,865: Closing Acceptor DataServer
+2015-08-22 15:46:03,155: MGui_to_DS
+2015-08-22 15:46:06,218: Closing Acceptor DataServer
+2015-08-22 15:46:55,508: MGui_to_DS
+2015-08-22 15:46:57,805: Closing Acceptor DataServer
+2015-08-22 15:47:55,134: MGui_to_DS
+2015-08-22 15:47:58,087: Closing Acceptor DataServer
+2015-08-22 15:48:24,325: MGui_to_DS
+2015-08-22 15:48:30,560: Closing Acceptor DataServer
+2015-08-22 15:49:32,014: MGui_to_DS
+2015-08-22 15:49:37,366: Closing Acceptor DataServer
+2015-08-22 15:50:24,384: MGui_to_DS
+2015-08-22 15:50:27,118: Closing Acceptor DataServer
+2015-08-22 15:54:37,533: MGui_to_DS
+2015-08-22 15:54:40,821: Closing Acceptor DataServer
+2015-08-22 15:55:05,798: MGui_to_DS
+2015-08-22 15:55:08,861: Closing Acceptor DataServer
+2015-08-22 15:55:18,487: MGui_to_DS
+2015-08-22 15:55:22,753: Closing Acceptor DataServer
+2015-08-22 15:55:55,893: MGui_to_DS
+2015-08-22 15:55:59,065: Closing Acceptor DataServer
+2015-08-22 16:23:40,028: MGui_to_DS
+2015-08-22 16:23:48,786: Connecting to DataServer...
+2015-08-22 16:23:56,102: Closing Acceptor DataServer
+2015-08-22 16:24:09,949: MGui_to_DS
+2015-08-22 16:24:15,699: Closing Acceptor DataServer
+2015-08-22 16:24:25,164: MGui_to_DS
+2015-08-22 16:24:27,410: Closing Acceptor DataServer
+2015-08-22 16:26:10,429: MGui_to_DS
+2015-08-22 16:26:12,978: Closing Acceptor DataServer
+2015-08-22 16:26:30,498: MGui_to_DS
+2015-08-22 16:26:35,301: Closing Acceptor DataServer
+2015-08-22 16:26:53,522: MGui_to_DS
+2015-08-22 16:27:27,571: Closing Acceptor DataServer
+2015-08-22 16:27:52,716: MGui_to_DS
+2015-08-22 16:27:55,377: Closing Acceptor DataServer
+2015-08-22 16:28:09,362: MGui_to_DS
+2015-08-22 16:28:12,023: Closing Acceptor DataServer
+2015-08-22 16:28:29,759: MGui_to_DS
+2015-08-22 16:28:44,618: Closing DataServer Connector
+2015-08-22 16:28:44,620: Closing DataServer Connector
+2015-08-22 16:28:51,759: Closing Acceptor DataServer
+2015-08-22 16:30:01,249: MGui_to_DS
+2015-08-22 16:35:06,948: Closing Acceptor DataServer
+2015-08-22 16:35:12,356: MGui_to_DS
+2015-08-22 16:35:16,281: Closing Acceptor DataServer
+2015-08-22 16:35:31,280: MGui_to_DS
+2015-08-22 16:35:33,233: Closing Acceptor DataServer
+2015-08-22 16:37:57,250: MGui_to_DS
+2015-08-22 16:37:58,915: Closing Acceptor DataServer
+2015-08-22 16:38:09,650: MGui_to_DS
+2015-08-22 16:38:11,948: Closing Acceptor DataServer
+2015-08-22 16:38:35,367: MGui_to_DS
+2015-08-22 16:38:37,207: Closing Acceptor DataServer
+2015-08-22 16:39:06,179: MGui_to_DS
+2015-08-22 16:39:07,835: Closing Acceptor DataServer
+2015-08-22 16:39:30,492: MGui_to_DS
+2015-08-22 16:39:32,823: Closing Acceptor DataServer
+2015-08-22 16:40:23,868: MGui_to_DS
+2015-08-22 16:41:26,729: Connecting to DataServer...
+2015-08-22 16:53:45,084: MGui_to_DS
+2015-08-22 16:53:50,231: Connecting to DataServer...
+2015-08-22 16:54:29,318: MGui_to_DS
+2015-08-22 16:54:48,970: Closing Acceptor DataServer
+2015-08-22 16:54:48,975: Closing Acceptor DataServer
+2015-08-22 16:57:52,233: Closing DataServer Connector

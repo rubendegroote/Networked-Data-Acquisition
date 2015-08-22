@@ -15,8 +15,7 @@ try:
 except:
     from backend.OpenOPC.OpenOPC import *
 
-
-
+FORMAT = tuple() # change this to actual format!
 def acquire(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     """ This is the function that will be the target function of a Process.
 

@@ -1361,3 +1361,132 @@
 2015-08-21 11:20:00,911: MGui_to_M
 2015-08-21 11:20:03,307: Connecting to Manager...
 2015-08-21 11:21:59,477: Closing Acceptor Manager
+2015-08-21 14:59:03,084: MGui_to_M
+2015-08-21 14:59:24,767: Closing Acceptor Manager
+2015-08-21 15:00:08,103: MGui_to_M
+2015-08-21 15:00:46,520: Closing Acceptor Manager
+2015-08-21 15:03:03,681: MGui_to_M
+2015-08-21 15:07:35,519: Closing Acceptor Manager
+2015-08-21 15:08:15,097: MGui_to_M
+2015-08-21 15:08:22,335: Closing Acceptor Manager
+2015-08-21 15:09:40,477: MGui_to_M
+2015-08-21 15:09:47,462: Closing Acceptor Manager
+2015-08-21 15:11:39,267: MGui_to_M
+2015-08-21 15:11:45,635: Closing Acceptor Manager
+2015-08-21 15:14:28,188: MGui_to_M
+2015-08-21 15:14:33,743: Connecting to Manager...
+2015-08-21 15:14:55,010: Closing Acceptor Manager
+2015-08-21 15:16:33,639: MGui_to_M
+2015-08-21 15:16:36,924: Connecting to Manager...
+2015-08-21 15:16:41,086: Closing Acceptor Manager
+2015-08-21 15:16:49,371: Closing Manager Connector
+2015-08-21 16:00:48,282: MGui_to_M
+2015-08-21 16:00:51,995: Connecting to Manager...
+2015-08-21 16:07:21,233: MGui_to_M
+2015-08-21 16:07:34,154: MGui_to_M
+2015-08-21 16:07:55,400: Closing Acceptor Manager
+2015-08-21 16:07:55,509: Closing Acceptor Manager
+2015-08-21 16:09:59,977: MGui_to_M
+2015-08-21 16:10:12,119: Connecting to Manager...
+2015-08-21 16:10:28,151: Closing Acceptor Manager
+2015-08-21 16:26:28,416: MGui_to_M
+2015-08-21 16:26:32,453: Connecting to Manager...
+2015-08-21 16:30:42,212: Closing Acceptor Manager
+2015-08-21 16:30:47,029: MGui_to_M
+2015-08-21 16:31:50,261: Closing Acceptor Manager
+2015-08-21 16:32:36,844: MGui_to_M
+2015-08-22 14:49:22,659: MGui_to_M
+2015-08-22 14:49:26,691: Connecting to Manager...
+2015-08-22 14:49:43,904: Closing Manager Connector
+2015-08-22 14:50:13,210: Connecting to Manager...
+2015-08-22 14:52:07,305: MGui_to_M
+2015-08-22 14:52:22,448: Closing Acceptor Manager
+2015-08-22 14:52:27,667: MGui_to_M
+2015-08-22 14:52:31,027: Closing Acceptor Manager
+2015-08-22 15:12:01,790: GUI Dispatcher
+2015-08-22 15:12:18,046: Closing Acceptor Manager
+2015-08-22 15:16:17,527: GUI Dispatcher
+2015-08-22 15:18:54,287: Closing Acceptor Manager
+2015-08-22 15:20:40,827: GUI Dispatcher
+2015-08-22 15:20:57,603: Closing Acceptor Manager
+2015-08-22 15:21:56,182: GUI Dispatcher
+2015-08-22 15:22:05,530: Closing Acceptor Manager
+2015-08-22 15:27:56,560: GUI Dispatcher
+2015-08-22 15:28:06,697: Closing Acceptor Manager
+2015-08-22 15:32:34,846: GUI Dispatcher
+2015-08-22 15:32:46,452: Closing Acceptor Manager
+2015-08-22 15:34:05,866: GUI Dispatcher
+2015-08-22 15:34:32,146: Closing Acceptor Manager
+2015-08-22 15:39:20,201: GUI
+2015-08-22 15:43:50,756: Closing Acceptor Manager
+2015-08-22 15:46:03,218: MGui_to_M
+2015-08-22 15:46:06,140: Closing Acceptor Manager
+2015-08-22 15:46:55,571: MGui_to_M
+2015-08-22 15:46:57,696: Closing Acceptor Manager
+2015-08-22 15:47:55,196: MGui_to_M
+2015-08-22 15:47:58,071: Closing Acceptor Manager
+2015-08-22 15:48:24,404: MGui_to_M
+2015-08-22 15:48:30,466: Closing Acceptor Manager
+2015-08-22 15:49:32,077: MGui_to_M
+2015-08-22 15:49:37,272: Closing Acceptor Manager
+2015-08-22 15:50:24,462: MGui_to_M
+2015-08-22 15:50:27,009: Closing Acceptor Manager
+2015-08-22 15:54:37,596: MGui_to_M
+2015-08-22 15:54:40,790: Closing Acceptor Manager
+2015-08-22 15:55:05,861: MGui_to_M
+2015-08-22 15:55:08,767: Closing Acceptor Manager
+2015-08-22 15:55:18,550: MGui_to_M
+2015-08-22 15:55:22,690: Closing Acceptor Manager
+2015-08-22 15:55:55,971: MGui_to_M
+2015-08-22 15:55:58,971: Closing Acceptor Manager
+2015-08-22 16:23:40,087: MGui_to_M
+2015-08-22 16:23:48,751: Connecting to Manager...
+2015-08-22 16:23:56,071: Closing Acceptor Manager
+2015-08-22 16:24:10,076: MGui_to_M
+2015-08-22 16:24:15,685: Closing Acceptor Manager
+2015-08-22 16:24:25,223: MGui_to_M
+2015-08-22 16:24:27,357: Closing Acceptor Manager
+2015-08-22 16:26:10,489: MGui_to_M
+2015-08-22 16:26:12,934: Closing Acceptor Manager
+2015-08-22 16:26:30,575: MGui_to_M
+2015-08-22 16:26:35,362: Closing Acceptor Manager
+2015-08-22 16:26:53,582: MGui_to_M
+2015-08-22 16:27:27,657: Closing Acceptor Manager
+2015-08-22 16:27:52,789: MGui_to_M
+2015-08-22 16:27:55,335: Closing Acceptor Manager
+2015-08-22 16:28:09,460: MGui_to_M
+2015-08-22 16:28:12,003: Closing Acceptor Manager
+2015-08-22 16:28:29,819: MGui_to_M
+2015-08-22 16:28:44,618: Closing Manager Connector
+2015-08-22 16:28:51,759: Closing Acceptor Manager
+2015-08-22 16:30:01,308: MGui_to_M
+2015-08-22 16:35:06,948: Closing Acceptor Manager
+2015-08-22 16:35:12,417: MGui_to_M
+2015-08-22 16:35:16,281: Closing Acceptor Manager
+2015-08-22 16:35:31,338: MGui_to_M
+2015-08-22 16:35:33,233: Closing Acceptor Manager
+2015-08-22 16:37:57,310: MGui_to_M
+2015-08-22 16:37:58,915: Closing Acceptor Manager
+2015-08-22 16:38:09,709: MGui_to_M
+2015-08-22 16:38:11,948: Closing Acceptor Manager
+2015-08-22 16:38:35,427: MGui_to_M
+2015-08-22 16:38:37,207: Closing Acceptor Manager
+2015-08-22 16:39:06,237: MGui_to_M
+2015-08-22 16:39:07,835: Closing Acceptor Manager
+2015-08-22 16:39:30,552: MGui_to_M
+2015-08-22 16:39:32,823: Closing Acceptor Manager
+2015-08-22 16:40:23,928: MGui_to_M
+2015-08-22 16:41:27,550: Connecting to Manager...
+2015-08-22 16:41:42,881: Closing Acceptor Manager
+2015-08-22 16:49:49,697: MGui_to_M
+2015-08-22 16:49:55,073: Closing Acceptor Manager
+2015-08-22 16:51:23,959: MGui_to_M
+2015-08-22 16:51:28,422: Closing Acceptor Manager
+2015-08-22 16:51:37,055: MGui_to_M
+2015-08-22 16:51:49,888: Closing Acceptor Manager
+2015-08-22 16:52:27,865: MGui_to_M
+2015-08-22 16:53:45,154: MGui_to_M
+2015-08-22 16:53:50,250: Connecting to Manager...
+2015-08-22 16:54:29,370: MGui_to_M
+2015-08-22 16:54:31,405: Connecting to Manager...
+2015-08-22 16:54:48,953: Closing Acceptor Manager
