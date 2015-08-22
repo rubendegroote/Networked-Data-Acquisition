@@ -131,7 +131,6 @@ class ManagerApp(QtGui.QMainWindow):
         receiver, address = info
         op,params = 'add_connector',{'address': address}
         message = make_message(op,params)
-        print(message)
         self.Man_DS_Connector.instruct(receiver, message)
 
     def remove_artist(self, address):
@@ -193,7 +192,7 @@ class Man_DS_Connector():
 
     def __init__(self, ManChan, DSChan, callback,onCloseCallback):
     
-        # try:
+        try:
             self.DS = Connector(DSChan,
                           callback=callback,
                           name='MGui_to_DS')
@@ -201,11 +200,11 @@ class Man_DS_Connector():
             # if the connection fails
             # prevents an Exception in the GUI
             self.DS.onCloseCallback = onCloseCallback
-        # except Exception as e:
-            # self.DS_error = e
-            # print(e)
-            # self.DS = None
-        # try:    
+        except Exception as e:
+            self.DS_error = e
+            print(e)
+            self.DS = None
+        try:    
             self.man = Connector(ManChan,
                           callback=callback,
                           onCloseCallback=onCloseCallback,
@@ -213,17 +212,16 @@ class Man_DS_Connector():
             # same comment as for the DS closeCallback
             self.man.onCloseCallback = onCloseCallback
 
-        # except Exception as e:
-        #     self.man_error = e
-        #     print(e)
-        #     self.man = None
+        except Exception as e:
+            self.man_error = e
+            print(e)
+            self.man = None
 
     def instruct(self, receiver, instr):
         if receiver == 'Manager':
             self.man.add_request(instr)
-        elif receiver == 'Data Server':
+        elif receiver == 'Data S erver':
             self.DS.add_request(instr)
         elif receiver == 'Both':
-            print(instr)
             self.man.add_request(instr)
             self.DS.add_request(instr)

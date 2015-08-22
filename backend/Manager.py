@@ -208,7 +208,6 @@ class Manager(Dispatcher):
         return True
 
 
-
     def status_reply(self, origin, params):
         self.format[origin] = params['format']
         if params['scanning'] and params['on_setpoint'] != self.on_setpoint:

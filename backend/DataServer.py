@@ -80,6 +80,7 @@ class DataServer(Dispatcher):
                 'bit_rates': self.bitrates}
 
     def data_reply(self,origin,params):
+        # print(origin,params)
         pass
 
     def getFromReader(self):

@@ -67,14 +67,16 @@ class Dispatcher(asyncore.dispatcher):
             c.commQ.put(self.connInfo)
         return {}
 
-    def remove_connector(self,address):
+    def remove_connector(self,params):
+        address = params['address']
         toRemove = []
         for name, prop in self.connInfo.items():
-            if address == (prop[1], str(prop[2])):
+            if address == [prop[1], str(prop[2])]:
                 self.connectors[name].close()
                 toRemove.append(name)
 
         for name in toRemove:
+            self.connectors[name].close()
             del self.connectors[name]
             del self.connInfo[name]
 
@@ -86,9 +88,6 @@ class Dispatcher(asyncore.dispatcher):
     def acceptor_cb(self, message):
         function = message['message']['op']
         args = message['message']['parameters']
-
-        if not function == 'status':
-            print(message)
 
         params = getattr(self, function)(args)
 

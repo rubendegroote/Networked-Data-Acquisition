@@ -66,7 +66,6 @@ class ArtistConnections(QtGui.QWidget):
         self.connectSig.emit(info)
 
     def update(self, origin, params):
-        print(origin,params)
         # update list of existing connections
         if origin == 'Manager':
             self.ManArtists = params.keys()
@@ -88,7 +87,7 @@ class ArtistConnections(QtGui.QWidget):
         toDelete = []
         for key,val in self.artistWidgets.items():
             if key not in self.ManArtists and key not in self.DSArtists:
-                toDelete.append(val)
+                toDelete.append(key)
             else:
                 if key not in params.keys():
                     val.set_disconnected(origin)
@@ -96,8 +95,13 @@ class ArtistConnections(QtGui.QWidget):
                     val.set_connected(origin)
 
         for key in toDelete:
-            self.artistWidgets[key].close()
-            del self.artistWidgets[key]     
+            try:
+                self.artistWidgets[key].close()
+                del self.artistWidgets[key]
+            except KeyError as e:
+                # raised when the widget has already been removed 
+                # due to an earlier status update
+                pass
 
 class ArtistWidget(QtGui.QWidget):
     removeSig = QtCore.Signal(object)
@@ -160,7 +164,6 @@ class ArtistWidget(QtGui.QWidget):
         self.reconnectSig.emit((sender, (self.IP, self.PORT)))
 
     def set_disconnected(self,origin):
-        print(0,origin)
         if origin == 'Manager':
             self.ManLabel.setStyleSheet(self.not_ok)
             self.ManReconnectButton.setVisible(True)
@@ -169,7 +172,6 @@ class ArtistWidget(QtGui.QWidget):
             self.DSReconnectButton.setVisible(True)
             
     def set_connected(self,origin):
-        print(1,origin)
         if origin == 'Manager':
             self.ManLabel.setStyleSheet(self.ok)
             self.ManReconnectButton.setHidden(True)

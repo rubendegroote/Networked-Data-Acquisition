@@ -5,8 +5,8 @@ import numpy as np
 
 class ScannerWidget(QtGui.QWidget):
 
-    scanInfoSig = QtCore.Signal(tuple)
-    setPointSig = QtCore.Signal(tuple)
+    scanInfoSig = QtCore.Signal(dict)
+    setPointSig = QtCore.Signal(dict)
     stopScanSig = QtCore.Signal(bool)
 
     def __init__(self):
