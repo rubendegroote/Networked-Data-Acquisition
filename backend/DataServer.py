@@ -4,10 +4,6 @@ import sys
 from collections import deque
 from datetime import datetime
 from copy import deepcopy
-import logging
-logging.basicConfig(filename='DataServer.log',
-                    format='%(asctime)s: %(message)s',
-                    level=logging.INFO)
 import os
 import pickle
 import socket

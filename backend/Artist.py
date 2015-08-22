@@ -1,10 +1,6 @@
 import asyncore
 import socket
 import multiprocessing as mp
-import logging
-logging.basicConfig(filename='Artist.log',
-                    format='%(asctime)s: %(message)s',
-                    level=logging.INFO)
 import threading as th
 import pandas as pd
 import time
@@ -149,7 +145,6 @@ class Artist(Dispatcher):
 
 
         # else:
-        #     logging.info('Got "{}" instruction from "{}"'.format(data, sender))
         #     if data[0] == 'STOP':
         #         self.StopDAQ()
         #     elif data[0] == 'START':
@@ -173,10 +168,6 @@ class Artist(Dispatcher):
         #     return None
 
     def StartDAQ(self):
-        if not self.stopFlag.is_set():
-            logging.warn('DAQ already running.')
-            return
-        logging.info('Starting DAQ')
         self.stopFlag.clear()
 
         self.InitializeScanning()
@@ -188,7 +179,6 @@ class Artist(Dispatcher):
         self.DAQProcess.start()
         self.contFlag.set()
         self.readThread = th.Timer(0, self.ReadData).start()
-        logging.info('DAQ Started.')
 
     def PauzeDAQ(self):
         self.contFlag.clear()
@@ -197,18 +187,11 @@ class Artist(Dispatcher):
         self.contFlag.set()
 
     def StopDAQ(self):
-        if self.stopFlag.is_set():
-            logging.warn('DAQ not running.')
-            return
-        logging.info('Stopping DAQ')
         self.stopFlag.set()
         self.contFlag.clear()
         # wait for the process to stop
-        while not self.IStoppedFlag.is_set():
-            time.sleep(0.05)
         self.IStoppedFlag.clear()
         self.DAQProcess.terminate()
-        logging.info('Stopped DAQ')
 
     def RestartDAQ(self):
         self.StopDAQ()
@@ -222,9 +205,6 @@ class Artist(Dispatcher):
     def ReadData(self):
         while not self.stopFlag.is_set():
             message = GetFromQueue(self.mQ, 'message')
-            if message is not None:
-                logging.warn("Received message \"{}\" from acquire."
-                             .format(message))
             ret = emptyPipe(self.dQ)
             if not ret == []:
                 print(len(ret))
@@ -235,7 +215,6 @@ class Artist(Dispatcher):
             time.sleep(0.01)
             # print('starting')
             # self.readThread = th.Timer(0.01, self.ReadData).start()
-        logging.info('Stoppped reading the data')
 
     def save(self):
         now = time.time()

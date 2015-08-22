@@ -3,7 +3,6 @@ import socket
 import multiprocessing as mp
 import json
 import time
-import logging
 from collections import deque
 try:
     from .Helpers import track, make_message
@@ -28,7 +27,6 @@ class Connector(asynchat.async_chat):
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         # self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self.connect(chan)
-        logging.info('Connecting to {}...'.format(self.name))
         time.sleep(0.05)
 
         self.send(self.name.encode('UTF-8'))
@@ -90,7 +88,6 @@ class Connector(asynchat.async_chat):
         # super(Connector, self).push('END_MESSAGE'.encode('UTF-8'))
 
     def handle_close(self):
-        logging.info('Closing {} Connector'.format(self.name))
         self.onCloseCallback(self)
         super(Connector, self).handle_close()
 
@@ -136,6 +133,5 @@ class Acceptor(asynchat.async_chat):
         # super(Acceptor, self).push('STOP_DATA'.encode('UTF-8'))
 
     def handle_close(self):
-        logging.info('Closing Acceptor {}'.format(self.name))
         self.onCloseCallback(self)
         super(Acceptor, self).handle_close()

@@ -3,7 +3,6 @@ import asyncore
 import asynchat
 import socket
 import time
-import logging
 try:
     from Helpers import *
     from connectors import Connector, Acceptor
@@ -47,7 +46,6 @@ class Dispatcher(asyncore.dispatcher):
 
     @try_call
     def add_connector(self, params):
-        print(params)
         address = params['address']
         if address is None:
             return
@@ -117,7 +115,6 @@ class Dispatcher(asyncore.dispatcher):
             sock, addr = pair
             try:
                 sender = self.get_sender_ID(sock)
-                logging.info(sender)
             except Exception as e:
                 return
             self.acceptors.append(Acceptor(sock=sock,

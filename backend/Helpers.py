@@ -1,7 +1,6 @@
 import pandas as pd
 import time
 import numpy as np
-import logging
 from collections import OrderedDict
 import copy
 
@@ -17,9 +16,6 @@ def GetFromQueue(q, name):
             ret = q.get_nowait()
 
         except Exception as e:
-            logging.critical(
-                'An error occured while getting from queue {}.'.format(name))
-            logging.critical(e)
             ret = None
     else:
         ret = None

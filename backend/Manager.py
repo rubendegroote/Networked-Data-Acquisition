@@ -5,10 +5,6 @@ import sys
 import multiprocessing as mp
 import ast
 from collections import OrderedDict
-import logging
-logging.basicConfig(filename='Manager.log',
-                    format='%(asctime)s: %(message)s',
-                    level=logging.INFO)
 try:
     from Helpers import *
     from connectors import Connector, Acceptor
@@ -88,11 +84,8 @@ class Manager(Dispatcher):
 
     @try_call
     def start_scan(self, scanInfo):
-        try:
-            name, self.scanPar = scanInfo[0].split(':')
-            self.scanner = self.connectors[name]
-        except:
-            logging.error('Could not start scan, no connection with Artist')
+        name, self.scanPar = scanInfo[0].split(':')
+        self.scanner = self.connectors[name]
         self.scanner.scanning = True
         self.curPos = 0
         self.scanRange = scanInfo[1]
