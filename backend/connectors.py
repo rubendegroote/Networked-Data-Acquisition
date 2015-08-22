@@ -6,9 +6,9 @@ import time
 import logging
 from collections import deque
 try:
-    from .Helpers import track
+    from .Helpers import track, make_message
 except:
-    from Helpers import track
+    from Helpers import track, make_message
 
 
 
@@ -66,7 +66,6 @@ class Connector(asynchat.async_chat):
         try:
             message = json.loads(self.buff.decode('UTF-8'))
             self.buff = b""
-
             self.callback(message=message)
         except Exception as e:
             print(e)
@@ -78,10 +77,11 @@ class Connector(asynchat.async_chat):
 
     def send_request(self):
         try:
-            instr = self.requestQ.get_nowait()
-            self.push({'message': instr})
+            message = self.requestQ.get_nowait()
         except:
-            self.push({'message': {'op': self.defaultRequest, 'parameters': {}}})
+            message = make_message(self.defaultRequest,{})
+
+        self.push(message)
 
     @track
     def push(self,message):
@@ -124,6 +124,7 @@ class Acceptor(asynchat.async_chat):
             self.push({'reply': {'op': 'receive_fail', 'parameters': {'exception': str(e), 'status': [1],
                 'attempt': self.buff.decode('UTF-8')}}})
         except Exception as e:
+            print(e)
             print(self.buff.decode('UTF-8'))
         finally:
             self.buff = b""

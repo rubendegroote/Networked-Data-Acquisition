@@ -6,6 +6,7 @@ from connectiondialogs import ConnectionDialog
 class ArtistConnections(QtGui.QWidget):
     connectSig = QtCore.Signal(tuple)
     removeSig = QtCore.Signal(tuple)
+    removeAllSig = QtCore.Signal(bool)
 
     def __init__(self, parent=None):
         super(ArtistConnections, self).__init__(parent)
@@ -25,11 +26,11 @@ class ArtistConnections(QtGui.QWidget):
         self.layout.addWidget(self.artistSelection, 100, 0, 1, 1)
 
         self.addArtistButton = QtGui.QPushButton('Add Artist')
-        self.addArtistButton.clicked.connect(lambda: self.addConnection())
+        self.addArtistButton.clicked.connect(self.addConnection)
         self.layout.addWidget(self.addArtistButton, 100, 1, 1, 1)
 
         self.removeArtistsButton = QtGui.QPushButton('Remove All Artists')
-        self.removeArtistsButton.clicked.connect(lambda: self.removeAll())
+        self.removeArtistsButton.clicked.connect(self.remove_all_artists)
         self.layout.addWidget(self.removeArtistsButton, 101, 0, 1, 2)
 
         self.ManArtists = []
@@ -57,9 +58,9 @@ class ArtistConnections(QtGui.QWidget):
     def remove(self, connWidget):
         self.removeSig.emit((connWidget.IP, connWidget.PORT))
 
-    def removeAll(self):
+    def remove_all_artists(self):
         for name in self.artistWidgets:
-            self.artistWidgets[name].removeArtist()
+            self.removeAllSig.emit(True)
 
     def reconnect(self, info):
         self.connectSig.emit(info)

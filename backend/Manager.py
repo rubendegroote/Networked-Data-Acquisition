@@ -40,18 +40,6 @@ class Manager(Dispatcher):
         self.format = {}
         self.on_setpoint = False
 
-    def status_reply(self, origin, params):
-        self.format[origin] = params['format']
-        if params['scanning'] and params['on_setpoint'] != self.on_setpoint:
-            self.on_setpoint = params['on_setpoint']
-            if params['on_setpoint']:
-                pass
-            else:
-                step_successful = self.scanToNext()
-                if not step_successful:
-                    self.notifyAll({'message': {'op': 'set_scan_number', 'parameters': {'scan_number': [-1]}}})
-                elif self.curPos == 1:
-                    self.notifyAll({'message': {'op': 'set_scan_number', 'parameters': {'scan_number': [self.scanNo]}}})
     @try_call
     def status(self, *args):
         params = {'connector_info': self.connInfo,
@@ -61,7 +49,8 @@ class Manager(Dispatcher):
                   'format': self.format}
         return params
 
-    def resumeScan(self):
+    @try_call
+    def resume_scan(self):
         self.scanner = self.connectors[self.resumeName]
         self.scanner.scanning = True
         self.scanPar = 'A0V'
@@ -95,7 +84,10 @@ class Manager(Dispatcher):
             self.scanParser.write(scanfile)
         self.scanToNext()
 
-    def scan(self, scanInfo):
+        return {}
+
+    @try_call
+    def start_scan(self, scanInfo):
         try:
             name, self.scanPar = scanInfo[0].split(':')
             self.scanner = self.connectors[name]
@@ -107,6 +99,11 @@ class Manager(Dispatcher):
         self.tPerStep = scanInfo[2]
         self.scanning = True
         self.scanNo += 1
+        self.set_all_scan_numbers(self.scanNo)       
+        
+        self.scanToNext()
+
+        # logging stuff
         self.scanParser['scanprogress'] = {'scanno': self.scanNo}
         self.progressParser['progress'] = {'name': name}
         try:
@@ -132,9 +129,11 @@ class Manager(Dispatcher):
                 ['Notify', self.logbook[-1], len(self.logbook) - 1])
         with open('ManagerScan.ini', 'w') as scanfile:
             self.scanParser.write(scanfile)
-        self.scanToNext()
 
-    def setpoint(self, setpointInfo):
+        return {}
+
+    @try_call
+    def go_to_setpoint(self, setpointInfo):
         name, self.scanPar = setpointInfo[0].split(':')
         self.scanner = self.connectors[name]
         value = setpointInfo[1]
@@ -157,20 +156,27 @@ class Manager(Dispatcher):
         self.scanner.add_instruction(
             ["Setpoint Change", self.scanPar, value])
 
-    def stopScan(self):
+        return {}
+
+    @try_call
+    def stop_scan(self):
         self.scanning = False
         self.scanner.scanning = False
-        self.notifyAll(['idling'])
+        self.set_all_scan_numbers(-1)
+        return {}
 
-    def notifyAll(self, instruction):
+    @try_call
+    def set_all_scan_numbers(self, number):
+        op,params = 'set_scan_number',{'scan_number': [number]}
         for instr in self.connectors.values():
-            instr.add_request(instruction)
+            instr.add_request(make_message(op,params))
+        return {}
 
-    def notifyAllLogs(self, instruction):
+    def notify_all_logs(self, instruction):
         for viewer in self.viewers:
             viewer.commQ.put(instruction)
 
-    def scanToNext(self):
+    def scan_to_next(self):
         if not self.scanning:
             return False
 
@@ -200,6 +206,19 @@ class Manager(Dispatcher):
         self.progress = int(self.curPos / len(self.scanRange) * 100)
 
         return True
+
+
+
+    def status_reply(self, origin, params):
+        self.format[origin] = params['format']
+        if params['scanning'] and params['on_setpoint'] != self.on_setpoint:
+            self.on_setpoint = params['on_setpoint']
+            if params['on_setpoint']:
+                pass
+            else:
+                step_successful = self.scan_to_next()
+                if not step_successful:
+                    self.stop_scan()
 
 def makeManager(PORT=5007):
     return Manager(PORT=PORT)

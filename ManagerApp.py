@@ -10,6 +10,7 @@ from connectiondialogs import Man_DS_ConnectionDialog
 from connectionwidgets import ArtistConnections
 from scanner import ScannerWidget
 
+from backend.Helpers import make_message
 
 class ResumeScanSignal(QtCore.QObject):
 
@@ -33,8 +34,8 @@ class ManagerApp(QtGui.QMainWindow):
 
         self.show()
 
-    def connectToServers(self, message=''):
-        respons = Man_DS_ConnectionDialog.getInfo(parent=self, message=message)
+    def connectToServers(self):
+        respons = Man_DS_ConnectionDialog.getInfo(parent=self)
         if respons[1]:
             self.addConnection(respons[0])
 
@@ -44,19 +45,19 @@ class ManagerApp(QtGui.QMainWindow):
         self.setCentralWidget(self.central)
 
         self.scanner = ScannerWidget()
-        self.scanner.scanInfoSig.connect(self.startScan)
-        self.scanner.stopScanSig.connect(self.stopScan)
-        self.scanner.setPointSig.connect(self.setPoint)
+        self.scanner.scanInfoSig.connect(self.start_scan)
+        self.scanner.stopScanSig.connect(self.stop_scan)
+        self.scanner.setPointSig.connect(self.go_to_setpoint)
         layout.addWidget(self.scanner, 0, 0, 1, 1)
 
         self.connWidget = ArtistConnections()
-        self.connWidget.connectSig.connect(self.addArtist)
-        self.connWidget.removeSig.connect(self.removeArtist)
-        # self.connWidget.removeAll.connect(self.removeAll)
+        self.connWidget.connectSig.connect(self.add_artist)
+        self.connWidget.removeSig.connect(self.remove_artist)
+        self.connWidget.removeAllSig.connect(self.remove_all_artists)
         layout.addWidget(self.connWidget, 1, 0, 1, 1)
 
         self.dispatchButton = QtGui.QPushButton('Connect to Servers')
-        self.dispatchButton.clicked.connect(lambda: self.connectToServers())
+        self.dispatchButton.clicked.connect(self.connectToServers)
         layout.addWidget(self.dispatchButton, 2, 0, 1, 1)
 
         self.disable()
@@ -115,32 +116,41 @@ class ManagerApp(QtGui.QMainWindow):
     def stopIOLoop(self):
         self.looping = False
 
-    def startScan(self, scanInfo):
+    def start_scan(self, scanInfo):
         self.connWidget.setDisabled(True)
         self.dispatchButton.setDisabled(True)
-        self.Man_DS_Connector.instruct('Manager', ['Scan', scanInfo])
+        self.Man_DS_Connector.instruct('Manager', ('start_scan', scanInfo))
 
-    def setPoint(self, setpointInfo):
-        self.Man_DS_Connector.instruct('Manager', ['Setpoint', setpointInfo])
+    def go_to_setpoint(self, setpointInfo):
+        self.Man_DS_Connector.instruct('Manager', ('go_to_setpoint', setpointInfo))
 
-    def stopScan(self):
-        self.Man_DS_Connector.instruct('Manager', ['Stop Scan'])
+    def stop_scan(self):
+        self.Man_DS_Connector.instruct('Manager', ('stop_scan',{}))
 
-    def addArtist(self, info):
+    def add_artist(self, info):
         receiver, address = info
-        message = {'op': 'add_connector', 'parameters': {'address': address}}
+        op,params = 'add_connector',{'address': address}
+        message = make_message(op,params)
+        print(message)
         self.Man_DS_Connector.instruct(receiver, message)
 
-    def removeArtist(self, address):
-        self.Man_DS_Connector.instruct('Both', ['Remove Artist', address])
+    def remove_artist(self, address):
+        op,params = 'remove_connector', {'address': address}
+        message = make_message(op,params)
+        self.Man_DS_Connector.instruct('Both',message)
 
-    def showResumeDialog(self, data):
-        smin, smax, sl, curpos, tPerStep, name = data
-        resuming = QtGui.QMessageBox.question(None, 'Resume scan?',
-                                              'An interrupted scan was found:\nScanning %s, %f to %f V, %f steps, on step %f, %f s per step\nResume this scan?' % (name,
-                                        float(smin),float(smax),float(sl),float(curpos),float(tPerStep)),QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
-        if resuming == QtGui.QMessageBox.Yes:
-            self.Man_DS_Connector.instruct('Manager', ['Resume Scan'])
+    def remove_all_artists(self):
+        op,params = 'remove_all_connectors', {}
+        message = make_message(op,params)
+        self.Man_DS_Connector.instruct('Both',message)
+
+    # def showResumeDialog(self, data):
+    #     smin, smax, sl, curpos, tPerStep, name = data
+    #     resuming = QtGui.QMessageBox.question(None, 'Resume scan?',
+    #                                           'An interrupted scan was found:\nScanning %s, %f to %f V, %f steps, on step %f, %f s per step\nResume this scan?' % (name,
+    #                                     float(smin),float(smax),float(sl),float(curpos),float(tPerStep)),QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+    #     if resuming == QtGui.QMessageBox.Yes:
+    #         self.Man_DS_Connector.instruct('Manager', ['Resume Scan'])
 
     def closeEvent(self, event):
         self.stopIOLoop()
@@ -183,7 +193,7 @@ class Man_DS_Connector():
 
     def __init__(self, ManChan, DSChan, callback,onCloseCallback):
     
-        try:
+        # try:
             self.DS = Connector(DSChan,
                           callback=callback,
                           name='MGui_to_DS')
@@ -191,9 +201,11 @@ class Man_DS_Connector():
             # if the connection fails
             # prevents an Exception in the GUI
             self.DS.onCloseCallback = onCloseCallback
-        except:
-            self.DS = None
-        try:    
+        # except Exception as e:
+            # self.DS_error = e
+            # print(e)
+            # self.DS = None
+        # try:    
             self.man = Connector(ManChan,
                           callback=callback,
                           onCloseCallback=onCloseCallback,
@@ -201,8 +213,10 @@ class Man_DS_Connector():
             # same comment as for the DS closeCallback
             self.man.onCloseCallback = onCloseCallback
 
-        except:
-            self.man = None
+        # except Exception as e:
+        #     self.man_error = e
+        #     print(e)
+        #     self.man = None
 
     def instruct(self, receiver, instr):
         if receiver == 'Manager':
@@ -210,5 +224,6 @@ class Man_DS_Connector():
         elif receiver == 'Data Server':
             self.DS.add_request(instr)
         elif receiver == 'Both':
+            print(instr)
             self.man.add_request(instr)
             self.DS.add_request(instr)

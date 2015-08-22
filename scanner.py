@@ -132,13 +132,16 @@ class ScannerWidget(QtGui.QWidget):
 
         dt = float(self.timeEdit.text())
 
-        self.scanInfoSig.emit((par,rng,dt))
+        self.scanInfoSig.emit({'parameter':par,
+                               'range':rng,
+                               'time_interval':dt})
 
     def makeSetpoint(self):
         par = 'M2: wavenumber'
         value = float(self.setpointEdit.text())
 
-        self.setPointSig.emit((par, value))
+        self.setPointSig.emit({'parameter':par,
+                               'setpoint': value})
 
     def stopScan(self):
         self.stopScanSig.emit(True)

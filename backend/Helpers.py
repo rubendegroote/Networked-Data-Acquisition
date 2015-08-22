@@ -77,6 +77,9 @@ def save_csv(data, name, artist=''):
                 group.to_csv(f, na_rep='nan')
 
 
+def make_message(op,params):
+    return {'message': {'op': op, 'parameters': params}}
+
 def track(func):
     def func_wrapper(self, message):
         try:

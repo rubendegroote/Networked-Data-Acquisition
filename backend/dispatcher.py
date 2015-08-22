@@ -47,6 +47,7 @@ class Dispatcher(asyncore.dispatcher):
 
     @try_call
     def add_connector(self, params):
+        print(params)
         address = params['address']
         if address is None:
             return
@@ -77,23 +78,26 @@ class Dispatcher(asyncore.dispatcher):
             del self.connectors[name]
             del self.connInfo[name]
 
-    def remove_all_connectors(self):
-        pass
+    def remove_all_connectors(self,params):
+        for name,conn in self.connInfo.items():
+            del self.connectors
+            del self.connInfo[name]     
 
     def acceptor_cb(self, message):
         function = message['message']['op']
         args = message['message']['parameters']
+
+        if not function == 'status':
+            print(message)
 
         params = getattr(self, function)(args)
 
         return add_reply(message, params)
 
     def acceptor_closed_cb(self, acceptor):
-        print(acceptor)
         self.acceptors.remove(acceptor)
 
     def connector_cb(self, message):
-        print(message)
         if message['reply']['parameters']['status'][0] == 0:
             function = message['reply']['op']
             args = message['reply']['parameters']

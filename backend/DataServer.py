@@ -76,13 +76,12 @@ class DataServer(Dispatcher):
 
     @try_call
     def status(self, *args):
-        return {'connector_info': self.connInfo, 'bit_rates': self.bitrates}
+        return {'connector_info': self.connInfo, 
+                'bit_rates': self.bitrates}
 
-    def connector_cb(self, message):
-        # with open(self.name + '_transmissionID.txt', 'a') as f:
-        #     f.write(str(message['track']))
+    def data_reply(self,origin,params):
         pass
-        
+
     def getFromReader(self):
         now = time.time()
         new_data = pd.DataFrame()
