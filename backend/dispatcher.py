@@ -61,8 +61,6 @@ class Dispatcher(asyncore.dispatcher):
         self.connectors[conn.acceptorName] = conn
         self.connInfo[conn.acceptorName] = (
             True, conn.chan[0], conn.chan[1])
-        for c in self.acceptors: # should be changed to use add_notification
-            c.commQ.put(self.connInfo)
         return {}
 
     def remove_connector(self,params):
@@ -115,6 +113,7 @@ class Dispatcher(asyncore.dispatcher):
             sock, addr = pair
             try:
                 sender = self.get_sender_ID(sock)
+                logging.info(sender)
             except Exception as e:
                 return
             self.acceptors.append(Acceptor(sock=sock,

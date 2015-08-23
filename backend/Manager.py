@@ -165,9 +165,9 @@ class Manager(Dispatcher):
             instr.add_request(make_message(op,params))
         return {}
 
-    def notify_all_logs(self, instruction):
-        for viewer in self.viewers:
-            viewer.commQ.put(instruction)
+    # def notify_all_logs(self, instruction):
+    #     for viewer in self.viewers:
+    #         viewer.commQ.put(instruction)
 
     def scan_to_next(self):
         if not self.scanning:

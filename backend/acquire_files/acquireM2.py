@@ -46,9 +46,9 @@ mapping = {
     "Stop Fast Scan Without Return": comm.fast_scan_stop_nr
 }
 
-FORMAT = ('status', 'wavelength', 'temperature', 'temperature_status',
-                     'etalon_lock', 'etalon_voltage', 'ref_cavity_lock', 'resonator_voltage',
-                     'ecd_lock', 'ecd_voltage', 'output_monitor', 'etalon_pd_dc', 'dither')
+FORMAT = ('timestamp','status', 'wavelength', 'temperature', 'temperature_status',
+        'etalon_lock', 'etalon_voltage', 'ref_cavity_lock', 'resonator_voltage',
+        'ecd_lock', 'ecd_voltage', 'output_monitor', 'etalon_pd_dc', 'dither')
 def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     """ This is the function that will be the target function of a Process.
 
@@ -115,10 +115,6 @@ def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     # otherwise get mysterious low first count
     mQ.put("Communication with ICE-BLOC achieved.")
 
-    # Create the format
-    ns.format = ('time', 'scan')
-    # Add an entry for each channel
-
     p = float(0.)  # Initial value for the input
     got_instr = False
 
@@ -177,15 +173,9 @@ def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
             now = time.time()
 
             # put data on the queue
-            # Does each value have to be an array in and of itself?
-            # For now, it is. The data from aiData is converted to
-            # arrays with a single value, and added to the tuple created
-            # from the other data (timestamp, scanNo, counts and scanningvoltage)
-            # dQ.send((
-            #         np.array([datetime.datetime.now()]),
-            #         np.array([ns.scanNo])) +
-            #         tuple([np.array([val]) for val in aiData])
-            #         )
+            data = [now]
+            data.extend([1] * (len(ns.format)-1))
+            dQ.send(data)
 
             if ns.on_setpoint and time.time() - ns.t0 >= tPerStep:
                 ns.on_setpoint = False

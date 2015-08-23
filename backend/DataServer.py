@@ -76,7 +76,12 @@ class DataServer(Dispatcher):
                 'bit_rates': self.bitrates}
 
     def data_reply(self,origin,params):
-        # print(origin,params)
+        print(origin,params)
+        # now save the data if needed - put on save process
+        
+        # keep the data in memory as required, ready for 
+        # pushing to viewers
+        
         pass
 
     def getFromReader(self):

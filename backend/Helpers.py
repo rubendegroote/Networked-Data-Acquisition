@@ -7,14 +7,10 @@ import logging
 SAVE_PATH = 'C:/Data/'
 
 
-def GetFromQueue(q, name):
+def GetFromQueue(q):
     if not q.empty():
         try:
-            # try-except to keep this thread refreshing while
-            # waiting for data (e.g. to notice stop commands that
-            # would have terminated the DAQ process already)
             ret = q.get_nowait()
-
         except Exception as e:
             ret = None
     else:
@@ -31,7 +27,7 @@ def emptyPipe(q):
         while q.poll(0.0005):
             try:
                 toSend.append(q.recv())
-            except:  # What to do here?
+            except Exception as e:  # What to do here?
                 pass
     return toSend
 

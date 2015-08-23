@@ -36,7 +36,6 @@ class Connector(asynchat.async_chat):
         self.set_terminator('STOP_DATA'.encode('UTF-8'))
         self.buff = b''
 
-        self.commQ = mp.Queue()
         self.requestQ = mp.Queue()
 
         self.send_request()
@@ -104,7 +103,6 @@ class Acceptor(asynchat.async_chat):
         self.counter = 0
 
         self.buff = b""
-        self.commQ = mp.Queue()
         self.dataDQ = deque()
 
         super(Acceptor, self).push(self.name.encode('UTF-8'))
