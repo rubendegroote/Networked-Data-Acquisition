@@ -5,9 +5,9 @@ import json
 import time
 from collections import deque
 try:
-    from .Helpers import track, make_message
+    from .Helpers import track, make_message, log_message
 except:
-    from Helpers import track, make_message
+    from Helpers import track, make_message, log_message
 
 
 
@@ -82,6 +82,7 @@ class Connector(asynchat.async_chat):
         self.push(message)
 
     @track
+    @log_message
     def push(self,message):
         dump = (json.dumps(message) + "END_MESSAGE").encode('UTF-8')
         super(Connector, self).push(dump)
@@ -127,6 +128,7 @@ class Acceptor(asynchat.async_chat):
             self.buff = b""
 
     @track
+    @log_message
     def push(self,message):
         dump = (json.dumps(message) + "STOP_DATA").encode('UTF-8')
         super(Acceptor, self).push(dump)

@@ -1,8 +1,8 @@
 import pandas as pd
 import time
 import numpy as np
-from collections import OrderedDict
 import copy
+import logging
 
 SAVE_PATH = 'C:/Data/'
 
@@ -96,7 +96,6 @@ def add_reply(message, params):
     new_message['reply']['parameters'] = params
     return new_message
 
-
 def try_call(func):
     def func_wrapper(*args, **kwargs):
         try:
@@ -106,3 +105,20 @@ def try_call(func):
             reply_dict = {'status': [1], 'exception': str(e)}
         return reply_dict
     return func_wrapper
+
+def log_message(func):
+    logging.basicConfig(filename='message_log',
+                    format='%(asctime)s: %(message)s',
+                    level=logging.INFO)
+
+    def func_wrapper(self,message):
+        if not message['message']['op'] == 'status' and \
+           not message['message']['op'] == 'data':
+            logging.info(message)
+        if 'reply' in message.keys():
+            if not message['reply']['parameters']['status'][0] == 0:
+                logging.info(message)
+        func(self,message)
+    
+    return func_wrapper
+        
