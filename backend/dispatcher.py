@@ -3,6 +3,7 @@ import asyncore
 import asynchat
 import socket
 import time
+from copy import deepcopy
 try:
     from Helpers import *
     from connectors import Connector, Acceptor
@@ -63,6 +64,7 @@ class Dispatcher(asyncore.dispatcher):
             True, conn.chan[0], conn.chan[1])
         return {}
 
+    @try_call
     def remove_connector(self,params):
         address = params['address']
         toRemove = []
@@ -70,16 +72,22 @@ class Dispatcher(asyncore.dispatcher):
             if address == [prop[1], str(prop[2])]:
                 self.connectors[name].close()
                 toRemove.append(name)
-
         for name in toRemove:
             self.connectors[name].close()
             del self.connectors[name]
             del self.connInfo[name]
 
+        return {}
+    
+    @try_call
     def remove_all_connectors(self,params):
-        for name,conn in self.connInfo.items():
-            del self.connectors
-            del self.connInfo[name]     
+        names = deepcopy(list(self.connInfo.keys()))
+        for name in names:
+            self.connectors[name].close()
+            del self.connectors[name]
+            del self.connInfo[name]
+
+        return {}
 
     def acceptor_cb(self, message):
         function = message['message']['op']
@@ -103,7 +111,6 @@ class Dispatcher(asyncore.dispatcher):
             print('Connector received fail message', message)
 
     def connector_closed_cb(self,connector):
-        print(connector)
         self.connInfo[connector.acceptorName] = (
             False, connector.chan[0], connector.chan[1])
 

@@ -9,11 +9,10 @@ try:
 except:
     from Helpers import track, make_message, log_message
 
-
-
 class Connector(asynchat.async_chat):
-    def __init__(self, chan, callback, onCloseCallback=None, name='', defaultRequest='status'):
-        super(Connector, self).__init__()
+    def __init__(self,chan,callback,
+            onCloseCallback=None,name='',defaultRequest='status'):
+        super(Connector,self).__init__()
         self.name = name
         self.callback = callback
         if onCloseCallback == None:
@@ -94,7 +93,8 @@ class Connector(asynchat.async_chat):
 
 class Acceptor(asynchat.async_chat):
 
-    def __init__(self, sock, callback=None, onCloseCallback=None, name=''):
+    def __init__(self, sock, callback=None, 
+            onCloseCallback=None, name=''):
         super(Acceptor, self).__init__(sock)
         self.set_terminator('END_MESSAGE'.encode('UTF-8'))
         self.callback = callback
@@ -116,7 +116,8 @@ class Acceptor(asynchat.async_chat):
             if not ret == None:
                 self.push(ret)
         except ValueError as e:
-            self.push({'reply': {'op': 'receive_fail', 'parameters': {'exception': str(e), 'status': [1],
+            self.push({'reply': {'op': 'receive_fail', 
+                'parameters': {'exception': str(e), 'status': [1],
                 'attempt': self.buff.decode('UTF-8')}}})
         except Exception as e:
             print(e)

@@ -628,3 +628,96 @@
 2015-08-23 19:31:28,727: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}, 'track': [('MGui_to_DS', 34)]}
 2015-08-23 19:32:33,122: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}, 'track': [('MGui_to_DS', 41)]}
 2015-08-23 19:32:33,124: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}, 'track': [('MGui_to_M', 40)]}
+2015-08-29 15:31:43,742: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 35)]}
+2015-08-29 15:31:43,742: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}, 'track': [('MGui_to_DS', 35)]}
+2015-08-29 15:32:04,087: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'remove_connector'}, 'track': [('MGui_to_M', 220)]}
+2015-08-29 15:32:04,087: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'remove_connector'}, 'track': [('MGui_to_DS', 221)]}
+2015-08-29 15:34:07,998: {'message': {'op': 'remove_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}, 'track': [('MGui_to_DS', 49)]}
+2015-08-29 15:34:07,998: {'message': {'op': 'remove_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}, 'track': [('MGui_to_M', 48)]}
+2015-08-29 15:36:02,003: {'track': [('MGui_to_DS', 33)], 'message': {'op': 'remove_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}}
+2015-08-29 15:36:02,003: {'track': [('MGui_to_M', 32)], 'message': {'op': 'remove_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}}
+2015-08-29 15:37:00,808: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}, 'track': [('MGui_to_M', 94)]}
+2015-08-29 15:37:00,808: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}, 'track': [('MGui_to_DS', 95)]}
+2015-08-29 15:37:19,404: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}, 'track': [('MGui_to_M', 264)]}
+2015-08-29 15:42:26,340: {'track': [('MGui_to_DS', 43)], 'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}}
+2015-08-29 15:42:26,340: {'track': [('MGui_to_M', 43)], 'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}}
+2015-08-29 15:43:36,180: {'track': [('MGui_to_DS', 670)], 'message': {'parameters': {'address': ('127.0.0.1', '5002')}, 'op': 'remove_connector'}}
+2015-08-29 15:43:36,289: {'track': [('MGui_to_M', 477)], 'message': {'parameters': {'address': ('127.0.0.1', '5002')}, 'op': 'remove_connector'}}
+2015-08-29 15:44:40,871: {'track': [('MGui_to_M', 30)], 'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}}
+2015-08-29 15:44:40,871: {'track': [('MGui_to_DS', 31)], 'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}}
+2015-08-29 15:46:43,359: {'track': [('MGui_to_DS', 1145)], 'message': {'parameters': {'address': ('127.0.0.1', '5002')}, 'op': 'remove_connector'}}
+2015-08-29 15:46:43,469: {'track': [('MGui_to_M', 1016)], 'message': {'parameters': {'address': ('127.0.0.1', '5002')}, 'op': 'remove_connector'}}
+2015-08-29 15:47:27,176: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}, 'track': [('MGui_to_DS', 28)]}
+2015-08-29 15:47:27,176: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 27)]}
+2015-08-29 15:47:34,178: {'message': {'parameters': {'address': ('127.0.0.1', '5002')}, 'op': 'remove_connector'}, 'track': [('MGui_to_DS', 91)]}
+2015-08-29 15:47:34,178: {'message': {'parameters': {'address': ('127.0.0.1', '5002')}, 'op': 'remove_connector'}, 'track': [('MGui_to_M', 91)]}
+2015-08-29 15:48:34,394: {'track': [('MGui_to_DS', 23)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}}
+2015-08-29 15:48:34,394: {'track': [('MGui_to_M', 22)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}}
+2015-08-29 15:48:39,115: {'track': [('MGui_to_DS', 58)], 'message': {'op': 'remove_connector', 'parameters': {'address': ('127.0.0.1', '5002')}}}
+2015-08-29 15:48:39,115: {'track': [('MGui_to_M', 53)], 'message': {'op': 'remove_connector', 'parameters': {'address': ('127.0.0.1', '5002')}}}
+2015-08-29 15:50:06,626: {'track': [('MGui_to_DS', 25)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}}
+2015-08-29 15:50:06,626: {'track': [('MGui_to_M', 24)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}}
+2015-08-29 15:50:11,382: {'track': [('MGui_to_DS', 63)], 'message': {'op': 'remove_connector', 'parameters': {'address': ('127.0.0.1', '5002')}}}
+2015-08-29 15:50:11,382: {'track': [('MGui_to_M', 62)], 'message': {'op': 'remove_connector', 'parameters': {'address': ('127.0.0.1', '5002')}}}
+2015-08-29 15:52:08,410: {'track': [('MGui_to_M', 49)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}}
+2015-08-29 15:52:08,425: {'track': [('MGui_to_DS', 50)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}}
+2015-08-29 15:52:13,800: {'track': [('MGui_to_M', 96)], 'message': {'op': 'remove_connector', 'parameters': {'address': ('127.0.0.1', '5002')}}}
+2015-08-29 15:52:13,800: {'track': [('MGui_to_DS', 97)], 'message': {'op': 'remove_connector', 'parameters': {'address': ('127.0.0.1', '5002')}}}
+2015-08-29 15:53:41,923: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}, 'track': [('MGui_to_M', 19)]}
+2015-08-29 15:53:41,923: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}, 'track': [('MGui_to_DS', 19)]}
+2015-08-29 15:53:43,235: {'message': {'op': 'remove_connector', 'parameters': {'address': ('127.0.0.1', '5002')}}, 'track': [('MGui_to_M', 29)]}
+2015-08-29 15:53:43,235: {'message': {'op': 'remove_connector', 'parameters': {'address': ('127.0.0.1', '5002')}}, 'track': [('MGui_to_DS', 30)]}
+2015-08-29 15:54:32,546: {'track': [('MGui_to_DS', 38)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}}
+2015-08-29 15:54:32,546: {'track': [('MGui_to_M', 37)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}}
+2015-08-29 15:54:34,296: {'track': [('MGui_to_DS', 53)], 'message': {'op': 'remove_connector', 'parameters': {'address': ('127.0.0.1', '5002')}}}
+2015-08-29 15:54:34,296: {'track': [('MGui_to_M', 47)], 'message': {'op': 'remove_connector', 'parameters': {'address': ('127.0.0.1', '5002')}}}
+2015-08-29 15:55:29,039: {'track': [('MGui_to_DS', 29)], 'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}}
+2015-08-29 15:55:29,039: {'track': [('MGui_to_M', 28)], 'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}}
+2015-08-29 15:55:36,258: {'track': [('MGui_to_DS', 92)], 'message': {'parameters': {'address': ('127.0.0.1', '5002')}, 'op': 'remove_connector'}}
+2015-08-29 15:55:36,368: {'track': [('MGui_to_M', 63)], 'message': {'parameters': {'address': ('127.0.0.1', '5002')}, 'op': 'remove_connector'}}
+2015-08-29 15:57:14,698: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}, 'track': [('MGui_to_DS', 25)]}
+2015-08-29 15:57:14,698: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 25)]}
+2015-08-29 15:57:18,010: {'message': {'parameters': {'address': ('127.0.0.1', '5002')}, 'op': 'remove_connector'}, 'track': [('MGui_to_DS', 55)]}
+2015-08-29 15:57:18,010: {'message': {'parameters': {'address': ('127.0.0.1', '5002')}, 'op': 'remove_connector'}, 'track': [('MGui_to_M', 54)]}
+2015-08-29 15:59:26,561: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}, 'track': [('MGui_to_DS', 35)]}
+2015-08-29 15:59:26,561: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}, 'track': [('MGui_to_M', 35)]}
+2015-08-29 15:59:28,421: {'message': {'op': 'remove_connector', 'parameters': {'address': ('127.0.0.1', '5002')}}, 'track': [('MGui_to_DS', 51)]}
+2015-08-29 15:59:28,421: {'message': {'op': 'remove_connector', 'parameters': {'address': ('127.0.0.1', '5002')}}, 'track': [('MGui_to_M', 50)]}
+2015-08-29 15:59:30,499: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}, 'track': [('MGui_to_DS', 70)]}
+2015-08-29 15:59:30,499: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}, 'track': [('MGui_to_M', 69)]}
+2015-08-29 16:00:35,825: {'message': {'op': 'remove_all_connectors', 'parameters': {}}, 'track': [('MGui_to_DS', 650)]}
+2015-08-29 16:00:35,825: {'message': {'op': 'remove_all_connectors', 'parameters': {}}, 'track': [('MGui_to_M', 666)]}
+2015-08-29 16:01:56,241: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 24)]}
+2015-08-29 16:01:56,348: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}, 'track': [('MGui_to_DS', 26)]}
+2015-08-29 16:01:58,540: {'message': {'parameters': {}, 'op': 'remove_all_connectors'}, 'track': [('MGui_to_DS', 44)]}
+2015-08-29 16:01:58,540: {'message': {'parameters': {}, 'op': 'remove_all_connectors'}, 'track': [('MGui_to_M', 45)]}
+2015-08-29 16:02:10,670: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}, 'track': [('MGui_to_DS', 155)]}
+2015-08-29 16:02:10,779: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 120)]}
+2015-08-29 16:03:34,774: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 62)]}
+2015-08-29 16:03:34,774: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}, 'track': [('MGui_to_DS', 62)]}
+2015-08-29 16:03:36,539: {'message': {'parameters': {}, 'op': 'remove_all_connectors'}, 'track': [('MGui_to_M', 73)]}
+2015-08-29 16:03:36,539: {'message': {'parameters': {}, 'op': 'remove_all_connectors'}, 'track': [('MGui_to_DS', 72)]}
+2015-08-29 16:04:18,654: {'track': [('MGui_to_M', 17)], 'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}}
+2015-08-29 16:04:18,654: {'track': [('MGui_to_DS', 18)], 'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}}
+2015-08-29 16:04:21,295: {'track': [('MGui_to_M', 32)], 'message': {'parameters': {}, 'op': 'remove_all_connectors'}}
+2015-08-29 16:04:21,295: {'track': [('MGui_to_DS', 41)], 'message': {'parameters': {}, 'op': 'remove_all_connectors'}}
+2015-08-29 16:04:30,264: {'track': [('MGui_to_DS', 123)], 'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}}
+2015-08-29 16:04:30,373: {'track': [('MGui_to_M', 79)], 'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}}
+2015-08-29 16:05:21,538: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}, 'track': [('MGui_to_M', 53)]}
+2015-08-29 16:05:21,538: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}, 'track': [('MGui_to_DS', 54)]}
+2015-08-29 16:05:31,749: {'message': {'op': 'remove_connector', 'parameters': {'address': ('127.0.0.1', '5002')}}, 'track': [('MGui_to_DS', 145)]}
+2015-08-29 16:05:31,859: {'message': {'op': 'remove_connector', 'parameters': {'address': ('127.0.0.1', '5002')}}, 'track': [('MGui_to_M', 111)]}
+2015-08-29 16:05:33,718: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}, 'track': [('MGui_to_M', 128)]}
+2015-08-29 16:05:33,718: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 5002)}}, 'track': [('MGui_to_DS', 163)]}
+2015-08-29 16:05:35,673: {'message': {'op': 'remove_all_connectors', 'parameters': {}}, 'track': [('MGui_to_M', 146)]}
+2015-08-29 16:05:35,673: {'message': {'op': 'remove_all_connectors', 'parameters': {}}, 'track': [('MGui_to_DS', 178)]}
+2015-08-29 16:06:37,088: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 30)]}
+2015-08-29 16:06:37,088: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}, 'track': [('MGui_to_DS', 30)]}
+2015-08-29 16:06:38,401: {'message': {'parameters': {}, 'op': 'remove_all_connectors'}, 'track': [('MGui_to_M', 40)]}
+2015-08-29 16:06:38,401: {'message': {'parameters': {}, 'op': 'remove_all_connectors'}, 'track': [('MGui_to_DS', 42)]}
+2015-08-29 16:06:41,341: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 67)]}
+2015-08-29 16:06:41,341: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}, 'track': [('MGui_to_DS', 69)]}
+2015-08-29 16:06:45,606: {'message': {'parameters': {'address': ('127.0.0.1', '5002')}, 'op': 'remove_connector'}, 'track': [('MGui_to_M', 106)]}
+2015-08-29 16:06:45,606: {'message': {'parameters': {'address': ('127.0.0.1', '5002')}, 'op': 'remove_connector'}, 'track': [('MGui_to_DS', 106)]}
+2015-08-29 16:06:47,465: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 123)]}
+2015-08-29 16:06:47,465: {'message': {'parameters': {'address': ('127.0.0.1', 5002)}, 'op': 'add_connector'}, 'track': [('MGui_to_DS', 123)]}

@@ -98,7 +98,7 @@ class Artist(Dispatcher):
         self.format = format
         self.ns.format = self.format
 
-        self.data_list = deque()
+        self.data_deque = deque()
 
         self.start_daq()
         self.start_saving()
@@ -113,10 +113,8 @@ class Artist(Dispatcher):
     @try_call
     def data(self, params):
         # Recall there is only one data server, so this works
-        l = len(self.data_list)
-        data = self.data_list[:l]
-        self.data = self.data[l:] ### should be replaced with e.g. deque
-                                  ### popping to make thread-safe
+        l = len(self.data_deque)
+        data = [self.data_deque.popleft() for _i in range(l)]
         return {'data': data, 'format': self.format}
 
     @try_call
@@ -165,7 +163,7 @@ class Artist(Dispatcher):
             message = GetFromQueue(self.mQ)
             ret = emptyPipe(self.data_output)
             if not ret == []:
-                self.data_list.extend(ret)
+                self.data_deque.extend(ret)
                 if self.save_data:
                     self.save_input.send(ret)
             time.sleep(0.01)
@@ -173,9 +171,8 @@ class Artist(Dispatcher):
     def handle_accept(self):
         # we want only one data server or manager
         # to be active at a time
-        for acc in self.acceptors:
-            acc.close()
-        self.acceptors = []
+        if len(self.acceptors) == 2:
+            print('Data Server and Manager already present! Aborting.')
         super(Artist,self).handle_accept()
 
 def makeArtist(name='test'):

@@ -187,6 +187,11 @@ class ManagerApp(QtGui.QMainWindow):
     def add_connector_reply(self, origin, params):
         pass
 
+    def remove_connector_reply(self,origin,params):
+        pass
+
+    def remove_all_connectors_reply(self,origin,params):
+        pass
 
 class Man_DS_Connector():
 
