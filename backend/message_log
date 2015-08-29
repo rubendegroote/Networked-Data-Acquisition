@@ -1404,3 +1404,241 @@
 2015-08-29 16:07:04,900: {'track': [['Manager', 144], ('M2', 144)], 'reply': {'op': 'status_reply', 'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}}, 'message': {'op': 'status', 'parameters': {}}}
 2015-08-29 16:07:05,009: {'track': [['Manager', 145], ('M2', 145)], 'reply': {'op': 'status_reply', 'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}}, 'message': {'op': 'status', 'parameters': {}}}
 2015-08-29 16:07:05,119: {'track': [['Manager', 146], ('M2', 146)], 'reply': {'op': 'status_reply', 'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}}, 'message': {'op': 'status', 'parameters': {}}}
+2015-08-29 16:10:50,911: MGui_to_DS
+2015-08-29 16:10:50,989: MGui_to_M
+2015-08-29 16:10:54,760: Manager
+2015-08-29 16:10:54,775: {'reply': {'op': 'add_connector_reply', 'parameters': {'status': [0]}}, 'message': {'op': 'add_connector', 'parameters': {'address': ['127.0.0.1', 5002]}}, 'track': [['MGui_to_M', 33], ('Manager', 33)]}
+2015-08-29 16:10:54,869: DataServer
+2015-08-29 16:10:54,885: {'message': {'op': 'add_connector', 'parameters': {'address': ['127.0.0.1', 5002]}}, 'track': [['MGui_to_DS', 34], ('DataServer', 34)], 'reply': {'op': 'add_connector_reply', 'parameters': {'status': [0]}}}
+2015-08-29 16:24:16,901: MGui_to_DS
+2015-08-29 16:24:16,979: MGui_to_M
+2015-08-29 16:24:21,057: Manager
+2015-08-29 16:24:21,089: {'message': {'op': 'add_connector', 'parameters': {'address': ['127.0.0.1', 5002]}}, 'reply': {'op': 'add_connector_reply', 'parameters': {'status': [0]}}, 'track': [['MGui_to_M', 36], ('Manager', 36)]}
+2015-08-29 16:24:21,167: DataServer
+2015-08-29 16:24:21,182: {'message': {'parameters': {'address': ['127.0.0.1', 5002]}, 'op': 'add_connector'}, 'track': [['MGui_to_DS', 37], ('DataServer', 37)], 'reply': {'parameters': {'status': [0]}, 'op': 'add_connector_reply'}}
+2015-08-29 16:24:28,089: {'message': {'op': 'remove_connector', 'parameters': {'address': ['127.0.0.1', '5002']}}, 'reply': {'op': 'remove_connector_reply', 'parameters': {'status': [0]}}, 'track': [['MGui_to_M', 100], ('Manager', 100)]}
+2015-08-29 16:24:28,307: {'message': {'parameters': {'address': ['127.0.0.1', '5002']}, 'op': 'remove_connector'}, 'track': [['MGui_to_DS', 92], ('DataServer', 92)], 'reply': {'parameters': {'status': [0]}, 'op': 'remove_connector_reply'}}
+2015-08-29 17:07:36,444: MGui_to_DS
+2015-08-29 17:07:36,523: MGui_to_M
+2015-08-29 17:07:39,512: Manager
+2015-08-29 17:07:39,528: {'track': [['MGui_to_M', 26], ('Manager', 26)], 'message': {'parameters': {'address': ['127.0.0.1', 5002]}, 'op': 'add_connector'}, 'reply': {'parameters': {'status': [0]}, 'op': 'add_connector_reply'}}
+2015-08-29 17:07:39,621: DataServer
+2015-08-29 17:07:39,621: {'message': {'op': 'add_connector', 'parameters': {'address': ['127.0.0.1', 5002]}}, 'track': [['MGui_to_DS', 27], ('DataServer', 27)], 'reply': {'op': 'add_connector_reply', 'parameters': {'status': [0]}}}
+2015-08-29 17:08:30,926: MGui_to_DS
+2015-08-29 17:08:30,988: MGui_to_M
+2015-08-29 17:08:47,972: {'reply': {'parameters': {'status': [0]}, 'op': 'remove_connector_reply'}, 'track': [['MGui_to_DS', 155], ('DataServer', 155)], 'message': {'parameters': {'address': ['127.0.0.1', 5002]}, 'op': 'remove_connector'}}
+2015-08-29 17:08:48,066: {'track': [['MGui_to_M', 92], ('Manager', 92)], 'message': {'parameters': {'address': ['127.0.0.1', 5002]}, 'op': 'remove_connector'}, 'reply': {'parameters': {'status': [0]}, 'op': 'remove_connector_reply'}}
+2015-08-29 17:08:50,047: {'reply': {'parameters': {'status': [0]}, 'op': 'remove_all_connectors_reply'}, 'track': [['MGui_to_DS', 174], ('DataServer', 174)], 'message': {'parameters': {}, 'op': 'remove_all_connectors'}}
+2015-08-29 17:08:50,251: {'track': [['MGui_to_M', 102], ('Manager', 102)], 'message': {'parameters': {}, 'op': 'remove_all_connectors'}, 'reply': {'parameters': {'status': [0]}, 'op': 'remove_all_connectors_reply'}}
+2015-08-29 17:08:52,840: DataServer
+2015-08-29 17:08:52,840: {'reply': {'parameters': {'status': [0]}, 'op': 'add_connector_reply'}, 'track': [['MGui_to_DS', 199], ('DataServer', 199)], 'message': {'parameters': {'address': ['127.0.0.1', 5002]}, 'op': 'add_connector'}}
+2015-08-29 17:08:52,949: Manager
+2015-08-29 17:08:52,949: {'track': [['MGui_to_M', 114], ('Manager', 114)], 'message': {'parameters': {'address': ['127.0.0.1', 5002]}, 'op': 'add_connector'}, 'reply': {'parameters': {'status': [0]}, 'op': 'add_connector_reply'}}
+2015-08-29 17:10:56,597: MGui_to_DS
+2015-08-29 17:10:56,691: MGui_to_M
+2015-08-29 17:11:01,328: Manager
+2015-08-29 17:11:01,344: {'message': {'op': 'add_connector', 'parameters': {'address': ['127.0.0.1', 5002]}}, 'track': [['MGui_to_M', 41], ('Manager', 41)], 'reply': {'op': 'add_connector_reply', 'parameters': {'status': [0]}}}
+2015-08-29 17:11:01,438: DataServer
+2015-08-29 17:11:01,438: {'track': [['MGui_to_DS', 42], ('DataServer', 42)], 'reply': {'parameters': {'status': [0]}, 'op': 'add_connector_reply'}, 'message': {'parameters': {'address': ['127.0.0.1', 5002]}, 'op': 'add_connector'}}
+2015-08-29 17:12:12,985: MGui_to_DS
+2015-08-29 17:12:13,047: MGui_to_M
+2015-08-29 17:13:35,339: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 1405], ('M2', 1405)]}
+2015-08-29 17:13:35,448: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 1406], ('M2', 1406)]}
+2015-08-29 17:13:54,982: MGui_to_DS
+2015-08-29 17:13:55,060: MGui_to_M
+2015-08-29 17:13:58,208: DataServer
+2015-08-29 17:13:58,208: {'reply': {'op': 'add_connector_reply', 'parameters': {'status': [0]}}, 'message': {'op': 'add_connector', 'parameters': {'address': ['127.0.0.1', 5002]}}, 'track': [['MGui_to_DS', 28], ('DataServer', 28)]}
+2015-08-29 17:13:58,318: Manager
+2015-08-29 17:13:58,333: {'message': {'op': 'add_connector', 'parameters': {'address': ['127.0.0.1', 5002]}}, 'track': [['MGui_to_M', 28], ('Manager', 28)], 'reply': {'op': 'add_connector_reply', 'parameters': {'status': [0]}}}
+2015-08-29 17:13:58,693: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 0], ('M2', 0)]}
+2015-08-29 17:13:58,802: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 1], ('M2', 1)]}
+2015-08-29 17:13:58,912: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 2], ('M2', 2)]}
+2015-08-29 17:13:59,021: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 3], ('M2', 3)]}
+2015-08-29 17:13:59,130: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 4], ('M2', 4)]}
+2015-08-29 17:13:59,240: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 5], ('M2', 5)]}
+2015-08-29 17:13:59,349: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 6], ('M2', 6)]}
+2015-08-29 17:13:59,458: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 7], ('M2', 7)]}
+2015-08-29 17:13:59,568: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 8], ('M2', 8)]}
+2015-08-29 17:13:59,677: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 9], ('M2', 9)]}
+2015-08-29 17:13:59,787: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 10], ('M2', 10)]}
+2015-08-29 17:13:59,896: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 11], ('M2', 11)]}
+2015-08-29 17:14:00,005: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 12], ('M2', 12)]}
+2015-08-29 17:14:00,109: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 13], ('M2', 13)]}
+2015-08-29 17:14:00,218: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 14], ('M2', 14)]}
+2015-08-29 17:14:00,327: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 15], ('M2', 15)]}
+2015-08-29 17:14:00,437: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 16], ('M2', 16)]}
+2015-08-29 17:14:00,546: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 17], ('M2', 17)]}
+2015-08-29 17:14:00,655: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 18], ('M2', 18)]}
+2015-08-29 17:14:00,765: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 19], ('M2', 19)]}
+2015-08-29 17:14:00,874: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 20], ('M2', 20)]}
+2015-08-29 17:14:00,984: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 21], ('M2', 21)]}
+2015-08-29 17:14:01,093: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 22], ('M2', 22)]}
+2015-08-29 17:14:01,202: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 23], ('M2', 23)]}
+2015-08-29 17:14:01,312: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 24], ('M2', 24)]}
+2015-08-29 17:14:01,421: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 25], ('M2', 25)]}
+2015-08-29 17:14:01,531: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 26], ('M2', 26)]}
+2015-08-29 17:14:01,640: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 27], ('M2', 27)]}
+2015-08-29 17:14:01,749: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 28], ('M2', 28)]}
+2015-08-29 17:14:01,859: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 29], ('M2', 29)]}
+2015-08-29 17:14:01,968: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 30], ('M2', 30)]}
+2015-08-29 17:14:02,077: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 31], ('M2', 31)]}
+2015-08-29 17:14:02,187: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 32], ('M2', 32)]}
+2015-08-29 17:14:02,296: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 33], ('M2', 33)]}
+2015-08-29 17:14:02,406: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 34], ('M2', 34)]}
+2015-08-29 17:14:02,515: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 35], ('M2', 35)]}
+2015-08-29 17:14:02,624: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 36], ('M2', 36)]}
+2015-08-29 17:14:02,743: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 37], ('M2', 37)]}
+2015-08-29 17:14:02,852: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 38], ('M2', 38)]}
+2015-08-29 17:14:02,962: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 39], ('M2', 39)]}
+2015-08-29 17:14:03,071: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 40], ('M2', 40)]}
+2015-08-29 17:14:03,180: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 41], ('M2', 41)]}
+2015-08-29 17:14:03,290: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 42], ('M2', 42)]}
+2015-08-29 17:14:03,399: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 43], ('M2', 43)]}
+2015-08-29 17:14:03,509: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 44], ('M2', 44)]}
+2015-08-29 17:14:03,618: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 45], ('M2', 45)]}
+2015-08-29 17:14:03,727: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 46], ('M2', 46)]}
+2015-08-29 17:14:03,837: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 47], ('M2', 47)]}
+2015-08-29 17:14:03,946: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 48], ('M2', 48)]}
+2015-08-29 17:14:04,055: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 49], ('M2', 49)]}
+2015-08-29 17:14:04,165: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 50], ('M2', 50)]}
+2015-08-29 17:14:04,274: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 51], ('M2', 51)]}
+2015-08-29 17:14:04,384: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 52], ('M2', 52)]}
+2015-08-29 17:14:04,493: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 53], ('M2', 53)]}
+2015-08-29 17:14:04,602: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 54], ('M2', 54)]}
+2015-08-29 17:14:04,712: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 55], ('M2', 55)]}
+2015-08-29 17:14:04,821: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 56], ('M2', 56)]}
+2015-08-29 17:14:04,930: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 57], ('M2', 57)]}
+2015-08-29 17:14:05,040: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 58], ('M2', 58)]}
+2015-08-29 17:14:05,149: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 59], ('M2', 59)]}
+2015-08-29 17:14:05,258: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 60], ('M2', 60)]}
+2015-08-29 17:14:05,368: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 61], ('M2', 61)]}
+2015-08-29 17:14:05,477: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 62], ('M2', 62)]}
+2015-08-29 17:14:05,587: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 63], ('M2', 63)]}
+2015-08-29 17:14:05,696: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 64], ('M2', 64)]}
+2015-08-29 17:14:05,805: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 65], ('M2', 65)]}
+2015-08-29 17:14:05,915: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 66], ('M2', 66)]}
+2015-08-29 17:14:06,024: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 67], ('M2', 67)]}
+2015-08-29 17:14:06,134: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 68], ('M2', 68)]}
+2015-08-29 17:14:06,240: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 69], ('M2', 69)]}
+2015-08-29 17:14:06,357: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 70], ('M2', 70)]}
+2015-08-29 17:14:06,467: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 71], ('M2', 71)]}
+2015-08-29 17:14:06,576: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 72], ('M2', 72)]}
+2015-08-29 17:14:06,685: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 73], ('M2', 73)]}
+2015-08-29 17:14:06,788: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 74], ('M2', 74)]}
+2015-08-29 17:14:06,896: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 75], ('M2', 75)]}
+2015-08-29 17:14:07,005: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 76], ('M2', 76)]}
+2015-08-29 17:14:07,114: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 77], ('M2', 77)]}
+2015-08-29 17:14:07,239: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 78], ('M2', 78)]}
+2015-08-29 17:14:07,349: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 79], ('M2', 79)]}
+2015-08-29 17:14:07,474: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 80], ('M2', 80)]}
+2015-08-29 17:14:07,583: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 81], ('M2', 81)]}
+2015-08-29 17:14:07,693: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 82], ('M2', 82)]}
+2015-08-29 17:14:07,802: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 83], ('M2', 83)]}
+2015-08-29 17:14:07,911: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 84], ('M2', 84)]}
+2015-08-29 17:14:08,021: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 85], ('M2', 85)]}
+2015-08-29 17:14:08,130: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 86], ('M2', 86)]}
+2015-08-29 17:14:08,239: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 87], ('M2', 87)]}
+2015-08-29 17:14:08,349: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 88], ('M2', 88)]}
+2015-08-29 17:14:08,458: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 89], ('M2', 89)]}
+2015-08-29 17:14:08,568: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 90], ('M2', 90)]}
+2015-08-29 17:14:08,677: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 91], ('M2', 91)]}
+2015-08-29 17:14:08,786: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 92], ('M2', 92)]}
+2015-08-29 17:14:08,889: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 93], ('M2', 93)]}
+2015-08-29 17:14:08,999: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 94], ('M2', 94)]}
+2015-08-29 17:14:09,108: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 95], ('M2', 95)]}
+2015-08-29 17:14:09,217: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 96], ('M2', 96)]}
+2015-08-29 17:14:09,327: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 97], ('M2', 97)]}
+2015-08-29 17:14:09,433: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 98], ('M2', 98)]}
+2015-08-29 17:14:09,543: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 99], ('M2', 99)]}
+2015-08-29 17:14:09,652: {'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}, 'track': [['Manager', 100], ('M2', 100)]}
+2015-08-29 17:14:24,668: MGui_to_M
+2015-08-29 17:14:34,270: MGui_to_DS
+2015-08-29 17:14:34,348: MGui_to_M
+2015-08-29 17:14:38,486: DataServer
+2015-08-29 17:14:38,486: {'reply': {'parameters': {'status': [0]}, 'op': 'add_connector_reply'}, 'message': {'parameters': {'address': ['127.0.0.1', 5002]}, 'op': 'add_connector'}, 'track': [['MGui_to_DS', 37], ('DataServer', 37)]}
+2015-08-29 17:14:38,596: Manager
+2015-08-29 17:14:38,611: {'reply': {'op': 'add_connector_reply', 'parameters': {'status': [0]}}, 'track': [['MGui_to_M', 37], ('Manager', 37)], 'message': {'parameters': {'address': ['127.0.0.1', 5002]}, 'op': 'add_connector'}}
+2015-08-29 17:15:40,328: MGui_to_DS
+2015-08-29 17:15:40,391: MGui_to_M
+2015-08-29 17:16:14,996: {'track': [['Manager', 877], ('M2', 877)], 'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '', 'status': [1]}, 'op': 'status_reply'}}
+2015-08-29 17:16:15,105: {'track': [['Manager', 878], ('M2', 878)], 'message': {'parameters': {}, 'op': 'status'}, 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}}
+2015-08-29 17:16:28,973: MGui_to_DS
+2015-08-29 17:16:29,051: MGui_to_M
+2015-08-29 17:16:31,445: DataServer
+2015-08-29 17:16:31,460: {'reply': {'op': 'add_connector_reply', 'parameters': {'status': [0]}}, 'track': [['MGui_to_DS', 21], ('DataServer', 21)], 'message': {'op': 'add_connector', 'parameters': {'address': ['127.0.0.1', 5002]}}}
+2015-08-29 17:16:31,551: Manager
+2015-08-29 17:16:31,582: {'reply': {'op': 'add_connector_reply', 'parameters': {'status': [0]}}, 'message': {'op': 'add_connector', 'parameters': {'address': ['127.0.0.1', 5002]}}, 'track': [['MGui_to_M', 21], ('Manager', 21)]}
+2015-08-29 17:16:31,660: {'reply': {'op': 'data_reply', 'parameters': {'exception': "Artist instance has no attribute 'data_deque'", 'status': [1]}}, 'message': {'op': 'data', 'parameters': {}}, 'track': [['DataServer', 0], ('M2', 0)]}
+2015-08-29 17:16:31,770: {'reply': {'op': 'status_reply', 'parameters': {'exception': "Artist instance has no attribute 'format'", 'status': [1]}}, 'message': {'op': 'status', 'parameters': {}}, 'track': [['Manager', 0], ('M2', 0)]}
+2015-08-29 17:16:31,770: {'reply': {'op': 'data_reply', 'parameters': {'exception': "Artist instance has no attribute 'data_deque'", 'status': [1]}}, 'message': {'op': 'data', 'parameters': {}}, 'track': [['DataServer', 1], ('M2', 1)]}
+2015-08-29 17:16:31,879: {'reply': {'op': 'status_reply', 'parameters': {'exception': "Artist instance has no attribute 'format'", 'status': [1]}}, 'message': {'op': 'status', 'parameters': {}}, 'track': [['Manager', 1], ('M2', 1)]}
+2015-08-29 17:16:31,879: {'reply': {'op': 'data_reply', 'parameters': {'exception': "Artist instance has no attribute 'data_deque'", 'status': [1]}}, 'message': {'op': 'data', 'parameters': {}}, 'track': [['DataServer', 2], ('M2', 2)]}
+2015-08-29 17:16:31,988: {'reply': {'op': 'status_reply', 'parameters': {'exception': "Artist instance has no attribute 'format'", 'status': [1]}}, 'message': {'op': 'status', 'parameters': {}}, 'track': [['Manager', 2], ('M2', 2)]}
+2015-08-29 17:16:31,988: {'reply': {'op': 'data_reply', 'parameters': {'exception': "Artist instance has no attribute 'data_deque'", 'status': [1]}}, 'message': {'op': 'data', 'parameters': {}}, 'track': [['DataServer', 3], ('M2', 3)]}
+2015-08-29 17:16:32,098: {'reply': {'op': 'status_reply', 'parameters': {'exception': "Artist instance has no attribute 'format'", 'status': [1]}}, 'message': {'op': 'status', 'parameters': {}}, 'track': [['Manager', 3], ('M2', 3)]}
+2015-08-29 17:16:32,098: {'reply': {'op': 'data_reply', 'parameters': {'exception': "Artist instance has no attribute 'data_deque'", 'status': [1]}}, 'message': {'op': 'data', 'parameters': {}}, 'track': [['DataServer', 4], ('M2', 4)]}
+2015-08-29 17:16:53,066: {'reply': {'op': 'status_reply', 'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}}, 'message': {'op': 'status', 'parameters': {}}, 'track': [['Manager', 195], ('M2', 195)]}
+2015-08-29 17:16:53,176: {'reply': {'op': 'status_reply', 'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}}, 'message': {'op': 'status', 'parameters': {}}, 'track': [['Manager', 196], ('M2', 196)]}
+2015-08-29 17:16:53,285: {'reply': {'op': 'status_reply', 'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}}, 'message': {'op': 'status', 'parameters': {}}, 'track': [['Manager', 197], ('M2', 197)]}
+2015-08-29 17:16:53,394: {'reply': {'op': 'status_reply', 'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}}, 'message': {'op': 'status', 'parameters': {}}, 'track': [['Manager', 198], ('M2', 198)]}
+2015-08-29 17:17:12,410: MGui_to_DS
+2015-08-29 17:17:12,504: MGui_to_M
+2015-08-29 17:17:17,687: Manager
+2015-08-29 17:17:17,718: {'message': {'parameters': {'address': ['127.0.0.1', 5002]}, 'op': 'add_connector'}, 'track': [['MGui_to_M', 46], ('Manager', 46)], 'reply': {'parameters': {'status': [0]}, 'op': 'add_connector_reply'}}
+2015-08-29 17:17:17,797: DataServer
+2015-08-29 17:17:17,812: {'reply': {'op': 'add_connector_reply', 'parameters': {'status': [0]}}, 'message': {'op': 'add_connector', 'parameters': {'address': ['127.0.0.1', 5002]}}, 'track': [['MGui_to_DS', 47], ('DataServer', 47)]}
+2015-08-29 17:17:53,567: {'reply': {'parameters': {'status': [1], 'exception': ''}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 314], ('M2', 314)]}
+2015-08-29 17:17:53,677: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 315], ('M2', 315)]}
+2015-08-29 17:17:53,786: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 316], ('M2', 316)]}
+2015-08-29 17:17:53,896: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 317], ('M2', 317)]}
+2015-08-29 17:17:54,013: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 318], ('M2', 318)]}
+2015-08-29 17:17:54,123: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 319], ('M2', 319)]}
+2015-08-29 17:17:54,232: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 320], ('M2', 320)]}
+2015-08-29 17:17:54,341: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 321], ('M2', 321)]}
+2015-08-29 17:17:54,451: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 322], ('M2', 322)]}
+2015-08-29 17:17:54,560: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 323], ('M2', 323)]}
+2015-08-29 17:17:54,669: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 324], ('M2', 324)]}
+2015-08-29 17:17:54,779: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 325], ('M2', 325)]}
+2015-08-29 17:17:54,888: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 326], ('M2', 326)]}
+2015-08-29 17:18:19,332: MGui_to_DS
+2015-08-29 17:18:19,426: MGui_to_M
+2015-08-29 17:18:22,215: Manager
+2015-08-29 17:18:22,230: {'reply': {'parameters': {'status': [0]}, 'op': 'add_connector_reply'}, 'track': [['MGui_to_M', 24], ('Manager', 24)], 'message': {'parameters': {'address': ['127.0.0.1', 5002]}, 'op': 'add_connector'}}
+2015-08-29 17:18:22,324: DataServer
+2015-08-29 17:18:22,324: {'message': {'op': 'add_connector', 'parameters': {'address': ['127.0.0.1', 5002]}}, 'track': [['MGui_to_DS', 25], ('DataServer', 25)], 'reply': {'op': 'add_connector_reply', 'parameters': {'status': [0]}}}
+2015-08-29 17:20:17,049: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 986], ('M2', 986)]}
+2015-08-29 17:20:17,160: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 987], ('M2', 987)]}
+2015-08-29 17:20:17,270: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 988], ('M2', 988)]}
+2015-08-29 17:20:17,380: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 989], ('M2', 989)]}
+2015-08-29 17:20:17,489: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 990], ('M2', 990)]}
+2015-08-29 17:20:17,598: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 991], ('M2', 991)]}
+2015-08-29 17:20:17,708: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 992], ('M2', 992)]}
+2015-08-29 17:20:17,817: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 993], ('M2', 993)]}
+2015-08-29 17:20:17,926: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 994], ('M2', 994)]}
+2015-08-29 17:20:18,036: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 995], ('M2', 995)]}
+2015-08-29 17:20:18,145: {'reply': {'parameters': {'status': [1], 'exception': '[WinError 232] The pipe is being closed'}, 'op': 'status_reply'}, 'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 996], ('M2', 996)]}
+2015-08-29 17:22:17,178: MGui_to_DS
+2015-08-29 17:22:17,256: MGui_to_M
+2015-08-29 17:22:19,927: Manager
+2015-08-29 17:22:19,942: {'track': [['MGui_to_M', 23], ('Manager', 23)], 'reply': {'op': 'add_connector_reply', 'parameters': {'status': [0]}}, 'message': {'op': 'add_connector', 'parameters': {'address': ['127.0.0.1', 5002]}}}
+2015-08-29 17:22:20,036: DataServer
+2015-08-29 17:22:20,036: {'reply': {'op': 'add_connector_reply', 'parameters': {'status': [0]}}, 'message': {'op': 'add_connector', 'parameters': {'address': ['127.0.0.1', 5002]}}, 'track': [['MGui_to_DS', 24], ('DataServer', 24)]}
+2015-08-29 17:23:15,304: MGui_to_M
+2015-08-29 17:23:17,945: MGui_to_DS
+2015-08-29 17:23:18,039: MGui_to_M
+2015-08-29 17:23:21,700: Manager
+2015-08-29 17:23:21,731: {'message': {'op': 'add_connector', 'parameters': {'address': ['127.0.0.1', 5002]}}, 'reply': {'op': 'add_connector_reply', 'parameters': {'status': [0]}}, 'track': [['MGui_to_M', 32], ('Manager', 32)]}
+2015-08-29 17:23:21,809: DataServer
+2015-08-29 17:23:21,809: {'track': [['MGui_to_DS', 33], ('DataServer', 33)], 'message': {'parameters': {'address': ['127.0.0.1', 5002]}, 'op': 'add_connector'}, 'reply': {'parameters': {'status': [0]}, 'op': 'add_connector_reply'}}
+2015-08-29 17:24:21,640: MGui_to_DS
+2015-08-29 17:24:21,702: MGui_to_M
+2015-08-29 17:24:23,234: DataServer
+2015-08-29 17:24:23,249: {'reply': {'op': 'add_connector_reply', 'parameters': {'status': [0]}}, 'message': {'op': 'add_connector', 'parameters': {'address': ['127.0.0.1', 5002]}}, 'track': [['MGui_to_DS', 13], ('DataServer', 13)]}
+2015-08-29 17:26:25,094: {'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 1471], ('M2', 1471)], 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}}
+2015-08-29 17:26:25,203: {'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 1472], ('M2', 1472)], 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}}
+2015-08-29 17:26:25,312: {'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 1473], ('M2', 1473)], 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}}
+2015-08-29 17:26:25,422: {'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 1474], ('M2', 1474)], 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}}
+2015-08-29 17:26:25,531: {'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 1475], ('M2', 1475)], 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}}
+2015-08-29 17:26:25,640: {'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 1476], ('M2', 1476)], 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}}
+2015-08-29 17:26:25,750: {'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 1477], ('M2', 1477)], 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}}
+2015-08-29 17:26:25,859: {'message': {'parameters': {}, 'op': 'status'}, 'track': [['Manager', 1478], ('M2', 1478)], 'reply': {'parameters': {'exception': '[WinError 232] The pipe is being closed', 'status': [1]}, 'op': 'status_reply'}}

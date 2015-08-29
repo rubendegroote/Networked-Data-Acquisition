@@ -13,6 +13,11 @@ except:
     from backend.Helpers import *
 
 try:
+    from save import *
+except:
+    from backend.save import *
+
+try:
     from connectors import Connector, Acceptor
 except:
     from backend.connectors import Connector, Acceptor
@@ -100,8 +105,8 @@ class Artist(Dispatcher):
 
         self.data_deque = deque()
 
-        self.start_daq()
         self.start_saving()
+        self.start_daq()
 
     def InitializeScanning(self):
         self.ns.scanning = False

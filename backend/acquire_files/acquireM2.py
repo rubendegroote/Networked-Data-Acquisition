@@ -187,6 +187,6 @@ def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
             # (is this error a big deal? Can we recover?)
             contFlag.set()
 
-        time.sleep(0.01)
+        time.sleep(0.001)
 
     IStoppedFlag.set()

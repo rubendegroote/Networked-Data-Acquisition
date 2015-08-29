@@ -21,6 +21,12 @@ except:
     from backend.connectors import Connector, Acceptor
 from dispatcher import Dispatcher
 
+try:
+    from save import *
+except:
+    from backend.save import *
+
+
 GET_INTERVAL = 0.05
 SAVE_INTERVAL = 2
 SHARED = ['scan', 'time']
@@ -33,24 +39,27 @@ class DataServer(Dispatcher):
         self.memory = 5000
         self.savedScan = -np.inf
         self.bitrates = []
-        self.saveDir = "Server"
-        self.dQs = {}
+        self.saveDir = "C:\\Data\\"
+
+        self.data_lists = {}
+
         self.save_data = save_data
         if save_data:
-            self.lock = th.Lock()
+            self.save_output,self.save_input = mp.Pipe(duplex=False)
             self.lastSaveTime = time.time()
             self.toSave = {}
 
         self.remember = remember
-        self.previous_scan_lock = th.Lock()
-        self.current_scan_lock = th.Lock()
-        self.stream_lock = th.Lock()
-        if remember:
-            self._data_previous_scan = pd.DataFrame()
-            self._data_current_scan = pd.DataFrame()
-            self._data_current_stream = pd.DataFrame()
+
         self._clear_memory = False
-        # self._getThread = th.Timer(1, self.getFromReader).start()
+        self.start_saving()
+
+    def start_saving(self):
+        self.saveProcess = mp.Process(target = save_continuously_dataserver,
+                                      args = (self.save_output,
+                                              self.saveDir))
+        self.saveProcess.start()
+
 
     @try_call
     def data(self, **kwargs):
@@ -76,57 +85,16 @@ class DataServer(Dispatcher):
                 'bit_rates': self.bitrates}
 
     def data_reply(self,origin,params):
-        print(origin,params)
-        # now save the data if needed - put on save process
+        data,format = params['data'],params['format']
+        if data == []:
+            return
+
+        try:
+            self.data_lists[origin].extend(data)
+        except KeyError as e:
+            self.data_lists[origin] = data
         
-        # keep the data in memory as required, ready for 
-        # pushing to viewers
-        
-        pass
-
-    def getFromReader(self):
-        now = time.time()
-        new_data = pd.DataFrame()
-        for name, reader in self.connectors.items():
-            dQ = self.dQs[name]
-            l = len(dQ)
-            if not l == 0:
-                data = flatten([dQ.popleft() for i in range(l)])
-                data = convert(flatten(data), format=reader._format)
-                new_data = new_data.append(data)
-                if self.save_data:
-                    self.lock.acquire()
-                    try:
-                        self.toSave[name] = self.toSave[name].append(data)
-                    except KeyError:
-                        self.toSave[name] = data
-                    finally:
-                        self.lock.release()
-
-        if not len(new_data) == 0:
-            if self.remember:
-                self.extractMemory(new_data)
-
-        if self.save_data and time.time() - self.lastSaveTime > SAVE_INTERVAL:
-            th.Thread(target=self.save).start()
-            self.lastSaveTime = time.time()
-
-        wait = abs(min(0, time.time() - now - GET_INTERVAL))
-        if self.looping:
-            self._getThread = th.Timer(wait, self.getFromReader).start()
-
-    def save(self):
-        self.lock.acquire()
-        toSave = deepcopy(self.toSave)
-        self.toSave = {}
-        self.lock.release()
-        # try:
-        #     a = sum([len(toSave[key]) for key in toSave.keys()])
-        #     print('saving:', a)
-        # except:
-        #     print('saving:', len(toSave))
-        for key, val in toSave.items():
-            save(val, self.saveDir, key)
+        self.save_input.send((origin,format,data))
 
     def extractMemory(self, new_data):
         # print('extract:', len(new_data))

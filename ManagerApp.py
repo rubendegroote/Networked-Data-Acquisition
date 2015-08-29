@@ -225,7 +225,7 @@ class Man_DS_Connector():
     def instruct(self, receiver, instr):
         if receiver == 'Manager':
             self.man.add_request(instr)
-        elif receiver == 'Data S erver':
+        elif receiver == 'Data Server':
             self.DS.add_request(instr)
         elif receiver == 'Both':
             self.man.add_request(instr)
