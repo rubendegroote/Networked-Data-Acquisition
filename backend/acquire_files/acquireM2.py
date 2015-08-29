@@ -171,7 +171,6 @@ def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
             # Modify the gathered data, to see how many counts since the last readout
             # have registered.
             now = time.time()
-
             # put data on the queue
             data = [now]
             data.extend([1] * (len(ns.format)-1))

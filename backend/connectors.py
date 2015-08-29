@@ -103,7 +103,6 @@ class Acceptor(asynchat.async_chat):
         self.counter = 0
 
         self.buff = b""
-        self.dataDQ = deque()
 
         super(Acceptor, self).push(self.name.encode('UTF-8'))
 

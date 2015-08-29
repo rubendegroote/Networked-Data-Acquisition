@@ -19,7 +19,6 @@ except:
 
 from dispatcher import Dispatcher
 
-SAVE_INTERVAL = 2
 
 
 # Some exploratory code to understand a bit better how to make the ARTIST
@@ -61,7 +60,7 @@ class Artist(Dispatcher):
             save_data=True,format = tuple(),settings={}):
         super(Artist, self).__init__(PORT, name)
         # self._data = []
-        self.saveDir = "Artist_" + self.name
+        self.saveDir = "C:\\Data\\"
 
         self.settings = settings
         self.acquireFunction = acquireFunction
@@ -71,13 +70,11 @@ class Artist(Dispatcher):
         self.iQ = mp.Queue()
         # message queue: acquire -> ARTIST
         self.mQ = mp.Queue()
-        # data queue: acquire -> ARTIST
-        dQ = mp.Pipe(duplex=False)
-        self.dQ = dQ[0]
-        self.acquire_dQ = dQ[1]
+        # data pipe: acquire -> ARTIST
+        self.data_output,self.data_input = mp.Pipe(duplex=False)
 
-        # save queue: send data to be saved
-        self.saveQ = deque()
+        # save pipe: send data to be saved
+        self.save_output,self.save_input = mp.Pipe(duplex=False)
 
         # holding flag for the acquisition
         self.contFlag = mp.Event()
@@ -101,11 +98,10 @@ class Artist(Dispatcher):
         self.format = format
         self.ns.format = self.format
 
-        self.data_list = []
-
-        self._saveThread = th.Timer(1, self.save).start()
+        self.data_list = deque()
 
         self.start_daq()
+        self.start_saving()
 
     def InitializeScanning(self):
         self.ns.scanning = False
@@ -116,7 +112,7 @@ class Artist(Dispatcher):
 
     @try_call
     def data(self, params):
-        # only one data server allowed at the moment!
+        # Recall there is only one data server, so this works
         l = len(self.data_list)
         data = self.data_list[:l]
         self.data = self.data[l:] ### should be replaced with e.g. deque
@@ -134,12 +130,18 @@ class Artist(Dispatcher):
         self.InitializeScanning()
         self.DAQProcess = mp.Process(target=self.acquireFunction,
                                      args=(self.settings,
-                                           self.acquire_dQ, self.iQ, self.mQ,
+                                           self.data_input, self.iQ, self.mQ,
                                            self.contFlag, self.stopFlag,
                                            self.IStoppedFlag, self.ns))
         self.DAQProcess.start()
         self.contFlag.set()
         self.readThread = th.Timer(0, self.read_data).start()
+
+    def start_saving(self):
+        self.saveProcess = mp.Process(target = save_continuously,
+                                      args = (self.save_output,self.saveDir,
+                                              self.name,self.format))
+        self.saveProcess.start()
 
     def pauze_daq(self):
         self.contFlag.clear()
@@ -161,26 +163,20 @@ class Artist(Dispatcher):
     def read_data(self):
         while not self.stopFlag.is_set():
             message = GetFromQueue(self.mQ)
-            ret = emptyPipe(self.dQ)
+            ret = emptyPipe(self.data_output)
             if not ret == []:
                 self.data_list.extend(ret)
-            # if self.save_data:
-            ##     save data!!
+                if self.save_data:
+                    self.save_input.send(ret)
             time.sleep(0.01)
 
-    def save(self):
-        now = time.time()
-        l = len(self.saveQ)
-        if not l == 0:
-            data = [self.saveQ.popleft() for i in range(l)]
-            data = convert(data, self.format)
-            save(data, self.saveDir, self.name)
-
-        # slightly more stable if the save runs every 0.5 seconds,
-        # regardless of how long the previous saving took
-        wait = abs(min(0, time.time() - now - SAVE_INTERVAL))
-        if self.save:
-            self._saveThread = th.Timer(wait, self.save).start()
+    def handle_accept(self):
+        # we want only one data server or manager
+        # to be active at a time
+        for acc in self.acceptors:
+            acc.close()
+        self.acceptors = []
+        super(Artist,self).handle_accept()
 
 def makeArtist(name='test'):
     if name == 'ABU' or name == 'ABU':

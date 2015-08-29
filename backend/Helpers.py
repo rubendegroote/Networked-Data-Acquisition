@@ -3,6 +3,7 @@ import time
 import numpy as np
 import copy
 import logging
+import h5py
 
 SAVE_PATH = 'C:/Data/'
 
@@ -37,10 +38,8 @@ def mass_concat(array, format):
     data = pd.DataFrame(data, columns=format)
     return data
 
-
 def flatten(array):
     return [l for sub in array for l in sub]
-
 
 def convert(data_list, format):
     data = np.array([l for subl in data_list for l in subl]).reshape(
@@ -58,7 +57,6 @@ def save(data, name, artist):
             with pd.get_store(SAVE_PATH + name + '_scan_' + str(int(n)) + '.h5') as store:
                 store.append(artist, group.convert_objects())
 
-
 def save_csv(data, name, artist=''):
     for n, group in groups:
         if n == -1:
@@ -68,6 +66,36 @@ def save_csv(data, name, artist=''):
             with open(SAVE_PATH + name + '_scan' + str(int(n)) + '.csv', 'a') as f:
                 group.to_csv(f, na_rep='nan')
 
+def save_continuously(saveQ,saveDir,name,format):
+    save_interval = 2
+    format = [f.encode('utf-8') for f in format]
+    store = h5py.File(saveDir + 'artist_data.h5','a')
+    to_save = np.row_stack(flatten(emptyPipe(saveQ)))    
+    try:
+        store.create_dataset(name,
+            data=to_save,
+            shape=(to_save.shape[0],to_save.shape[1]),
+            maxshape=(None,to_save.shape[1]),chunks=True)
+        store[name].attrs['format'] = format
+        store.close()
+    except RuntimeError as e:
+        print('Data file for artist {} exist, will append...'.format(name))
+        pass
+
+    while True:
+        now = time.time()
+
+        to_save = np.row_stack(flatten(emptyPipe(saveQ)))
+        with h5py.File(saveDir + 'artist_data.h5','a') as store:
+            newshape = (store[name].shape[0] + to_save.shape[0],
+                                to_save.shape[1])
+            store[name].resize(newshape)
+            store[name][-to_save.shape[0]:] = to_save
+
+        # slightly more stable if the save runs every 0.5 seconds,
+        # regardless of how long the previous saving took
+        wait = abs(min(0, time.time() - now - save_interval))
+        time.sleep(wait)
 
 def make_message(op,params):
     return {'message': {'op': op, 'parameters': params}}

@@ -4,7 +4,10 @@ To Do
 * Repair data saving
 * Implement M2 laser control
 * Implement remaining methods for e.g. artist
-* Implement logbook
-* Implement data viewer
+    * start, stop, restart, ...
+* Reimplement logbook
+* Reimplement data viewer
 * Augment scanner and information on the manager GUI
-* Online analysis with satlas
+    * add parameters that can be scanned as attribute for artist
+        and display those
+* Online analysis with satlas?
