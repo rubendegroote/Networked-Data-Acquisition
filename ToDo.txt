@@ -1,8 +1,8 @@
 To Do
 
-* Repair the data server
-* Repair data saving
-* Implement M2 laser control
+* Repair the data server        DONE
+* Repair data saving            DONE
+* Implement M2 laser control    AT CERN
 * Implement remaining methods for e.g. artist
     * start, stop, restart, ...
 * Reimplement logbook

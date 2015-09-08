@@ -68,15 +68,11 @@ class ManagerApp(QtGui.QMainWindow):
         target(origin,params)
 
     def addConnection(self, data):
-        # try:
-        #     self.Man_DS_Connector.man.handle_close()
-        #     self.Man_DS_Connector.DS.handle_close()
-        # except:
-        #     pass
         ManChan = data[0], int(data[1])
         DSChan = data[2], int(data[3])
         self.Man_DS_Connector = Man_DS_Connector(ManChan, DSChan,
                                  callback=self.reply_cb,
+                                 default_cb=self.default_cb,
                                  onCloseCallback = self.lostConn)
 
         if self.Man_DS_Connector.man and self.Man_DS_Connector.DS:
@@ -92,6 +88,20 @@ class ManagerApp(QtGui.QMainWindow):
             self.dispatchButton.setDisabled(True)
         else:
             self.statusBar().showMessage('Connection failure')
+
+    def reply_cb(self, message):
+        if message['reply']['parameters']['status'][0] == 0:
+            function = message['reply']['op']
+            args = message['reply']['parameters']
+            track = message['track']
+
+            params = getattr(self, function)(track, args)
+
+        else:
+            print('ManagerApp received fail message', message)
+
+    def default_cb(self):
+        return 'status',{}
 
     def lostConn(self, connector):
         print('lostConn')
@@ -130,17 +140,17 @@ class ManagerApp(QtGui.QMainWindow):
     def add_artist(self, info):
         receiver, address = info
         op,params = 'add_connector',{'address': address}
-        message = make_message(op,params)
+        message = make_message((op,params))
         self.Man_DS_Connector.instruct(receiver, message)
 
     def remove_artist(self, address):
         op,params = 'remove_connector', {'address': address}
-        message = make_message(op,params)
+        message = make_message((op,params))
         self.Man_DS_Connector.instruct('Both',message)
 
     def remove_all_artists(self):
         op,params = 'remove_all_connectors', {}
-        message = make_message(op,params)
+        message = make_message((op,params))
         self.Man_DS_Connector.instruct('Both',message)
 
     # def showResumeDialog(self, data):
@@ -154,19 +164,9 @@ class ManagerApp(QtGui.QMainWindow):
     def closeEvent(self, event):
         self.stopIOLoop()
         event.accept()
-
-    def reply_cb(self, message):
-        if message['reply']['parameters']['status'][0] == 0:
-            function = message['reply']['op']
-            args = message['reply']['parameters']
-            origin = message['track'][-1][0]
-
-            params = getattr(self, function)(origin, args)
-
-        else:
-            print('ManagerApp received fail message', message)
             
-    def status_reply(self, origin, params):
+    def status_reply(self, track, params):
+        origin, track_id = track[-1]
         if origin == 'Manager':
             self.updateSignal.emit((self.scanner.update,
                                     {'origin':origin,
@@ -184,42 +184,42 @@ class ManagerApp(QtGui.QMainWindow):
                                        {'origin':origin,
                                        'args':params['connector_info']}))
 
-    def add_connector_reply(self, origin, params):
+    def add_connector_reply(self,track,params):
         pass
 
-    def remove_connector_reply(self,origin,params):
+    def remove_connector_reply(self,track,params):
         pass
 
-    def remove_all_connectors_reply(self,origin,params):
+    def remove_all_connectors_reply(self,track,params):
         pass
 
 class Man_DS_Connector():
 
-    def __init__(self, ManChan, DSChan, callback,onCloseCallback):
+    def __init__(self,ManChan,DSChan,callback,
+            onCloseCallback,default_cb):
     
         try:
-            self.DS = Connector(DSChan,
+            self.DS = Connector(chan=DSChan,name='MGUI_to_DS',
                           callback=callback,
-                          name='MGui_to_DS')
+                          default_callback = default_cb,)
             # by only adding this closeCallback now, it is not triggerd
             # if the connection fails
             # prevents an Exception in the GUI
             self.DS.onCloseCallback = onCloseCallback
         except Exception as e:
             self.DS_error = e
-            print(e)
+            print('Error connecting to dataserver \n'+ str(e))
             self.DS = None
         try:    
-            self.man = Connector(ManChan,
+            self.man = Connector(chan=ManChan,name='MGui_to_M',
                           callback=callback,
-                          onCloseCallback=onCloseCallback,
-                          name='MGui_to_M')
+                          default_callback=default_cb)
             # same comment as for the DS closeCallback
             self.man.onCloseCallback = onCloseCallback
 
         except Exception as e:
             self.man_error = e
-            print(e)
+            print('Error connecting to manager \n'+ str(e))
             self.man = None
 
     def instruct(self, receiver, instr):

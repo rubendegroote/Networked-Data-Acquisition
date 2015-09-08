@@ -63,7 +63,8 @@ def save_csv(data, name, artist=''):
             with open(SAVE_PATH + name + '_scan' + str(int(n)) + '.csv', 'a') as f:
                 group.to_csv(f, na_rep='nan')
 
-def make_message(op,params):
+def make_message(message):
+    op,params = message
     return {'message': {'op': op, 'parameters': params}}
 
 def track(func):

@@ -38,22 +38,22 @@ def acquireMatisse(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     t0 = 0
 
 
-    ### Controlling the Matisse
-    pywintypes.datetime = pywintypes.TimeType # Needed to avoid some weird bug
-    opc = client()
-    opc.connect('National Instruments.Variable Engine.1')
-    newVal = float(opc.read('Wavemeter.Setpoint')[0])/0.0299792458
+    # ### Controlling the Matisse
+    # pywintypes.datetime = pywintypes.TimeType # Needed to avoid some weird bug
+    # opc = client()
+    # opc.connect('National Instruments.Variable Engine.1')
+    # newVal = float(opc.read('Wavemeter.Setpoint')[0])/0.0299792458
 
-    ### Wavemeter stuff
-    # Load the .dll file
-    wlmdata = ctypes.WinDLL("c:\\windows\\system32\\wlmData.dll")
+    # ### Wavemeter stuff
+    # # Load the .dll file
+    # wlmdata = ctypes.WinDLL("c:\\windows\\system32\\wlmData.dll")
 
-    # Specify required argument types and return types for function calls
-    wlmdata.GetFrequencyNum.argtypes = [ctypes.c_long, ctypes.c_double]
-    wlmdata.GetFrequencyNum.restype  = ctypes.c_double
+    # # Specify required argument types and return types for function calls
+    # wlmdata.GetFrequencyNum.argtypes = [ctypes.c_long, ctypes.c_double]
+    # wlmdata.GetFrequencyNum.restype  = ctypes.c_double
 
-    wlmdata.GetExposureNum.argtypes = [ctypes.c_long, ctypes.c_long, ctypes.c_long]
-    wlmdata.GetExposureNum.restype  = ctypes.c_long
+    # wlmdata.GetExposureNum.argtypes = [ctypes.c_long, ctypes.c_long, ctypes.c_long]
+    # wlmdata.GetExposureNum.restype  = ctypes.c_long
 
     got_instr = False
     contFlag.wait()  # Wait until the boolean for continuing is set to True
@@ -72,10 +72,10 @@ def acquireMatisse(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
                 pass
 
             # Execute function calls
-            wavenumber = wlmdata.GetFrequencyNum(1,0)/0.0299792458
-            wavenumber2 = wlmdata.GetFrequencyNum(2,0)/0.0299792458
-            expos      = wlmdata.GetExposureNum(1,1,0),wlmdata.GetExposureNum(1,2,0),wlmdata.GetExposureNum(2,1,0),wlmdata.GetExposureNum(2,2,0)
-            now = time.time()
+            # wavenumber = wlmdata.GetFrequencyNum(1,0)/0.0299792458
+            # wavenumber2 = wlmdata.GetFrequencyNum(2,0)/0.0299792458
+            # expos      = wlmdata.GetExposureNum(1,1,0),wlmdata.GetExposureNum(1,2,0),wlmdata.GetExposureNum(2,1,0),wlmdata.GetExposureNum(2,2,0)
+            # now = time.time()
 
             if got_instr:
                 if instr[0] == 'Scan Change':
@@ -107,24 +107,26 @@ def acquireMatisse(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
 
 
             # put data on the queue
-            # Does each value have to be an array in and of itself?
-            # For now, it is. The data from aiData is converted to
-            # arrays with a single value, and added to the tuple created
-            # from the other data (timestamp, scanNo, counts and scanningvoltage)
-            dQ.send((
-                    np.array([datetime.datetime.now()]),
-                    np.array([ns.scanNo]),
-                    np.array([newVal/0.0299792458]),
-                    np.array([wavenumber]),
-                    np.array([wavenumber2])
-                    ))
+            # dQ.send([datetime.datetime.now(),
+            #         ns.scanNo,
+            #         newVal/0.0299792458,
+            #         wavenumber,
+            #         wavenumber]
+            #         )
+
+            now = time.time()
+            # put data on the queue
+            data = [now]
+            data.extend([1] * (len(ns.format)-1))
+            dQ.send(data)
 
             if ns.on_setpoint and time.time() - ns.t0 >= tPerStep:
                 ns.on_setpoint = False
                 
-            dt = 0.001*max(expos) - (time.time()-now)
-            if dt>0: 
-                time.sleep(dt)
+            # dt = 0.001*max(expos) - (time.time()-now)
+            # if dt>0: 
+                # time.sleep(dt)
+            time.sleep(0.001)
 
         except Exception as e:
             mQ.put(e)

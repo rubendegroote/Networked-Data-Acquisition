@@ -83,13 +83,13 @@ class Manager(Dispatcher):
         return {}
 
     @try_call
-    def start_scan(self, scanInfo):
-        name, self.scanPar = scanInfo[0].split(':')
+    def start_scan(self, params):
+        name, self.scanPar = params[0].split(':')
         self.scanner = self.connectors[name]
         self.scanner.scanning = True
         self.curPos = 0
-        self.scanRange = scanInfo[1]
-        self.tPerStep = scanInfo[2]
+        self.scanRange = params[1]
+        self.tPerStep = params[2]
         self.scanning = True
         self.scanNo += 1
         self.set_all_scan_numbers(self.scanNo)       
@@ -126,10 +126,10 @@ class Manager(Dispatcher):
         return {}
 
     @try_call
-    def go_to_setpoint(self, setpointInfo):
-        name, self.scanPar = setpointInfo[0].split(':')
+    def go_to_setpoint(self, params):
+        name, self.scanPar = params[0].split(':')
         self.scanner = self.connectors[name]
-        value = setpointInfo[1]
+        value = params[1]
         try:
             newEntry = {key: '' for key in self.logbook[-1][-1].keys()}
             if 'Tags' in self.logbook[-1][-1].keys():
@@ -162,7 +162,7 @@ class Manager(Dispatcher):
     def set_all_scan_numbers(self, number):
         op,params = 'set_scan_number',{'scan_number': [number]}
         for instr in self.connectors.values():
-            instr.add_request(make_message(op,params))
+            instr.add_request(make_message((op,params)))
         return {}
 
     # def notify_all_logs(self, instruction):
@@ -200,8 +200,8 @@ class Manager(Dispatcher):
 
         return True
 
-
-    def status_reply(self, origin, params):
+    def status_reply(self, track, params):
+        origin, track_id = track[-1]
         self.format[origin] = params['format']
         if params['scanning'] and params['on_setpoint'] != self.on_setpoint:
             self.on_setpoint = params['on_setpoint']
@@ -217,26 +217,26 @@ def makeManager(PORT=5007):
 
 
 def main():
-    # try:
-    m = makeManager(5004)
-    #     style = "QLabel { background-color: green }"
-    #     e=''
-    # except Exception as e:
-    #     style = "QLabel { background-color: red }"
+    try:
+        m = makeManager(5004)
+        style = "QLabel { background-color: green }"
+        e=''
+    except Exception as e:
+        style = "QLabel { background-color: red }"
 
-    # from PyQt4 import QtCore,QtGui
-    # # Small visual indicator that this is running
-    # app = QtGui.QApplication(sys.argv)
-    # w = QtGui.QWidget()
+    from PyQt4 import QtCore,QtGui
+    # Small visual indicator that this is running
+    app = QtGui.QApplication(sys.argv)
+    w = QtGui.QWidget()
 
-    # w.setWindowTitle('Manager')
-    # layout = QtGui.QGridLayout(w)
-    # label = QtGui.QLabel(e)
-    # label.setStyleSheet(style)
-    # layout.addWidget(label)
-    # w.show()
+    w.setWindowTitle('Manager')
+    layout = QtGui.QGridLayout(w)
+    label = QtGui.QLabel(e)
+    label.setStyleSheet(style)
+    layout.addWidget(label)
+    w.show()
     
-    # sys.exit(app.exec_())
+    sys.exit(app.exec_())
 
 
 if __name__ == '__main__':

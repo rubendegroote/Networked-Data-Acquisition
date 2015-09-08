@@ -22,22 +22,12 @@ class ConnectionsWidget(QtGui.QWidget):
         if respons[1]:
             self.newConn.emit(respons[0])
 
-        # self.addConButton.setText('Add Artist')
-        # self.addConButton.clicked.disconnect(self.addConn)
-        # self.addConButton.clicked.connect(self.addArtist)
-
-    def addArtist(self):
-        respons = ConnectionDialog.getInfo(self)
-        if respons[1]:
-            self.newArtist.emit(respons[0])
-
-
 class ConnectionDialog(QtGui.QDialog):
 
     def __init__(self, parent=None):
         super(ConnectionDialog, self).__init__(parent)
-        self.channel = 'KSF402'
-        self.port = 5004
+        self.channel = '127.0.0.1'
+        self.port = 5005
 
         layout = QtGui.QGridLayout(self)
 

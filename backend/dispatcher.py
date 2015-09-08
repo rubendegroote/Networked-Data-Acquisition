@@ -12,7 +12,7 @@ except:
     from backend.connectors import Connector, Acceptor
 
 class Dispatcher(asyncore.dispatcher):
-    def __init__(self, PORT, name, defaultRequest = 'status'):
+    def __init__(self, PORT, name, defaultRequest = ('status',{})):
         super(Dispatcher,self).__init__()
         self.port = PORT
         self.name = name
@@ -57,7 +57,7 @@ class Dispatcher(asyncore.dispatcher):
         conn = Connector(chan=(address[0], int(address[1])),
                               callback=self.connector_cb,
                               onCloseCallback=self.connector_closed_cb,
-                              defaultRequest=self.defaultRequest,
+                              default_callback=self.default_cb,
                               name=self.name)
         self.connectors[conn.acceptorName] = conn
         self.connInfo[conn.acceptorName] = (
@@ -104,8 +104,8 @@ class Dispatcher(asyncore.dispatcher):
         if message['reply']['parameters']['status'][0] == 0:
             function = message['reply']['op']
             args = message['reply']['parameters']
-            origin, tracker_id, = message['track'][-1]
-            params = getattr(self, function)(origin, args)
+            track = message['track']
+            params = getattr(self, function)(track, args)
 
         else:
             print('Connector received fail message', message)
@@ -113,6 +113,9 @@ class Dispatcher(asyncore.dispatcher):
     def connector_closed_cb(self,connector):
         self.connInfo[connector.acceptorName] = (
             False, connector.chan[0], connector.chan[1])
+
+    def default_cb(self):
+        return 'status',{}
 
     def handle_accept(self):
         pair = self.accept()
@@ -122,11 +125,12 @@ class Dispatcher(asyncore.dispatcher):
                 sender = self.get_sender_ID(sock)
                 logging.info(sender)
             except Exception as e:
+                print('Handle_accept error', e) # this has to be
+                                                # pushed to the GUI!
                 return
-            self.acceptors.append(Acceptor(sock=sock,
+            self.acceptors.append(Acceptor(sock=sock,name=self.name,
                                callback=self.acceptor_cb,
-                               onCloseCallback=self.acceptor_closed_cb,
-                               name=self.name))
+                               onCloseCallback=self.acceptor_closed_cb))
 
     def get_sender_ID(self, sock):
         now = time.time()

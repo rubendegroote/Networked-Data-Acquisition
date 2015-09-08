@@ -15,11 +15,11 @@ class ArtistConnections(QtGui.QWidget):
         self.layout = QtGui.QGridLayout(self)
 
         self.options = ['ABU', 'CRIS', 'Laser', 'Diodes','M2']
-        self.address = {'ABU': ('PCCRIS15', 5005),
-                        'CRIS': ('PCCRIS6', 5005),
-                        'Laser': ('PCCRIS15', 5004),
-                        'Diodes': ('PCCRIS15', 5003),
-                        'M2': ('127.0.0.1', 5002)}
+        self.address = {'ABU': ('127.0.0.1', 6005),
+                        'CRIS': ('127.0.0.1', 6005),
+                        'Laser': ('127.0.0.1', 6004),
+                        'Diodes': ('127.0.0.1', 6003),
+                        'M2': ('127.0.0.1', 6002)}
         self.artistSelection = QtGui.QComboBox()
         self.artistSelection.addItems(self.options)
         self.artistSelection.setCurrentIndex(0)
@@ -67,7 +67,7 @@ class ArtistConnections(QtGui.QWidget):
         print(info)
         self.connectSig.emit(info)
 
-    def update(self, origin, params):
+    def update(self,origin,params):
         # update list of existing connections
         if origin == 'Manager':
             self.ManArtists = params.keys()

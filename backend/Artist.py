@@ -120,6 +120,7 @@ class Artist(Dispatcher):
         # Recall there is only one data server, so this works
         l = len(self.data_deque)
         data = [self.data_deque.popleft() for _i in range(l)]
+        print('sent ', len(data))
         return {'data': data, 'format': self.format}
 
     @try_call
@@ -181,7 +182,7 @@ class Artist(Dispatcher):
         super(Artist,self).handle_accept()
 
 def makeArtist(name='test'):
-    if name == 'ABU' or name == 'ABU':
+    if name == 'ABU' or name == 'CRIS':
         from acquire_files.acquire import acquire as aq
         from acquire_files.acquire import FORMAT
         settings = dict(counterChannel="/Dev1/ctr1",  # corresponds to PFI3
@@ -189,24 +190,28 @@ def makeArtist(name='test'):
                                aiChannel="/Dev1/ai1,/Dev1/ai2",
                                noOfAi=2,
                                clockChannel="/Dev1/PFI1")
+        PORT = 6005
     
     elif name == 'laser':
         from acquire_files.acquireMatisse import acquireMatisse as aq
         from acquire_files.acquireMatisse import FORMAT
         settings = dict()
+        PORT = 6004
     
     elif name == 'diodes':
         from acquire_files.acquireDiodes import acquireDiodes as aq
         from acquire_files.acquireDiodes import FORMAT
         settings = dict(aiChannel="/Dev1/ai1,/Dev1/ai2,/Dev1/ai3",
                                noOfAi=3)
+        PORT = 6003
     
     elif name == 'M2':
         from acquire_files.acquireM2 import acquireM2 as aq
         from acquire_files.acquireM2 import FORMAT
         settings = dict()
+        PORT = 6002
 
-    artist = Artist(PORT=5002, name=name, save_data=True,
+    artist = Artist(PORT=PORT, name=name, save_data=True,
         format=FORMAT,acquireFunction=aq,settings=settings)
     
     return artist

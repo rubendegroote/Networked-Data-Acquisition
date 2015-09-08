@@ -17,7 +17,7 @@ class Man_DS_ConnectionDialog(QtGui.QDialog):
         else:
             ManChannelBoxtext = '127.0.0.1'
             ManPortBoxtext = 5007
-            DSChannelBoxtext = 'PCCRIS15'
+            DSChannelBoxtext = '127.0.0.1'
             DSPortBoxtext = 5006
 
         self.layout = QtGui.QGridLayout(self)

@@ -7,6 +7,8 @@ try:
 except:
     from backend.Helpers import emptyPipe
 
+SAVE_INTERVAL = 0.2
+
 def flatten(array):
     return [l for sub in array for l in sub]
 
@@ -25,10 +27,8 @@ def save(to_save,format,file_name,set_name):
             store[set_name].attrs['format'] = format
 
 def save_continuously(save_output,saveDir,name,format):
-    save_interval = 2
-
     format = [f.encode('utf-8') for f in format]
-    file_name = saveDir + 'artist_data.h5'
+    file_name = saveDir + name + '_data.h5'
     set_name = name
 
     while True:
@@ -39,11 +39,11 @@ def save_continuously(save_output,saveDir,name,format):
 
         # slightly more stable if the save runs every 0.5 seconds,
         # regardless of how long the previous saving took
-        wait = abs(min(0, time.time() - now - save_interval))
+        wait = abs(min(0, time.time() - now - SAVE_INTERVAL))
         time.sleep(wait)
 
 def save_continuously_dataserver(save_output,saveDir):
-    save_interval = 2
+    file_name = saveDir + 'server_data.h5'
     
     while True:
         now = time.time()
@@ -64,14 +64,11 @@ def save_continuously_dataserver(save_output,saveDir):
             to_save_dict[key] = np.row_stack(val)
 
         for origin in formats.keys():
-            to_save = to_save_dict[origin]
-            format = formats[origin]
-            file_name = saveDir + 'server_data.h5'
+            to_save,format = to_save_dict[origin],formats[origin]
             set_name = origin
-            print(to_save,format,file_name,set_name)
             save(to_save,format,file_name,set_name)
 
         # slightly more stable if the save runs every 0.5 seconds,
         # regardless of how long the previous saving took
-        wait = abs(min(0, time.time() - now - save_interval))
+        wait = abs(min(0, time.time() - now - SAVE_INTERVAL))
         time.sleep(wait)

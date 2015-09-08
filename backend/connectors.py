@@ -10,8 +10,8 @@ except:
     from Helpers import track, make_message, log_message
 
 class Connector(asynchat.async_chat):
-    def __init__(self,chan,callback,
-            onCloseCallback=None,name='',defaultRequest='status'):
+    def __init__(self,name,chan,callback,
+            onCloseCallback=None,default_callback=None):
         super(Connector,self).__init__()
         self.name = name
         self.callback = callback
@@ -20,7 +20,7 @@ class Connector(asynchat.async_chat):
         else:
             self.onCloseCallback = onCloseCallback
         self.chan = chan
-        self.defaultRequest = defaultRequest
+        self.default_callback = default_callback
         self.counter = 0
 
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -75,7 +75,7 @@ class Connector(asynchat.async_chat):
         try:
             message = self.requestQ.get_nowait()
         except:
-            message = make_message(self.defaultRequest,{})
+            message = make_message(self.default_callback())
 
         self.push(message)
 

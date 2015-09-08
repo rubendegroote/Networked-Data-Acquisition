@@ -7,15 +7,14 @@ from scanner import ScannerWidget
 from connect import ConnectionsWidget
 from central import CentralDock
 
-from backend.DataServer import DataServer
-from backend.Manager import Manager
-from backend.Radio import RadioConnector
-
+from backend.connectors import Connector
 
 class RadioApp(QtGui.QMainWindow):
 
     def __init__(self):
         super(RadioApp, self).__init__()
+        self.last_message = 0
+
         self.looping = True
         t = th.Thread(target=self.startIOLoop).start()
 
@@ -65,14 +64,34 @@ class RadioApp(QtGui.QMainWindow):
         self.radio.currentScan = value
 
     def addConnection(self, data):
-        self.radio = RadioConnector(chan=(data[0], int(data[1])),
-                                    callback=None,
-                                    onCloseCallback=self.connLost)
-        self.centralDock.graphDocks[0].graph.memoryClear.connect(self.radio.clearMemory)
-        self.centralDock.graphDocks[0].graph.memoryChanged.connect(self.radio.changeMemory)
+        self.radio = Connector(chan=(data[0], int(data[1])),name='Radio',
+                    callback=self.reply_cb,
+                    onCloseCallback=self.lostConn,
+                    default_callback=self.default_cb)
+        # self.centralDock.graphDocks[0].graph.memoryClear.connect(self.radio.clearMemory)
+        # self.centralDock.graphDocks[0].graph.memoryChanged.connect(self.radio.changeMemory)
         self.connectToolBar.setHidden(True)
 
-    def connLost(self):
+    def reply_cb(self,message):
+        if message['reply']['parameters']['status'][0] == 0:
+            function = message['reply']['op']
+            args = message['reply']['parameters']
+            track = message['track']
+
+            params = getattr(self, function)(track, args)
+
+        else:
+            print('Radio received fail message', message)
+
+    def default_cb(self):
+        return 'data',{'last_message':self.last_message}
+
+    def lostConn(self,connector):
+        print('lost connection')
+
+    def data_reply(self,track,params):
+        origin, track_id = track
+        
         pass
 
     def plot(self):
