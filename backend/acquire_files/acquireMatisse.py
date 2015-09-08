@@ -9,7 +9,7 @@ try:
 except:
     from backend.OpenOPC.OpenOPC import *
 
-FORMAT = ('time', 'scan', 'setpoint','wavenumber','wavenumber HeNe')
+FORMAT = ('timestamp', 'scan', 'setpoint','wavenumber','wavenumber HeNe')
 def acquireMatisse(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     """ This is the function that will be the target function of a Process.
 

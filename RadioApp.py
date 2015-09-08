@@ -2,10 +2,11 @@ from PyQt4 import QtCore,QtGui
 import threading as th
 import asyncore
 import time
+import pandas as pd
 
 from scanner import ScannerWidget
 from connect import ConnectionsWidget
-from central import CentralDock
+from graph import MyGraph
 
 from backend.connectors import Connector
 
@@ -13,33 +14,22 @@ class RadioApp(QtGui.QMainWindow):
 
     def __init__(self):
         super(RadioApp, self).__init__()
-        self.last_message = 0
+        self.first_time = True
 
         self.looping = True
         t = th.Thread(target=self.startIOLoop).start()
 
         self.init_UI()
 
+        time.sleep(0.1)
+        self.addConnection(['127.0.0.1',5005])
+
     def init_UI(self):
+        self.graph = MyGraph('central')
+        self.setCentralWidget(self.graph)
 
-        self.connectToolBar = QtGui.QToolBar('Connections')
-        self.connectToolBar.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.addToolBar(self.connectToolBar)
-
-        self.connectionsWidget = ConnectionsWidget()
-        self.connectionsWidget.newConn.connect(self.addConnection)
-        self.connectToolBar.addWidget(self.connectionsWidget)
-
-        self.centralDock = CentralDock()
-        self.centralDock.graphDocks[0].graph.dataRequested.connect(self.changeDataType)
-        self.centralDock.graphDocks[0].graph.scanRequested.connect(self.changeCurrentScan)
-        self.setCentralWidget(self.centralDock)
-
+        self.setGeometry(200,100,1200,800)
         self.show()
-
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.plot)
-        self.timer.start(50)
 
     def stopIOLoop(self):
         self.looping = False
@@ -68,9 +58,6 @@ class RadioApp(QtGui.QMainWindow):
                     callback=self.reply_cb,
                     onCloseCallback=self.lostConn,
                     default_callback=self.default_cb)
-        # self.centralDock.graphDocks[0].graph.memoryClear.connect(self.radio.clearMemory)
-        # self.centralDock.graphDocks[0].graph.memoryChanged.connect(self.radio.changeMemory)
-        self.connectToolBar.setHidden(True)
 
     def reply_cb(self,message):
         if message['reply']['parameters']['status'][0] == 0:
@@ -84,38 +71,46 @@ class RadioApp(QtGui.QMainWindow):
             print('Radio received fail message', message)
 
     def default_cb(self):
-        return 'data',{'last_message':self.last_message}
+        if self.first_time:
+            self.first_time = False
+            return 'data_format',{}
+        elif self.graph.reset:
+            self.graph.reset_data()
+            return 'data',{'no_of_rows':self.graph.no_of_rows,
+                           'x':self.graph.x_key,
+                           'y':self.graph.y_key}
+
+        else:
+            return 'data',{'no_of_rows':self.graph.no_of_rows,
+                           'x':self.graph.x_key,
+                           'y':self.graph.y_key}
 
     def lostConn(self,connector):
         print('lost connection')
 
     def data_reply(self,track,params):
         origin, track_id = track
-        
-        pass
-
-    def plot(self):
-        try:
-            for g in self.centralDock.graphDocks:
-                if g.graph.xkey == 'time':
-                    selected = [g.graph.ykey]
-                elif g.graph.ykey == 'time':
-                    selected = [g.graph.xkey]
-                else:
-                    selected = [g.graph.xkey, g.graph.ykey]
-                g.graph.setXYOptions(list(self.radio.format))
-                if all([s in self.radio.data.columns for s in selected]):
-                    # print(self.radio.data[selected])
-                    g.graph.plot(self.radio.data[selected])
-                self.radio.xy = list(self.radio.format)
-
-                try:
-                    self.statusBar().showMessage('Laser Wavelength: '+ str(self.radio.data['laser: wavenumber'][-1]) +  ' cm-1')
-                except:
-                    pass
-
-        except AttributeError as e:
+        data = params['data']
+        if data == []:
             pass
+
+        else:
+            self.graph.no_of_rows = params['no_of_rows']
+
+            data_x = pd.DataFrame({'time':data[0],'x':data[1]})
+            data_y = pd.DataFrame({'time':data[2],'y':data[3]})
+
+            data = pd.concat([data_x,data_y])
+            data.set_index(['time'],inplace=True)
+
+            self.graph.data=self.graph.data.append(data)
+
+    def data_format_reply(self,track,params):
+        origin, track_id = track
+        self.graph.formats = params['data_format']
+        self.graph.no_of_rows = {k:0 for k in self.graph.formats.keys()}
+
+        self.graph.setXYOptions(self.graph.formats)
 
     def closeEvent(self,event):
         self.stopIOLoop()

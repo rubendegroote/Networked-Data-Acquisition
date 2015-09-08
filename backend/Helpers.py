@@ -24,7 +24,6 @@ def emptyPipe(q):
     toSend = []
     now = time.time()
     while len(toSend) == 0 and time.time() - now < 1:
-        time.sleep(0.01)
         while q.poll(0.0005):
             try:
                 toSend.append(q.recv())

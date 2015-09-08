@@ -121,6 +121,7 @@ def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     contFlag.wait()  # Wait until the boolean for continuing is set to True
 
     tPerStep = 0
+    counter=0
     while not stopFlag.is_set():  # Continue the acquisition loop while the stop flag is False
         try:
             # if the contFlag is set: wait for it to be unset
@@ -172,13 +173,13 @@ def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
             # have registered.
             now = time.time()
             # put data on the queue
-            data = [now]
-            data.extend([1] * (len(ns.format)-1))
+            data = [now,counter]
+            data.extend([np.random.rand()] * (len(ns.format)-2))
             dQ.send(data)
 
             if ns.on_setpoint and time.time() - ns.t0 >= tPerStep:
                 ns.on_setpoint = False
-
+            counter+=1
         except Exception as e:
             mQ.put(e)
             # hold the process...

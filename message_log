@@ -832,3 +832,295 @@
 2015-09-06 22:14:23,240: {'track': [('MGUI_to_DS', 18)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
 2015-09-06 22:14:26,880: {'track': [('MGui_to_M', 49)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
 2015-09-06 22:14:26,880: {'track': [('MGUI_to_DS', 48)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 10:27:59,440: {'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 38)]}
+2015-09-08 10:27:59,440: {'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 39)]}
+2015-09-08 10:28:03,945: {'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 83)]}
+2015-09-08 10:28:03,945: {'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 83)]}
+2015-09-08 10:39:35,101: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGui_to_M', 30)]}
+2015-09-08 10:39:35,102: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGUI_to_DS', 31)]}
+2015-09-08 10:39:37,204: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}, 'track': [('MGui_to_M', 51)]}
+2015-09-08 10:39:37,204: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}, 'track': [('MGUI_to_DS', 50)]}
+2015-09-08 11:05:03,094: {'track': [('MGUI_to_DS', 9)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 11:05:03,696: {'track': [('MGUI_to_DS', 14)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 11:06:30,270: {'track': [('MGUI_to_DS', 8)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 11:06:31,275: {'track': [('MGUI_to_DS', 18)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 11:12:09,299: {'track': [('MGUI_to_DS', 6)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 11:12:09,702: {'track': [('MGUI_to_DS', 10)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 11:13:04,436: {'track': [('MGUI_to_DS', 7)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 11:13:04,840: {'track': [('MGUI_to_DS', 10)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 11:30:15,120: {'track': [('MGUI_to_DS', 33)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-08 11:30:17,024: {'track': [('MGUI_to_DS', 51)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 11:30:57,821: {'track': [('MGUI_to_DS', 8)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-08 11:30:58,627: {'track': [('MGUI_to_DS', 15)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 11:36:52,213: {'track': [('MGUI_to_DS', 8)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 11:36:53,114: {'track': [('MGUI_to_DS', 16)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 11:40:44,886: {'track': [('MGUI_to_DS', 17)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 11:40:45,591: {'track': [('MGUI_to_DS', 24)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 11:41:30,772: {'track': [('MGUI_to_DS', 4)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 11:41:31,176: {'track': [('MGUI_to_DS', 7)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 11:43:11,209: {'track': [('MGUI_to_DS', 6)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 11:43:11,614: {'track': [('MGUI_to_DS', 9)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 11:48:29,230: {'track': [('MGUI_to_DS', 8)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 11:48:29,931: {'track': [('MGUI_to_DS', 14)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 11:49:48,472: {'track': [('MGUI_to_DS', 6)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 11:49:48,974: {'track': [('MGUI_to_DS', 10)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 12:00:08,700: {'track': [('MGui_to_M', 30)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 12:00:08,701: {'track': [('MGUI_to_DS', 31)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 12:00:11,008: {'track': [('MGui_to_M', 53)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 12:00:11,009: {'track': [('MGUI_to_DS', 52)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 12:11:43,781: {'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 9)]}
+2015-09-08 12:11:44,382: {'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 14)]}
+2015-09-08 12:14:22,173: {'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 4)]}
+2015-09-08 12:14:22,577: {'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 8)]}
+2015-09-08 12:23:41,066: {'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 3)]}
+2015-09-08 12:23:41,369: {'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 6)]}
+2015-09-08 12:25:05,618: {'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 4)]}
+2015-09-08 12:25:06,023: {'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 6)]}
+2015-09-08 13:15:05,429: {'track': [('MGUI_to_DS', 9)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 13:15:06,132: {'track': [('MGUI_to_DS', 15)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 13:17:51,803: {'track': [('MGUI_to_DS', 6)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 13:17:52,307: {'track': [('MGUI_to_DS', 10)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 13:18:43,431: {'track': [('MGUI_to_DS', 27)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 13:18:43,734: {'track': [('MGUI_to_DS', 30)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 13:19:46,149: {'track': [('MGUI_to_DS', 8)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 13:19:46,551: {'track': [('MGUI_to_DS', 11)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-08 13:27:12,889: {'track': [('MGUI_to_DS', 6)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 13:27:13,292: {'track': [('MGUI_to_DS', 9)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-08 13:30:08,323: {'track': [('MGUI_to_DS', 9)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 13:30:08,724: {'track': [('MGUI_to_DS', 12)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 13:37:54,815: {'track': [('MGUI_to_DS', 4)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 13:37:55,317: {'track': [('MGUI_to_DS', 8)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 13:45:40,521: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 13:46:10,418: {'track': [('MGUI_to_DS', 4)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 13:46:10,822: {'track': [('MGUI_to_DS', 8)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 13:46:17,353: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 13:46:41,269: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 13:49:27,144: {'track': [('MGUI_to_DS', 4)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 13:49:27,549: {'track': [('MGUI_to_DS', 7)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 13:50:00,288: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 14:09:12,436: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 14:12:42,157: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 14:14:11,900: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 14:14:51,210: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 14:15:35,894: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 14:16:38,231: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 14:17:20,498: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 14:17:33,450: {'track': [('Radio', 0)], 'message': {'parameters': {}, 'op': 'data_format'}}
+2015-09-08 14:20:43,802: {'track': [('Radio', 0)], 'message': {'parameters': {}, 'op': 'data_format'}}
+2015-09-08 14:21:16,083: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 14:34:30,716: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 14:34:41,284: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 14:36:02,579: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 14:36:26,898: {'track': [('Radio', 0)], 'message': {'parameters': {}, 'op': 'data_format'}}
+2015-09-08 14:36:38,437: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 14:37:04,943: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 14:38:06,126: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 14:38:28,257: {'track': [('Radio', 0)], 'message': {'parameters': {}, 'op': 'data_format'}}
+2015-09-08 14:40:00,530: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 14:40:26,238: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 14:40:34,615: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 14:41:06,697: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 14:42:14,054: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 14:42:44,348: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 14:43:01,687: {'track': [('Radio', 0)], 'message': {'parameters': {}, 'op': 'data_format'}}
+2015-09-08 14:43:19,253: {'track': [('Radio', 0)], 'message': {'parameters': {}, 'op': 'data_format'}}
+2015-09-08 14:43:44,761: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 14:44:24,103: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 14:45:05,952: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 14:46:45,403: {'track': [('Radio', 0)], 'message': {'parameters': {}, 'op': 'data_format'}}
+2015-09-08 14:47:38,879: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 14:50:02,570: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 14:50:44,390: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 14:56:53,033: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 15:08:36,390: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 15:08:56,914: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 15:09:38,165: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 15:09:49,569: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 15:10:14,677: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 15:11:06,922: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 15:11:45,769: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 15:12:42,486: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 15:14:08,231: {'track': [('Radio', 0)], 'message': {'parameters': {}, 'op': 'data_format'}}
+2015-09-08 15:15:09,213: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 15:17:24,322: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 15:18:11,382: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 15:18:38,484: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 15:19:01,115: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 15:20:00,176: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 15:20:25,280: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 15:21:02,746: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 15:21:38,220: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 15:22:38,408: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 15:22:46,771: {'track': [('Radio', 0)], 'message': {'parameters': {}, 'op': 'data_format'}}
+2015-09-08 15:23:26,623: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 15:23:38,980: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 15:24:23,208: {'track': [('Radio', 0)], 'message': {'parameters': {}, 'op': 'data_format'}}
+2015-09-08 15:42:45,187: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 15:46:28,822: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 15:57:00,745: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 15:57:32,049: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 15:58:01,887: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 15:58:29,379: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 15:59:02,048: {'track': [('Radio', 0)], 'message': {'parameters': {}, 'op': 'data_format'}}
+2015-09-08 15:59:43,115: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 16:00:33,160: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 16:01:13,819: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 16:02:30,749: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 16:05:19,949: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 16:05:28,918: {'track': [('Radio', 0)], 'message': {'parameters': {}, 'op': 'data_format'}}
+2015-09-08 16:07:49,865: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 16:09:29,488: {'track': [('MGUI_to_DS', 8)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 16:09:29,989: {'track': [('MGUI_to_DS', 12)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-08 16:09:37,278: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 16:10:33,017: {'track': [('Radio', 0)], 'message': {'parameters': {}, 'op': 'data_format'}}
+2015-09-08 16:10:52,452: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 16:11:49,066: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 16:12:25,936: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 16:13:14,991: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 16:21:50,722: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 16:30:01,809: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 16:42:22,639: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 16:42:38,755: {'track': [('Radio', 0)], 'message': {'parameters': {}, 'op': 'data_format'}}
+2015-09-08 16:43:06,465: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 16:43:41,145: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 16:43:53,700: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 16:44:15,407: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 16:44:39,842: {'track': [('Radio', 0)], 'message': {'parameters': {}, 'op': 'data_format'}}
+2015-09-08 16:45:24,826: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 16:46:28,858: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 16:49:07,740: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 16:50:05,308: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 16:51:08,004: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 16:51:46,289: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 16:53:33,338: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 16:53:36,833: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGUI_to_DS', 17)]}
+2015-09-08 16:53:36,834: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGui_to_M', 16)]}
+2015-09-08 16:53:40,651: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}, 'track': [('MGUI_to_DS', 53)]}
+2015-09-08 16:53:40,652: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}, 'track': [('MGui_to_M', 51)]}
+2015-09-08 16:54:02,812: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 16:55:07,205: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGui_to_M', 11)]}
+2015-09-08 16:55:07,206: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGUI_to_DS', 12)]}
+2015-09-08 16:55:10,306: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}, 'track': [('MGui_to_M', 42)]}
+2015-09-08 16:55:10,306: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}, 'track': [('MGUI_to_DS', 41)]}
+2015-09-08 16:55:12,983: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 16:56:27,940: {'track': [('MGui_to_M', 17)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 16:56:27,940: {'track': [('MGUI_to_DS', 17)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 16:56:30,245: {'track': [('MGui_to_M', 39)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 16:56:30,246: {'track': [('MGUI_to_DS', 38)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 16:56:34,959: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 16:56:46,114: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 16:57:12,620: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 16:57:22,384: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 16:58:39,097: {'track': [('Radio', 0)], 'message': {'parameters': {}, 'op': 'data_format'}}
+2015-09-08 16:58:59,915: {'track': [('MGUI_to_DS', 16)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-08 16:58:59,915: {'track': [('MGui_to_M', 15)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-08 16:59:02,419: {'track': [('MGUI_to_DS', 39)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 16:59:02,420: {'track': [('MGui_to_M', 40)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 16:59:07,351: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 16:59:23,696: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 16:59:45,224: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 17:00:30,467: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 17:02:50,284: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 17:10:13,506: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 17:11:37,446: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 17:17:15,717: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 17:17:25,256: {'track': [('MGUI_to_DS', 131)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 17:17:25,257: {'track': [('MGui_to_M', 130)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 17:17:27,657: {'track': [('MGUI_to_DS', 154)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 17:17:27,658: {'track': [('MGui_to_M', 154)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 17:17:30,819: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 17:17:40,807: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 17:19:42,980: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 17:22:50,774: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 17:22:55,474: {'track': [('MGUI_to_DS', 13)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 17:22:55,474: {'track': [('MGui_to_M', 12)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 17:22:59,378: {'track': [('MGUI_to_DS', 50)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 17:22:59,378: {'track': [('MGui_to_M', 51)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 17:23:09,093: {'track': [('Radio', 0)], 'message': {'parameters': {}, 'op': 'data_format'}}
+2015-09-08 17:24:11,050: {'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 18)]}
+2015-09-08 17:24:11,050: {'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 17)]}
+2015-09-08 17:24:13,451: {'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 41)]}
+2015-09-08 17:24:13,451: {'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 41)]}
+2015-09-08 17:25:47,809: {'track': [('MGui_to_M', 20)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 17:25:47,810: {'track': [('MGUI_to_DS', 20)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 17:25:59,711: {'track': [('MGui_to_M', 138)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 17:25:59,711: {'track': [('MGUI_to_DS', 139)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 17:28:43,838: {'track': [('MGui_to_M', 21)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-08 17:28:43,839: {'track': [('MGUI_to_DS', 22)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-08 17:28:46,245: {'track': [('MGui_to_M', 43)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 17:28:46,245: {'track': [('MGUI_to_DS', 44)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 17:29:16,293: {'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 11)]}
+2015-09-08 17:29:16,293: {'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 12)]}
+2015-09-08 17:29:18,396: {'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 32)]}
+2015-09-08 17:29:18,396: {'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 31)]}
+2015-09-08 17:30:31,338: {'track': [('MGUI_to_DS', 18)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 17:30:31,339: {'track': [('MGui_to_M', 17)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 17:30:33,262: {'track': [('MGUI_to_DS', 36)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 17:30:33,263: {'track': [('MGui_to_M', 36)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 17:31:42,116: {'track': [('MGui_to_M', 13)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-08 17:31:42,117: {'track': [('MGUI_to_DS', 13)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-08 17:31:44,321: {'track': [('MGui_to_M', 34)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 17:31:44,322: {'track': [('MGUI_to_DS', 35)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 17:32:31,501: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGui_to_M', 14)]}
+2015-09-08 17:32:31,501: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGUI_to_DS', 14)]}
+2015-09-08 17:32:33,404: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}, 'track': [('MGui_to_M', 32)]}
+2015-09-08 17:32:33,404: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}, 'track': [('MGUI_to_DS', 32)]}
+2015-09-08 17:33:12,781: {'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 21)]}
+2015-09-08 17:33:12,782: {'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 22)]}
+2015-09-08 17:33:56,483: {'track': [('MGUI_to_DS', 15)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-08 17:33:56,484: {'track': [('MGui_to_M', 15)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-08 17:33:58,685: {'track': [('MGUI_to_DS', 37)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 17:33:58,686: {'track': [('MGui_to_M', 36)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 17:36:53,965: {'track': [('MGUI_to_DS', 13)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-08 17:36:53,966: {'track': [('MGui_to_M', 12)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-08 17:36:57,866: {'track': [('MGUI_to_DS', 51)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 17:36:57,867: {'track': [('MGui_to_M', 51)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 17:38:28,662: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}, 'track': [('MGui_to_M', 59)]}
+2015-09-08 17:38:28,662: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}, 'track': [('MGUI_to_DS', 60)]}
+2015-09-08 17:54:35,321: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGUI_to_DS', 22)]}
+2015-09-08 17:54:35,322: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGui_to_M', 21)]}
+2015-09-08 17:54:37,734: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}, 'track': [('MGUI_to_DS', 44)]}
+2015-09-08 17:54:37,734: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}, 'track': [('MGui_to_M', 45)]}
+2015-09-08 17:54:57,285: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 17:55:53,546: {'track': [('MGui_to_M', 17)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-08 17:55:53,546: {'track': [('MGUI_to_DS', 17)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-08 17:55:55,148: {'track': [('MGui_to_M', 32)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 17:55:55,149: {'track': [('MGUI_to_DS', 32)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 17:56:04,315: {'track': [('Radio', 0)], 'message': {'parameters': {}, 'op': 'data_format'}}
+2015-09-08 17:57:38,843: {'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 16)]}
+2015-09-08 17:57:38,843: {'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 17)]}
+2015-09-08 17:57:41,046: {'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 38)]}
+2015-09-08 17:57:41,046: {'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 37)]}
+2015-09-08 17:57:44,057: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 18:00:31,084: {'track': [('MGui_to_M', 24)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 18:00:31,084: {'track': [('MGUI_to_DS', 24)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 18:00:32,885: {'track': [('MGui_to_M', 41)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 18:00:35,409: {'track': [('MGUI_to_DS', 29)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 18:06:26,601: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 18:06:31,174: {'track': [('MGUI_to_DS', 13)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 18:06:31,175: {'track': [('MGui_to_M', 13)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-08 18:06:32,981: {'track': [('MGUI_to_DS', 30)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 18:06:32,981: {'track': [('MGui_to_M', 30)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-08 18:06:41,337: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 18:11:53,084: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 18:11:58,448: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGui_to_M', 14)]}
+2015-09-08 18:11:58,449: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGUI_to_DS', 15)]}
+2015-09-08 18:12:01,854: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 18:12:07,693: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 18:12:55,890: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGui_to_M', 42)]}
+2015-09-08 18:12:55,891: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGUI_to_DS', 42)]}
+2015-09-08 18:13:02,410: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}, 'track': [('MGui_to_M', 106)]}
+2015-09-08 18:13:02,511: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}, 'track': [('MGUI_to_DS', 105)]}
+2015-09-08 18:13:05,907: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 18:23:27,918: {'track': [('MGui_to_M', 15)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-08 18:23:27,919: {'track': [('MGUI_to_DS', 16)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-08 18:23:31,034: {'track': [('MGui_to_M', 45)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 18:23:31,035: {'track': [('MGUI_to_DS', 46)], 'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}}
+2015-09-08 18:23:49,337: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-08 18:25:30,761: {'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 27)]}
+2015-09-08 18:25:30,762: {'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 26)]}
+2015-09-08 18:25:32,572: {'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 44)]}
+2015-09-08 18:25:32,573: {'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 44)]}
+2015-09-08 18:25:35,228: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-08 18:26:24,684: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-08 18:29:38,020: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}

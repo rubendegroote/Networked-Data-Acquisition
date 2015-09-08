@@ -78,9 +78,6 @@ class Artist(Dispatcher):
         # data pipe: acquire -> ARTIST
         self.data_output,self.data_input = mp.Pipe(duplex=False)
 
-        # save pipe: send data to be saved
-        self.save_output,self.save_input = mp.Pipe(duplex=False)
-
         # holding flag for the acquisition
         self.contFlag = mp.Event()
         self.contFlag.clear()
@@ -99,14 +96,18 @@ class Artist(Dispatcher):
         self.ns.scanNo = -1
         self.ns.on_setpoint = False
         self.ns.scanning = False
-        self.save_data = save_data
         self.format = format
         self.ns.format = self.format
 
         self.data_deque = deque()
 
-        self.start_saving()
         self.start_daq()
+
+        self.save_data = save_data
+        if save_data:
+            # save pipe: send data to be saved
+            self.save_output,self.save_input = mp.Pipe(duplex=False)
+            self.start_saving()
 
     def InitializeScanning(self):
         self.ns.scanning = False
@@ -132,7 +133,8 @@ class Artist(Dispatcher):
         self.stopFlag.clear()
 
         self.InitializeScanning()
-        self.DAQProcess = mp.Process(target=self.acquireFunction,
+        self.DAQProcess = mp.Process(name = 'daq' + self.name,
+                                      target=self.acquireFunction,
                                      args=(self.settings,
                                            self.data_input, self.iQ, self.mQ,
                                            self.contFlag, self.stopFlag,
@@ -142,7 +144,8 @@ class Artist(Dispatcher):
         self.readThread = th.Timer(0, self.read_data).start()
 
     def start_saving(self):
-        self.saveProcess = mp.Process(target = save_continuously,
+        self.saveProcess = mp.Process(name = 'save_' + self.name,
+                                      target = save_continuously,
                                       args = (self.save_output,self.saveDir,
                                               self.name,self.format))
         self.saveProcess.start()
@@ -172,6 +175,7 @@ class Artist(Dispatcher):
                 self.data_deque.extend(ret)
                 if self.save_data:
                     self.save_input.send(ret)
+
             time.sleep(0.01)
 
     def handle_accept(self):
@@ -211,7 +215,7 @@ def makeArtist(name='test'):
         settings = dict()
         PORT = 6002
 
-    artist = Artist(PORT=PORT, name=name, save_data=True,
-        format=FORMAT,acquireFunction=aq,settings=settings)
+    artist = Artist(name=name,PORT=PORT,acquireFunction=aq,
+        save_data=True,format=FORMAT,settings=settings)
     
     return artist

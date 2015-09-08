@@ -3,7 +3,7 @@ from PyQt4 import QtCore,QtGui
 import pyqtgraph.dockarea as da
 import datetime
 import numpy as np
-
+import pandas as pd
 from picbutton import PicButton
 
 
@@ -25,10 +25,21 @@ class MyGraph(QtGui.QWidget):
     def __init__(self, name):
         super(QtGui.QWidget, self).__init__()
 
+        self.reset = False
         self.options = []
         self.name = name
-        self.xkey = ''
-        self.ykey = ''
+
+        self.data = pd.DataFrame()
+        self.x_key = []
+        self.y_key = []
+
+        self.init_UI()
+        
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.plot)
+        self.timer.start(50)
+
+    def init_UI(self):
 
         self.layout = QtGui.QGridLayout(self)
 
@@ -48,9 +59,9 @@ class MyGraph(QtGui.QWidget):
         layout.addLayout(self.sublayout, 1, 0)
 
         self.comboY = QtGui.QComboBox(parent=None)
+        self.comboY.setMinimumWidth(250)
         self.comboY.setToolTip('Choose the variable you want to put\
  on the Y-axis.')
-        self.comboY.currentIndexChanged.connect(self.newXY)
         self.sublayout.addWidget(self.comboY, 0, 1)
 
         label = QtGui.QLabel('vs')
@@ -58,9 +69,9 @@ class MyGraph(QtGui.QWidget):
         self.sublayout.addWidget(label, 0, 2)
 
         self.comboX = QtGui.QComboBox(parent=None)
+        self.comboX.setMinimumWidth(250)
         self.comboX.setToolTip('Choose the variable you want to put\
  on the X-axis.')
-        self.comboX.currentIndexChanged.connect(self.newXY)
         self.sublayout.addWidget(self.comboX, 0, 3)
 
  #        self.mathCheckBox = QtGui.QCheckBox('Mathy math math')
@@ -179,69 +190,61 @@ class MyGraph(QtGui.QWidget):
 
         return edges, bin_means, errors
 
-    def plot(self, data):
-
-        try:
-            self.graph.clear()
-            columns = data.columns.values
-            histmode = str(self.graphBox.currentText()) == 'Step (histogram)'
-            if len(columns) == 2:
-                data.sort_index(inplace=True)
-                data[columns[0]].fillna(method='bfill', inplace=True)
-                data.dropna(inplace=True)
-                x = data[columns[0]].values
-                y = data[columns[1]].values
-                if histmode:
-                    binsize = self.binSpinBox.value()
-                    x, y, errors = self.calcHist(x, y, binsize)
-
-                self.curve.setData(x, y,
-                                   pen='r',
-                                   # fillLevel=0,
-                                   stepMode=histmode,
-                                   brush='g')
-            elif len(columns) == 1:
-                data.dropna(inplace=True)
-                time = np.array([t.item() / 10**9 for t in (data.index.values - np.datetime64('1970-01-01T00:00Z'))])
-                data = data[columns[0]].values
-                if histmode:
-                    binsize = self.binSpinBox.value()
-                    time, data, errors = self.calcHist(time, data, binsize)
-                time = time - np.min(time)
-
-
-                self.curve = pg.PlotCurveItem(time, data,
-                                              pen='r',
-                                              # fillLevel=0,
-                                              stepMode=histmode,
-                                              brush='g')
-            self.graph.addItem(self.curve)
-        except Exception as e:
-            print(e)
-
     def setXYOptions(self, options):
-        options.append('time')
-        if not options == self.options:
-            self.options = options
-            curX = int(self.comboX.currentIndex())
-            curY = int(self.comboY.currentIndex())
-            self.comboX.clear()
-            self.comboX.addItems(options)
+        self.options = ['device: parameter']
+        self.options.extend([key+': '+v for key,val in options.items() for v in val])
 
-            self.comboY.clear()
-            self.comboY.addItems(options)
+        self.comboX.addItems(self.options)
+        self.comboY.addItems(self.options)
 
-            self.comboX.setCurrentIndex(curX)
-            self.comboY.setCurrentIndex(curY)
-
-        else:
-            pass
+        self.comboX.currentIndexChanged.connect(self.newXY)
+        self.comboY.currentIndexChanged.connect(self.newXY)
 
     def newXY(self):
-        self.xkey = str(self.comboX.currentText())
-        self.ykey = str(self.comboY.currentText())
+        new_xkey = str(self.comboX.currentText()).split(': ')
+        new_ykey = str(self.comboY.currentText()).split(': ')
 
-    def updatePlot(self):
-        self.clearPlot()
-        self.setXY()
-        self.plot()
+        if not 'device' in new_xkey and not 'device' in new_ykey:
+            self.reset = True
+            self.x_key = new_xkey
+            self.y_key = new_ykey
+        else:
+            self.x_key = []
+            self.y_key = []
+
+    def reset_data(self):
+        self.no_of_rows = {k:0 for k in self.formats.keys()}
+        
+        self.data = pd.DataFrame({'time':[],
+                                  'x':[],
+                                  'y':[]})
+        self.data.set_index(['time'],inplace=True)
+                                
+        self.reset = False
+
+    def plot(self):
+        self.graph.clear()
+        histmode = str(self.graphBox.currentText()) == 'Step (histogram)'
+
+        data = self.data.sort_index()
+        if 'timestamp' in self.x_key:
+            data['x'] = data['x'] - data['x'].values[0]
+        elif 'timestamp' in self.y_key:
+            data['y'] = data['y'] - data['y'][0]
+
+        
+        data['x'].fillna(method='bfill', inplace=True)
+        data.dropna(inplace=True)
+        x = data['x'].values
+        y = data['y'].values
+        if histmode:
+            binsize = self.binSpinBox.value()
+            x, y, errors = self.calcHist(x, y, binsize)
+
+        self.curve.setData(x, y,
+                           pen='r',
+                           # fillLevel=0,
+                           stepMode=histmode,
+                           brush='g')
+
+        self.graph.addItem(self.curve)

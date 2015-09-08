@@ -32,22 +32,21 @@ def save_continuously(save_output,saveDir,name,format):
     set_name = name
 
     while True:
+        to_save = []
         now = time.time()
-
-        to_save = np.row_stack(flatten(emptyPipe(save_output)))
+        while time.time()-now < SAVE_INTERVAL:
+            to_save.extend(emptyPipe(save_output))
+        to_save = np.row_stack(flatten(to_save))
         save(to_save,format,file_name,set_name)
-
-        # slightly more stable if the save runs every 0.5 seconds,
-        # regardless of how long the previous saving took
-        wait = abs(min(0, time.time() - now - SAVE_INTERVAL))
-        time.sleep(wait)
 
 def save_continuously_dataserver(save_output,saveDir):
     file_name = saveDir + 'server_data.h5'
     
     while True:
+        to_save = []
         now = time.time()
-        to_save = emptyPipe(save_output)
+        while time.time()-now < SAVE_INTERVAL:
+            to_save.extend(emptyPipe(save_output))
 
         to_save_dict = {}
         formats = {}
@@ -60,15 +59,5 @@ def save_continuously_dataserver(save_output,saveDir):
                 to_save_dict[origin] = data
             formats[origin] = format
 
-        for key,val in to_save_dict.items():
-            to_save_dict[key] = np.row_stack(val)
-
-        for origin in formats.keys():
-            to_save,format = to_save_dict[origin],formats[origin]
-            set_name = origin
-            save(to_save,format,file_name,set_name)
-
-        # slightly more stable if the save runs every 0.5 seconds,
-        # regardless of how long the previous saving took
-        wait = abs(min(0, time.time() - now - SAVE_INTERVAL))
-        time.sleep(wait)
+        for origin,to_save in to_save_dict.items():
+            save(np.row_stack(to_save),formats[origin],file_name,origin)
