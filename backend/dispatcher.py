@@ -105,10 +105,12 @@ class Dispatcher(asyncore.dispatcher):
             function = message['reply']['op']
             args = message['reply']['parameters']
             track = message['track']
+            for mess in message['status_updates']:
+                self.notify_connectors(mess)
             params = getattr(self, function)(track, args)
-
         else:
-            print('Connector received fail message', message)
+            exception = message['reply']['parameters']['exception']
+            self.notify_connectors(([1],"Received status fail in reply\n:{}".format(exception)))
 
     def connector_closed_cb(self,connector):
         self.connInfo[connector.acceptorName] = (
@@ -116,6 +118,10 @@ class Dispatcher(asyncore.dispatcher):
 
     def default_cb(self):
         return 'status',{}
+
+    def notify_connectors(self,status_update):
+        for acc in self.acceptors:
+            acc.message_queue.append(status_update)
 
     def handle_accept(self):
         pair = self.accept()
@@ -125,8 +131,7 @@ class Dispatcher(asyncore.dispatcher):
                 sender = self.get_sender_ID(sock)
                 logging.info(sender)
             except Exception as e:
-                print('Handle_accept error', e) # this has to be
-                                                # pushed to the GUI!
+                self.notify_connectors(([1],"Received status fail in handle_accept\n:{}".format(str(e))))
                 return
             self.acceptors.append(Acceptor(sock=sock,name=self.name,
                                callback=self.acceptor_cb,

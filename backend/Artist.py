@@ -92,10 +92,12 @@ class Artist(Dispatcher):
         self.mgr = mp.Manager()
         # Shared scan number
         self.ns = self.mgr.Namespace()
-        self.ns.t0 = time.time()
-        self.ns.scanNo = -1
+        self.ns.start_of_setpoint = time.time()
+        self.ns.scan_number = -1
         self.ns.on_setpoint = False
         self.ns.scanning = False
+        self.ns.current_position = 0
+        self.ns.progress = 0
         self.format = format
         self.ns.format = self.format
 
@@ -114,19 +116,37 @@ class Artist(Dispatcher):
 
     @try_call
     def status(self, params):
-        return {'format': self.format, 'scanning': self.ns.scanning, 'on_setpoint': self.ns.on_setpoint}
+        return {'format': self.format,
+                'scanning': self.ns.scanning,
+                'on_setpoint': self.ns.on_setpoint,
+                'progress': self.ns.progress,
+                'scan_number': self.ns.scan_number}
 
     @try_call
     def data(self, params):
         # Recall there is only one data server, so this works
         l = len(self.data_deque)
         data = [self.data_deque.popleft() for _i in range(l)]
-        print('sent ', len(data))
         return {'data': data, 'format': self.format}
 
     @try_call
     def set_scan_number(self, params):
-        self.ns.scanNo = params['scan_number'][0]
+        self.ns.scan_number = params['scan_number'][0]
+        return {}
+
+    @try_call
+    def start_scan(self,params):
+        self.ns.scan_parameter = params['scan_parameter'][0]
+        self.ns.scan_array = params['scan_array']
+        self.ns.time_per_step = params['time_per_step'][0]
+
+        self.iQ.put('scan')
+
+        return {}
+
+    @try_call
+    def stop_scan(self,params):
+        self.ns.scanning = False
         return {}
 
     def start_daq(self):
@@ -142,13 +162,6 @@ class Artist(Dispatcher):
         self.DAQProcess.start()
         self.contFlag.set()
         self.readThread = th.Timer(0, self.read_data).start()
-
-    def start_saving(self):
-        self.saveProcess = mp.Process(name = 'save_' + self.name,
-                                      target = save_continuously,
-                                      args = (self.save_output,self.saveDir,
-                                              self.name,self.format))
-        self.saveProcess.start()
 
     def pauze_daq(self):
         self.contFlag.clear()
@@ -169,7 +182,7 @@ class Artist(Dispatcher):
 
     def read_data(self):
         while not self.stopFlag.is_set():
-            message = GetFromQueue(self.mQ)
+            self.handle_messages()
             ret = emptyPipe(self.data_output)
             if not ret == []:
                 self.data_deque.extend(ret)
@@ -178,12 +191,25 @@ class Artist(Dispatcher):
 
             time.sleep(0.01)
 
+    def handle_messages(self):
+        message = GetFromQueue(self.mQ)
+        if not message == None:
+            self.notify_connectors(message)
+
+    def start_saving(self):
+        self.saveProcess = mp.Process(name = 'save_' + self.name,
+                                      target = save_continuously,
+                                      args = (self.save_output,self.saveDir,
+                                              self.name,self.format))
+        self.saveProcess.start()
+
     def handle_accept(self):
         # we want only one data server or manager
         # to be active at a time
         if len(self.acceptors) == 2:
             print('Data Server and Manager already present! Aborting.')
         super(Artist,self).handle_accept()
+
 
 def makeArtist(name='test'):
     if name == 'ABU' or name == 'CRIS':

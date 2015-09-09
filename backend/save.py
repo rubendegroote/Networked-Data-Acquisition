@@ -7,8 +7,6 @@ try:
 except:
     from backend.Helpers import emptyPipe
 
-SAVE_INTERVAL = 0.2
-
 def flatten(array):
     return [l for sub in array for l in sub]
 
@@ -32,10 +30,7 @@ def save_continuously(save_output,saveDir,name,format):
     set_name = name
 
     while True:
-        to_save = []
-        now = time.time()
-        while time.time()-now < SAVE_INTERVAL:
-            to_save.extend(emptyPipe(save_output))
+        to_save=emptyPipe(save_output)
         to_save = np.row_stack(flatten(to_save))
         save(to_save,format,file_name,set_name)
 
@@ -43,11 +38,7 @@ def save_continuously_dataserver(save_output,saveDir):
     file_name = saveDir + 'server_data.h5'
     
     while True:
-        to_save = []
-        now = time.time()
-        while time.time()-now < SAVE_INTERVAL:
-            to_save.extend(emptyPipe(save_output))
-
+        to_save=emptyPipe(save_output)
         to_save_dict = {}
         formats = {}
         for info in to_save:

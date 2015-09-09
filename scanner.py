@@ -8,6 +8,7 @@ class ScannerWidget(QtGui.QWidget):
     scanInfoSig = QtCore.Signal(dict)
     setPointSig = QtCore.Signal(dict)
     stopScanSig = QtCore.Signal(bool)
+    toggleConnectionsSig = QtCore.Signal(bool)
 
     def __init__(self):
         super(ScannerWidget, self).__init__()
@@ -86,31 +87,20 @@ class ScannerWidget(QtGui.QWidget):
         self.scanNumberLabel = QtGui.QLabel(str(-1))
         self.layout.addWidget(self.scanNumberLabel, 4, 2, 1, 1)
 
-    def updateScanNumber(self, scanNo):
-        self.scanNumberLabel.setText(str(scanNo))
+    def updateScanNumber(self, scan_number):
+        self.scanNumberLabel.setText(str(scan_number))
 
     def control(self):
         if self.state == "START":
             self.makeScan()
+            self.state = "STOP"
+
         elif self.state == "STOP":
             self.stopScan()
-
-    def changeControl(self):
-        if self.state == "START":
-            self.state = "STOP"
-            self.controlButton.setIcon('stop.png')
-            self.controlButton.setToolTip(
-                'Click here to stop the current capture.')
-            self.setpointButton.setCheckable(False)
-
-        elif self.state == "STOP":
             self.state = "START"
-            self.controlButton.setIcon('start.png')
-            self.controlButton.setToolTip('Click here to start a new capture.')
-            self.setpointButton.setCheckable(True)
 
     def makeScan(self):
-        par = 'laser: wavenumber'
+        par = 'M2: wavelength'
 
         start = float(self.startEdit.text())
         stop = float(self.stopEdit.text())
@@ -128,13 +118,13 @@ class ScannerWidget(QtGui.QWidget):
                     newRng = np.concatenate((newRng,rng[::-1]))
                 else:
                     newRng = np.concatenate((newRng,rng))
-        rng = newRng
+        rng = list(newRng)
 
         dt = float(self.timeEdit.text())
 
-        self.scanInfoSig.emit({'parameter':par,
-                               'range':rng,
-                               'time_interval':dt})
+        self.scanInfoSig.emit({'scan_parameter':par,
+                               'scan_array':rng,
+                               'time_per_step':dt})
 
     def makeSetpoint(self):
         par = 'M2: wavenumber'
@@ -146,18 +136,41 @@ class ScannerWidget(QtGui.QWidget):
     def stopScan(self):
         self.stopScanSig.emit(True)
 
-    def update(self, origin, info):
-        scanNo, format, progress, artists = info['scan_number'][0], info['format'], info['progress'][0], info['connector_info']
-        self.updateScanNumber(scanNo)
-        self.updateProgress(progress)
-        try:
-            form = {}
-            for k, v in artists.items():
-                if v[0]:
-                    form[k] = format[k]
-            self.setParCombo(form)
-        except Exception as e:
-            pass
+    def update(self, track, info):
+        origin, track_id = track[-1]
+        scanning,on_setpoint = info['scanning'],info['on_setpoint']
+        scan_number, progress = info['scan_number'][0],info['progress']
+
+        if len(progress) > 0:
+            scanning = any(scanning.values())
+            progress = max(progress.values())
+            on_setpoint = any(on_setpoint.values())
+
+            self.updateScanNumber(scan_number)
+            self.updateProgress(progress)
+            if not scanning:
+                self.state = "START"
+                self.controlButton.setIcon('start.png')
+                self.controlButton.setToolTip('Click here to start a new capture.')
+                self.setpointButton.setCheckable(True)
+                self.toggleConnectionsSig.emit(True)
+
+            else:
+                self.state = "STOP"
+                self.controlButton.setIcon('stop.png')
+                self.controlButton.setToolTip(
+                    'Click here to stop the current capture.')
+                self.setpointButton.setCheckable(False)
+                self.toggleConnectionsSig.emit(False)
+
+        # try:
+        #     form = {}
+        #     for k, v in artists.items():
+        #         if v[0]:
+        #             form[k] = format[k]
+        #     self.setParCombo(form)
+        # except Exception as e:
+        #     pass
 
     def setParCombo(self, format):
         if self.pars == format:
@@ -185,4 +198,4 @@ class ScannerWidget(QtGui.QWidget):
         self.setpointCombo.setCurrentIndex(curPar)
 
     def updateProgress(self, val):
-        self.progressBar.setValue(10 * val)
+        self.progressBar.setValue(1000*val)

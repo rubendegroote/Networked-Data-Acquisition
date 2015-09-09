@@ -65,7 +65,6 @@ class DataServer(Dispatcher):
             for i in [x,y]:
                 col = self.formats[i[0]].index(i[1])
                 row = min(self.no_of_rows[i[0]] - no_of_rows[i[0]],self.buffer_size)
-                print(row)
                 if not row == 0:
                     dataset = self.data_dict[i[0]].T
                     return_list.append(list(dataset[0,-row:])) #timestamp as well

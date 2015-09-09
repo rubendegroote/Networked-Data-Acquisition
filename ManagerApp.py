@@ -10,8 +10,6 @@ from connectiondialogs import Man_DS_ConnectionDialog
 from connectionwidgets import ArtistConnections
 from scanner import ScannerWidget
 
-from backend.Helpers import make_message
-
 class ResumeScanSignal(QtCore.QObject):
 
     resumescan = QtCore.pyqtSignal(tuple)
@@ -19,6 +17,7 @@ class ResumeScanSignal(QtCore.QObject):
 
 class ManagerApp(QtGui.QMainWindow):
     updateSignal = QtCore.pyqtSignal(tuple)
+    messageUpdateSignal = QtCore.pyqtSignal(tuple)
     def __init__(self):
         super(ManagerApp, self).__init__()
         self.looping = True
@@ -31,6 +30,7 @@ class ManagerApp(QtGui.QMainWindow):
         # self.timer.timeout.connect(self.update)
         # self.timer.start(50)
         self.updateSignal.connect(self.updateUI)
+        self.messageUpdateSignal.connect(self.updateMessages)
 
         self.show()
 
@@ -48,6 +48,7 @@ class ManagerApp(QtGui.QMainWindow):
         self.scanner.scanInfoSig.connect(self.start_scan)
         self.scanner.stopScanSig.connect(self.stop_scan)
         self.scanner.setPointSig.connect(self.go_to_setpoint)
+        self.scanner.toggleConnectionsSig.connect(self.toggleConnectionsUI)
         layout.addWidget(self.scanner, 0, 0, 1, 1)
 
         self.connWidget = ArtistConnections()
@@ -56,16 +57,20 @@ class ManagerApp(QtGui.QMainWindow):
         self.connWidget.removeAllSig.connect(self.remove_all_artists)
         layout.addWidget(self.connWidget, 1, 0, 1, 1)
 
-        self.dispatchButton = QtGui.QPushButton('Connect to Servers')
-        self.dispatchButton.clicked.connect(self.connectToServers)
-        layout.addWidget(self.dispatchButton, 2, 0, 1, 1)
+        self.serverConnectButton = QtGui.QPushButton('Connect to Servers')
+        self.serverConnectButton.clicked.connect(self.connectToServers)
+        layout.addWidget(self.serverConnectButton, 2, 0, 1, 1)
+
+        self.messageLog = QtGui.QPlainTextEdit()
+        self.messageLog.setMinimumWidth(400)
+        layout.addWidget(self.messageLog,0,1,3,1)
 
         self.disable()
 
     def updateUI(self,*args):
         target,info_dict = args[0]
-        params,origin = info_dict['args'],info_dict['origin']
-        target(origin,params)
+        params,track = info_dict['args'],info_dict['track']
+        target(track,params)
 
     def addConnection(self, data):
         ManChan = data[0], int(data[1])
@@ -85,7 +90,7 @@ class ManagerApp(QtGui.QMainWindow):
             with open('ManagerDSConnections.ini', 'w') as configfile:
                 config.write(configfile)
 
-            self.dispatchButton.setDisabled(True)
+            self.serverConnectButton.setDisabled(True)
         else:
             self.statusBar().showMessage('Connection failure')
 
@@ -94,7 +99,10 @@ class ManagerApp(QtGui.QMainWindow):
             function = message['reply']['op']
             args = message['reply']['parameters']
             track = message['track']
-
+            status_updates = message['status_updates']
+            for status_update in status_updates:
+                self.updateSignal.emit((self.display_message,{'track':track,
+                                                         'args':status_updates}))
             params = getattr(self, function)(track, args)
 
         else:
@@ -107,7 +115,7 @@ class ManagerApp(QtGui.QMainWindow):
         print('lostConn')
         self.statusBar().showMessage(
             connector.acceptorName + ' connection failure')
-        self.dispatchButton.setEnabled(True)
+        self.serverConnectButton.setEnabled(True)
         self.disable()
 
     def disable(self):
@@ -118,6 +126,14 @@ class ManagerApp(QtGui.QMainWindow):
         self.scanner.setEnabled(True)
         self.connWidget.setEnabled(True)
 
+    def toggleConnectionsUI(self,boolean):
+        if boolean:
+            self.connWidget.setEnabled(True)
+            self.serverConnectButton.setEnabled(True)
+        else:
+            self.connWidget.setDisabled(True)
+            self.serverConnectButton.setDisabled(True)
+
     def startIOLoop(self):
         while self.looping:
             asyncore.loop(count=1)
@@ -127,8 +143,6 @@ class ManagerApp(QtGui.QMainWindow):
         self.looping = False
 
     def start_scan(self, scanInfo):
-        self.connWidget.setDisabled(True)
-        self.dispatchButton.setDisabled(True)
         self.Man_DS_Connector.instruct('Manager', ('start_scan', scanInfo))
 
     def go_to_setpoint(self, setpointInfo):
@@ -140,18 +154,15 @@ class ManagerApp(QtGui.QMainWindow):
     def add_artist(self, info):
         receiver, address = info
         op,params = 'add_connector',{'address': address}
-        message = make_message((op,params))
-        self.Man_DS_Connector.instruct(receiver, message)
+        self.Man_DS_Connector.instruct(receiver, (op,params))
 
     def remove_artist(self, address):
         op,params = 'remove_connector', {'address': address}
-        message = make_message((op,params))
-        self.Man_DS_Connector.instruct('Both',message)
+        self.Man_DS_Connector.instruct('Both',(op,params))
 
     def remove_all_artists(self):
         op,params = 'remove_all_connectors', {}
-        message = make_message((op,params))
-        self.Man_DS_Connector.instruct('Both',message)
+        self.Man_DS_Connector.instruct('Both',(op,params))
 
     # def showResumeDialog(self, data):
     #     smin, smax, sl, curpos, tPerStep, name = data
@@ -169,28 +180,43 @@ class ManagerApp(QtGui.QMainWindow):
         origin, track_id = track[-1]
         if origin == 'Manager':
             self.updateSignal.emit((self.scanner.update,
-                                    {'origin':origin,
+                                    {'track':track,
                                     'args':params}))
 
-            scanning = params['scanning']
-            if self.scanner.state == 'START' and scanning:
-                self.scanner.changeControl()
-            elif self.scanner.state == 'STOP' and not scanning:
-                self.dispatchButton.setEnabled(True)
-                self.connWidget.setEnabled(True)
-                self.scanner.changeControl()
-
         self.updateSignal.emit((self.connWidget.update,
-                                       {'origin':origin,
+                                       {'track':track,
                                        'args':params['connector_info']}))
 
+    def start_scan_reply(self,track,params):
+        # print("start_scan_reply",track,params)
+        pass
+
+    def stop_scan_reply(self,track,params):
+        # print("stop_scan_reply",track,params)
+        pass
+
+    def display_message(self,track,params):
+        self.messageUpdateSignal.emit((track,params))
+
+    def updateMessages(self,info):
+        track,messages = info
+        for message in messages:
+            if message[0][0] == 0:
+                text = '{}: {} reports {}'.format(track[-1][1],track[-1][0],message[1])
+            else:
+                print(track,message)
+        self.messageLog.appendPlainText(text)
+
     def add_connector_reply(self,track,params):
+        # print("add_connector_reply",track,params)
         pass
 
     def remove_connector_reply(self,track,params):
+        # print("remove_connector_reply",track,params)
         pass
 
     def remove_all_connectors_reply(self,track,params):
+        # print("remove_all_connectors_reply",track,params)
         pass
 
 class Man_DS_Connector():

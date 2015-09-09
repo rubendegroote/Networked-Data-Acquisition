@@ -51,6 +51,8 @@ class MyGraph(QtGui.QWidget):
         self.graph.showGrid(x=True, y=True, alpha=0.7)
 
         self.curve = pg.PlotCurveItem()
+        self.graph.addItem(self.curve)
+
 
         layout = QtGui.QGridLayout(gView)
         layout.addWidget(self.graph, 0, 0, 1, 1)
@@ -223,28 +225,28 @@ class MyGraph(QtGui.QWidget):
         self.reset = False
 
     def plot(self):
-        self.graph.clear()
         histmode = str(self.graphBox.currentText()) == 'Step (histogram)'
 
-        data = self.data.sort_index()
-        if 'timestamp' in self.x_key:
-            data['x'] = data['x'] - data['x'].values[0]
-        elif 'timestamp' in self.y_key:
-            data['y'] = data['y'] - data['y'][0]
+        if len(self.data)>0:
+            data = self.data.sort_index()
+            if 'timestamp' in self.x_key:
+                data['x'] = data['x'] - data['x'].values[0]
+            elif 'timestamp' in self.y_key:
+                data['y'] = data['y'] - data['y'][0]
 
-        
-        data['x'].fillna(method='bfill', inplace=True)
-        data.dropna(inplace=True)
-        x = data['x'].values
-        y = data['y'].values
-        if histmode:
-            binsize = self.binSpinBox.value()
-            x, y, errors = self.calcHist(x, y, binsize)
+            data['x'].fillna(method='ffill', inplace=True)
+            data.dropna(inplace=True)
+            x = data['x'].values
+            y = data['y'].values
+            if histmode:
+                binsize = self.binSpinBox.value()
+                x, y, errors = self.calcHist(x, y, binsize)
 
-        self.curve.setData(x, y,
-                           pen='r',
-                           # fillLevel=0,
-                           stepMode=histmode,
-                           brush='g')
+            self.curve.setData(x, y,
+                               pen='r',
+                               # fillLevel=0,
+                               stepMode=histmode,
+                               brush='g')
 
-        self.graph.addItem(self.curve)
+        # except:
+        #     pass

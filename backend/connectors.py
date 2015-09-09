@@ -15,10 +15,7 @@ class Connector(asynchat.async_chat):
         super(Connector,self).__init__()
         self.name = name
         self.callback = callback
-        if onCloseCallback == None:
-            self.onCloseCallback = lambda x: None
-        else:
-            self.onCloseCallback = onCloseCallback
+        self.onCloseCallback = lambda x: None
         self.chan = chan
         self.default_callback = default_callback
         self.counter = 0
@@ -36,6 +33,9 @@ class Connector(asynchat.async_chat):
         self.buff = b''
 
         self.requestQ = mp.Queue()
+       
+        if not onCloseCallback == None:
+            self.onCloseCallback = onCloseCallback
 
         self.send_request()
 
@@ -64,7 +64,7 @@ class Connector(asynchat.async_chat):
             self.buff = b""
             self.callback(message=message)
         except Exception as e:
-            print(e)
+            print('Connector error in found terminator:\n', e)
         finally:
             self.send_request()
 
@@ -73,7 +73,7 @@ class Connector(asynchat.async_chat):
 
     def send_request(self):
         try:
-            message = self.requestQ.get_nowait()
+            message = make_message(self.requestQ.get_nowait())
         except:
             message = make_message(self.default_callback())
 
@@ -84,7 +84,6 @@ class Connector(asynchat.async_chat):
     def push(self,message):
         dump = (json.dumps(message) + "END_MESSAGE").encode('UTF-8')
         super(Connector, self).push(dump)
-        # super(Connector, self).push('END_MESSAGE'.encode('UTF-8'))
 
     def handle_close(self):
         self.onCloseCallback(self)
@@ -101,6 +100,7 @@ class Acceptor(asynchat.async_chat):
         self.onCloseCallback = onCloseCallback
         self.name = name
         self.counter = 0
+        self.message_queue = deque()
 
         self.buff = b""
 
@@ -113,14 +113,15 @@ class Acceptor(asynchat.async_chat):
         try:
             message = json.loads(self.buff.decode('UTF-8'))
             ret = self.callback(message=message)
-            if not ret == None:
-                self.push(ret)
+            no_of_messages = len(self.message_queue)
+            ret['status_updates'] = [self.message_queue.popleft() for l in range(no_of_messages)]
+            self.push(ret)
         except ValueError as e:
             self.push({'reply': {'op': 'receive_fail', 
                 'parameters': {'exception': str(e), 'status': [1],
                 'attempt': self.buff.decode('UTF-8')}}})
         except Exception as e:
-            print(e)
+            print('Acceptor exception in found terminator:\n',e)
             print(self.buff.decode('UTF-8'))
         finally:
             self.buff = b""
@@ -130,7 +131,6 @@ class Acceptor(asynchat.async_chat):
     def push(self,message):
         dump = (json.dumps(message) + "STOP_DATA").encode('UTF-8')
         super(Acceptor, self).push(dump)
-        # super(Acceptor, self).push('STOP_DATA'.encode('UTF-8'))
 
     def handle_close(self):
         self.onCloseCallback(self)

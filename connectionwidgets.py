@@ -67,7 +67,8 @@ class ArtistConnections(QtGui.QWidget):
         print(info)
         self.connectSig.emit(info)
 
-    def update(self,origin,params):
+    def update(self,track,params):
+        origin, track_id = track[-1]
         # update list of existing connections
         if origin == 'Manager':
             self.ManArtists = params.keys()

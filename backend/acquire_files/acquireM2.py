@@ -81,11 +81,6 @@ def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     # set1 = settings['set1']
     # set_hardware_function(set1)
 
-    # Start the acquisition loop
-    # mQ.put(['time', 'scan', 'x', 'y', 'z'])
-    timeout = 10.0
-    maxRate = 10000.0  # Again, copied from old code
-
     # HOST = '192.168.1.216'
     # PORT = 39933
     # for res in socket.getaddrinfo(HOST, PORT, socket.AF_UNSPEC, socket.SOCK_STREAM):
@@ -113,7 +108,7 @@ def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
 
     # need to perform a count here that we then throw away
     # otherwise get mysterious low first count
-    mQ.put("Communication with ICE-BLOC achieved.")
+    mQ.put(([0],"Communication with ICE-BLOC achieved."))
 
     p = float(0.)  # Initial value for the input
     got_instr = False
@@ -121,11 +116,13 @@ def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     contFlag.wait()  # Wait until the boolean for continuing is set to True
 
     tPerStep = 0
-    counter=0
+    wavelength=0
     while not stopFlag.is_set():  # Continue the acquisition loop while the stop flag is False
         try:
             # if the contFlag is set: wait for it to be unset
             contFlag.wait()
+
+            ### Receiving instructions
             try:
                 instr = iQ.get_nowait()
                 got_instr = True
@@ -133,55 +130,77 @@ def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
                 got_instr = False
                 # no instructions received
                 pass
-
+            ### Interpreting instructions
             if got_instr:
+                if instr == 'scan':
+                    if ns.scan_parameter == 'wavelength':
+                        ns.current_position = 0
+                        ns.scanning = True
+                        mQ.put(([0],'Starting {} scan.'.format(ns.scan_parameter)))
+                    else:
+                        mQ.put(([1],'{} cannot be scanned.'.format(ns.scan_parameter)))
 
-                translation = mapping[instr[0]](instr[1])
-
-                if instr[0] == 'Setpoint Change':
+                elif instr == 'Setpoint Change':
                     p = instr[2]
                     # s.sendall(json.dumps(comm.move_wave_t(841.0)))
                     # response = json.loads(s.recv(1024))
                     # if response['operator'] == 'move_wave_t_reply':
                     #     stat = response['parameters']['status']
                     #     if stat == 0:
-                    #         mQ.put('Wavelength tuned to {} via table tuning'.format(841.0))
+                    #         mQ.put(([0],'Wavelength tuned to {} via table tuning'.format(841.0)))
                     #     elif stat == 1:
-                    #         mQ.put('Command failed.')
+                    #         mQ.put(([1],'Command failed.'))
                     #     elif stat == 2:
-                    #         mQ.put('Wavelength out of range.')
+                    #         mQ.put(([1],'Wavelength out of range.'))
                     # elif response['operator'] == 'parse_fail':
-                    #     mQ.put('Parse fail: received message is "{}"'.format(str(response)))
-                    mQ.put('Wavelength tuned to {} via table tuning'.format(841.0))
-
+                    #     mQ.put(([1],'Parse fail: received message is "{}"'.format(str(response))))
+                    mQ.put(([0],'Wavelength tuned to {} via table tuning'.format(841.0)))
 
                     ns.on_setpoint = True
-                    # initial guess of when scanNo will be set to the current scan value. This
-                    # is not a perfect guess because there is some time required for the 
-                    # change in ns.on_setpoint to propagate to the manager and back.
-                    # This initial guess will later be modified by the Artist to the actual time
-                    # it received the 'Measuring' instruction.
-                    ns.t0 = time.time()
+
                 else:
-                    mQ.put('Unknown instruction {}.'.format(instr[0]))
+                    try:
+                        translation = mapping[instr[0]](instr[1])
+                    except KeyError:
+                        mQ.put(([1],'Unknown instruction {}.'.format(instr[0])))
                     
+            ### Scanning logic
+            if ns.scanning:
+                if time.time() - ns.start_of_setpoint > ns.time_per_step:
+                    ns.on_setpoint = False
+                    if ns.current_position == len(ns.scan_array):
+                        ns.scanning = False
+                        ns.progress = 1.0
+                        mQ.put(([0],'Stopped {} scan.'.format(ns.scan_parameter)))
+                    else:
+                        setpoint = ns.scan_array[ns.current_position]
+                        # mapping["Set Wavelength"](setpoint)
+                        wavelength = setpoint
+                    
+                        ns.progress = ns.current_position/len(ns.scan_array)
+                        ns.current_position += 1
+                        ns.start_of_setpoint = time.time()
+                        ns.on_setpoint = True
+                        mQ.put(([0],'{} scan: setoint reached'.format(ns.scan_parameter)))
+                else:
+                    # carry on
+                    pass
+
+            ### Getting feedback
             # s.sendall(json.dumps(comm.get_status()))
             # response = s.recv(1024)
             # data = [response['parameters'][string] for string in data_channels]
 
-            # Modify the gathered data, to see how many counts since the last readout
-            # have registered.
+            ### Sending data to Artist
             now = time.time()
             # put data on the queue
-            data = [now,counter]
-            data.extend([np.random.rand()] * (len(ns.format)-2))
+            data = [now,1,wavelength]
+            data.extend([np.random.rand()] * (len(ns.format)-3))
             dQ.send(data)
 
-            if ns.on_setpoint and time.time() - ns.t0 >= tPerStep:
-                ns.on_setpoint = False
-            counter+=1
+
         except Exception as e:
-            mQ.put(e)
+            mQ.put(([1],str(e)))
             # hold the process...
             contFlag.wait()
             # ... and wait for a decision to be made by the ARTIST/Manager
