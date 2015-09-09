@@ -106,6 +106,8 @@ class Dispatcher(asyncore.dispatcher):
             args = message['reply']['parameters']
             track = message['track']
             for mess in message['status_updates']:
+                adjusted_mess = mess
+                adjusted_mess[1] = "{} says \'{}\'".format(track[-1][0],mess[1])
                 self.notify_connectors(mess)
             params = getattr(self, function)(track, args)
         else:

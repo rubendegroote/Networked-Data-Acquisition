@@ -181,7 +181,7 @@ def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
                         ns.current_position += 1
                         ns.start_of_setpoint = time.time()
                         ns.on_setpoint = True
-                        mQ.put(([0],'{} scan: setoint reached'.format(ns.scan_parameter)))
+                        mQ.put(([0],'{} scan: setpoint reached'.format(ns.scan_parameter)))
                 else:
                     # carry on
                     pass

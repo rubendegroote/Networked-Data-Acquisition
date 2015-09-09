@@ -116,7 +116,6 @@ class Manager(Dispatcher):
         origin, track_id = track[-1]
         self.notify_connectors(([0],"Artist {} received stopping instruction correctly.".format(origin)))
 
-
     @try_call
     def go_to_setpoint(self, params):
         name, self.scanPar = params[0].split(':')
