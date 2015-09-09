@@ -101,11 +101,13 @@ class ManagerApp(QtGui.QMainWindow):
             track = message['track']
             status_updates = message['status_updates']
             for status_update in status_updates:
-                self.messageUpdateSignal.emit({'track':track,'args':status_updates})
+                self.messageUpdateSignal.emit({'track':track,'args':status_update})
             params = getattr(self, function)(track, args)
 
         else:
-            print('ManagerApp received fail message', message)
+            exception = message['reply']['parameters']['exception']
+            self.messageUpdateSignal.emit(
+                {'track':track,'args':[[1],"Received status fail in reply\n:{}".format(exception)]})
 
     def default_cb(self):
         return 'status',{}
@@ -189,38 +191,37 @@ class ManagerApp(QtGui.QMainWindow):
     def start_scan_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
-            {'track':track,'args':[[[0],"Start scan instruction received"]]})
+            {'track':track,'args':[[0],"Start scan instruction received"]})
         
     def stop_scan_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
-            {'track':track,'args':[[[0],"Stop scan instruction received"]]})
+            {'track':track,'args':[[0],"Stop scan instruction received"]})
 
     def add_connector_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
-            {'track':track,'args':[[[0],"Add connector instruction received"]]})
+            {'track':track,'args':[[0],"Add connector instruction received"]})
         
     def remove_connector_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
-            {'track':track,'args':[[[0],"Remove connector instruction received"]]})
+            {'track':track,'args':[[0],"Remove connector instruction received"]})
         
     def remove_all_connectors_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
-            {'track':track,'args':[[[0],"Remove all connectors instruction received"]]})
+            {'track':track,'args':[[0],"Remove all connectors instruction received"]})
 
     def updateMessages(self,info):
-        track,messages = info['track'],info['args']
-        for message in messages:
-            text = '{}: {} reports {}'.format(track[-1][1],track[-1][0],message[1])
-            if message[0][0] == 0:
-                self.messageLog.appendPlainText(text)        
-            else:
-                error_dialog = QtGui.QErrorMessage(self)
-                error_dialog.showMessage(text)
-                error_dialog.exec_()
+        track,message = info['track'],info['args']
+        text = '{}: {} reports {}'.format(track[-1][1],track[-1][0],message[1])
+        if message[0][0] == 0:
+            self.messageLog.appendPlainText(text)        
+        else:
+            error_dialog = QtGui.QErrorMessage(self)
+            error_dialog.showMessage(text)
+            error_dialog.exec_()
 
 class Man_DS_Connector():
 
