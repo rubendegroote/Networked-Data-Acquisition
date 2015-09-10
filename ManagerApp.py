@@ -53,8 +53,8 @@ class ManagerApp(QtGui.QMainWindow):
 
         self.connWidget = ArtistConnections()
         self.connWidget.connectSig.connect(self.add_artist)
-        self.connWidget.removeSig.connect(self.remove_artist)
-        self.connWidget.removeAllSig.connect(self.remove_all_artists)
+        self.connWidget.removeSig.connect(self.remove_connector)
+        self.connWidget.removeAllSig.connect(self.remove_all_connectors)
         layout.addWidget(self.connWidget, 1, 0, 1, 1)
 
         self.serverConnectButton = QtGui.QPushButton('Connect to Servers')
@@ -95,10 +95,10 @@ class ManagerApp(QtGui.QMainWindow):
             self.statusBar().showMessage('Connection failure')
 
     def reply_cb(self, message):
+        track = message['track']
         if message['reply']['parameters']['status'][0] == 0:
             function = message['reply']['op']
             args = message['reply']['parameters']
-            track = message['track']
             status_updates = message['status_updates']
             for status_update in status_updates:
                 self.messageUpdateSignal.emit({'track':track,'args':status_update})
@@ -143,35 +143,10 @@ class ManagerApp(QtGui.QMainWindow):
     def stopIOLoop(self):
         self.looping = False
 
-    def start_scan(self, scanInfo):
-        self.Man_DS_Connector.instruct('Manager', ('start_scan', scanInfo))
-
-    def go_to_setpoint(self, setpointInfo):
-        self.Man_DS_Connector.instruct('Manager', ('go_to_setpoint', setpointInfo))
-
-    def stop_scan(self):
-        self.Man_DS_Connector.instruct('Manager', ('stop_scan',{}))
-
     def add_artist(self, info):
         receiver, address = info
         op,params = 'add_connector',{'address': address}
         self.Man_DS_Connector.instruct(receiver, (op,params))
-
-    def remove_artist(self, address):
-        op,params = 'remove_connector', {'address': address}
-        self.Man_DS_Connector.instruct('Both',(op,params))
-
-    def remove_all_artists(self):
-        op,params = 'remove_all_connectors', {}
-        self.Man_DS_Connector.instruct('Both',(op,params))
-
-    # def showResumeDialog(self, data):
-    #     smin, smax, sl, curpos, tPerStep, name = data
-    #     resuming = QtGui.QMessageBox.question(None, 'Resume scan?',
-    #                                           'An interrupted scan was found:\nScanning %s, %f to %f V, %f steps, on step %f, %f s per step\nResume this scan?' % (name,
-    #                                     float(smin),float(smax),float(sl),float(curpos),float(tPerStep)),QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
-    #     if resuming == QtGui.QMessageBox.Yes:
-    #         self.Man_DS_Connector.instruct('Manager', ['Resume Scan'])
 
     def closeEvent(self, event):
         self.stopIOLoop()
@@ -188,25 +163,47 @@ class ManagerApp(QtGui.QMainWindow):
                                        {'track':track,
                                        'args':params['connector_info']}))
 
+    def start_scan(self, scanInfo):
+        self.Man_DS_Connector.instruct('Manager', ('start_scan', scanInfo))
+
     def start_scan_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
             {'track':track,'args':[[0],"Start scan instruction received"]})
+
+    def stop_scan(self):
+        self.Man_DS_Connector.instruct('Manager', ('stop_scan',{}))
         
     def stop_scan_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
             {'track':track,'args':[[0],"Stop scan instruction received"]})
 
+    def go_to_setpoint(self, setpointInfo):
+        self.Man_DS_Connector.instruct('Manager', ('go_to_setpoint', setpointInfo))
+
+    def go_to_setpoint_reply(self,track,params):
+        origin,track_id = track[-1]
+        self.messageUpdateSignal.emit(
+            {'track':track,'args':[[0],"Go to setpoint instruction received"]})
+
     def add_connector_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
             {'track':track,'args':[[0],"Add connector instruction received"]})
+
+    def remove_connector(self, address):
+        op,params = 'remove_connector', {'address': address}
+        self.Man_DS_Connector.instruct('Both',(op,params))
         
     def remove_connector_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
             {'track':track,'args':[[0],"Remove connector instruction received"]})
+
+    def remove_all_connectors(self):
+        op,params = 'remove_all_connectors', {}
+        self.Man_DS_Connector.instruct('Both',(op,params))
         
     def remove_all_connectors_reply(self,track,params):
         origin,track_id = track[-1]

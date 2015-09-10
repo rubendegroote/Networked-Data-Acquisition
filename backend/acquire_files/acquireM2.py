@@ -140,8 +140,7 @@ def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
                     else:
                         mQ.put(([1],'{} cannot be scanned.'.format(ns.scan_parameter)))
 
-                elif instr == 'Setpoint Change':
-                    p = instr[2]
+                elif instr == 'go_to_setpoint':
                     # s.sendall(json.dumps(comm.move_wave_t(841.0)))
                     # response = json.loads(s.recv(1024))
                     # if response['operator'] == 'move_wave_t_reply':
@@ -154,9 +153,13 @@ def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
                     #         mQ.put(([1],'Wavelength out of range.'))
                     # elif response['operator'] == 'parse_fail':
                     #     mQ.put(([1],'Parse fail: received message is "{}"'.format(str(response))))
-                    mQ.put(([0],'Wavelength tuned to {} via table tuning'.format(841.0)))
+                    if ns.parameter == 'wavelength':
+                        # go to setpoint
+                        mQ.put(([0],'Wavelength tuned to {} via table tuning'.format(ns.setpoint)))
+                        ns.on_setpoint = True
+                    else:
+                        mQ.put(([1],'{} cannot be set.'.format(ns.parameter)))
 
-                    ns.on_setpoint = True
 
                 else:
                     try:

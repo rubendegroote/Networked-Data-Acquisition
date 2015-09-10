@@ -98,6 +98,8 @@ class Artist(Dispatcher):
         self.ns.scanning = False
         self.ns.current_position = 0
         self.ns.progress = 0
+        self.ns.parameter = ''
+        self.ns.setpoint = 0
         self.format = format
         self.ns.format = self.format
 
@@ -139,9 +141,16 @@ class Artist(Dispatcher):
         self.ns.scan_parameter = params['scan_parameter'][0]
         self.ns.scan_array = params['scan_array']
         self.ns.time_per_step = params['time_per_step'][0]
-
         self.iQ.put('scan')
 
+        return {}
+
+    @try_call
+    def go_to_setpoint(self,params):
+        self.ns.on_setpoint = False
+        self.ns.parameter = params['parameter'][0]
+        self.ns.setpoint = params['setpoint'][0]
+        self.iQ.put('go_to_setpoint')
         return {}
 
     @try_call

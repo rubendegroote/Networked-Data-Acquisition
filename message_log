@@ -1550,3 +1550,61 @@
 2015-09-09 18:20:09,395: {'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 34)]}
 2015-09-09 18:20:13,375: {'message': {'parameters': {'time_per_step': 1.0, 'scan_parameter': 'M2: wavelength', 'scan_array': [15407.299999999999, 15407.305555555555, 15407.31111111111, 15407.316666666666, 15407.322222222221, 15407.327777777778, 15407.333333333334, 15407.338888888889, 15407.344444444445, 15407.35]}, 'op': 'start_scan'}, 'track': [('MGui_to_M', 72)]}
 2015-09-09 18:20:17,616: {'message': {'parameters': {}, 'op': 'stop_scan'}, 'track': [('MGui_to_M', 114)]}
+2015-09-10 09:37:16,523: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-10 09:37:25,176: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGUI_to_DS', 39)]}
+2015-09-10 09:37:25,177: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGui_to_M', 38)]}
+2015-09-10 09:37:29,595: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}, 'track': [('MGUI_to_DS', 82)]}
+2015-09-10 09:37:29,595: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}, 'track': [('MGui_to_M', 82)]}
+2015-09-10 09:37:35,705: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-10 09:37:45,565: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-10 09:37:53,542: {'message': {'op': 'go_to_setpoint', 'parameters': {'setpoint': 15407.31, 'parameter': 'M2: wavenumber'}}, 'track': [('MGui_to_M', 315)]}
+2015-09-10 09:51:12,883: {'track': [('Radio', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-10 09:51:17,315: {'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 14)]}
+2015-09-10 09:51:17,315: {'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 14)]}
+2015-09-10 09:51:19,122: {'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}, 'track': [('MGUI_to_DS', 32)]}
+2015-09-10 09:51:19,123: {'message': {'parameters': {'address': ('127.0.0.1', 6004)}, 'op': 'add_connector'}, 'track': [('MGui_to_M', 31)]}
+2015-09-10 09:51:21,171: {'message': {'parameters': {'parameter': 'M2: wavelength', 'setpoint': 15407.31}, 'op': 'go_to_setpoint'}, 'track': [('MGui_to_M', 50)]}
+2015-09-10 09:54:07,252: {'track': [('MGui_to_M', 14)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-10 09:54:07,253: {'track': [('MGUI_to_DS', 15)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-10 09:54:09,075: {'track': [('MGui_to_M', 32)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-10 09:54:09,076: {'track': [('MGUI_to_DS', 31)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-10 09:54:09,787: {'track': [('MGui_to_M', 35)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['M2: wavelength'], 'setpoint': [15407.31]}}}
+2015-09-10 09:57:28,331: {'track': [('MGui_to_M', 25)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-10 09:57:28,334: {'track': [('MGUI_to_DS', 26)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-10 09:57:30,044: {'track': [('MGui_to_M', 42)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-10 09:57:30,045: {'track': [('MGUI_to_DS', 42)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-10 09:57:38,101: {'track': [('MGui_to_M', 121)], 'message': {'op': 'go_to_setpoint', 'parameters': {'setpoint': [15407.31], 'parameter': ['M2: wavelength']}}}
+2015-09-10 09:58:29,398: {'message': {'parameters': {'parameter': ['M2: wavelength'], 'setpoint': [15407.31]}, 'op': 'go_to_setpoint'}, 'track': [('MGui_to_M', 15)]}
+2015-09-10 09:59:19,768: {'message': {'op': 'go_to_setpoint', 'parameters': {'setpoint': [15407.31], 'parameter': ['M2: wavelength']}}, 'track': [('MGui_to_M', 6)]}
+2015-09-10 09:59:22,875: {'message': {'op': 'go_to_setpoint', 'parameters': {'setpoint': [15407.31], 'parameter': ['M2: wavelength']}}, 'track': [('MGui_to_M', 37)]}
+2015-09-10 09:59:45,971: {'track': [('MGui_to_M', 26)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['M2: wavelength'], 'setpoint': [15407.31]}}}
+2015-09-10 09:59:48,287: {'track': [('MGUI_to_DS', 49)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-10 09:59:48,288: {'track': [('MGui_to_M', 49)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-10 09:59:50,303: {'track': [('MGui_to_M', 67)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['M2: wavelength'], 'setpoint': [15407.31]}}}
+2015-09-10 09:59:51,615: {'track': [('MGui_to_M', 79)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['M2: wavelength'], 'setpoint': [15407.31]}}}
+2015-09-10 09:59:54,037: {'track': [('MGUI_to_DS', 100)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-10 09:59:54,038: {'track': [('MGui_to_M', 102)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-10 09:59:54,544: {'track': [('MGui_to_M', 106)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['M2: wavelength'], 'setpoint': [15407.31]}}}
+2015-09-10 09:59:55,853: {'track': [('MGui_to_M', 119)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['M2: wavelength'], 'setpoint': [15407.31]}}}
+2015-09-10 09:59:57,062: {'track': [('MGui_to_M', 131)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['M2: wavelength'], 'setpoint': [15407.31]}}}
+2015-09-10 09:59:57,967: {'track': [('MGui_to_M', 140)], 'message': {'op': 'start_scan', 'parameters': {'time_per_step': [10.0], 'scan_parameter': ['M2: wavelength'], 'scan_array': [15407.299999999999, 15407.305555555555, 15407.31111111111, 15407.316666666666, 15407.322222222221, 15407.327777777778, 15407.333333333334, 15407.338888888889, 15407.344444444445, 15407.35]}}}
+2015-09-10 10:00:12,737: {'track': [('MGui_to_M', 284)], 'message': {'op': 'start_scan', 'parameters': {'time_per_step': [10.0], 'scan_parameter': ['M2: wavelength'], 'scan_array': [15407.299999999999, 15407.305555555555, 15407.31111111111, 15407.316666666666, 15407.322222222221, 15407.327777777778, 15407.333333333334, 15407.338888888889, 15407.344444444445, 15407.35]}}}
+2015-09-10 10:00:18,464: {'track': [('MGui_to_M', 341)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['M2: wavelength'], 'setpoint': [15407.31]}}}
+2015-09-10 10:00:20,980: {'track': [('MGui_to_M', 366)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['M2: wavelength'], 'setpoint': [15407.31]}}}
+2015-09-10 10:00:21,080: {'track': [('MGui_to_M', 367)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['M2: wavelength'], 'setpoint': [15407.31]}}}
+2015-09-10 10:00:21,281: {'track': [('MGui_to_M', 369)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['M2: wavelength'], 'setpoint': [15407.31]}}}
+2015-09-10 10:00:21,382: {'track': [('MGui_to_M', 370)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['M2: wavelength'], 'setpoint': [15407.31]}}}
+2015-09-10 10:00:21,585: {'track': [('MGui_to_M', 372)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['M2: wavelength'], 'setpoint': [15407.31]}}}
+2015-09-10 10:00:21,686: {'track': [('MGui_to_M', 373)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['M2: wavelength'], 'setpoint': [15407.31]}}}
+2015-09-10 10:00:21,787: {'track': [('MGui_to_M', 374)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['M2: wavelength'], 'setpoint': [15407.31]}}}
+2015-09-10 10:00:21,888: {'track': [('MGui_to_M', 375)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['M2: wavelength'], 'setpoint': [15407.31]}}}
+2015-09-10 10:00:22,089: {'track': [('MGui_to_M', 377)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['M2: wavelength'], 'setpoint': [15407.31]}}}
+2015-09-10 10:03:41,133: {'track': [('MGUI_to_DS', 25)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-10 10:03:41,135: {'track': [('MGui_to_M', 24)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-10 10:03:42,649: {'track': [('MGUI_to_DS', 39)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-10 10:03:42,650: {'track': [('MGui_to_M', 39)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6004)}}}
+2015-09-10 10:04:00,691: {'track': [('MGui_to_M', 12)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['wavelength'], 'setpoint': [15407.31], 'artist': ['M2']}}}
+2015-09-10 10:05:40,713: {'track': [('MGUI_to_DS', 27)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-10 10:05:40,715: {'track': [('MGui_to_M', 26)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-10 10:05:42,727: {'track': [('MGui_to_M', 45)], 'message': {'parameters': {'parameter': ['wavelength'], 'artist': ['M2'], 'setpoint': [15407.31]}, 'op': 'go_to_setpoint'}}
+2015-09-10 10:05:45,443: {'track': [('MGui_to_M', 72)], 'message': {'parameters': {'scan_array': [15407.299999999999, 15407.305555555555, 15407.31111111111, 15407.316666666666, 15407.322222222221, 15407.327777777778, 15407.333333333334, 15407.338888888889, 15407.344444444445, 15407.35], 'scan_parameter': ['wavelength'], 'time_per_step': [10.0], 'artist': ['M2']}, 'op': 'start_scan'}}

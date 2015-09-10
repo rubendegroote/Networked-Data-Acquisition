@@ -48,7 +48,8 @@ class Manager(Dispatcher):
 
     @try_call
     def start_scan(self, params):
-        artist_name, scan_parameter = params['scan_parameter'].split(': ')
+        artist_name = params['artist'][0]
+        scan_parameter = params['scan_parameter']
         scan_array = params['scan_array']
         time_per_step = params['time_per_step']
         
@@ -61,9 +62,9 @@ class Manager(Dispatcher):
         scanner = self.connectors[artist_name]
         self.scan_number += 1
         self.set_all_scan_numbers(self.scan_number)
-        scanner.add_request(('start_scan',{'scan_parameter':[scan_parameter],
+        scanner.add_request(('start_scan',{'scan_parameter':scan_parameter,
                                      'scan_array':scan_array,
-                                     'time_per_step':[time_per_step]}))
+                                     'time_per_step':time_per_step}))
 
     def start_scan_reply(self,track,params):
         origin, track_id = track[-1]
@@ -118,35 +119,46 @@ class Manager(Dispatcher):
 
     @try_call
     def go_to_setpoint(self, params):
-        name, self.scanPar = params[0].split(':')
-        self.scanner = self.connectors[name]
-        value = params[1]
-        try:
-            newEntry = {key: '' for key in self.logbook[-1][-1].keys()}
-            if 'Tags' in self.logbook[-1][-1].keys():
-                newEntry['Tags'] = OrderedDict()
-                for t in self.logbook[-1][-1]['Tags'].keys():
-                    newEntry['Tags'][t] = False
-        except:
-            newEntry = {}
-        entry = {'Author': 'Automatic Entry',
-                 'Text': self.setpointMessage.format(name, value)}
-        for key in entry.keys():
-            newEntry[key] = entry[key]
-        logbooks.addEntry(self.logbook, **newEntry)
-        logbooks.saveEntry(self.logbookPath, self.logbook, -1)
-        self.notifyAllLogs(
-                ['Notify', self.logbook[-1], len(self.logbook) - 1])
-        self.scanner.add_instruction(
-            ["Setpoint Change", self.scanPar, value])
+        artist_name = params['artist'][0]
+        parameter = params['parameter']
+        setpoint = params['setpoint']
+        
+        self.set_artist(artist_name,parameter,setpoint)
+
+        ## logging stuff
+        # try:
+        #     newEntry = {key: '' for key in self.logbook[-1][-1].keys()}
+        #     if 'Tags' in self.logbook[-1][-1].keys():
+        #         newEntry['Tags'] = OrderedDict()
+        #         for t in self.logbook[-1][-1]['Tags'].keys():
+        #             newEntry['Tags'][t] = False
+        # except:
+        #     newEntry = {}
+        # entry = {'Author': 'Automatic Entry',
+        #          'Text': self.setpointMessage.format(name, value)}
+        # for key in entry.keys():
+        #     newEntry[key] = entry[key]
+        # logbooks.addEntry(self.logbook, **newEntry)
+        # logbooks.saveEntry(self.logbookPath, self.logbook, -1)
+        # self.notifyAllLogs(
+        #         ['Notify', self.logbook[-1], len(self.logbook) - 1])
+        # self.scanner.add_instruction(
+        #     ["Setpoint Change", self.scanPar, value])
 
         return {}
 
+    def set_artist(self,artist_name,parameter,setpoint):
+        artist_to_set = self.connectors[artist_name]
+        artist_to_set.add_request(('go_to_setpoint',{'parameter':parameter,
+                                                     'setpoint':setpoint}))
+
+    def go_to_setpoint_reply(self,track,params):
+        origin, track_id = track[-1]
+        self.notify_connectors(([0],"Artist {} received setpoint instruction correctly.".format(origin)))
 
     # def notify_all_logs(self, instruction):
     #     for viewer in self.viewers:
     #         viewer.commQ.put(instruction)
-
 
     def status_reply(self, track, params):
         origin, track_id = track[-1]

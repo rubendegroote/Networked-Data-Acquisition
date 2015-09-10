@@ -100,7 +100,8 @@ class ScannerWidget(QtGui.QWidget):
             self.state = "START"
 
     def makeScan(self):
-        par = 'M2: wavelength'
+        artist = ['M2']
+        parameter = ['wavelength']
 
         start = float(self.startEdit.text())
         stop = float(self.stopEdit.text())
@@ -120,17 +121,20 @@ class ScannerWidget(QtGui.QWidget):
                     newRng = np.concatenate((newRng,rng))
         rng = list(newRng)
 
-        dt = float(self.timeEdit.text())
+        dt = [float(self.timeEdit.text())]
 
-        self.scanInfoSig.emit({'scan_parameter':par,
+        self.scanInfoSig.emit({'artist':artist,
+                               'scan_parameter':parameter,
                                'scan_array':rng,
                                'time_per_step':dt})
 
     def makeSetpoint(self):
-        par = 'M2: wavenumber'
-        value = float(self.setpointEdit.text())
+        artist = ['M2']
+        parameter = ['wavelength']
+        value = [float(self.setpointEdit.text())]
 
-        self.setPointSig.emit({'parameter':par,
+        self.setPointSig.emit({'artist':artist,
+                               'parameter':parameter,
                                'setpoint': value})
 
     def stopScan(self):
