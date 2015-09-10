@@ -222,7 +222,7 @@ class Man_DS_Connector():
         try:
             self.DS = Connector(chan=DSChan,name='MGUI_to_DS',
                           callback=callback,
-                          default_callback = default_cb,)
+                          default_callback = default_cb)
             # by only adding this closeCallback now, it is not triggerd
             # if the connection fails
             # prevents an Exception in the GUI

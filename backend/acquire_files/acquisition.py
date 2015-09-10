@@ -15,7 +15,7 @@ def acquire(settings,name,dQ,iQ,mQ,contFlag,stopFlag,IStoppedFlag,ns):
     ns.format = hardware.format
 
     ### set-up connections and initialize
-    return_message = hardware.format(settings)
+    return_message = hardware.setup(settings)
     mQ.put(return_message)
 
     contFlag.wait()  # Wait until the boolean for continuing is set to True

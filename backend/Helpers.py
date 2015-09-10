@@ -90,6 +90,8 @@ def try_call(func):
     def func_wrapper(*args, **kwargs):
         try:
             reply_dict = func(*args, **kwargs)
+            if reply_dict is None:
+                reply_dict = {}
             reply_dict['status'] = [0]
         except Exception as e:
             reply_dict = {'status': [1], 'exception': str(e)}
@@ -103,7 +105,8 @@ def log_message(func):
 
     def func_wrapper(self,message):
         if not message['message']['op'] == 'status' and \
-           not message['message']['op'] == 'data':
+           not message['message']['op'] == 'data' and \
+           not message['message']['op'] == 'logbook_status':
             logging.info(message)
         if 'reply' in message.keys():
             if not message['reply']['parameters']['status'][0] == 0:

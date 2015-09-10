@@ -3,6 +3,7 @@ import pyqtgraph as pg
 from LogbookApp import LogbookApp
 from multiprocessing import freeze_support
 import sys
+from PyQt4 import QtCore, QtGui
 from backend.logbook import *
 
 pg.setConfigOption('background', 'w')

@@ -6,10 +6,11 @@ from collections import OrderedDict
 # import time
 # import os
 
+START = 'Started scanning Artist {} from {:.8f} to {:.8f} cm-1, in {:.0f} steps with {:.8f} seconds per step.'
+SET   = 'Set Artist {} parameter {} to {:.8f} cm-1.'
 
 def prettyPrint(snap):
-    return "\n".join([snap['Time'].strftime("%d-%m-%Y %H:%M:%S")] + [str(key) + ': ' + str(val) for key, val in snap.items() if not key == 'time']) + "\n"
-
+    return "\n".join([str(key) + ': ' + str(val) for key, val in snap.items()]) + "\n"
 
 def saveEntry(filename, logbook, entry):
     filename = filename + 'entry_'
@@ -23,10 +24,24 @@ def saveEntry(filename, logbook, entry):
     with open(filename + '_raw', 'wb') as f:
         pickle.dump(entry, f)
 
+def addEntryFromCopy(logbook,new_info):
+    try:
+        newEntry = {key: '' for key in logbook[-1][-1].keys()}
+        if 'Tags' in logbook[-1][-1].keys():
+            newEntry['Tags'] = OrderedDict()
+            for t in logbook[-1][-1]['Tags'].keys():
+                newEntry['Tags'][t] = False
+    except:
+        newEntry = {}
+
+    for key,val in new_info.items():
+        newEntry[key] = val
+
+    addEntry(logbook, **newEntry)
 
 def addEntry(logbook, **kwargs):
     snap = OrderedDict()
-    snap['Time'] = datetime.now()
+    snap['Time'] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     snap['Author'] = ''
     snap['Text'] = ''
     for key, val in kwargs.items():
@@ -34,20 +49,17 @@ def addEntry(logbook, **kwargs):
             snap[key] = val
     logbook.append([snap])
 
-
-def editEntry(logbook, key, **kwargs):
-    entry = logbook[key]
+def editEntry(logbook, index, updated_entry):
+    entry = logbook[index]
     fields = deepcopy(entry[-1])
-    for key, val in kwargs.items():
+    for key, val in updated_entry.items():
         fields[key] = val
-    fields['Time'] = datetime.now()
+    fields['Time'] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     entry.append(fields)
-
 
 def saveLogbook(filename, logbook):
     for i, entry in enumerate(logbook):
         saveEntry(filename, logbook, i)
-
 
 def loadLogbook(filePath):
     logbook = []
@@ -59,97 +71,8 @@ def loadLogbook(filePath):
     logbook = sorted(logbook, key=lambda entry: entry[0]['Time'])
     return logbook
 
-# class Entry(object):
-
-#     def __init__(self, **kwargs):
-#         super(Entry, self).__init__()
-#         snap = OrderedDict()
-#         snap['Time'] = datetime.now()
-#         snap['Author'] = ''
-#         snap['Text'] = ''
-#         for key, val in kwargs.items():
-#             if not key == 'time':
-#                 snap[key] = val
-#         self.snapShots = []
-#         self.snapShots.append(snap)
-
-#     def edit(self, **kwargs):
-#         fields = deepcopy(self.snapShots[-1])
-#         for key, val in kwargs.items():
-#             fields[key] = val
-#         self.snapShots.append(fields)
-#         self.snapShots[-1]['time'] = datetime.now()
-
-#     def save(self, fileName):
-#         with open(fileName + '.txt','w') as f:
-#             for snap in self.snapShots:
-#                 f.write(prettyPrint(snap))
-#                 f.write('\n')
-#         with open(fileName + '_raw', 'wb') as f:
-#             pickle.dump(self, f)
-
-#     def __str__(self):
-#         return prettyPrint(self.snapShots[-1])
-
-
-# class Logbook(OrderedDict):
-
-#     def __init__(self):
-#         super(Logbook, self).__init__()
-
-#     def addEntry(self, **kwargs):
-#         key = kwargs.pop('key', None)
-#         entry = Entry(**kwargs)
-#         if key is None:
-#             keys = list(self.keys())
-#             try:
-#                 key = keys[-1]
-#             except IndexError:
-#                 key = 0
-#             try:
-#                 key = int(key) + 1
-#             except TypeError:
-#                 key = key + '1'
-#         self[key] = entry
-
-#     def editEntry(self, key, **kwargs):
-#         self[key].edit(**kwargs)
-
-#     def save(self, fileName, nrs=None):
-#         if nrs == 'all':
-#             for i, entry in self.items():
-#                 entry.save(fileName + 'entry_' + str(i))
-#         elif nrs is not None:
-#             for nr in nrs:
-#                 self[int(nr)].save(fileName + 'entry_' + str(nr))
-
-#     def load(self, filePath, nrs=None):
-#         if nrs == 'all':
-#             path = filePath
-#             fileNames = glob.glob(filePath + '*')
-#             fileNames = [f for f in fileNames if '_raw' in f]
-#             for fileName in fileNames:
-#                 nr = fileName.split('entry_')[-1].split('_raw')[0]
-#                 with open(fileName, 'rb') as f:
-#                     self[nr] = pickle.load(f)
-#         else:
-#             for nr in nrs:
-#                 fileName = filePath + 'entry_' + str(nr) + '_raw'
-#                 with open(fileName,'rb') as f:
-#                     self[nr] = pickle.load(f)
-
-#     def __str__(self):
-# return "\n".join(["Entry {}:\n".format(i) + str(e) for i, e in
-# self.items()])
-
 def main():
-    log = []
-    addEntry(log, Author='Me')
-    print(str(prettyPrint(log[0][-1])))
-    editEntry(log, 0, Author='Not me')
-    print(str(prettyPrint(log[0][-1])))
-    log = loadLogbook("C:/Data/ManagerLogbook")
-    print(log)
+    print(SET.format(1,2,3))
 
 if __name__ == '__main__':
     main()

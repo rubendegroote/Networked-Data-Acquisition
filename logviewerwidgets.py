@@ -188,8 +188,7 @@ class FrameLayout(QtGui.QFrame):
 
 class LogEntryWidget(FrameLayout):
 
-    updated = QtCore.pyqtSignal(object)  # emitted when the new entry is updated
-    renew = QtCore.pyqtSignal(object)
+    submitSig = QtCore.pyqtSignal(int,object)  # emitted when the new entry is updated
     fieldAdded = QtCore.pyqtSignal()
     tagAdded = QtCore.pyqtSignal()
     dataRequest = QtCore.pyqtSignal(int)
@@ -218,7 +217,7 @@ class LogEntryWidget(FrameLayout):
         self.versionLabel.setStyleSheet('border: 0px;')
         self.versionSelect = QtGui.QComboBox(parent=None)
         self.versionSelect.setToolTip('Choose the entry version you want to load.')
-        options = [snap['Time'].strftime("%d-%m-%Y %H:%M:%S") for snap in self.entry]
+        options = [snap['Time'] for snap in self.entry]
         self.versionSelect.clear()
         self.versionSelect.addItems(options)
         self.versionSelect.setCurrentIndex(self.selected)
@@ -227,16 +226,22 @@ class LogEntryWidget(FrameLayout):
         self.grid.addWidget(self.versionSelect, 1, 1)
 
     def selectDifferentVersion(self):
-        # self.versionSelect.currentIndexChanged.disconnect(self.selectDifferentVersion)
         self.selected = int(self.versionSelect.currentIndex())
-        # self.updated.emit((self.entry[-1], self.number))
-        self.renew.emit((self.entry, self.number))
+        self.clearFrame()
+        self.createFrame()
 
     def createFrame(self):
         teller = 2
-
+        
+        options = [snap['Time'] for snap in self.entry]
+        
+        self.versionSelect.currentIndexChanged.disconnect(self.selectDifferentVersion)
+        self.versionSelect.clear()
+        self.versionSelect.addItems(options)
+        self.versionSelect.setCurrentIndex(self.selected)
+        self.versionSelect.currentIndexChanged.connect(self.selectDifferentVersion)
+        
         for pkey in self.entry[self.selected].keys():
-
             propname = str(pkey)
             if pkey.lower() == 'text':
                 self.texts[pkey] = QtGui.QTextEdit()
@@ -249,7 +254,7 @@ class LogEntryWidget(FrameLayout):
 
             elif pkey.lower() in self.unEditableProp:
                 if pkey.lower() == 'time':
-                    self.texts[pkey] = QtGui.QLabel(self.entry[self.selected][pkey].strftime("%d-%m-%Y %H:%M:%S"))
+                    self.texts[pkey] = QtGui.QLabel(self.entry[self.selected][pkey])
                 else:
                     self.texts[pkey] = QtGui.QLabel(str(self.entry[self.selected][pkey]))
                 self.texts[pkey].setStyleSheet("border: 0px;")
@@ -283,7 +288,7 @@ class LogEntryWidget(FrameLayout):
         self.editButton.clicked.connect(self.editEntry)
         self.grid.addWidget(self.editButton, teller, 1)
 
-        if 'Scan Number' in self.entry[-1].keys():
+        if 'Scan Number' in self.entry[-1].keys() and self.entry[-1]['Scan Number'] is not '':
             self.getDataButton = QtGui.QPushButton(text='Get Scan Data')
             self.getDataButton.setToolTip('Click here to get the data from this scan.')
             self.getDataButton.clicked.connect(lambda x: self.dataRequest.emit(self.entry[-1]['Scan Number']))
@@ -293,9 +298,7 @@ class LogEntryWidget(FrameLayout):
             textItem.setDisabled(True)
 
         self.confirmed = True
-
         self.widget.setLayout(self.grid)
-
         self.addWidget(self.widget)
 
     def clearFrame(self):
@@ -305,6 +308,10 @@ class LogEntryWidget(FrameLayout):
                 widget.deleteLater()
                 self.grid.removeWidget(widget)
                 widget.setParent(None)
+
+    def showNew(self):
+        self.titleFrame.newLabel.setVisible(True)
+        self.versionSelect.setCurrentIndex(-1)
 
     def confirmEntry(self):
         for (key, textItem) in self.texts.items():
@@ -329,7 +336,7 @@ class LogEntryWidget(FrameLayout):
         self.editButton.clicked.disconnect(self.confirmEntry)
         self.editButton.clicked.connect(self.editEntry)
 
-        self.updated.emit((self.entry[-1], self.number))
+        self.submitSig.emit(self.number,self.entry[-1])
 
     def editEntry(self):
         for text in self.texts.values():
@@ -373,6 +380,3 @@ class LogEntryWidget(FrameLayout):
 
         self.arrow.arrowNameTrue = imagePath + 'minimizeGreen.png'
         self.arrow.arrowNameFalse = imagePath + 'maximizeGreen.png'
-
-    def showNew(self):
-        self.titleFrame.newLabel.setVisible(True)

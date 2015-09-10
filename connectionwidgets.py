@@ -35,7 +35,6 @@ class ArtistConnections(QtGui.QWidget):
     def addConnection(self):
         selection = self.artistSelection.currentText()
         respons = self.address[selection]
-        print(respons)
         self.connectSig.emit(('Both', respons))
 
     def addArtistWidget(self, name='', IP='KSF402', PORT='5004'):
@@ -60,7 +59,6 @@ class ArtistConnections(QtGui.QWidget):
             self.removeAllSig.emit(True)
 
     def reconnect(self, info):
-        print(info)
         self.connectSig.emit(info)
 
     def update(self,track,params):

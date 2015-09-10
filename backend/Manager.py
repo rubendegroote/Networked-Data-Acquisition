@@ -8,11 +8,12 @@ from collections import OrderedDict
 try:
     from Helpers import *
     from connectors import Connector, Acceptor
-    import logbook as logbooks
+    import logbook as lb
 except:
     from backend.Helpers import *
     from backend.connectors import Connector, Acceptor
-    import backend.logbook as logbooks
+    import backend.logbook as lb
+
 from datetime import datetime
 import configparser
 import threading as th
@@ -25,7 +26,7 @@ import glob
 from dispatcher import Dispatcher
 
 SAVE_PATH = 'C:/Data/'
-
+LOG_PATH = 'C:/Logbook/'
 
 class Manager(Dispatcher):
     def __init__(self, PORT=5007, name='Manager'):
@@ -35,6 +36,15 @@ class Manager(Dispatcher):
         self.scanning = {}
         self.format = {}
         self.on_setpoint = {}
+
+        self.logbookPath = LOG_PATH+'logbook'
+        try:
+            self.logbook = lb.loadLogbook(self.logbookPath)
+            self.log_edits = list(range(len(self.logbook)))
+        except:
+            self.logbook = []
+            lb.saveLogbook(self.logbookPath, self.logbook)
+            self.log_edits = []
 
     @try_call
     def status(self, *args):
@@ -65,36 +75,19 @@ class Manager(Dispatcher):
         scanner.add_request(('start_scan',{'scan_parameter':scan_parameter,
                                      'scan_array':scan_array,
                                      'time_per_step':time_per_step}))
+        
+        info_for_log = {'Scan Number': self.scan_number,
+             'Author': 'Automatic Entry',
+             'Text': lb.START.format(artist_name,scan_array[0],
+                                     scan_array[-1],
+                                     len(scan_array),
+                                     time_per_step[0])}
+        self.add_to_logbook(info_for_log)
+        self.current_scan_log_number = len(self.logbook)-1
 
     def start_scan_reply(self,track,params):
         origin, track_id = track[-1]
         self.notify_connectors(([0],"Artist {} received scanning instruction correctly.".format(origin)))
-
-        # # logging stuff
-        # self.scanParser['scanprogress'] = {'scan_number': self.scan_number}
-        # self.progressParser['progress'] = {'name': name}
-        # try:
-        #     newEntry = {key: '' for key in self.logbook[-1][-1].keys()}
-        #     if 'Tags' in self.logbook[-1][-1].keys():
-        #         newEntry['Tags'] = OrderedDict()
-        #         for t in self.logbook[-1][-1]['Tags'].keys():
-        #             newEntry['Tags'][t] = False
-        # except:
-        #     newEntry = {}
-        # entry = {'Scan Number': self.scan_number,
-        #          'Author': 'Automatic Entry',
-        #          'Text': self.startMessage.format(name,self.scanRange[0],
-        #                                           self.scanRange[-1],
-        #                                           len(self.scanRange),
-        #                                           self.tPerStep)}
-        # for key in entry.keys():
-        #     newEntry[key] = entry[key]
-        # logbooks.addEntry(self.logbook, **newEntry)
-        # logbooks.saveEntry(self.logbookPath, self.logbook, -1)
-        # self.notifyAllLogs(
-        #         ['Notify', self.logbook[-1], len(self.logbook) - 1])
-        # with open('ManagerScan.ini', 'w') as scanfile:
-        #     self.scanParser.write(scanfile)
 
     @try_call
     def set_all_scan_numbers(self, number):
@@ -111,6 +104,7 @@ class Manager(Dispatcher):
     def stop_scan(self,params):
         self.set_all_scan_numbers(-1)
         self.connectors[self.scanner_name].add_request(('stop_scan',{}))
+
         return {}
 
     def stop_scan_reply(self,track,params):
@@ -125,40 +119,47 @@ class Manager(Dispatcher):
         
         self.set_artist(artist_name,parameter,setpoint)
 
-        ## logging stuff
-        # try:
-        #     newEntry = {key: '' for key in self.logbook[-1][-1].keys()}
-        #     if 'Tags' in self.logbook[-1][-1].keys():
-        #         newEntry['Tags'] = OrderedDict()
-        #         for t in self.logbook[-1][-1]['Tags'].keys():
-        #             newEntry['Tags'][t] = False
-        # except:
-        #     newEntry = {}
-        # entry = {'Author': 'Automatic Entry',
-        #          'Text': self.setpointMessage.format(name, value)}
-        # for key in entry.keys():
-        #     newEntry[key] = entry[key]
-        # logbooks.addEntry(self.logbook, **newEntry)
-        # logbooks.saveEntry(self.logbookPath, self.logbook, -1)
-        # self.notifyAllLogs(
-        #         ['Notify', self.logbook[-1], len(self.logbook) - 1])
-        # self.scanner.add_instruction(
-        #     ["Setpoint Change", self.scanPar, value])
-
         return {}
 
     def set_artist(self,artist_name,parameter,setpoint):
         artist_to_set = self.connectors[artist_name]
         artist_to_set.add_request(('go_to_setpoint',{'parameter':parameter,
                                                      'setpoint':setpoint}))
+        info_for_log =  {'Author': 'Automatic Entry',
+                 'Text': lb.SET.format(artist_name, parameter[0], setpoint[0])}
+        self.add_to_logbook(info_for_log)
 
     def go_to_setpoint_reply(self,track,params):
         origin, track_id = track[-1]
         self.notify_connectors(([0],"Artist {} received setpoint instruction correctly.".format(origin)))
+        
+    @try_call
+    def logbook_status(self,params):
+        no_of_edits = params['no_of_log_edits'][0]
+        edits_missing = len(self.log_edits) - no_of_edits
+        if not edits_missing == 0:
+            log_edit_numbers = self.log_edits[-edits_missing:]
+            log_edits = [self.logbook[e] for e in log_edit_numbers]
+        else:
+            log_edit_numbers = []
+            log_edits = []
 
-    # def notify_all_logs(self, instruction):
-    #     for viewer in self.viewers:
-    #         viewer.commQ.put(instruction)
+        return {'log_edit_numbers':log_edit_numbers,
+                'log_edits':log_edits} # send all edits that have not been sent yet
+
+    @try_call
+    def add_entry_to_log(self,params):
+        self.add_to_logbook(info_for_log = {})
+
+        return {}
+
+    @try_call
+    def change_entry(self,params):
+        number = params['number'][0]
+        entry = params['entry']
+        lb.editEntry(self.logbook,number,entry)
+        lb.saveEntry(self.logbookPath, self.logbook, number)
+        self.log_edits.append(number) # number of the entry that was edited
 
     def status_reply(self, track, params):
         origin, track_id = track[-1]
@@ -167,9 +168,13 @@ class Manager(Dispatcher):
         self.progress[origin] = params['progress']
         self.on_setpoint[origin] = params['on_setpoint']
 
+    def add_to_logbook(self,info_for_log):
+        lb.addEntryFromCopy(self.logbook,info_for_log)
+        lb.saveEntry(self.logbookPath, self.logbook, -1)
+        self.log_edits.append(len(self.logbook)-1) # number of the entry that was added
+
 def makeManager(PORT=5007):
     return Manager(PORT=PORT)
-
 
 def main():
     try:
