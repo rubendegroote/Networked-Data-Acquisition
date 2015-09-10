@@ -188,9 +188,9 @@ class FrameLayout(QtGui.QFrame):
 
 class LogEntryWidget(FrameLayout):
 
-    submitSig = QtCore.pyqtSignal(int,object)  # emitted when the new entry is updated
-    fieldAdded = QtCore.pyqtSignal()
-    tagAdded = QtCore.pyqtSignal()
+    submitSig = QtCore.pyqtSignal()  # emitted when the new entry is updated
+    submitTagSig = QtCore.pyqtSignal()
+    addFieldSig = QtCore.pyqtSignal()
     dataRequest = QtCore.pyqtSignal(int)
 
     def __init__(self, text='Placeholder text', entry=None, number=0):
@@ -251,6 +251,7 @@ class LogEntryWidget(FrameLayout):
                 for tag, value in self.entry[self.selected][pkey].items():
                     self.tags[tag] = QtGui.QCheckBox(tag)
                     self.tags[tag].setChecked(value)
+                    self.tags[tag].stateChanged.connect(self.confirmTags)
 
             elif pkey.lower() in self.unEditableProp:
                 if pkey.lower() == 'time':
@@ -275,12 +276,12 @@ class LogEntryWidget(FrameLayout):
 
         self.addFieldButton = QtGui.QPushButton(text='Add field')
         self.addFieldButton.setToolTip('Click here to add a field to all logbook entries.')
-        self.addFieldButton.clicked.connect(lambda x: self.fieldAdded.emit())
+        self.addFieldButton.clicked.connect(self.addFieldSig.emit)
         self.grid.addWidget(self.addFieldButton, teller, 0)
 
         self.addTagButton = QtGui.QPushButton(text='Add tag')
         self.addTagButton.setToolTip('Click here to add a tag to all logbook entries.')
-        self.addTagButton.clicked.connect(lambda x: self.tagAdded.emit())
+        self.addTagButton.clicked.connect(self.submitTagSig.emit)
         self.grid.addWidget(self.addTagButton, teller + 1, 0)
 
         self.editButton = QtGui.QPushButton(text='Edit')
@@ -295,7 +296,10 @@ class LogEntryWidget(FrameLayout):
             self.grid.addWidget(self.getDataButton, teller + 1, 1)
 
         for (key, textItem) in self.texts.items():
-            textItem.setDisabled(True)
+            try:
+                textItem.setDisabled(True)
+            except RuntimeError:
+                pass # this sometimes points to a deleted widget if a field was added to the entry later
 
         self.confirmed = True
         self.widget.setLayout(self.grid)
@@ -312,6 +316,12 @@ class LogEntryWidget(FrameLayout):
     def showNew(self):
         self.titleFrame.newLabel.setVisible(True)
         self.versionSelect.setCurrentIndex(-1)
+
+    def confirmTags(self):
+        for (key, box) in self.tags.items():
+            self.entry[-1]['Tags'][key] = box.isChecked()
+
+        self.submitSig.emit()
 
     def confirmEntry(self):
         for (key, textItem) in self.texts.items():
@@ -336,7 +346,7 @@ class LogEntryWidget(FrameLayout):
         self.editButton.clicked.disconnect(self.confirmEntry)
         self.editButton.clicked.connect(self.editEntry)
 
-        self.submitSig.emit(self.number,self.entry[-1])
+        self.submitSig.emit()
 
     def editEntry(self):
         for text in self.texts.values():

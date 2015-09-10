@@ -28,6 +28,7 @@ class LogbookApp(QtGui.QMainWindow):
 
         self.log_edits = []
         self.logEntryWidgets = {}
+        self.tags = []
 
         self.looping = True
         t = th.Thread(target=self.startIOLoop).start()
@@ -129,8 +130,8 @@ class LogbookApp(QtGui.QMainWindow):
         self.logEntryWidgets[number].createFrame()
 
         self.logEntryWidgets[number].submitSig.connect(self.submit_change)
-        # self.logEntryWidgets[number].fieldAdded.connect(self.addField)
-        # self.logEntryWidgets[number].tagAdded.connect(self.addTag)
+        self.logEntryWidgets[number].submitTagSig.connect(self.submit_new_tag)
+        self.logEntryWidgets[number].addFieldSig.connect(self.submit_new_field)
         # self.logEntryWidgets[number].dataRequest.connect(self.getData)
         
         self.entryContainers[-1].addWidget(self.logEntryWidgets[number], number, 0)
@@ -145,12 +146,37 @@ class LogbookApp(QtGui.QMainWindow):
     def add_entry_to_log_reply(self,track,params):
         print(track,params)
 
-    def submit_change(self,number,entry):
+    def submit_change(self):
+        number = self.sender().number
+        entry = self.sender().entry
         self.man.add_request(('change_entry',{'number':[number],
-                                              'entry':entry}))
+                                              'entry':entry[-1]}))
 
     def change_entry_reply(self,track,params):
         print(track,params)
+
+    def submit_new_field(self):
+        field_name, result = FieldAdditionDialog.getInfo()
+        if result:
+            self.man.add_request(('add_new_field', {'field_name':field_name}))
+
+    def add_new_field_reply(self,track,params):
+        print(track,params)
+
+    def submit_new_tag(self):
+        number = self.sender().number
+        tag_name, result = QtGui.QInputDialog.getItem(self, 'Tag Input Dialog', 
+                'Choose a tag or enter new tag:', self.tags)
+
+        if result:
+            self.man.add_request(('add_new_tag', {'tag_name':tag_name,
+                                                  'number':number}))
+
+    def add_new_tag_reply(self,track,params):
+        print(track,params)
+        tag_name = params['tag_name']
+        if not tag_name in self.tags:
+            self.tags.append(tag_name)
 
     def edit_entry_ui(self,number,entry):
         self.logEntryWidgets[number].entry = entry
@@ -197,6 +223,12 @@ class LogbookApp(QtGui.QMainWindow):
         for number,edit in zip(reversed(log_edit_numbers),reversed(log_edits)):
             if not number in done: 
                 done.append(number)
+                    
+                # add tags if there are any
+                if 'Tags' in edit[-1].keys():
+                    self.tags.extend(edit[-1]['Tags'])
+                    self.tags = list(set(self.tags))
+
                 if number in self.logEntryWidgets.keys():
                     self.editSignal.emit(number,edit)
                 else: # entry is not yet in the logbook

@@ -49,3 +49,4 @@ Temporary Items
 *.log
 backend/Manager.log
 *.pyc
+backend/message_log

@@ -150,7 +150,6 @@ class Manager(Dispatcher):
     @try_call
     def add_entry_to_log(self,params):
         self.add_to_logbook(info_for_log = {})
-
         return {}
 
     @try_call
@@ -160,6 +159,27 @@ class Manager(Dispatcher):
         lb.editEntry(self.logbook,number,entry)
         lb.saveEntry(self.logbookPath, self.logbook, number)
         self.log_edits.append(number) # number of the entry that was edited
+        return {}
+
+    @try_call
+    def add_new_field(self,params):
+        field_name = params['field_name']
+        for number,entry in enumerate(self.logbook):
+            new_info = {field_name:""}
+            lb.editEntry(self.logbook,number,new_info)
+            lb.saveEntry(self.logbookPath, self.logbook, number)
+            self.log_edits.append(number) # number of the entry that was edited
+        return {}
+
+    @try_call
+    def add_new_tag(self,params):
+        tag_name = params['tag_name']
+        number = params['number']
+        new_info = {'Tags':{tag_name:True}}
+        lb.editEntry(self.logbook,number,new_info)
+        lb.saveEntry(self.logbookPath, self.logbook, number)
+        self.log_edits.append(number) # number of the entry that was edited
+        return {'tag_name':tag_name}
 
     def status_reply(self, track, params):
         origin, track_id = track[-1]

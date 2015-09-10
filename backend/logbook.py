@@ -49,11 +49,19 @@ def addEntry(logbook, **kwargs):
             snap[key] = val
     logbook.append([snap])
 
-def editEntry(logbook, index, updated_entry):
+def editEntry(logbook, index, new_info):
     entry = logbook[index]
     fields = deepcopy(entry[-1])
-    for key, val in updated_entry.items():
-        fields[key] = val
+    for key, val in new_info.items():
+        if key == 'Tags':
+            if not key in fields.keys():
+                fields[key] = dict()
+            for tag_name,tagged in val.items():
+                fields[key][tag_name] = tagged
+
+        else:   
+            fields[key] = val
+
     fields['Time'] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     entry.append(fields)
 
