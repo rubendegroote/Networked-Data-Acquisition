@@ -34,7 +34,7 @@ class Dispatcher(asyncore.dispatcher):
     def start(self):
         while self.looping:
             asyncore.loop(count=1)
-            time.sleep(0.1)
+            time.sleep(0.03)
 
     def stop(self):
         self.looping = False
@@ -73,16 +73,6 @@ class Dispatcher(asyncore.dispatcher):
                 self.connectors[name].close()
                 toRemove.append(name)
         for name in toRemove:
-            self.connectors[name].close()
-            del self.connectors[name]
-            del self.connInfo[name]
-
-        return {}
-    
-    @try_call
-    def remove_all_connectors(self,params):
-        names = deepcopy(list(self.connInfo.keys()))
-        for name in names:
             self.connectors[name].close()
             del self.connectors[name]
             del self.connInfo[name]

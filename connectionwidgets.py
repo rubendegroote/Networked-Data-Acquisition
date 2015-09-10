@@ -29,10 +29,6 @@ class ArtistConnections(QtGui.QWidget):
         self.addArtistButton.clicked.connect(self.addConnection)
         self.layout.addWidget(self.addArtistButton, 100, 1, 1, 1)
 
-        self.removeArtistsButton = QtGui.QPushButton('Remove All Artists')
-        self.removeArtistsButton.clicked.connect(self.remove_all_artists)
-        self.layout.addWidget(self.removeArtistsButton, 101, 0, 1, 2)
-
         self.ManArtists = []
         self.DSArtists = []
 
@@ -106,6 +102,13 @@ class ArtistConnections(QtGui.QWidget):
                 # due to an earlier status update
                 pass
 
+    def updateData(self,track,params):
+        for key,val in self.artistWidgets.items():
+            try:
+                val.rowLabel.setText('data rows: ' + str(params['no_of_rows'][key]))
+            except KeyError:
+                pass
+
 class ArtistWidget(QtGui.QWidget):
     removeSig = QtCore.Signal(object)
     reconnectSig = QtCore.Signal(object)
@@ -154,9 +157,12 @@ class ArtistWidget(QtGui.QWidget):
             lambda: self.reConnectArtist('Data Server'))
         self.DSReconnectButton.setHidden(True)
 
+        self.rowLabel = QtGui.QLabel()
+        self.layout.addWidget(self.rowLabel, 0, 6, 1, 1)
+
         self.removeButton = QtGui.QPushButton('Remove')
         self.removeButton.clicked.connect(self.removeArtist)
-        self.layout.addWidget(self.removeButton, 0, 6, 1, 1)
+        self.layout.addWidget(self.removeButton, 0, 7, 1, 1)
 
     def removeArtist(self):
         self.removeSig.emit(self)

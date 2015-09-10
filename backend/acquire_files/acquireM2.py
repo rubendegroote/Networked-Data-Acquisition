@@ -160,12 +160,13 @@ def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
                     else:
                         mQ.put(([1],'{} cannot be set.'.format(ns.parameter)))
 
-
                 else:
                     try:
                         translation = mapping[instr[0]](instr[1])
+                        mQ.put(([0],'Executed {} instruction.'.format(instr)))
+
                     except KeyError:
-                        mQ.put(([1],'Unknown instruction {}.'.format(instr[0])))
+                        mQ.put(([1],'Unknown instruction {}.'.format(instr)))
                     
             ### Scanning logic
             if ns.scanning:

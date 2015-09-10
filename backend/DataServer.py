@@ -88,7 +88,7 @@ class DataServer(Dispatcher):
 
     @try_call
     def status(self, *args):
-        return {'connector_info': self.connInfo}
+        return {'connector_info': self.connInfo,'no_of_rows':self.no_of_rows}
 
     @try_call
     def data_format(self, *args):

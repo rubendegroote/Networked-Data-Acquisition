@@ -54,7 +54,6 @@ class ManagerApp(QtGui.QMainWindow):
         self.connWidget = ArtistConnections()
         self.connWidget.connectSig.connect(self.add_artist)
         self.connWidget.removeSig.connect(self.remove_connector)
-        self.connWidget.removeAllSig.connect(self.remove_all_connectors)
         layout.addWidget(self.connWidget, 1, 0, 1, 1)
 
         self.serverConnectButton = QtGui.QPushButton('Connect to Servers')
@@ -63,7 +62,7 @@ class ManagerApp(QtGui.QMainWindow):
 
         self.messageLog = QtGui.QPlainTextEdit()
         self.messageLog.setMinimumWidth(400)
-        layout.addWidget(self.messageLog,0,1,3,1)
+        layout.addWidget(self.messageLog,0,1,4,1)
 
         self.disable()
 
@@ -138,7 +137,7 @@ class ManagerApp(QtGui.QMainWindow):
     def startIOLoop(self):
         while self.looping:
             asyncore.loop(count=1)
-            time.sleep(0.1)
+            time.sleep(0.05)
 
     def stopIOLoop(self):
         self.looping = False
@@ -156,6 +155,10 @@ class ManagerApp(QtGui.QMainWindow):
         origin, track_id = track[-1]
         if origin == 'Manager':
             self.updateSignal.emit((self.scanner.update,
+                                    {'track':track,
+                                    'args':params}))
+        elif origin == 'DataServer':
+            self.updateSignal.emit((self.connWidget.updateData,
                                     {'track':track,
                                     'args':params}))
 
@@ -200,15 +203,6 @@ class ManagerApp(QtGui.QMainWindow):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
             {'track':track,'args':[[0],"Remove connector instruction received"]})
-
-    def remove_all_connectors(self):
-        op,params = 'remove_all_connectors', {}
-        self.Man_DS_Connector.instruct('Both',(op,params))
-        
-    def remove_all_connectors_reply(self,track,params):
-        origin,track_id = track[-1]
-        self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"Remove all connectors instruction received"]})
 
     def updateMessages(self,info):
         track,message = info['track'],info['args']
