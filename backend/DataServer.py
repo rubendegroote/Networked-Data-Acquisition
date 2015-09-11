@@ -32,7 +32,7 @@ class DataServer(Dispatcher):
         self.saveProcess.start()
 
     @try_call
-    def data(self, params):
+    def stream(self, params):
         no_of_rows,x,y = params['no_of_rows'],params['x'],params['y']
 
         if x == [] and y == []:
@@ -52,6 +52,10 @@ class DataServer(Dispatcher):
                     return_list.append([])
 
             return {'data': return_list,'no_of_rows':self.no_of_rows}
+
+    @try_call
+    def scan(self,params):
+        pass
 
     @try_call
     def clear_memory(self, *args):

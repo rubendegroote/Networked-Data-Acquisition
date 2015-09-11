@@ -31,9 +31,6 @@ class Artist(Dispatcher):
     mQ: multiprocessing Queue
         A queue that is used for communicating error messages with the
         acquisition process
-    contFlag: multiprocessing Event
-        An event that is set when the DAQ process should continue,
-        is cleared when it should pause
     stopFlag: multiprocessing Event
         An event that is set when the DAQ process should stop
     running: bool
@@ -44,12 +41,11 @@ class Artist(Dispatcher):
     """
 
     def __init__(self, name='', PORT=5005, acquireFunction=None,
-            save_data=True,format = tuple(),settings={}):
+            save_data=True,format = tuple()):
         super(Artist, self).__init__(PORT, name)
         # self._data = []
         self.saveDir = "C:\\Data\\"
 
-        self.settings = settings
         self.acquireFunction = acquireFunction
 
         # instructions queue:
@@ -60,9 +56,6 @@ class Artist(Dispatcher):
         # data pipe: acquire -> ARTIST
         self.data_output,self.data_input = mp.Pipe(duplex=False)
 
-        # holding flag for the acquisition
-        self.contFlag = mp.Event()
-        self.contFlag.clear()
         # stop flag for the acquisition
         self.stopFlag = mp.Event()
         self.stopFlag.set()
@@ -146,23 +139,16 @@ class Artist(Dispatcher):
         self.InitializeScanning()
         self.DAQProcess = mp.Process(name = 'daq' + self.name,
                                       target=self.acquireFunction,
-                                     args=(self.settings,
-                                           self.data_input, self.iQ, self.mQ,
-                                           self.contFlag, self.stopFlag,
+                                      args=(self.name,
+                                           self.data_input, self.iQ, self.mQ, 
+                                           self.stopFlag,
                                            self.IStoppedFlag, self.ns))
         self.DAQProcess.start()
-        self.contFlag.set()
+
         self.readThread = th.Timer(0, self.read_data).start()
-
-    def pauze_daq(self):
-        self.contFlag.clear()
-
-    def resume_daq(self):
-        self.contFlag.set()
 
     def stop_daq(self):
         self.stopFlag.set()
-        self.contFlag.clear()
         # wait for the process to stop
         self.IStoppedFlag.clear()
         self.DAQProcess.terminate()
@@ -203,6 +189,7 @@ class Artist(Dispatcher):
 
 
 def makeArtist(name='test'):
+
     if name == 'ABU' or name == 'CRIS':
         from acquire_files.acquire import acquire as aq
         from acquire_files.acquire import FORMAT
@@ -227,12 +214,18 @@ def makeArtist(name='test'):
         PORT = 6003
     
     elif name == 'M2':
-        from acquire_files.acquireM2 import acquireM2 as aq
-        from acquire_files.acquireM2 import FORMAT
-        settings = dict()
+        from acquire_files.acquisition import hardware_map,acquire
         PORT = 6002
+        FORMAT = hardware_map['M2'].format
+        aq = acquire
+
+    # elif name == 'M2':
+    #     from acquire_files.acquireM2 import acquireM2 as aq
+    #     from acquire_files.acquireM2 import FORMAT
+    #     settings = dict()
+    #     PORT = 6002
 
     artist = Artist(name=name,PORT=PORT,acquireFunction=aq,
-        save_data=True,format=FORMAT,settings=settings)
+        save_data=True,format=FORMAT)
     
     return artist

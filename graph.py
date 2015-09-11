@@ -100,15 +100,6 @@ class MyGraph(QtGui.QWidget):
         self.dataRequested.emit(str(self.meanBox.currentText()))
         self.sublayout.addWidget(self.meanBox, 2, 1)
 
-        self.scanStyles = ['Current Scan', 'Previous Scan']
-        self.scanBox = QtGui.QComboBox(self)
-        self.scanBox.addItems(self.scanStyles)
-        self.scanBox.setCurrentIndex(0)
-        self.scanBox.setMaximumWidth(110)
-        self.scanBox.currentIndexChanged.connect(lambda: self.scanRequested.emit(str(self.scanBox.currentText())))
-        self.dataRequested.emit(str(self.scanBox.currentText()))
-        self.sublayout.addWidget(self.scanBox, 2, 2)
-
         self.graphStyles = ['Step (histogram)', 'Line']#, 'Point']
 
         self.graphBox = QtGui.QComboBox(self)
@@ -148,15 +139,15 @@ class MyGraph(QtGui.QWidget):
 
         self.sublayout.addWidget(self.clearMemory, 2, 8)
 
-        self.saveButton = PicButton('save', checkable=False, size=25)
-        self.saveButton.setToolTip('Save the current graph to file.')
-        # self.saveButton.clicked.connect(self.saveSpectrum)
-        self.sublayout.addWidget(self.saveButton, 0, 7, 1, 1)
+        # self.saveButton = PicButton('save', checkable=False, size=25)
+        # self.saveButton.setToolTip('Save the current graph to file.')
+        # # self.saveButton.clicked.connect(self.saveSpectrum)
+        # self.sublayout.addWidget(self.saveButton, 0, 7, 1, 1)
 
-        self.settingsButton = PicButton('settings', checkable=True, size=25)
-        self.settingsButton.setToolTip('Display the advanced plotting options.')
-        # self.settingsButton.clicked.connect(self.showSettings)
-        self.sublayout.addWidget(self.settingsButton, 0, 8, 1, 1)
+        # self.settingsButton = PicButton('settings', checkable=True, size=25)
+        # self.settingsButton.setToolTip('Display the advanced plotting options.')
+        # # self.settingsButton.clicked.connect(self.showSettings)
+        # self.sublayout.addWidget(self.settingsButton, 0, 8, 1, 1)
 
 
         self.sublayout.setColumnStretch(6, 1)

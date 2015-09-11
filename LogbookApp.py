@@ -12,13 +12,10 @@ import os
 from backend.connectors import Connector
 from connectiondialogs import ConnectionDialog, FieldAdditionDialog
 from logviewerwidgets import LogEntryWidget
-from backend.Filereader import FileReader
 SAVE_DIR = 'C:/Data/'
 
 
-fileServer_channel = ('127.0.0.1', 5009)
 manager_channel = ('127.0.0.1', 5004)
-
 
 class LogbookApp(QtGui.QMainWindow):
     editSignal = QtCore.pyqtSignal(int,object)
@@ -36,7 +33,6 @@ class LogbookApp(QtGui.QMainWindow):
         self.init_UI()
 
         self.add_manager()
-        self.add_fileserver(auto=True)
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update)
@@ -69,17 +65,6 @@ class LogbookApp(QtGui.QMainWindow):
         self.managerLabel.setMinimumHeight(25)
         self.managerLabel.setStyleSheet("QLabel { background-color: red }")
         layout.addWidget(self.managerLabel, 1, 0, 1, 2)
-
-        self.file_server_label = QtGui.QLabel('File Server')
-        self.file_server_label.setAlignment(QtCore.Qt.AlignCenter)
-        self.managerLabel.setMinimumHeight(25)
-        self.file_server_label.setMinimumWidth(50)
-        self.file_server_label.setStyleSheet("QLabel { background-color: red }")
-        layout.addWidget(self.file_server_label, 2, 0, 1, 2)
-
-        self.addFileServer = QtGui.QPushButton('Add File server')
-        self.addFileServer.clicked.connect(self.add_fileserver)
-        layout.addWidget(self.addFileServer, 2, 0, 1, 2)
 
         self.addManager = QtGui.QPushButton('Reconnect to Manager')
         self.addManager.clicked.connect(self.add_manager)
@@ -173,7 +158,6 @@ class LogbookApp(QtGui.QMainWindow):
         self.logEntryWidgets[number].submitSig.connect(self.submit_change)
         self.logEntryWidgets[number].submitTagSig.connect(self.submit_new_tag)
         self.logEntryWidgets[number].addFieldSig.connect(self.submit_new_field)
-        self.logEntryWidgets[number].dataRequest.connect(self.request_data)
         
         self.entryContainers[-1].addWidget(self.logEntryWidgets[number], number, 0)
         # QtGui.QApplication.processEvents()
@@ -218,13 +202,6 @@ class LogbookApp(QtGui.QMainWindow):
         if not tag_name in self.tags:
             self.tags.append(tag_name)
 
-
-    def request_file(self):
-        pass
-
-    def request_file_reply(self,params):
-        pass
-
     def edit_entry_ui(self,number,entry):
         self.logEntryWidgets[number].entry = entry
         self.logEntryWidgets[number].clearFrame()
@@ -244,18 +221,6 @@ class LogbookApp(QtGui.QMainWindow):
             self.addManager.setHidden(True)
         except Exception as e:
             print(e)
-
-    def addFileConnection(self, auto=False):
-       try:
-           self.file_server = Connector(name='LGUI_to_FS'.
-                                        chan=fileServer_channel,
-                                        callback=self.reply_cb,
-                                        onCloseCallback=self.onCloseCallback,
-                                        default_cb=self.default_fileserver_cb)
-           self.file_server_label.setStyleSheet("QLabel { background-color: green }")
-           self.addFileServer.setHidden(True)
-       except:
-           pass
 
     def reply_cb(self,message):
         track = message['track']
@@ -293,14 +258,8 @@ class LogbookApp(QtGui.QMainWindow):
                 else: # entry is not yet in the logbook
                     self.addSignal.emit(number,edit)
 
-    def data_status_reply(self,params):
-        print(params)
-
     def default_cb(self):
         return 'logbook_status',{'no_of_log_edits':[len(self.log_edits)]}
-
-    def default_fileserver_cb(self):
-        return 'data_status',{}
 
     def onCloseCallback(self, connector):
         print(connector.acceptorName + ' connection failure')

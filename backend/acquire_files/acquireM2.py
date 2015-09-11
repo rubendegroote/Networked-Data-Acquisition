@@ -9,42 +9,6 @@ import json
 
 from . import SolsTiScommands as comm
 
-mapping = {
-    "Set Wavelength": comm.set_wave_m,
-    "Poll Wavelength": comm.poll_wave_m,
-    "Lock Wavelength": comm.lock_wave_m,
-    "Stop Wavelength": comm.stop_wave_m,
-    "Set Wavelength Tune": comm.move_wave_t,
-    "Poll Wavelength Tune": comm.poll_move_wave_t,
-    "Stop Wavelength Tune": comm.stop_move_wave_t,
-    "Tune Etalon": comm.tune_etalon,
-    "Tune Cavity": comm.tune_cavity,
-    "Finetune Cavity": comm.fine_tune_cavity,
-    "Tune Resonator": comm.tune_resonator,
-    "Finetune Resonator": comm.fine_tune_resonator,
-    "Lock Etalon": comm.etalon_lock,
-    "Etalon Lock Status": comm.etalon_lock_status,
-    "Lock Reference Cavity": comm.cavity_lock,
-    "Reference Cavity Lock Status": comm.cavity_lock_status,
-    "Lock ECD": comm.ecd_lock,
-    "ECD Lock Status": comm.ecd_lock_status,
-    "Monitor A": comm.monitor_a,
-    "Monitor B": comm.monitor_b,
-    "Select Etalon Profile": comm.select_profile,
-    "Get Status": comm.get_status,
-    "Get Alignment Status": comm.get_alignment_status,
-    "Beam Alignment Mode": comm.beam_alignment,
-    "Beam Alignment x": comm.beam_adjust_x,
-    "Beam Alignment y": comm.beam_adjust_y,
-    "Initialize Scan Stitch": comm.scan_stitch_initialise,
-    "Scan Stitch": comm.scan_stitch_op,
-    "Scan Stitch Status": comm.scan_stitch_status,
-    "Scan Stitch Output": comm.scan_stitch_output,
-    "Start Fast Scan": comm.fast_scan_start,
-    "Poll Fast Scan": comm.fast_scan_poll,
-    "Stop Fast Scan": comm.fast_scan_stop,
-    "Stop Fast Scan Without Return": comm.fast_scan_stop_nr
-}
 
 FORMAT = ('timestamp','status', 'wavelength', 'temperature', 'temperature_status',
         'etalon_lock', 'etalon_voltage', 'ref_cavity_lock', 'resonator_voltage',
@@ -115,8 +79,6 @@ def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
 
     contFlag.wait()  # Wait until the boolean for continuing is set to True
 
-    tPerStep = 0
-    wavelength=0
     while not stopFlag.is_set():  # Continue the acquisition loop while the stop flag is False
         try:
             # if the contFlag is set: wait for it to be unset

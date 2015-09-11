@@ -449,8 +449,3 @@ def fast_scan_stop_nr(scan):
     resonator_single", "ecd_continuous", "fringe_test", "resonator_ramp",
     "ecd_ramp", "cavity_triangular", "resonator_triangular"}"""
     return give_message("fast_scan_stop_nr", {"scan": scan})
-
-test = json.dumps(scan_stitch_initialise('line', 811.15321, 811.16321, 200, "kHz/s"))
-print(test)
-test = json.dumps(scan_stitch_initialise('line', 811.15321, 811.16321, 200, "kHz/s"))
-print(test)

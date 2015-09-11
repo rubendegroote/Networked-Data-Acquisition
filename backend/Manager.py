@@ -180,7 +180,8 @@ def main():
         m = makeManager(5004)
         style = "QLabel { background-color: green }"
         e=''
-    except Exception as e:
+    except Exception as error:
+        e = str(error)
         style = "QLabel { background-color: red }"
 
     from PyQt4 import QtCore,QtGui
