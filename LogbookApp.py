@@ -93,14 +93,14 @@ class LogbookApp(QtGui.QMainWindow):
         layout.addWidget(self.addEntryButton, 5, 0, 1, 2)
 
         self.searchStringLabel = QtGui.QPushButton('String search')
-        # self.searchStringLabel.clicked.connect(self.filterLogbookOnString)
+        self.searchStringLabel.clicked.connect(self.filterLogbookOnString)
         self.searchStringLabel.setDisabled(True)
         self.searchStringEdit = QtGui.QLineEdit('')
         layout.addWidget(self.searchStringLabel, 6, 0)
         layout.addWidget(self.searchStringEdit, 6, 1)
 
         self.searchTagLabel = QtGui.QPushButton('Tag search')
-        # self.searchTagLabel.clicked.connect(self.filterLogbookOnTag)
+        self.searchTagLabel.clicked.connect(self.filterLogbookOnTag)
         self.searchTagLabel.setDisabled(True)
         self.searchTagEdit = QtGui.QLineEdit('')
         layout.addWidget(self.searchTagLabel, 7, 0)
@@ -123,6 +123,47 @@ class LogbookApp(QtGui.QMainWindow):
         entryContainer.setAlignment(QtCore.Qt.AlignTop)
         self.entryContainers.append(entryContainer)
 
+    def filterLogbookOnString(self):
+        filterString = str(self.searchStringEdit.text())
+        if filterString == '':
+            filter_dict = dict.fromkeys(self.logEntryWidgets, True)
+            self.filter_logbook(filter_dict=filter_dict)
+        else:
+            filter_dict = dict.fromkeys(self.logEntryWidgets, False)
+            for number, widget in self.logEntryWidgets.items():
+                entry = widget.entry
+                for snapshot in entry:
+                    for value in snapshot.values():
+                        try:
+                            if isinstance(value, str) and filterString.lower() in value.lower():
+                                filter_dict[number] = True
+                            else:
+                                pass
+                        except:
+                            raise
+            self.filter_logbook(filter_dict=filter_dict)
+
+    def filterLogbookOnTag(self):
+        filterTag = str(self.searchTagEdit.text())
+        if filterTag == '':
+            filter_dict = dict.fromkeys(self.logEntryWidgets, True)
+            self.filter_logbook(filter_dict=filter_dict)
+        else:
+            filter_dict = dict.fromkeys(self.logEntryWidgets, False)
+            for number, widget in self.logEntryWidgets.items():
+                entry = widget.entry
+                for snapshot in entry:
+                    if 'Tags' in snapshot and filterTag in snapshot['Tags'] and snapshot['Tags'][filterTag]:
+                        filter_dict[number] = True
+            self.filter_logbook(filter_dict=filter_dict)
+
+    def filter_logbook(self,filter_dict):
+        for key,val in filter_dict.items():
+            if val:
+                self.logEntryWidgets[key].setVisible(True)
+            else:
+                self.logEntryWidgets[key].setHidden(True)
+
     def add_entry_to_ui(self,number,entry):
         self.logEntryWidgets[number] = LogEntryWidget(text='Entry ' + str(int(number)),
                                                            entry=entry,
@@ -144,8 +185,8 @@ class LogbookApp(QtGui.QMainWindow):
         self.man.add_request(('add_entry_to_log',{}))
 
     def add_entry_to_log_reply(self,track,params):
-        print(track,params)
-
+        pass
+        
     def submit_change(self):
         number = self.sender().number
         entry = self.sender().entry
@@ -153,7 +194,7 @@ class LogbookApp(QtGui.QMainWindow):
                                               'entry':entry[-1]}))
 
     def change_entry_reply(self,track,params):
-        print(track,params)
+        pass
 
     def submit_new_field(self):
         field_name, result = FieldAdditionDialog.getInfo()
@@ -161,7 +202,7 @@ class LogbookApp(QtGui.QMainWindow):
             self.man.add_request(('add_new_field', {'field_name':field_name}))
 
     def add_new_field_reply(self,track,params):
-        print(track,params)
+        pass
 
     def submit_new_tag(self):
         number = self.sender().number
@@ -173,7 +214,6 @@ class LogbookApp(QtGui.QMainWindow):
                                                   'number':number}))
 
     def add_new_tag_reply(self,track,params):
-        print(track,params)
         tag_name = params['tag_name']
         if not tag_name in self.tags:
             self.tags.append(tag_name)
