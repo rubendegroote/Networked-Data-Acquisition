@@ -1,30 +1,10 @@
-import asynchat
-import asyncore
 import sys
-from collections import deque
-from datetime import datetime
-from copy import deepcopy
-import os
-import pickle
-import socket
-import threading as th
-import multiprocessing as mp
-import time
-import numpy as np
-import pandas as pd
-from bokeh.embed import autoload_server
-try:
-    from Helpers import *
-    from connectors import Connector, Acceptor
-except:
-    from backend.Helpers import *
-    from backend.connectors import Connector, Acceptor
+from Helpers import *
+from save import *
+from connectors import Connector, Acceptor
+import logbook as lb
 from dispatcher import Dispatcher
-
-try:
-    from save import *
-except:
-    from backend.save import *
+import multiprocessing as mp
 
 class DataServer(Dispatcher):
     def __init__(self, PORT=5006, save_data=False, remember=True, name='DataServer'):
@@ -41,8 +21,6 @@ class DataServer(Dispatcher):
             self.save_output,self.save_input = mp.Pipe(duplex=False)
 
         self.start_saving()
-
-        self.data_lock = th.Lock()
 
     def default_cb(self):
         return 'data', {}

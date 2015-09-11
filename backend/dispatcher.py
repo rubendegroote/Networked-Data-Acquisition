@@ -1,15 +1,10 @@
 import threading as th
 import asyncore
-import asynchat
 import socket
 import time
-from copy import deepcopy
-try:
-    from Helpers import *
-    from connectors import Connector, Acceptor
-except:
-    from backend.Helpers import *
-    from backend.connectors import Connector, Acceptor
+from Helpers import *
+from connectors import Connector, Acceptor
+
 
 class Dispatcher(asyncore.dispatcher):
     def __init__(self, PORT, name, defaultRequest = ('status',{})):

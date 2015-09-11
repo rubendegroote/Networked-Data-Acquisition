@@ -35,8 +35,8 @@ class LogbookApp(QtGui.QMainWindow):
         self.man = None
         self.init_UI()
 
-        self.addConnection()
-        # self.addFileConnection(auto=True)
+        self.add_manager()
+        self.add_fileserver(auto=True)
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update)
@@ -50,7 +50,7 @@ class LogbookApp(QtGui.QMainWindow):
     def startIOLoop(self):
         while self.looping:
             asyncore.loop(count=1)
-            time.sleep(0.1)
+            time.sleep(0.2)
 
     def stopIOLoop(self):
         self.looping = False
@@ -70,19 +70,19 @@ class LogbookApp(QtGui.QMainWindow):
         self.managerLabel.setStyleSheet("QLabel { background-color: red }")
         layout.addWidget(self.managerLabel, 1, 0, 1, 2)
 
-        self.fileServerLabel = QtGui.QLabel('File Server')
-        self.fileServerLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.file_server_label = QtGui.QLabel('File Server')
+        self.file_server_label.setAlignment(QtCore.Qt.AlignCenter)
         self.managerLabel.setMinimumHeight(25)
-        self.fileServerLabel.setMinimumWidth(50)
-        self.fileServerLabel.setStyleSheet("QLabel { background-color: red }")
-        layout.addWidget(self.fileServerLabel, 2, 0, 1, 2)
+        self.file_server_label.setMinimumWidth(50)
+        self.file_server_label.setStyleSheet("QLabel { background-color: red }")
+        layout.addWidget(self.file_server_label, 2, 0, 1, 2)
 
         self.addFileServer = QtGui.QPushButton('Add File server')
-        # self.addFileServer.clicked.connect(self.addFileConnection)
+        self.addFileServer.clicked.connect(self.add_fileserver)
         layout.addWidget(self.addFileServer, 2, 0, 1, 2)
 
         self.addManager = QtGui.QPushButton('Reconnect to Manager')
-        self.addManager.clicked.connect(self.addConnection)
+        self.addManager.clicked.connect(self.add_manager)
         layout.addWidget(self.addManager, 1, 0, 1, 2)
 
         self.editLabel = QtGui.QLabel('Logbook:')
@@ -173,7 +173,7 @@ class LogbookApp(QtGui.QMainWindow):
         self.logEntryWidgets[number].submitSig.connect(self.submit_change)
         self.logEntryWidgets[number].submitTagSig.connect(self.submit_new_tag)
         self.logEntryWidgets[number].addFieldSig.connect(self.submit_new_field)
-        # self.logEntryWidgets[number].dataRequest.connect(self.getData)
+        self.logEntryWidgets[number].dataRequest.connect(self.request_data)
         
         self.entryContainers[-1].addWidget(self.logEntryWidgets[number], number, 0)
         # QtGui.QApplication.processEvents()
@@ -186,7 +186,7 @@ class LogbookApp(QtGui.QMainWindow):
 
     def add_entry_to_log_reply(self,track,params):
         pass
-        
+
     def submit_change(self):
         number = self.sender().number
         entry = self.sender().entry
@@ -218,13 +218,20 @@ class LogbookApp(QtGui.QMainWindow):
         if not tag_name in self.tags:
             self.tags.append(tag_name)
 
+
+    def request_file(self):
+        pass
+
+    def request_file_reply(self,params):
+        pass
+
     def edit_entry_ui(self,number,entry):
         self.logEntryWidgets[number].entry = entry
         self.logEntryWidgets[number].clearFrame()
         self.logEntryWidgets[number].createFrame()
         self.logEntryWidgets[number].showNew()
 
-    def addConnection(self):
+    def add_manager(self):
         try:
             self.man = Connector(name='LGUI_to_M',
                                         chan=manager_channel,
@@ -237,6 +244,18 @@ class LogbookApp(QtGui.QMainWindow):
             self.addManager.setHidden(True)
         except Exception as e:
             print(e)
+
+    def addFileConnection(self, auto=False):
+       try:
+           self.file_server = Connector(name='LGUI_to_FS'.
+                                        chan=fileServer_channel,
+                                        callback=self.reply_cb,
+                                        onCloseCallback=self.onCloseCallback,
+                                        default_cb=self.default_fileserver_cb)
+           self.file_server_label.setStyleSheet("QLabel { background-color: green }")
+           self.addFileServer.setHidden(True)
+       except:
+           pass
 
     def reply_cb(self,message):
         track = message['track']
@@ -274,8 +293,14 @@ class LogbookApp(QtGui.QMainWindow):
                 else: # entry is not yet in the logbook
                     self.addSignal.emit(number,edit)
 
+    def data_status_reply(self,params):
+        print(params)
+
     def default_cb(self):
         return 'logbook_status',{'no_of_log_edits':[len(self.log_edits)]}
+
+    def default_fileserver_cb(self):
+        return 'data_status',{}
 
     def onCloseCallback(self, connector):
         print(connector.acceptorName + ' connection failure')

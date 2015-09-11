@@ -1,42 +1,30 @@
 import http.server
 import socketserver
 import os
-import asynchat
-import asyncore
-import socket
-import threading as th
-import multiprocessing as mp
-import pickle
-import time
-from Convert import *
-
+import sys
+from Helpers import *
+from connectors import Connector, Acceptor
+import logbook as lb
+from dispatcher import Dispatcher
 
 FILE_SERVER_PORT = 5009
 HTTP_SERVER_PORT = 5010
-
+DATA_PATH = 'C:/Data/'
 
 class FileServer(asyncore.dispatcher):
 
     def __init__(self):
         super(FileServer, self).__init__()
-        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-        self.bind(('', FILE_SERVER_PORT))
-        self.listen(5)
-        print('Listening on port {}'.format(FILE_SERVER_PORT))
+        self.http_process = mp.Process(target=run).start()
+        
+    @try_call
+    def request_file(self,params):
+        pass
 
-    def writable(self):
-        return False
-
-    def readable(self):
-        return True
-
-    def handle_accept(self):
-        pair = self.accept()
-        if pair is not None:
-            sock, addr = pair
-            handler = FileHandler(sock)
-            print('Accepted {}'.format(addr))
+    @try_call
+    def data_status(self,params):
+        file_names = [f for f in next(os.walk(DATA_PATH))[2] if '.h5']
+        return {'file_names':file_names}
 
 
 class FileHandler(asynchat.async_chat):
@@ -100,13 +88,6 @@ class FileHandler(asynchat.async_chat):
     def collect_incoming_data(self, request):
         self.request += request
 
-
-def start():
-    while True:
-        asyncore.loop(count=1)
-        time.sleep(0.1)
-
-
 def run():
     server_address = ('', HTTP_SERVER_PORT)
     httpd = socketserver.TCPServer(server_address,
@@ -114,12 +95,31 @@ def run():
     httpd.serve_forever()
 
 
-def makeServer():
-    os.chdir('C:/Data/')
-    f = FileServer()
-    t = th.Thread(target=start).start()
-    t = mp.Process(target=run).start()
+def makeFileServer(PORT=5006):
+    return FileServer(PORT=PORT)
+
+def main():
+    try:
+        m = makeFileServer(5006)
+        style = "QLabel { background-color: green }"
+        e=''
+    except Exception as e:
+        style = "QLabel { background-color: red }"
+
+    from PyQt4 import QtCore,QtGui
+    # Small visual indicator that this is running
+    app = QtGui.QApplication(sys.argv)
+    w = QtGui.QWidget()
+
+    w.setWindowTitle('Manager')
+    layout = QtGui.QGridLayout(w)
+    label = QtGui.QLabel(e)
+    label.setStyleSheet(style)
+    layout.addWidget(label)
+    w.show()
+    
+    sys.exit(app.exec_())
 
 
 if __name__ == '__main__':
-    makeServer()
+    main()

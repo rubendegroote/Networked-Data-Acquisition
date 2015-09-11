@@ -31,37 +31,6 @@ def emptyPipe(q):
                 pass
     return toSend
 
-
-def mass_concat(array, format):
-    data = np.concatenate([d for d in array])
-    data = pd.DataFrame(data, columns=format)
-    return data
-
-def convert(data_list, format):
-    data = np.array([l for subl in data_list for l in subl]).reshape(
-        (-1, len(format)))
-    data = pd.DataFrame(data, columns=format).set_index('time')
-    return data
-
-
-def save(data, name, artist):
-    with pd.get_store(SAVE_PATH + name + '_stream.h5') as store:
-        store.append(artist, data.convert_objects())
-    groups = data.groupby('scan', sort=False)
-    for n, group in groups:
-        if not n == -1:
-            with pd.get_store(SAVE_PATH + name + '_scan_' + str(int(n)) + '.h5') as store:
-                store.append(artist, group.convert_objects())
-
-def save_csv(data, name, artist=''):
-    for n, group in groups:
-        if n == -1:
-            with open(SAVE_PATH + name + '_stream.csv', 'a') as f:
-                group.to_csv(f, na_rep='nan')
-        else:
-            with open(SAVE_PATH + name + '_scan' + str(int(n)) + '.csv', 'a') as f:
-                group.to_csv(f, na_rep='nan')
-
 def make_message(message):
     op,params = message
     return {'message': {'op': op, 'parameters': params}}
