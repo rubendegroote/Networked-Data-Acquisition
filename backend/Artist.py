@@ -13,8 +13,12 @@ class Artist(Dispatcher):
     def __init__(self, name='', PORT=5005, acquireFunction=None,
             save_data=True,format = tuple()):
         super(Artist, self).__init__(PORT, name)
-        # self._data = []
         self.saveDir = "C:\\Data\\"
+
+        # this boolean is set to true when a scan is started
+        # and is set to false the first time the scan data is
+        # sent to the data server. 
+        self.scan_just_started = False
 
         self.acquireFunction = acquireFunction
 
@@ -80,7 +84,17 @@ class Artist(Dispatcher):
         l = len(self.scan_data_deque)
         scan_data = [self.scan_data_deque.popleft() for _i in range(l)]
 
-        return {'data': data,'scan_data': scan_data,
+        # boolean to tell the data server if it has to clear the
+        # scan data buffer or not 
+        if self.scan_just_started:
+            self.scan_just_started = False
+            scan_just_started = True
+        else:
+            scan_just_started = False
+
+        return {'data': data,
+                'scan_data': scan_data,
+                'scan_just_started': scan_just_started,
                 'format': self.format}
 
     @try_call
@@ -93,6 +107,9 @@ class Artist(Dispatcher):
         self.ns.scan_parameter = params['scan_parameter'][0]
         self.ns.scan_array = params['scan_array']
         self.ns.time_per_step = params['time_per_step'][0]
+
+        self.scan_just_started = True
+
         self.iQ.put('scan')
 
         return {}

@@ -120,7 +120,6 @@ class RadioApp(QtGui.QMainWindow):
             # file sesrver time
             return 'data_format',{}
 
-
     def default_fileserver_cb(self):
         if self.live_viewing:
             # data server time
@@ -132,9 +131,17 @@ class RadioApp(QtGui.QMainWindow):
     def onCloseCallback(self,connector):
         print('lost connection')
 
+    def scan_reply(self,track,params):
+        self.data_reply(track,params)
+
     def stream_reply(self,track,params):
+        self.data_reply(track,params)
+
+    def data_reply(self,track,params):
         origin, track_id = track
-        data = params['stream_data']
+        data = params['data']
+        buffers_cleared = params['buffers_cleared']
+
         if data == []:
             pass
 
@@ -147,26 +154,11 @@ class RadioApp(QtGui.QMainWindow):
             data = pd.concat([data_x,data_y])
             data.set_index(['time'],inplace=True)
 
-            self.graph.data=self.graph.data.append(data)
-
-    def scan_reply(self,track,params):
-        # this is way too copy-pasty - rewrite scan and stream to
-        # merge into one function!
-        origin, track_id = track
-        data = params['scan_data']
-        if data == []:
-            pass
-        else:
-            self.graph.no_of_rows = params['no_of_rows_in_scan']
-
-            data_x = pd.DataFrame({'time':data[0],'x':data[1]})
-            data_y = pd.DataFrame({'time':data[2],'y':data[3]})
-
-            data = pd.concat([data_x,data_y])
-            data.set_index(['time'],inplace=True)
-
-            self.graph.data=self.graph.data.append(data)
-
+            if buffers_cleared:
+                self.graph.data=data
+            else:                
+                self.graph.data=self.graph.data.append(data)
+                
     def file_status_reply(self,track,params):
         file_names = params['file_names']
         print(params)

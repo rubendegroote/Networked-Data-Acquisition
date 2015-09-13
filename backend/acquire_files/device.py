@@ -63,7 +63,6 @@ class Device():
         else:
             return mQ.put(([1],'Unknown instruction {}.'.format(instr)))
             
-
     @try_deco
     def scan(self):
         if time.time() - self.ns.start_of_setpoint > self.ns.time_per_step:
