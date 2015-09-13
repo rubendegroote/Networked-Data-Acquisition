@@ -8,7 +8,7 @@ hardware_map = {}
 hardware_map['M2'] = M2()
 
 ### Main acquire loop
-def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
+def acquire(name,data_pipe,scan_data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
     ### what hardware?
     hardware = hardware_map[name]
 
@@ -24,25 +24,36 @@ def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
     got_instr = False
     ### start acquisition loop
     while not stopFlag.is_set():  # Continue the acquisition loop while the stop flag is False
-        try:
-            ### Receiving instructions
-            instr = receive_instruction(iQ)
+        ### Receiving instructions
+        instr = receive_instruction(iQ)
 
-            if instr is not None:
-                return_message = hardware.interpret(instr)
-                mQ.put(return_message)
+        ### Act on the instruction
+        ## This can also write to the device if needed
+        return_message = hardware.interpret(instr)
+        mQ.put(return_message)
 
-            ### Output logic
-            return_message = hardware.output()
-            if return_message is not None:
-                mQ.put(return_message)
+        ### Scanning logic
+        ## Will go through the scan array and write to device
+        if self.ns.scanning:
+            return_message = hardware.scan()
+            mQ.put(return_message)
 
-            ### Input logic
-            data = hardware.input()
+        ### Stabilizing on setpoint logic
+        if not self.ns.on_setpoint or 
+                hardware.needs_stabilization:
+            return_message = hardware.stabilize()
+            mQ.put(return_message)
+
+        ### Input logic
+        return_message = hardware.input()
+        if return_message[0][0] == [0]: # input was succesful
+            data = return_message[1]
             data_pipe.send(data)
+            if self.ns.scanning:
+                scan_data_pipe.send(data)
 
-        except Exception as e:
-            mQ.put(([1],str(e)))
+        else: #error to report
+            mQ.put(return_message)
 
         time.sleep(0.001)
 

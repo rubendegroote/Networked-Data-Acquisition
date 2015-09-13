@@ -2,14 +2,18 @@ import socket
 import time
 import SolsTiScommands as comm
 import numpy as np
+from .Helpers import try_deco 
 
-class M2():
+class M2(Device):
     def __init__(self):
-        self.format =  ('timestamp','status', 'wavelength', 'temperature', 'temperature_status',
-        'etalon_lock', 'etalon_voltage', 'ref_cavity_lock', 'resonator_voltage',
-        'ecd_lock', 'ecd_voltage', 'output_monitor', 'etalon_pd_dc', 'dither')
+        format =  ('timestamp','status', 'wavelength', 'temperature', 'temperature_status',
+            'etalon_lock', 'etalon_voltage', 'ref_cavity_lock', 'resonator_voltage',
+            'ecd_lock', 'ecd_voltage', 'output_monitor', 'etalon_pd_dc', 'dither',
+            'scan_number')
+        
+        write_param = 'wavelength'
 
-        self.mapping = {
+        mapping = {
             "Set Wavelength": comm.set_wave_m,
             "Poll Wavelength": comm.poll_wave_m,
             "Lock Wavelength": comm.lock_wave_m,
@@ -46,17 +50,21 @@ class M2():
             "Stop Fast Scan Without Return": comm.fast_scan_stop_nr
         }
 
-        self.host = '192.168.1.216'
-        self.port = 39933
-
-        self.ns = None
+        super(Matisse,self).__init__(name = 'M2',
+                                     format=format,
+                                     write_param = write_param,
+                                     mapping = mapping,
+                                     needs_stabilization = True)
+        
+        self.settings = {'host': '192.168.1.216',
+                         'port':39933}
 
         self.wavelength=0
 
-        self.settings = {}
+        print('Note: the methods below should be reworked with raise statements')
 
-    def setup(self):
-        pass
+    def connect_to_device(self):
+        # host,port = self.settings['host'],self.settings['port']
         # for res in socket.getaddrinfo(self.host, self.port, socket.AF_UNSPEC, socket.SOCK_STREAM):
         #     af, socktype, proto, canonname, sa = res
         #     try:
@@ -79,73 +87,36 @@ class M2():
         #     print(repr(data))
         # else:
         #     print('derp')
-        return ([0],"Communication with ICE-BLOC achieved.")
+        pass
 
-    def interpret(self,instr):
-        if instr == 'scan':
-            if self.ns.scan_parameter == 'wavelength':
-                self.ns.current_position = 0
-                self.ns.scanning = True
-                return ([0],'Starting {} scan.'.format(self.ns.scan_parameter))
-            else:
-                return ([1],'{} cannot be scanned.'.format(self.ns.scan_parameter))
+    def write_to_device(self,instr):
+        # self.socket.sendall(json.dumps(comm.move_wave_t(self.ns.setpoint)))
+        # response = json.loads(self.socket.recv(1024))
+        # if response['operator'] == 'move_wave_t_reply':
+        #     stat = response['parameters']['status']
+        #     if stat == 0:
+        #         return ([0],'Wavelength tuned to {} via table tuning'.format(self.ns.setpoint))
+        #     elif stat == 1:
+        #         return ([1],'Command failed.')
+        #     elif stat == 2:
+        #         return ([1],'Wavelength out of range.')
+        # elif response['operator'] == 'parse_fail':
+        #     return ([1],'Parse fail: received message is "{}"'.format(str(response)))
+        
+        # Given that we have to stabilize, this could remain a 
+        # simple pass, and the stabilization can then take over and 
+        # go to the setpoint as needed. 
+        # So, perhaps this can always return a fail, so that 
+        # ns.on_setpoint is not set to True, so that the stabilization
+        # kicks in??
+        pass
 
-        elif instr == 'go_to_setpoint':
-            # self.socket.sendall(json.dumps(comm.move_wave_t(841.0)))
-            # response = json.loads(self.socket.recv(1024))
-            # if response['operator'] == 'move_wave_t_reply':
-            #     stat = response['parameters']['status']
-            #     if stat == 0:
-            #         return ([0],'Wavelength tuned to {} via table tuning'.format(841.0))
-            #     elif stat == 1:
-            #         return ([1],'Command failed.')
-            #     elif stat == 2:
-            #         return ([1],'Wavelength out of range.')
-            # elif response['operator'] == 'parse_fail':
-            #     return ([1],'Parse fail: received message is "{}"'.format(str(response)))
-            if self.ns.parameter == 'wavelength':
-                # go to setpoint
-                return ([0],'Wavelength tuned to {} via table tuning'.format(self.ns.setpoint))
-                self.ns.on_setpoint = True
-            else:
-                return ([1],'{} cannot be set.'.format(self.ns.parameter))
-
-        else:
-            try:
-                translation = self.mapping[instr[0]](instr[1])
-                return ([0],'Executed {} instruction.'.format(instr))
-
-            except KeyError:
-                return ([1],'Unknown instruction {}.'.format(instr))
-
-    def output(self):
-        if self.ns.scanning:
-            if time.time() - self.ns.start_of_setpoint > self.ns.time_per_step:
-                self.ns.on_setpoint = False
-                if self.ns.current_position == len(self.ns.scan_array):
-                    self.ns.scanning = False
-                    self.ns.progress = 1.0
-                    return ([0],'Stopped {} scan.'.format(self.ns.scan_parameter))
-                else:
-                    setpoint = self.ns.scan_array[self.ns.current_position]
-                    # self.mapping["Set Wavelength"](setpoint)
-                    self.wavelength = setpoint
-                
-                    self.ns.progress = self.ns.current_position/len(self.ns.scan_array)
-                    self.ns.current_position += 1
-                    self.ns.start_of_setpoint = time.time()
-                    self.ns.on_setpoint = True
-                    return ([0],'{} scan: setpoint reached'.format(self.ns.scan_parameter))
-
-    def input(self):
+    def read_from_device(self):
         # self.socket.sendall(json.dumps(comm.get_status()))
         # response = self.socket.recv(1024)
         # data = [response['parameters'][string] for string in data_channels]
 
-        now = time.time()
-        # put data on the queue
-        data = [now,1,self.wavelength]
-        data.extend([np.random.rand()] * (len(self.ns.format)-3))
+        data = [np.random.rand()] * (len(self.ns.format)-3)
 
         return data
 

@@ -30,25 +30,32 @@ def save_continuously(save_output,saveDir,name,format):
     set_name = name
 
     while True:
-        to_save=emptyPipe(save_output)
-        to_save = np.row_stack(flatten(to_save))
-        save(to_save,format,file_name,set_name)
+        to_save = emptyPipe(save_output)
+        if not to_save == []:
+            to_save = np.row_stack(flatten(to_save))
+            save(to_save,format,file_name,set_name)
+        else:
+            time.sleep(0.001)
 
 def save_continuously_dataserver(save_output,saveDir):
     file_name = saveDir + 'server_data.h5'
     
     while True:
         to_save=emptyPipe(save_output)
-        to_save_dict = {}
-        formats = {}
-        for info in to_save:
-            origin,format,data = info
-            format = [f.encode('utf-8') for f in format]
-            try:
-                to_save_dict[origin].extend(data)
-            except:
-                to_save_dict[origin] = data
-            formats[origin] = format
+        if not to_save == []:
+            to_save_dict = {}
+            formats = {}
+            for info in to_save:
+                origin,format,data = info
+                format = [f.encode('utf-8') for f in format]
+                try:
+                    to_save_dict[origin].extend(data)
+                except:
+                    to_save_dict[origin] = data
+                formats[origin] = format
 
-        for origin,to_save in to_save_dict.items():
-            save(np.row_stack(to_save),formats[origin],file_name,origin)
+            for origin,to_save in to_save_dict.items():
+                save(np.row_stack(to_save),formats[origin],file_name,origin)
+        else:
+            time.sleep(0.001)
+            

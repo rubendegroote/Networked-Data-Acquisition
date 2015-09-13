@@ -10,36 +10,6 @@ import threading as th
 
 # Some exploratory code to understand a bit better how to make the ARTIST
 class Artist(Dispatcher):
-
-    """
-    Parameters
-    ----------
-    name: str
-        The name of this ARTIST
-    settings: dict
-        The dictionary with initial config settings for
-        the DAQ process
-
-    Attributes
-    ----------
-    dQ: multiprocessing Queue
-        A queue that is used for communicating data with the
-        acquisition process
-    iQ: multiprocessing Queue
-        A queue that is used for communicating instructions with the
-        acquisition process
-    mQ: multiprocessing Queue
-        A queue that is used for communicating error messages with the
-        acquisition process
-    stopFlag: multiprocessing Event
-        An event that is set when the DAQ process should stop
-    running: bool
-        A boolean that indicates if the DAQ process is running
-
-    data: dict
-        A dictionary with the data
-    """
-
     def __init__(self, name='', PORT=5005, acquireFunction=None,
             save_data=True,format = tuple()):
         super(Artist, self).__init__(PORT, name)
@@ -55,6 +25,8 @@ class Artist(Dispatcher):
         self.mQ = mp.Queue()
         # data pipe: acquire -> ARTIST
         self.data_output,self.data_input = mp.Pipe(duplex=False)
+        # scan data pipe: acquire -> ARTIST
+        self.scan_data_output,self.scan_data_input = mp.Pipe(duplex=False)
 
         # stop flag for the acquisition
         self.stopFlag = mp.Event()
@@ -104,7 +76,12 @@ class Artist(Dispatcher):
         # Recall there is only one data server, so this works
         l = len(self.data_deque)
         data = [self.data_deque.popleft() for _i in range(l)]
-        return {'data': data, 'format': self.format}
+
+        l = len(self.scan_data_deque)
+        scan_data = [self.scan_data_deque.popleft() for _i in range(l)]
+
+        return {'data': data,'scan_data': scan_data,
+                'format': self.format}
 
     @try_call
     def set_scan_number(self, params):
@@ -138,11 +115,13 @@ class Artist(Dispatcher):
 
         self.InitializeScanning()
         self.DAQProcess = mp.Process(name = 'daq' + self.name,
-                                      target=self.acquireFunction,
-                                      args=(self.name,
-                                           self.data_input, self.iQ, self.mQ, 
-                                           self.stopFlag,
-                                           self.IStoppedFlag, self.ns))
+                  target=self.acquireFunction,
+                  args=(self.name,
+                       self.data_input, 
+                       self.scan_data_input, 
+                       self.iQ, self.mQ, 
+                       self.stopFlag,
+                       self.IStoppedFlag, self.ns))
         self.DAQProcess.start()
 
         self.readThread = th.Timer(0, self.read_data).start()
@@ -160,11 +139,16 @@ class Artist(Dispatcher):
     def read_data(self):
         while not self.stopFlag.is_set():
             self.handle_messages()
-            ret = emptyPipe(self.data_output)
-            if not ret == []:
-                self.data_deque.extend(ret)
+            
+            data_packet = emptyPipe(self.data_output)
+            if not data_packet == []:
+                self.data_deque.extend(data_packet)
                 if self.save_data:
-                    self.save_input.send(ret)
+                    self.save_input.send(data_packet)
+            
+            scan_data_packet = emptyPipe(self.scan_data_output)
+            if not scan_data_packet == []:
+                self.scan_data_deque.extend(data_packet)
 
             time.sleep(0.01)
 
@@ -189,43 +173,17 @@ class Artist(Dispatcher):
 
 
 def makeArtist(name='test'):
+    ports = {'ABU':6005,
+             'CRIS':6005,
+             'Matisse':6004,
+             'diodes':6003,
+             'M2':6002}
 
-    if name == 'ABU' or name == 'CRIS':
-        from acquire_files.acquire import acquire as aq
-        from acquire_files.acquire import FORMAT
-        settings = dict(counterChannel="/Dev1/ctr1",  # corresponds to PFI3
-                               aoChannel="/Dev1/ao0",
-                               aiChannel="/Dev1/ai1,/Dev1/ai2",
-                               noOfAi=2,
-                               clockChannel="/Dev1/PFI1")
-        PORT = 6005
-    
-    elif name == 'laser':
-        from acquire_files.acquireMatisse import acquireMatisse as aq
-        from acquire_files.acquireMatisse import FORMAT
-        settings = dict()
-        PORT = 6004
-    
-    elif name == 'diodes':
-        from acquire_files.acquireDiodes import acquireDiodes as aq
-        from acquire_files.acquireDiodes import FORMAT
-        settings = dict(aiChannel="/Dev1/ai1,/Dev1/ai2,/Dev1/ai3",
-                               noOfAi=3)
-        PORT = 6003
-    
-    elif name == 'M2':
-        from acquire_files.acquisition import hardware_map,acquire
-        PORT = 6002
-        FORMAT = hardware_map['M2'].format
-        aq = acquire
+    from acquire_files.acquisition import hardware_map,acquire
+    PORT = ports[name]
+    FORMAT = hardware_map[name].format
 
-    # elif name == 'M2':
-    #     from acquire_files.acquireM2 import acquireM2 as aq
-    #     from acquire_files.acquireM2 import FORMAT
-    #     settings = dict()
-    #     PORT = 6002
-
-    artist = Artist(name=name,PORT=PORT,acquireFunction=aq,
+    artist = Artist(name=name,PORT=PORT,acquireFunction=acquire,
         save_data=True,format=FORMAT)
     
     return artist

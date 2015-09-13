@@ -2,6 +2,7 @@ import time
 import copy
 import logging
 import h5py
+import traceback
 
 SAVE_PATH = 'C:/Data/'
 
@@ -16,7 +17,6 @@ def GetFromQueue(q):
         ret = None
 
     return ret
-
 
 def emptyPipe(q):
     toSend = []
@@ -82,3 +82,12 @@ def log_message(func):
     
     return func_wrapper
         
+
+def try_deco(func):
+    def func_wrapper(*args,**kwargs):
+        try:
+            reply = func(*args, **kwargs)
+        except:
+            reply = ([1],traceback.format_exc())
+        return reply
+    return func_wrapper
