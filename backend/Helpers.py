@@ -45,7 +45,6 @@ def track(func):
         return func(self, message)
     return func_wrapper
 
-
 def add_reply(message, params):
     new_message = copy.deepcopy(message)
     new_message['reply'] = {}

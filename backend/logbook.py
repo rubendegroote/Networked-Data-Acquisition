@@ -44,6 +44,7 @@ def addEntry(logbook, **kwargs):
     snap['Time'] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     snap['Author'] = ''
     snap['Text'] = ''
+    snap["Mass"] = ''
     for key, val in kwargs.items():
         if not key == 'Time':
             snap[key] = val

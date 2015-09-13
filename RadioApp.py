@@ -58,6 +58,7 @@ class RadioApp(QtGui.QMainWindow):
         else:
             self.live_viewing = False
 
+        self.no_of_rows = {}
         self.request = item.text(0)
 
     def stopIOLoop(self):
@@ -140,24 +141,22 @@ class RadioApp(QtGui.QMainWindow):
     def data_reply(self,track,params):
         origin, track_id = track
         data = params['data']
-        buffers_cleared = params['buffers_cleared']
 
         if data == []:
-            pass
+            return
 
-        else:
-            self.graph.no_of_rows = params['no_of_rows']
+        self.graph.no_of_rows = params['no_of_rows']
 
-            data_x = pd.DataFrame({'time':data[0],'x':data[1]})
-            data_y = pd.DataFrame({'time':data[2],'y':data[3]})
+        data_x = pd.DataFrame({'time':data[0],'x':data[1]})
+        data_y = pd.DataFrame({'time':data[2],'y':data[3]})
 
-            data = pd.concat([data_x,data_y])
-            data.set_index(['time'],inplace=True)
+        data = pd.concat([data_x,data_y])
+        data.set_index(['time'],inplace=True)
 
-            if buffers_cleared:
-                self.graph.data=data
-            else:                
-                self.graph.data=self.graph.data.append(data)
+        if buffers_cleared:
+            self.graph.data=data
+        else:                
+            self.graph.data=self.graph.data.append(data)
                 
     def file_status_reply(self,track,params):
         file_names = params['file_names']

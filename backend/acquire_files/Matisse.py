@@ -7,8 +7,7 @@ from .OpenOPC.OpenOPC import *
 
 class Matisse(Device):
     def __init__(self):
-        format =  ('timestamp','scan_number','setpoint',
-                        'wavenumber','wavenumber 2')
+        format =  ('wavenumber','wavenumber 2')
         write_param = 'wavelength'
         
         super(Matisse,self).__init__(name = 'Matisse',

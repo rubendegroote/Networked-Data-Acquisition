@@ -138,7 +138,9 @@ class LogbookApp(QtGui.QMainWindow):
             for number, widget in self.logEntryWidgets.items():
                 entry = widget.entry
                 for snapshot in entry:
-                    if 'Tags' in snapshot and filterTag in snapshot['Tags'] and snapshot['Tags'][filterTag]:
+                    if 'Tags' in snapshot and \
+                       filterTag in snapshot['Tags'] and \
+                       snapshot['Tags'][filterTag]:
                         filter_dict[number] = True
             self.filter_logbook(filter_dict=filter_dict)
 
@@ -262,7 +264,7 @@ class LogbookApp(QtGui.QMainWindow):
         return 'logbook_status',{'no_of_log_edits':[len(self.log_edits)]}
 
     def onCloseCallback(self, connector):
-        print(connector.acceptorName + ' connection failure')
+        print(connector.acceptor_name + ' connection failure')
 
     def closeEvent(self, event):
         self.timer.stop()

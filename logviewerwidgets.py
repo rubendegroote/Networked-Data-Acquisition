@@ -209,7 +209,7 @@ class LogEntryWidget(FrameLayout):
         self.tags = {}
 
         self.visibleProp = list(self.entry[-1].keys())
-        self.unEditableProp = ['time', 'scan number']
+        self.unEditableProp = ['Time', 'Scan Number', 'Mass']
 
         self.widget = QtGui.QWidget(self)
         self.grid = QtGui.QGridLayout()

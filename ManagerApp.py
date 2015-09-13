@@ -10,11 +10,6 @@ from connectiondialogs import Man_DS_ConnectionDialog
 from connectionwidgets import ArtistConnections
 from scanner import ScannerWidget
 
-class ResumeScanSignal(QtCore.QObject):
-
-    resumescan = QtCore.pyqtSignal(tuple)
-
-
 class ManagerApp(QtGui.QMainWindow):
     updateSignal = QtCore.pyqtSignal(tuple)
     messageUpdateSignal = QtCore.pyqtSignal(dict)
@@ -23,6 +18,7 @@ class ManagerApp(QtGui.QMainWindow):
         self.looping = True
         self.hasMan = False
         self.hasDS = False
+        self.masses = []
         t = th.Thread(target=self.startIOLoop).start()
         self.init_UI()
 
@@ -114,7 +110,7 @@ class ManagerApp(QtGui.QMainWindow):
     def lostConn(self, connector):
         print('lostConn')
         self.statusBar().showMessage(
-            connector.acceptorName + ' connection failure')
+            connector.acceptor_name + ' connection failure')
         self.serverConnectButton.setEnabled(True)
         self.disable()
 
@@ -157,6 +153,7 @@ class ManagerApp(QtGui.QMainWindow):
             self.updateSignal.emit((self.scanner.update,
                                     {'track':track,
                                     'args':params}))
+            self.masses = params['masses']
         elif origin == 'DataServer':
             self.updateSignal.emit((self.connWidget.updateData,
                                     {'track':track,
@@ -167,7 +164,14 @@ class ManagerApp(QtGui.QMainWindow):
                                        'args':params['connector_info']}))
 
     def start_scan(self, scanInfo):
-        self.Man_DS_Connector.instruct('Manager', ('start_scan', scanInfo))
+        # ask for the isotope mass
+        mass, result = QtGui.QInputDialog.getItem(self, 'Mass Input Dialog', 
+                'Choose a mass or enter new mass:', self.masses)
+        if result:
+            scanInfo['mass'] = [mass]
+            self.Man_DS_Connector.instruct('Manager', ('start_scan', scanInfo))
+        else:
+            pass
 
     def start_scan_reply(self,track,params):
         origin,track_id = track[-1]

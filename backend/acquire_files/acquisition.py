@@ -8,7 +8,7 @@ hardware_map = {}
 hardware_map['M2'] = M2()
 
 ### Main acquire loop
-def acquire(name,data_pipe,scan_data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
+def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
     ### what hardware?
     hardware = hardware_map[name]
 
@@ -49,8 +49,6 @@ def acquire(name,data_pipe,scan_data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
         if return_message[0][0] == [0]: # input was succesful
             data = return_message[1]
             data_pipe.send(data)
-            if self.ns.scanning:
-                scan_data_pipe.send(data)
 
         else: #error to report
             mQ.put(return_message)

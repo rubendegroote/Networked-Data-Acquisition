@@ -54,8 +54,8 @@ class Dispatcher(asyncore.dispatcher):
                               onCloseCallback=self.connector_closed_cb,
                               default_callback=self.default_cb,
                               name=self.name)
-        self.connectors[conn.acceptorName] = conn
-        self.connInfo[conn.acceptorName] = (
+        self.connectors[conn.acceptor_name] = conn
+        self.connInfo[conn.acceptor_name] = (
             True, conn.chan[0], conn.chan[1])
         return {}
 
@@ -100,8 +100,9 @@ class Dispatcher(asyncore.dispatcher):
             self.notify_connectors(([1],"Received status fail in reply\n:{}".format(exception)))
 
     def connector_closed_cb(self,connector):
-        self.connInfo[connector.acceptorName] = (
+        self.connInfo[connector.acceptor_name] = (
             False, connector.chan[0], connector.chan[1])
+        self.notify_connectors(([1],"{} disconnected from {}".format(self.name,connector.acceptor_name)))
 
     def default_cb(self):
         return 'status',{}

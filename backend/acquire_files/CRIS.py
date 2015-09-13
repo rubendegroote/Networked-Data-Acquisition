@@ -8,9 +8,7 @@ from PyDAQmx.DAQmxFunctions import *
 
 class CRIS(Device):
     def __init__(self):
-        format =  ('timestamp','scan_number','AOV'
-                   'Counts','AIChannel1',
-                   'AIChannel2')
+        format =  ('AOV','Counts','AIChannel1','AIChannel2')
 
         settings = dict(counterChannel="/Dev1/ctr1",  # corresponds to PFI3
                                aoChannel="/Dev1/ao0",

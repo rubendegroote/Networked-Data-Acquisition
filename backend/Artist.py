@@ -11,15 +11,8 @@ import threading as th
 # Some exploratory code to understand a bit better how to make the ARTIST
 class Artist(Dispatcher):
     def __init__(self, name='', PORT=5005, acquireFunction=None,
-            save_data=True,format = tuple()):
+            format = tuple()):
         super(Artist, self).__init__(PORT, name)
-        self.saveDir = "C:\\Data\\"
-
-        # this boolean is set to true when a scan is started
-        # and is set to false the first time the scan data is
-        # sent to the data server. 
-        self.scan_just_started = False
-
         self.acquireFunction = acquireFunction
 
         # instructions queue:
@@ -29,8 +22,6 @@ class Artist(Dispatcher):
         self.mQ = mp.Queue()
         # data pipe: acquire -> ARTIST
         self.data_output,self.data_input = mp.Pipe(duplex=False)
-        # scan data pipe: acquire -> ARTIST
-        self.scan_data_output,self.scan_data_input = mp.Pipe(duplex=False)
 
         # stop flag for the acquisition
         self.stopFlag = mp.Event()
@@ -58,14 +49,10 @@ class Artist(Dispatcher):
 
         self.start_daq()
 
-        self.save_data = save_data
-        if save_data:
-            # save pipe: send data to be saved
-            self.save_output,self.save_input = mp.Pipe(duplex=False)
-            self.start_saving()
-
-    def InitializeScanning(self):
-        self.ns.scanning = False
+        self.saveDir = "C:\\Data\\"
+        # save pipe: send data to be saved
+        self.save_output,self.save_input = mp.Pipe(duplex=False)
+        self.start_saving()
 
     @try_call
     def status(self, params):
@@ -81,20 +68,7 @@ class Artist(Dispatcher):
         l = len(self.data_deque)
         data = [self.data_deque.popleft() for _i in range(l)]
 
-        l = len(self.scan_data_deque)
-        scan_data = [self.scan_data_deque.popleft() for _i in range(l)]
-
-        # boolean to tell the data server if it has to clear the
-        # scan data buffer or not 
-        if self.scan_just_started:
-            self.scan_just_started = False
-            scan_just_started = True
-        else:
-            scan_just_started = False
-
         return {'data': data,
-                'scan_data': scan_data,
-                'scan_just_started': scan_just_started,
                 'format': self.format}
 
     @try_call
@@ -107,8 +81,7 @@ class Artist(Dispatcher):
         self.ns.scan_parameter = params['scan_parameter'][0]
         self.ns.scan_array = params['scan_array']
         self.ns.time_per_step = params['time_per_step'][0]
-
-        self.scan_just_started = True
+        self.ns.mass = params['mass'][0]
 
         self.iQ.put('scan')
 
@@ -130,28 +103,15 @@ class Artist(Dispatcher):
     def start_daq(self):
         self.stopFlag.clear()
 
-        self.InitializeScanning()
+        args = (self.name,self.data_input, 
+                self.iQ, self.mQ,self.stopFlag,
+                self.IStoppedFlag, self.ns)
         self.DAQProcess = mp.Process(name = 'daq' + self.name,
                   target=self.acquireFunction,
-                  args=(self.name,
-                       self.data_input, 
-                       self.scan_data_input, 
-                       self.iQ, self.mQ, 
-                       self.stopFlag,
-                       self.IStoppedFlag, self.ns))
+                  args=args)
         self.DAQProcess.start()
 
         self.readThread = th.Timer(0, self.read_data).start()
-
-    def stop_daq(self):
-        self.stopFlag.set()
-        # wait for the process to stop
-        self.IStoppedFlag.clear()
-        self.DAQProcess.terminate()
-
-    def restart_daq(self):
-        self.stop_daq()
-        self.start_daq()
 
     def read_data(self):
         while not self.stopFlag.is_set():
@@ -160,13 +120,8 @@ class Artist(Dispatcher):
             data_packet = emptyPipe(self.data_output)
             if not data_packet == []:
                 self.data_deque.extend(data_packet)
-                if self.save_data:
-                    self.save_input.send(data_packet)
+                self.save_input.send(data_packet)
             
-            scan_data_packet = emptyPipe(self.scan_data_output)
-            if not scan_data_packet == []:
-                self.scan_data_deque.extend(data_packet)
-
             time.sleep(0.01)
 
     def handle_messages(self):
@@ -175,10 +130,11 @@ class Artist(Dispatcher):
             self.notify_connectors(message)
 
     def start_saving(self):
+        args = (self.save_output,self.saveDir,
+                  self.name,self.format)
         self.saveProcess = mp.Process(name = 'save_' + self.name,
                                       target = save_continuously,
-                                      args = (self.save_output,self.saveDir,
-                                              self.name,self.format))
+                                      args = args)
         self.saveProcess.start()
 
     def handle_accept(self):
@@ -200,7 +156,7 @@ def makeArtist(name='test'):
     PORT = ports[name]
     FORMAT = hardware_map[name].format
 
-    artist = Artist(name=name,PORT=PORT,acquireFunction=acquire,
-        save_data=True,format=FORMAT)
+    artist = Artist(name=name,PORT=PORT,
+            acquireFunction=acquire,format=FORMAT)
     
     return artist

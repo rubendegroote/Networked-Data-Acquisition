@@ -27,7 +27,7 @@ class Connector(asynchat.async_chat):
 
         self.send(self.name.encode('UTF-8'))
 
-        self.acceptorName = self.wait_for_connection()
+        self.acceptor_name = self.wait_for_connection()
 
         self.set_terminator('STOP_DATA'.encode('UTF-8'))
         self.buff = b''

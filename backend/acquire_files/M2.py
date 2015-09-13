@@ -6,10 +6,9 @@ from .Helpers import try_deco
 
 class M2(Device):
     def __init__(self):
-        format =  ('timestamp','status', 'wavelength', 'temperature', 'temperature_status',
+        format =  ('status', 'wavelength', 'temperature', 'temperature_status',
             'etalon_lock', 'etalon_voltage', 'ref_cavity_lock', 'resonator_voltage',
-            'ecd_lock', 'ecd_voltage', 'output_monitor', 'etalon_pd_dc', 'dither',
-            'scan_number')
+            'ecd_lock', 'ecd_voltage', 'output_monitor', 'etalon_pd_dc', 'dither')
         
         write_param = 'wavelength'
 

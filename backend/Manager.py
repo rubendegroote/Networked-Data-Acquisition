@@ -41,22 +41,28 @@ class Manager(Dispatcher):
         scan_parameter = params['scan_parameter']
         scan_array = params['scan_array']
         time_per_step = params['time_per_step']
+        mass = params['mass']
         
-        self.scan_artist(artist_name,scan_parameter,scan_array,time_per_step)
+        self.scan_artist(artist_name,scan_parameter,
+                         scan_array,time_per_step,mass)
 
         return {}
 
-    def scan_artist(self,artist_name,scan_parameter,scan_array,time_per_step):
+    def scan_artist(self,artist_name,scan_parameter,
+                         scan_array,time_per_step,
+                         mass):
         self.scanner_name = artist_name
         scanner = self.connectors[artist_name]
         self.scan_number += 1
         self.set_all_scan_numbers(self.scan_number)
         scanner.add_request(('start_scan',{'scan_parameter':scan_parameter,
                                      'scan_array':scan_array,
-                                     'time_per_step':time_per_step}))
+                                     'time_per_step':time_per_step,
+                                     'mass':mass}))
         
         info_for_log = {'Scan Number': self.scan_number,
              'Author': 'Automatic Entry',
+             'Mass':mass[0],
              'Text': lb.START.format(artist_name,scan_array[0],
                                      scan_array[-1],
                                      len(scan_array),

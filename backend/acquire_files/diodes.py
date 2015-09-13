@@ -8,8 +8,7 @@ from PyDAQmx.DAQmxFunctions import *
 
 class diodes(Device):
     def __init__(self):
-        format =  ('timestamp','scan_number',
-                   'AIChannel1','AIChannel2','AIChannel3')
+        format =  ('AIChannel1','AIChannel2','AIChannel3')
 
         settings = dict(aiChannel="/Dev1/ai1,/Dev1/ai2,/Dev1/ai3",
                                noOfAi=3)

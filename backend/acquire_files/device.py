@@ -4,7 +4,7 @@ from .Helpers import try_deco
 
 class Device():
     def __init__(self,name = 'device',
-                      format = ('timestamp','scan_number'),
+                      format = (),
                       settings = {},
                       ns = None,
                       write_param = 'name_of_parameter',
@@ -12,7 +12,8 @@ class Device():
                       needs_stabilization = False):
 
         self.name = name
-        self.format = format
+        self.format = ('timestamp','scan_number',
+                                'mass','setpoint') + format
         self.settings = settings
         self.ns = ns
         self.write_param = write_param
@@ -97,7 +98,10 @@ class Device():
     @try_deco
     def input(self):
         data_from_device = self.read_from_device()
-        data = [time.time(),self.ns.scan_number, self.ns.setpoint]
+        data = [time.time(),
+                self.ns.scan_number,
+                self.ns.mass, 
+                self.ns.setpoint]
         data.extend(data_from_device)
         return ([0],data)
     
