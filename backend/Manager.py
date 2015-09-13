@@ -15,6 +15,7 @@ class Manager(Dispatcher):
         self.scanning = {}
         self.format = {}
         self.on_setpoint = {}
+        self.masses = []
 
         self.logbookPath = LOG_PATH+'logbook'
         try:
@@ -32,7 +33,8 @@ class Manager(Dispatcher):
                   'scanning': self.scanning,
                   'on_setpoint': self.on_setpoint,
                   'progress': self.progress,
-                  'format': self.format}
+                  'format': self.format,
+                  'masses':self.masses}
         return params
 
     @try_call
@@ -172,6 +174,8 @@ class Manager(Dispatcher):
         self.scanning[origin] = params['scanning']
         self.progress[origin] = params['progress']
         self.on_setpoint[origin] = params['on_setpoint']
+        if not params['mass'] in self.masses:
+            self.masses.append(params['mass'])
 
     def add_to_logbook(self,info_for_log):
         lb.addEntryFromCopy(self.logbook,info_for_log)

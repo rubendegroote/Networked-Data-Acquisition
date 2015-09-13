@@ -1,6 +1,8 @@
 import socket
-import tim
-from .Helpers import try_deco
+import time
+# from . import Helpers as hp 
+
+format = ('timestamp','scan_number','mass','setpoint')
 
 class Device():
     def __init__(self,name = 'device',
@@ -12,8 +14,7 @@ class Device():
                       needs_stabilization = False):
 
         self.name = name
-        self.format = ('timestamp','scan_number',
-                                'mass','setpoint') + format
+        self.format =  format
         self.settings = settings
         self.ns = ns
         self.write_param = write_param
@@ -33,12 +34,12 @@ class Device():
         # to be overridden
         pass
 
-    @try_deco
+    # @hp.try_deco
     def setup(self):
         self.connect_to_device()
         return ([0],"Communication with {} achieved.".format(self.name))
 
-    @try_deco
+    # @hp.try_deco
     def interpret(self,instr):
         if instr == 'scan':
             if self.ns.scan_parameter == self.write_param:
@@ -62,30 +63,37 @@ class Device():
             return ([0],'Executed {} instruction.'.format(instr))
         
         else:
-            return mQ.put(([1],'Unknown instruction {}.'.format(instr)))
-            
-    @try_deco
+            return ([1],'Unknown instruction {}.'.format(instr))
+
+    # @hp.try_deco
     def scan(self):
+        print('scanner')
         if time.time() - self.ns.start_of_setpoint > self.ns.time_per_step:
+            print('here')
             self.ns.on_setpoint = False
             if self.ns.current_position == len(self.ns.scan_array):
+                print('here 2')
                 self.ns.scanning = False
                 self.ns.progress = 1.0
                 return ([0],'Stopped {} scan.'.format(self.ns.scan_parameter))
             else:
+                print('here 3')
                 self.ns.setpoint = self.ns.scan_array[self.ns.current_position]
                 return ([0],'{} scan: setpoint acknowledged'.format(self.ns.scan_parameter))
 
-    @try_deco
+    # @hp.try_deco
     def stabilize(self):
         # do stabilization if needed
+        if not self.ns.on_setpoint: # go to setpoint if needed
+            self.write_to_device()
+            self.ns.on_setpoint = True
+            return ([0],'{} setpoint reached'.format(self.ns.scan_parameter))
+        
         if self.needs_stabilization:
             # do stuff to stabilize on setpoint
             # this will probz take some self.write_to_device() calls
-            self.ns.on_setpoint = True
-        elif not self.ns.on_setpoint: # go to setpoint if needed
-            self.write_to_device()
-            self.ns.on_setpoint = True
+            # self.write_to_device()
+            pass
 
         # if this move was part of a scan, update the progress
         if self.ns.scanning and self.ns.on_setpoint:
@@ -95,7 +103,7 @@ class Device():
 
         pass
 
-    @try_deco
+    # @hp.try_deco
     def input(self):
         data_from_device = self.read_from_device()
         data = [time.time(),

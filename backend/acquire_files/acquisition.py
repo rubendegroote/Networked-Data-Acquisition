@@ -2,15 +2,18 @@ import json
 import numpy
 import time
 
-from .M2 import M2 as M2
+from . import M2
+
+format_map = {}
+format_map['M2'] = M2.format
 
 hardware_map = {}
-hardware_map['M2'] = M2()
+hardware_map['M2'] = M2.M2
 
 ### Main acquire loop
 def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
     ### what hardware?
-    hardware = hardware_map[name]
+    hardware = hardware_map[name]()
 
     hardware.ns = ns
 
@@ -29,27 +32,30 @@ def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
 
         ### Act on the instruction
         ## This can also write to the device if needed
-        return_message = hardware.interpret(instr)
-        mQ.put(return_message)
+        if not instr is None:
+            return_message = hardware.interpret(instr)
+            # never returns None
+            mQ.put(return_message)
 
         ### Scanning logic
         ## Will go through the scan array and write to device
-        if self.ns.scanning:
+        if ns.scanning:
             return_message = hardware.scan()
-            mQ.put(return_message)
+            if not return_message is None:
+                mQ.put(return_message)
 
         ### Stabilizing on setpoint logic
-        if not self.ns.on_setpoint or 
+        if not ns.on_setpoint or \
                 hardware.needs_stabilization:
             return_message = hardware.stabilize()
-            mQ.put(return_message)
+            if not return_message is None:
+                mQ.put(return_message)
 
         ### Input logic
         return_message = hardware.input()
-        if return_message[0][0] == [0]: # input was succesful
+        if return_message[0][0] == 0: # input was succesful
             data = return_message[1]
             data_pipe.send(data)
-
         else: #error to report
             mQ.put(return_message)
 

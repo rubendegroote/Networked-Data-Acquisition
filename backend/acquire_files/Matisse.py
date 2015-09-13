@@ -5,13 +5,16 @@ import ctypes
 from .Helpers import try_deco
 from .OpenOPC.OpenOPC import *
 
+from .device import format,Device
+
+this_format = format + ('wavenumber','wavenumber 2')
+
 class Matisse(Device):
     def __init__(self):
-        format =  ('wavenumber','wavenumber 2')
         write_param = 'wavelength'
         
         super(Matisse,self).__init__(name = 'Matisse',
-                                     format=format,
+                                     format=this_format,
                                      write_param = write_param)
 
     def connect_to_device(self):

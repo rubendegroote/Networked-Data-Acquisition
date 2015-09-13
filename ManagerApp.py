@@ -165,10 +165,11 @@ class ManagerApp(QtGui.QMainWindow):
 
     def start_scan(self, scanInfo):
         # ask for the isotope mass
+        masses = [str(m) for m in self.masses]
         mass, result = QtGui.QInputDialog.getItem(self, 'Mass Input Dialog', 
-                'Choose a mass or enter new mass:', self.masses)
+                'Choose a mass or enter new mass:', masses)
         if result:
-            scanInfo['mass'] = [mass]
+            scanInfo['mass'] = [int(mass)]
             self.Man_DS_Connector.instruct('Manager', ('start_scan', scanInfo))
         else:
             pass

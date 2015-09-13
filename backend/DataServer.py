@@ -140,12 +140,12 @@ class DataServer(Dispatcher):
             self.no_of_rows[origin] += len(data)
             self.formats[origin] = format
         
-def makeServer(PORT=5006, save=True):
-    return DataServer(PORT, save)
+def makeServer(PORT=5006):
+    return DataServer(PORT)
 
 def main():
     try:
-        d = makeServer(5005, save=True)
+        d = makeServer(5005)
         style = "QLabel { background-color: green }"
         e = ''
     except Exception as error:

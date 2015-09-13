@@ -6,10 +6,12 @@ from PyDAQmx import *
 from PyDAQmx.DAQmxConstants import *
 from PyDAQmx.DAQmxFunctions import *
 
+from .device import format,Device
+
+this_format = format + ('AOV','Counts','AIChannel1','AIChannel2')
+
 class CRIS(Device):
     def __init__(self):
-        format =  ('AOV','Counts','AIChannel1','AIChannel2')
-
         settings = dict(counterChannel="/Dev1/ctr1",  # corresponds to PFI3
                                aoChannel="/Dev1/ao0",
                                aiChannel="/Dev1/ai1,/Dev1/ai2",
@@ -19,7 +21,7 @@ class CRIS(Device):
         write_param = 'AOV'
 
         super(CRIS,self).__init__(name = 'CRIS',
-                                  format=format,
+                                  format=this_format,
                                   settings=settings,
                                   write_param = write_param)
 

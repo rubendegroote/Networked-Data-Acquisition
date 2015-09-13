@@ -1,5 +1,5 @@
 import sys
-from Helpers import *
+import Helpers as hp
 from save import *
 from connectors import Connector, Acceptor
 import logbook as lb
@@ -7,6 +7,9 @@ from dispatcher import Dispatcher
 import multiprocessing as mp
 from collections import deque
 import threading as th
+
+from acquire_files.acquisition import format_map,acquire
+
 
 # Some exploratory code to understand a bit better how to make the ARTIST
 class Artist(Dispatcher):
@@ -36,13 +39,16 @@ class Artist(Dispatcher):
         self.ns = self.mgr.Namespace()
         self.ns.start_of_setpoint = time.time()
         self.ns.scan_number = -1
+        self.ns.mass = 0
         self.ns.on_setpoint = False
         self.ns.scanning = False
         self.ns.current_position = 0
         self.ns.progress = 0
         self.ns.parameter = ''
+        self.ns.scan_parameter = ''
         self.ns.setpoint = 0
-        self.format = format
+
+        self.format = format_map[name]
         self.ns.format = self.format
 
         self.data_deque = deque()
@@ -54,29 +60,29 @@ class Artist(Dispatcher):
         self.save_output,self.save_input = mp.Pipe(duplex=False)
         self.start_saving()
 
-    @try_call
+    @hp.try_call
     def status(self, params):
         return {'format': self.format,
                 'scanning': self.ns.scanning,
                 'on_setpoint': self.ns.on_setpoint,
                 'progress': self.ns.progress,
-                'scan_number': self.ns.scan_number}
+                'scan_number': self.ns.scan_number,
+                'mass':self.ns.mass}
 
-    @try_call
+    @hp.try_call
     def data(self, params):
         # Recall there is only one data server, so this works
         l = len(self.data_deque)
         data = [self.data_deque.popleft() for _i in range(l)]
-
         return {'data': data,
                 'format': self.format}
 
-    @try_call
+    @hp.try_call
     def set_scan_number(self, params):
         self.ns.scan_number = params['scan_number'][0]
         return {}
 
-    @try_call
+    @hp.try_call
     def start_scan(self,params):
         self.ns.scan_parameter = params['scan_parameter'][0]
         self.ns.scan_array = params['scan_array']
@@ -87,7 +93,7 @@ class Artist(Dispatcher):
 
         return {}
 
-    @try_call
+    @hp.try_call
     def go_to_setpoint(self,params):
         self.ns.on_setpoint = False
         self.ns.parameter = params['parameter'][0]
@@ -95,7 +101,7 @@ class Artist(Dispatcher):
         self.iQ.put('go_to_setpoint')
         return {}
 
-    @try_call
+    @hp.try_call
     def stop_scan(self,params):
         self.ns.scanning = False
         return {}
@@ -117,7 +123,7 @@ class Artist(Dispatcher):
         while not self.stopFlag.is_set():
             self.handle_messages()
             
-            data_packet = emptyPipe(self.data_output)
+            data_packet = hp.emptyPipe(self.data_output)
             if not data_packet == []:
                 self.data_deque.extend(data_packet)
                 self.save_input.send(data_packet)
@@ -125,8 +131,9 @@ class Artist(Dispatcher):
             time.sleep(0.01)
 
     def handle_messages(self):
-        message = GetFromQueue(self.mQ)
+        message = hp.GetFromQueue(self.mQ)
         if not message == None:
+            print(message)
             self.notify_connectors(message)
 
     def start_saving(self):
@@ -152,11 +159,14 @@ def makeArtist(name='test'):
              'diodes':6003,
              'M2':6002}
 
-    from acquire_files.acquisition import hardware_map,acquire
     PORT = ports[name]
-    FORMAT = hardware_map[name].format
-
     artist = Artist(name=name,PORT=PORT,
-            acquireFunction=acquire,format=FORMAT)
+            acquireFunction=acquire)
     
     return artist
+
+def main():
+    pass
+
+if __name__ == '__main__':
+    main()

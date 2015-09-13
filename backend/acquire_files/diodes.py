@@ -6,15 +6,17 @@ from PyDAQmx import *
 from PyDAQmx.DAQmxConstants import *
 from PyDAQmx.DAQmxFunctions import *
 
+from .device import format,Device
+
+this_format = format +  ('AIChannel1','AIChannel2','AIChannel3')
+
 class diodes(Device):
     def __init__(self):
-        format =  ('AIChannel1','AIChannel2','AIChannel3')
-
         settings = dict(aiChannel="/Dev1/ai1,/Dev1/ai2,/Dev1/ai3",
                                noOfAi=3)
 
         super(diodes,self).__init__(name = 'diodes',
-                                  format=format,
+                                  format=this_format,
                                   settings=settings)
 
     def connect_to_device(self):

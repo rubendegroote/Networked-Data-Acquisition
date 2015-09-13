@@ -2,14 +2,15 @@ import socket
 import time
 import SolsTiScommands as comm
 import numpy as np
-from .Helpers import try_deco 
+
+from .device import format,Device
+
+this_format = format + ('status', 'wavelength', 'temperature', 'temperature_status',
+    'etalon_lock', 'etalon_voltage', 'ref_cavity_lock', 'resonator_voltage',
+    'ecd_lock', 'ecd_voltage', 'output_monitor', 'etalon_pd_dc', 'dither')
 
 class M2(Device):
     def __init__(self):
-        format =  ('status', 'wavelength', 'temperature', 'temperature_status',
-            'etalon_lock', 'etalon_voltage', 'ref_cavity_lock', 'resonator_voltage',
-            'ecd_lock', 'ecd_voltage', 'output_monitor', 'etalon_pd_dc', 'dither')
-        
         write_param = 'wavelength'
 
         mapping = {
@@ -49,8 +50,8 @@ class M2(Device):
             "Stop Fast Scan Without Return": comm.fast_scan_stop_nr
         }
 
-        super(Matisse,self).__init__(name = 'M2',
-                                     format=format,
+        super(M2,self).__init__(name = 'M2',
+                                     format=this_format,
                                      write_param = write_param,
                                      mapping = mapping,
                                      needs_stabilization = True)
@@ -88,7 +89,7 @@ class M2(Device):
         #     print('derp')
         pass
 
-    def write_to_device(self,instr):
+    def write_to_device(self):
         # self.socket.sendall(json.dumps(comm.move_wave_t(self.ns.setpoint)))
         # response = json.loads(self.socket.recv(1024))
         # if response['operator'] == 'move_wave_t_reply':

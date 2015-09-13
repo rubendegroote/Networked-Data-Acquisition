@@ -1,4 +1,3 @@
-# SolsTiS commands
 import socket
 IP = socket.gethostbyname(socket.gethostname())
 import json
