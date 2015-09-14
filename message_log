@@ -16492,3 +16492,239 @@
 2015-09-13 20:46:40,570: {'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['wavelength'], 'setpoint': [15407.31], 'artist': ['M2']}}, 'track': [('MGui_to_M', 136)]}
 2015-09-13 20:46:45,598: {'message': {'op': 'start_scan', 'parameters': {'scan_parameter': ['wavelength'], 'artist': ['M2'], 'scan_array': [15407.299999999999, 15407.305555555555, 15407.31111111111, 15407.316666666666, 15407.322222222221, 15407.327777777778, 15407.333333333334, 15407.338888888889, 15407.344444444445, 15407.35], 'time_per_step': [1.0], 'mass': [67]}}, 'track': [('MGui_to_M', 231)]}
 2015-09-13 20:46:53,932: {'message': {'op': 'stop_scan', 'parameters': {}}, 'track': [('MGui_to_M', 388)]}
+2015-09-14 20:37:56,708: {'track': [('R_to_DS', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
+2015-09-14 20:37:56,715: {'track': [('R_to_DS', 1)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:56,746: {'track': [('R_to_DS', 2)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:56,852: {'track': [('R_to_DS', 3)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:56,957: {'track': [('R_to_DS', 4)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:57,029: {'track': [('R_to_DS', 5)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:57,113: {'track': [('R_to_DS', 6)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:57,222: {'track': [('R_to_DS', 7)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:57,305: {'track': [('R_to_DS', 8)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:57,371: {'track': [('R_to_DS', 9)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:57,460: {'track': [('R_to_DS', 10)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:57,517: {'track': [('R_to_DS', 11)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:57,554: {'track': [('R_to_DS', 12)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:57,638: {'track': [('R_to_DS', 13)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:57,706: {'track': [('R_to_DS', 14)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:57,760: {'track': [('R_to_DS', 15)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:57,792: {'track': [('R_to_DS', 16)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:57,829: {'track': [('R_to_DS', 17)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:57,873: {'track': [('R_to_DS', 18)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:57,905: {'track': [('R_to_DS', 19)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:57,941: {'track': [('R_to_DS', 20)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:57,973: {'track': [('R_to_DS', 21)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,005: {'track': [('R_to_DS', 22)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,041: {'track': [('R_to_DS', 23)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,077: {'track': [('R_to_DS', 24)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,109: {'track': [('R_to_DS', 25)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,141: {'track': [('R_to_DS', 26)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,173: {'track': [('R_to_DS', 27)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,205: {'track': [('R_to_DS', 28)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,237: {'track': [('R_to_DS', 29)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,273: {'track': [('R_to_DS', 30)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,305: {'track': [('R_to_DS', 31)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,337: {'track': [('R_to_DS', 32)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,369: {'track': [('R_to_DS', 33)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,405: {'track': [('R_to_DS', 34)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,437: {'track': [('R_to_DS', 35)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,469: {'track': [('R_to_DS', 36)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,505: {'track': [('R_to_DS', 37)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,537: {'track': [('R_to_DS', 38)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,573: {'track': [('R_to_DS', 39)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,605: {'track': [('R_to_DS', 40)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,637: {'track': [('R_to_DS', 41)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,673: {'track': [('R_to_DS', 42)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,705: {'track': [('R_to_DS', 43)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,737: {'track': [('R_to_DS', 44)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,769: {'track': [('R_to_DS', 45)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,805: {'track': [('R_to_DS', 46)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,837: {'track': [('R_to_DS', 47)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,873: {'track': [('R_to_DS', 48)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,905: {'track': [('R_to_DS', 49)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,937: {'track': [('R_to_DS', 50)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:58,969: {'track': [('R_to_DS', 51)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,005: {'track': [('R_to_DS', 52)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,037: {'track': [('R_to_DS', 53)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,069: {'track': [('R_to_DS', 54)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,105: {'track': [('R_to_DS', 55)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,137: {'track': [('R_to_DS', 56)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,169: {'track': [('R_to_DS', 57)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,205: {'track': [('R_to_DS', 58)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,241: {'track': [('R_to_DS', 59)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,273: {'track': [('R_to_DS', 60)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,305: {'track': [('R_to_DS', 61)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,337: {'track': [('R_to_DS', 62)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,373: {'track': [('R_to_DS', 63)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,405: {'track': [('R_to_DS', 64)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,437: {'track': [('R_to_DS', 65)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,469: {'track': [('R_to_DS', 66)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,505: {'track': [('R_to_DS', 67)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,537: {'track': [('R_to_DS', 68)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,569: {'track': [('R_to_DS', 69)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,605: {'track': [('R_to_DS', 70)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,637: {'track': [('R_to_DS', 71)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,673: {'track': [('R_to_DS', 72)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,709: {'track': [('R_to_DS', 73)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,745: {'track': [('R_to_DS', 74)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,777: {'track': [('R_to_DS', 75)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,813: {'track': [('R_to_DS', 76)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,845: {'track': [('R_to_DS', 77)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,877: {'track': [('R_to_DS', 78)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,909: {'track': [('R_to_DS', 79)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,941: {'track': [('R_to_DS', 80)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:37:59,973: {'track': [('R_to_DS', 81)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,005: {'track': [('R_to_DS', 82)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,037: {'track': [('R_to_DS', 83)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,069: {'track': [('R_to_DS', 84)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,105: {'track': [('R_to_DS', 85)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,137: {'track': [('R_to_DS', 86)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,173: {'track': [('R_to_DS', 87)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,205: {'track': [('R_to_DS', 88)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,245: {'track': [('R_to_DS', 89)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,281: {'track': [('R_to_DS', 90)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,321: {'track': [('R_to_DS', 91)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,357: {'track': [('R_to_DS', 92)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,389: {'track': [('R_to_DS', 93)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,429: {'track': [('R_to_DS', 94)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,465: {'track': [('R_to_DS', 95)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,505: {'track': [('R_to_DS', 96)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,537: {'track': [('R_to_DS', 97)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,569: {'track': [('R_to_DS', 98)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,605: {'track': [('R_to_DS', 99)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,637: {'track': [('R_to_DS', 100)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,673: {'track': [('R_to_DS', 101)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,705: {'track': [('R_to_DS', 102)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,737: {'track': [('R_to_DS', 103)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,769: {'track': [('R_to_DS', 104)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,805: {'track': [('R_to_DS', 105)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,837: {'track': [('R_to_DS', 106)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,873: {'track': [('R_to_DS', 107)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,905: {'track': [('R_to_DS', 108)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,937: {'track': [('R_to_DS', 109)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:00,973: {'track': [('R_to_DS', 110)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,005: {'track': [('R_to_DS', 111)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,037: {'track': [('R_to_DS', 112)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,069: {'track': [('R_to_DS', 113)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,105: {'track': [('R_to_DS', 114)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,137: {'track': [('R_to_DS', 115)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,169: {'track': [('R_to_DS', 116)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,201: {'track': [('R_to_DS', 117)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,237: {'track': [('R_to_DS', 118)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,269: {'track': [('R_to_DS', 119)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,301: {'track': [('R_to_DS', 120)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,337: {'track': [('R_to_DS', 121)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,369: {'track': [('R_to_DS', 122)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,401: {'track': [('R_to_DS', 123)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,437: {'track': [('R_to_DS', 124)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,469: {'track': [('R_to_DS', 125)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,501: {'track': [('R_to_DS', 126)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,537: {'track': [('R_to_DS', 127)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,569: {'track': [('R_to_DS', 128)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,601: {'track': [('R_to_DS', 129)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,637: {'track': [('R_to_DS', 130)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,669: {'track': [('R_to_DS', 131)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,705: {'track': [('R_to_DS', 132)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,737: {'track': [('R_to_DS', 133)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,769: {'track': [('R_to_DS', 134)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,801: {'track': [('R_to_DS', 135)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,837: {'track': [('R_to_DS', 136)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,869: {'track': [('R_to_DS', 137)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,901: {'track': [('R_to_DS', 138)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,937: {'track': [('R_to_DS', 139)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:01,969: {'track': [('R_to_DS', 140)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,005: {'track': [('R_to_DS', 141)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,037: {'track': [('R_to_DS', 142)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,069: {'track': [('R_to_DS', 143)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,105: {'track': [('R_to_DS', 144)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,137: {'track': [('R_to_DS', 145)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,169: {'track': [('R_to_DS', 146)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,205: {'track': [('R_to_DS', 147)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,237: {'track': [('R_to_DS', 148)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,269: {'track': [('R_to_DS', 149)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,305: {'track': [('R_to_DS', 150)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,337: {'track': [('R_to_DS', 151)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,369: {'track': [('R_to_DS', 152)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,401: {'track': [('R_to_DS', 153)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,437: {'track': [('R_to_DS', 154)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,469: {'track': [('R_to_DS', 155)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,505: {'track': [('R_to_DS', 156)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,537: {'track': [('R_to_DS', 157)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,569: {'track': [('R_to_DS', 158)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,601: {'track': [('R_to_DS', 159)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,637: {'track': [('R_to_DS', 160)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,669: {'track': [('R_to_DS', 161)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,705: {'track': [('R_to_DS', 162)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,737: {'track': [('R_to_DS', 163)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,769: {'track': [('R_to_DS', 164)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,805: {'track': [('R_to_DS', 165)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,837: {'track': [('R_to_DS', 166)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,869: {'track': [('R_to_DS', 167)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,901: {'track': [('R_to_DS', 168)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,937: {'track': [('R_to_DS', 169)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:02,969: {'track': [('R_to_DS', 170)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:03,001: {'track': [('R_to_DS', 171)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:03,037: {'track': [('R_to_DS', 172)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:03,069: {'track': [('R_to_DS', 173)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:03,101: {'track': [('R_to_DS', 174)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:03,137: {'track': [('R_to_DS', 175)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:03,169: {'track': [('R_to_DS', 176)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:38:03,201: {'track': [('R_to_DS', 177)], 'message': {'op': 'stream', 'parameters': {'no_of_rows': {}, 'x': [], 'y': []}}}
+2015-09-14 20:41:43,722: {'track': [('MGUI_to_DS', 40)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-14 20:41:43,722: {'track': [('MGui_to_M', 39)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-14 20:41:45,468: {'track': [('MGui_to_M', 66)], 'message': {'parameters': {'setpoint': [15407.31], 'artist': ['M2'], 'parameter': ['wavelength']}, 'op': 'go_to_setpoint'}}
+2015-09-14 20:41:47,692: {'track': [('MGui_to_M', 106)], 'message': {'parameters': {'setpoint': [15407.31], 'artist': ['M2'], 'parameter': ['wavelength']}, 'op': 'go_to_setpoint'}}
+2015-09-14 20:41:48,304: {'track': [('MGui_to_M', 117)], 'message': {'parameters': {'setpoint': [15407.31], 'artist': ['M2'], 'parameter': ['wavelength']}, 'op': 'go_to_setpoint'}}
+2015-09-14 20:41:48,920: {'track': [('MGui_to_M', 128)], 'message': {'parameters': {'setpoint': [15407.31], 'artist': ['M2'], 'parameter': ['wavelength']}, 'op': 'go_to_setpoint'}}
+2015-09-14 20:41:49,656: {'track': [('MGui_to_M', 141)], 'message': {'parameters': {'setpoint': [15407.31], 'artist': ['M2'], 'parameter': ['wavelength']}, 'op': 'go_to_setpoint'}}
+2015-09-14 20:41:51,728: {'track': [('MGui_to_M', 178)], 'message': {'parameters': {'setpoint': [15407.31], 'artist': ['M2'], 'parameter': ['wavelength']}, 'op': 'go_to_setpoint'}}
+2015-09-14 20:41:53,913: {'track': [('MGui_to_M', 217)], 'message': {'parameters': {'setpoint': [15407.31], 'artist': ['M2'], 'parameter': ['wavelength']}, 'op': 'go_to_setpoint'}}
+2015-09-14 20:42:13,458: {'track': [('MGui_to_M', 566)], 'message': {'parameters': {'artist': ['M2'], 'time_per_step': [1.0], 'scan_parameter': ['wavelength'], 'mass': [90], 'scan_array': [15407.299999999999, 15407.305555555555, 15407.31111111111, 15407.316666666666, 15407.322222222221, 15407.327777777778, 15407.333333333334, 15407.338888888889, 15407.344444444445, 15407.35]}, 'op': 'start_scan'}}
+2015-09-14 20:43:29,788: {'track': [('MGui_to_M', 1881)], 'message': {'parameters': {'setpoint': [15407.31], 'artist': ['M2'], 'parameter': ['wavelength']}, 'op': 'go_to_setpoint'}}
+2015-09-14 20:43:33,728: {'track': [('MGui_to_M', 1953)], 'message': {'parameters': {'setpoint': [15407.31], 'artist': ['M2'], 'parameter': ['wavelength']}, 'op': 'go_to_setpoint'}}
+2015-09-14 20:45:16,916: {'message': {'op': 'go_to_setpoint', 'parameters': {'setpoint': [15407.31], 'artist': ['M2'], 'parameter': ['wavelength']}}, 'track': [('MGui_to_M', 19)]}
+2015-09-14 20:45:20,837: {'message': {'op': 'go_to_setpoint', 'parameters': {'setpoint': [15407.31], 'artist': ['M2'], 'parameter': ['wavelength']}}, 'track': [('MGui_to_M', 88)]}
+2015-09-14 20:45:22,801: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGUI_to_DS', 125)]}
+2015-09-14 20:45:22,801: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGui_to_M', 123)]}
+2015-09-14 20:45:24,441: {'message': {'op': 'go_to_setpoint', 'parameters': {'setpoint': [15407.31], 'artist': ['M2'], 'parameter': ['wavelength']}}, 'track': [('MGui_to_M', 149)]}
+2015-09-14 20:45:31,897: {'message': {'op': 'go_to_setpoint', 'parameters': {'setpoint': [15407.31], 'artist': ['M2'], 'parameter': ['wavelength']}}, 'track': [('MGui_to_M', 278)]}
+2015-09-14 20:45:50,857: {'message': {'op': 'go_to_setpoint', 'parameters': {'setpoint': [15407.31], 'artist': ['M2'], 'parameter': ['wavelength']}}, 'track': [('MGui_to_M', 605)]}
+2015-09-14 20:49:35,616: {'track': [('MGui_to_M', 86)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-14 20:49:35,619: {'track': [('MGUI_to_DS', 89)], 'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}}
+2015-09-14 20:49:37,648: {'track': [('MGui_to_M', 121)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['wavelength'], 'artist': ['M2'], 'setpoint': [15407.31]}}}
+2015-09-14 20:49:40,617: {'track': [('MGui_to_M', 178)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['wavelength'], 'artist': ['M2'], 'setpoint': [15407.31]}}}
+2015-09-14 20:49:47,463: {'track': [('MGui_to_M', 309)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['wavelength'], 'artist': ['M2'], 'setpoint': [15407.31]}}}
+2015-09-14 20:49:51,755: {'track': [('MGui_to_M', 391)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['wavelength'], 'artist': ['M2'], 'setpoint': [15407.31]}}}
+2015-09-14 20:49:52,761: {'track': [('MGui_to_M', 410)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['wavelength'], 'artist': ['M2'], 'setpoint': [15407.31]}}}
+2015-09-14 20:49:59,727: {'track': [('MGui_to_M', 543)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['wavelength'], 'artist': ['M2'], 'setpoint': [15407.32]}}}
+2015-09-14 20:50:11,667: {'track': [('MGui_to_M', 766)], 'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['wavelength'], 'artist': ['M2'], 'setpoint': [15407.33]}}}
+2015-09-14 20:53:42,439: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGui_to_M', 91)]}
+2015-09-14 20:53:42,441: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGUI_to_DS', 93)]}
+2015-09-14 20:53:43,231: {'message': {'op': 'go_to_setpoint', 'parameters': {'parameter': ['wavelength'], 'artist': ['M2'], 'setpoint': [15407.31]}}, 'track': [('MGui_to_M', 105)]}
+2015-09-14 20:54:24,065: {'track': [('MGui_to_M', 31)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-14 20:54:24,068: {'track': [('MGUI_to_DS', 35)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
+2015-09-14 20:54:25,475: {'track': [('MGui_to_M', 56)], 'message': {'parameters': {'setpoint': [15407.31], 'artist': ['M2'], 'parameter': ['wavelength']}, 'op': 'go_to_setpoint'}}
+2015-09-14 20:54:29,497: {'track': [('MGui_to_M', 132)], 'message': {'parameters': {'setpoint': [15407.31], 'artist': ['M2'], 'parameter': ['wavelength']}, 'op': 'go_to_setpoint'}}
+2015-09-14 20:56:09,065: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGui_to_M', 48)]}
+2015-09-14 20:56:09,067: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGUI_to_DS', 49)]}
+2015-09-14 20:56:09,649: {'message': {'op': 'go_to_setpoint', 'parameters': {'artist': ['M2'], 'setpoint': [15407.31], 'parameter': ['wavelength']}}, 'track': [('MGui_to_M', 56)]}
+2015-09-14 20:56:16,859: {'message': {'op': 'go_to_setpoint', 'parameters': {'artist': ['M2'], 'setpoint': [15407.31], 'parameter': ['wavelength']}}, 'track': [('MGui_to_M', 182)]}
+2015-09-14 20:56:17,720: {'message': {'op': 'go_to_setpoint', 'parameters': {'artist': ['M2'], 'setpoint': [15407.31], 'parameter': ['wavelength']}}, 'track': [('MGui_to_M', 197)]}
+2015-09-14 20:56:18,305: {'message': {'op': 'go_to_setpoint', 'parameters': {'artist': ['M2'], 'setpoint': [15407.31], 'parameter': ['wavelength']}}, 'track': [('MGui_to_M', 207)]}
+2015-09-14 20:56:20,494: {'message': {'op': 'go_to_setpoint', 'parameters': {'artist': ['M2'], 'setpoint': [15407.31], 'parameter': ['wavelength']}}, 'track': [('MGui_to_M', 245)]}
+2015-09-14 20:56:21,172: {'message': {'op': 'go_to_setpoint', 'parameters': {'artist': ['M2'], 'setpoint': [15407.31], 'parameter': ['wavelength']}}, 'track': [('MGui_to_M', 257)]}
+2015-09-14 20:56:21,693: {'message': {'op': 'go_to_setpoint', 'parameters': {'artist': ['M2'], 'setpoint': [15407.31], 'parameter': ['wavelength']}}, 'track': [('MGui_to_M', 266)]}
+2015-09-14 20:56:22,384: {'message': {'op': 'go_to_setpoint', 'parameters': {'artist': ['M2'], 'setpoint': [15407.31], 'parameter': ['wavelength']}}, 'track': [('MGui_to_M', 278)]}
+2015-09-14 20:56:22,607: {'message': {'op': 'go_to_setpoint', 'parameters': {'artist': ['M2'], 'setpoint': [15407.31], 'parameter': ['wavelength']}}, 'track': [('MGui_to_M', 281)]}
+2015-09-14 20:56:22,722: {'message': {'op': 'go_to_setpoint', 'parameters': {'artist': ['M2'], 'setpoint': [15407.31], 'parameter': ['wavelength']}}, 'track': [('MGui_to_M', 283)]}
+2015-09-14 20:56:22,898: {'message': {'op': 'go_to_setpoint', 'parameters': {'artist': ['M2'], 'setpoint': [15407.31], 'parameter': ['wavelength']}}, 'track': [('MGui_to_M', 286)]}
+2015-09-14 20:56:23,009: {'message': {'op': 'go_to_setpoint', 'parameters': {'artist': ['M2'], 'setpoint': [15407.31], 'parameter': ['wavelength']}}, 'track': [('MGui_to_M', 288)]}
+2015-09-14 20:56:23,180: {'message': {'op': 'go_to_setpoint', 'parameters': {'artist': ['M2'], 'setpoint': [15407.31], 'parameter': ['wavelength']}}, 'track': [('MGui_to_M', 291)]}
+2015-09-14 20:56:27,727: {'message': {'op': 'start_scan', 'parameters': {'mass': [100], 'scan_parameter': ['wavelength'], 'artist': ['M2'], 'time_per_step': [1.0], 'scan_array': [15407.299999999999, 15407.305555555555, 15407.31111111111, 15407.316666666666, 15407.322222222221, 15407.327777777778, 15407.333333333334, 15407.338888888889, 15407.344444444445, 15407.35]}}, 'track': [('MGui_to_M', 371)]}
+2015-09-14 20:56:32,727: {'message': {'op': 'start_scan', 'parameters': {'mass': [120], 'scan_parameter': ['wavelength'], 'artist': ['M2'], 'time_per_step': [1.0], 'scan_array': [15407.299999999999, 15407.305555555555, 15407.31111111111, 15407.316666666666, 15407.322222222221, 15407.327777777778, 15407.333333333334, 15407.338888888889, 15407.344444444445, 15407.35]}}, 'track': [('MGui_to_M', 459)]}
+2015-09-14 20:56:38,821: {'message': {'op': 'start_scan', 'parameters': {'mass': [0], 'scan_parameter': ['wavelength'], 'artist': ['M2'], 'time_per_step': [10.0], 'scan_array': [15407.299999999999, 15407.305555555555, 15407.31111111111, 15407.316666666666, 15407.322222222221, 15407.327777777778, 15407.333333333334, 15407.338888888889, 15407.344444444445, 15407.35]}}, 'track': [('MGui_to_M', 568)]}
+2015-09-14 20:56:40,911: {'message': {'op': 'start_scan', 'parameters': {'mass': [0], 'scan_parameter': ['wavelength'], 'artist': ['M2'], 'time_per_step': [10.0], 'scan_array': [15407.299999999999, 15407.305555555555, 15407.31111111111, 15407.316666666666, 15407.322222222221, 15407.327777777778, 15407.333333333334, 15407.338888888889, 15407.344444444445, 15407.35]}}, 'track': [('MGui_to_M', 606)]}
+2015-09-14 20:57:53,230: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGUI_to_DS', 53)]}
+2015-09-14 20:57:53,232: {'message': {'op': 'add_connector', 'parameters': {'address': ('127.0.0.1', 6002)}}, 'track': [('MGui_to_M', 50)]}
+2015-09-14 20:57:54,077: {'message': {'op': 'go_to_setpoint', 'parameters': {'setpoint': [15407.31], 'artist': ['M2'], 'parameter': ['wavelength']}}, 'track': [('MGui_to_M', 62)]}
+2015-09-14 20:58:03,673: {'message': {'op': 'start_scan', 'parameters': {'scan_parameter': ['wavelength'], 'artist': ['M2'], 'mass': [100], 'scan_array': [15407.299999999999, 15407.305555555555, 15407.31111111111, 15407.316666666666, 15407.322222222221, 15407.327777777778, 15407.333333333334, 15407.338888888889, 15407.344444444445, 15407.35], 'time_per_step': [1.0]}}, 'track': [('MGui_to_M', 245)]}

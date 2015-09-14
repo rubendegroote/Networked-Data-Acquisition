@@ -36,9 +36,10 @@ def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
             return_message = hardware.interpret(instr)
             # never returns None
             mQ.put(return_message)
+            print(ns.on_setpoint)
 
         ### Scanning logic
-        ## Will go through the scan array and write to device
+        ## iterates through the scan array
         if ns.scanning:
             return_message = hardware.scan()
             if not return_message is None:

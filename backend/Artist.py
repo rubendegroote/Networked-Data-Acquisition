@@ -95,7 +95,6 @@ class Artist(Dispatcher):
 
     @hp.try_call
     def go_to_setpoint(self,params):
-        self.ns.on_setpoint = False
         self.ns.parameter = params['parameter'][0]
         self.ns.setpoint = params['setpoint'][0]
         self.iQ.put('go_to_setpoint')
@@ -133,7 +132,6 @@ class Artist(Dispatcher):
     def handle_messages(self):
         message = hp.GetFromQueue(self.mQ)
         if not message == None:
-            print(message)
             self.notify_connectors(message)
 
     def start_saving(self):

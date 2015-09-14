@@ -67,17 +67,13 @@ class Device():
 
     # @hp.try_deco
     def scan(self):
-        print('scanner')
         if time.time() - self.ns.start_of_setpoint > self.ns.time_per_step:
-            print('here')
             self.ns.on_setpoint = False
             if self.ns.current_position == len(self.ns.scan_array):
-                print('here 2')
                 self.ns.scanning = False
                 self.ns.progress = 1.0
                 return ([0],'Stopped {} scan.'.format(self.ns.scan_parameter))
             else:
-                print('here 3')
                 self.ns.setpoint = self.ns.scan_array[self.ns.current_position]
                 return ([0],'{} scan: setpoint acknowledged'.format(self.ns.scan_parameter))
 
@@ -87,6 +83,10 @@ class Device():
         if not self.ns.on_setpoint: # go to setpoint if needed
             self.write_to_device()
             self.ns.on_setpoint = True
+            if self.ns.scanning:
+                self.ns.progress = self.ns.current_position/len(self.ns.scan_array)
+                self.ns.current_position += 1
+                self.ns.start_of_setpoint = time.time()
             return ([0],'{} setpoint reached'.format(self.ns.scan_parameter))
         
         if self.needs_stabilization:
@@ -94,14 +94,6 @@ class Device():
             # this will probz take some self.write_to_device() calls
             # self.write_to_device()
             pass
-
-        # if this move was part of a scan, update the progress
-        if self.ns.scanning and self.ns.on_setpoint:
-            self.ns.progress = self.ns.current_position/len(self.ns.scan_array)
-            self.ns.current_position += 1
-            self.ns.start_of_setpoint = time.time()
-
-        pass
 
     # @hp.try_deco
     def input(self):

@@ -13,7 +13,7 @@ from backend.connectors import Connector
 from connectiondialogs import ConnectionDialog, FieldAdditionDialog
 from logviewerwidgets import LogEntryWidget
 SAVE_DIR = 'C:/Data/'
-
+LOG_PER_PAGE = 20
 
 manager_channel = ('127.0.0.1', 5004)
 
@@ -91,22 +91,27 @@ class LogbookApp(QtGui.QMainWindow):
         layout.addWidget(self.searchTagLabel, 7, 0)
         layout.addWidget(self.searchTagEdit, 7, 1)
 
-        self.scrollArea = QtGui.QScrollArea(self)
-        self.scrollArea.setWidgetResizable(True)
-        self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        layout.addWidget(self.scrollArea, 8, 0, 1, 2)
+        self.page_widget = QtGui.QTabWidget()
+        layout.addWidget(self.page_widget,8,0,1,2)
+        self.pages = []
+        self.new_log_page()
 
-        self.entryContainersLayout = QtGui.QVBoxLayout(
-            self.scrollAreaWidgetContents)
-        self.entryContainers = []
-        self.newEntryContainer()
+    def new_log_page(self):
+        new_page_widget = QtGui.QWidget()
+        layout = QtGui.QGridLayout(new_page_widget)
 
-    def newEntryContainer(self):
-        entryContainer = QtGui.QGridLayout()
-        self.entryContainersLayout.addLayout(entryContainer)
-        entryContainer.setAlignment(QtCore.Qt.AlignTop)
-        self.entryContainers.append(entryContainer)
+        scrollArea = QtGui.QScrollArea(new_page_widget)
+        scrollArea.setWidgetResizable(True)
+        scrollAreaWidgetContents = QtGui.QWidget()
+        scrollArea.setWidget(scrollAreaWidgetContents)
+        layout.addWidget(scrollArea)
+
+        new_page = QtGui.QGridLayout(scrollAreaWidgetContents)
+        fr = len(self.pages)*LOG_PER_PAGE
+        to = fr+LOG_PER_PAGE
+        self.page_widget.addTab(new_page_widget,str(fr)+' - '+str(to))
+        new_page.setAlignment(QtCore.Qt.AlignTop)
+        self.pages.append(new_page)
 
     def filterLogbookOnString(self):
         filterString = str(self.searchStringEdit.text())
@@ -161,11 +166,11 @@ class LogbookApp(QtGui.QMainWindow):
         self.logEntryWidgets[number].submitTagSig.connect(self.submit_new_tag)
         self.logEntryWidgets[number].addFieldSig.connect(self.submit_new_field)
         
-        self.entryContainers[-1].addWidget(self.logEntryWidgets[number], number, 0)
+        self.pages[-1].addWidget(self.logEntryWidgets[number], number, 0)
         # QtGui.QApplication.processEvents()
 
-        if self.entryContainers[-1].count() > 20:
-            self.newEntryContainer()
+        if self.pages[-1].count() > LOG_PER_PAGE:
+            self.new_log_page()
 
     def add_entry_to_log(self):
         self.man.add_request(('add_entry_to_log',{}))
@@ -244,21 +249,16 @@ class LogbookApp(QtGui.QMainWindow):
         log_edits = params['log_edits']
         self.log_edits.extend(log_edits)
 
-        done = []
-        # this way we immediately update to the latest version of the entry
-        for number,edit in zip(reversed(log_edit_numbers),reversed(log_edits)):
-            if not number in done: 
-                done.append(number)
-                    
-                # add tags if there are any
-                if 'Tags' in edit[-1].keys():
-                    self.tags.extend(edit[-1]['Tags'])
-                    self.tags = list(set(self.tags))
+        for number,edit in zip(log_edit_numbers,log_edits):
+            # add tags if there are any
+            if 'Tags' in edit[-1].keys():
+                self.tags.extend(edit[-1]['Tags'])
+                self.tags = list(set(self.tags))
 
-                if number in self.logEntryWidgets.keys():
-                    self.editSignal.emit(number,edit)
-                else: # entry is not yet in the logbook
-                    self.addSignal.emit(number,edit)
+            if number in self.logEntryWidgets.keys():
+                self.editSignal.emit(number,edit)
+            else: # entry is not yet in the logbook
+                self.addSignal.emit(number,edit)
 
     def default_cb(self):
         return 'logbook_status',{'no_of_log_edits':[len(self.log_edits)]}
