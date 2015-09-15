@@ -3,12 +3,15 @@ import numpy
 import time
 
 from . import M2
+from . import Matisse
 
 format_map = {}
 format_map['M2'] = M2.this_format
+format_map['Matisse'] = Matisse.this_format
 
 hardware_map = {}
 hardware_map['M2'] = M2.M2
+hardware_map['Matisse'] = Matisse.Matisse
 
 ### Main acquire loop
 def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):

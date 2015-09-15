@@ -1,9 +1,10 @@
+from backend.Helpers import *
+from backend.save import *
+from backend.connectors import Connector, Acceptor
+import backend.logbook as lb
+from backend.dispatcher import Dispatcher
+
 import sys
-from Helpers import *
-from save import *
-from connectors import Connector, Acceptor
-import logbook as lb
-from dispatcher import Dispatcher
 import multiprocessing as mp
 
 SAVE_DIR = "C:\\Data\\Gallium_Run\\"
@@ -163,7 +164,7 @@ class DataServer(Dispatcher):
 def makeServer(PORT=5006):
     return DataServer(PORT)
 
-def main():
+def start_dataserver():
     try:
         d = makeServer(5005)
         style = "QLabel { background-color: green }"
@@ -187,4 +188,4 @@ def main():
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
-    main()
+    start_dataserver()

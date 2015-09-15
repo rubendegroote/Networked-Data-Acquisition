@@ -2,8 +2,7 @@ import socket
 import time
 import numpy as np
 import ctypes
-from .Helpers import try_deco
-from .OpenOPC.OpenOPC import *
+from ..OpenOPC.OpenOPC import *
 
 from .device import format,Device
 

@@ -1,10 +1,9 @@
-from Artist import makeArtist
+from backend.Artist import makeArtist
 import threading as th
 import asyncore
 
-
 def main():
-    m = makeArtist('laser')
+    m = makeArtist('M2')
 
 if __name__ == '__main__':
     main()

@@ -1,8 +1,9 @@
 import sys
-from Helpers import *
-from connectors import Connector, Acceptor
-import logbook as lb
-from dispatcher import Dispatcher
+
+from backend.Helpers import *
+from backend.connectors import Connector, Acceptor
+import backend.logbook as lb
+from backend.dispatcher import Dispatcher
 
 LOG_PATH = 'C:\\Logbook\\Gallium_Run\\logbook'
 
@@ -183,7 +184,7 @@ class Manager(Dispatcher):
 def makeManager(PORT=5007):
     return Manager(PORT=PORT)
 
-def main():
+def start_manager():
     try:
         m = makeManager(5004)
         style = "QLabel { background-color: green }"
@@ -208,4 +209,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    start_manager()

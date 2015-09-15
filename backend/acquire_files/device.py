@@ -1,6 +1,6 @@
 import socket
 import time
-# from . import Helpers as hp 
+import backend.Helpers as hp 
 
 format = ('timestamp','scan_number','mass','setpoint')
 
@@ -34,12 +34,12 @@ class Device():
         # to be overridden
         pass
 
-    # @hp.try_deco
+    @hp.try_deco
     def setup(self):
         self.connect_to_device()
         return ([0],"Communication with {} achieved.".format(self.name))
 
-    # @hp.try_deco
+    @hp.try_deco
     def interpret(self,instr):
         if instr == 'scan':
             if self.ns.scan_parameter == self.write_param:
@@ -65,7 +65,7 @@ class Device():
         else:
             return ([1],'Unknown instruction {}.'.format(instr))
 
-    # @hp.try_deco
+    @hp.try_deco
     def scan(self):
         if time.time() - self.ns.start_of_setpoint > self.ns.time_per_step:
             self.ns.on_setpoint = False
@@ -77,7 +77,7 @@ class Device():
                 self.ns.setpoint = self.ns.scan_array[self.ns.current_position]
                 return ([0],'{} scan: setpoint acknowledged'.format(self.ns.scan_parameter))
 
-    # @hp.try_deco
+    @hp.try_deco
     def stabilize(self):
         # do stabilization if needed
         if not self.ns.on_setpoint: # go to setpoint if needed
@@ -95,7 +95,7 @@ class Device():
             # self.write_to_device()
             pass
 
-    # @hp.try_deco
+    @hp.try_deco
     def input(self):
         data_from_device = self.read_from_device()
         data = [time.time(),

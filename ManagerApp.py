@@ -2,10 +2,10 @@ import asyncore
 import pickle
 import threading as th
 import time
-
-from PyQt4 import QtCore, QtGui
-from backend.connectors import Connector
 import configparser
+from PyQt4 import QtCore, QtGui
+
+from backend.connectors import Connector
 from connectiondialogs import Man_DS_ConnectionDialog
 from connectionwidgets import ArtistConnections
 from scanner import ScannerWidget

@@ -1,14 +1,15 @@
+import backend.Helpers as hp
+from backend.save import *
+from backend.connectors import Connector, Acceptor
+import backend.logbook as lb
+from backend.dispatcher import Dispatcher
+
 import sys
-import Helpers as hp
-from save import *
-from connectors import Connector, Acceptor
-import logbook as lb
-from dispatcher import Dispatcher
 import multiprocessing as mp
 from collections import deque
 import threading as th
 
-from acquire_files.acquisition import format_map,acquire
+from backend.acquire_files.acquisition import format_map,acquire
 
 SAVE_DIR = "C:\\Data\\Gallium_Run\\"
 

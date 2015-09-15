@@ -2,8 +2,9 @@ import threading as th
 import asyncore
 import socket
 import time
-from Helpers import *
-from connectors import Connector, Acceptor
+
+from backend.Helpers import *
+from backend.connectors import Connector, Acceptor
 
 
 class Dispatcher(asyncore.dispatcher):

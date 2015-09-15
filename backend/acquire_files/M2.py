@@ -1,6 +1,6 @@
 import socket
 import time
-import SolsTiScommands as comm
+import backend.acquire_files.SolsTiScommands as comm
 import numpy as np
 
 from .device import format,Device
