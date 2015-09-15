@@ -11,6 +11,7 @@ class DataServer(Dispatcher):
         super(DataServer, self).__init__(PORT, name)
         self.data = {}
         self.scan_data = {}
+        self.current_scan = -1
 
         self.formats = {}
         
@@ -117,12 +118,6 @@ class DataServer(Dispatcher):
         #send the data as is to be saved
         self.save_input.send((origin,format,data))
 
-        ### do grouping based on scan number here!
-        ### once grouped, add current scan to current
-        ### scan array (clear it if new scan)
-        ### send the grouped scan data to the save pipe as well
-        ## to update no_of_rows_scan as well
-        
         #add the data to the buffer (a dict of numpy arrays)
         try:
             if len(self.data[origin])<self.buffer_size:
@@ -133,13 +128,37 @@ class DataServer(Dispatcher):
 
         except KeyError:
             # first time we see this artist
-            self.data[origin] = np.row_stack(data)
+            self.data[origin] = data
             self.no_of_rows[origin] = 0
         finally:
             # some bookkeeping for radio communications
             self.no_of_rows[origin] += len(data)
             self.formats[origin] = format
-        
+
+        ## add the most recent scan to a separate buffer
+        #turn the list of data lists into a nice array
+        data = np.row_stack(data)
+        #group it
+        grouped_data = group_per_scan(to_save,
+                    axis=format.index('scan_number'))
+        scan_no = max(grouped_data.keys())
+        if scan_no == -1:
+            # no scan data this time
+            return
+
+        scan_data = grouped_data[scan_no]
+        if not scan_no == self.current_scan:
+            self.scan_data = {}
+            self.current_scan = scan_no
+        else:
+            try:
+                self.scan_data[origin] = \
+                    np.concatenate((self.scan_data[origin],scan_data))
+            except KeyError:
+                self.scan_data[origin] = scan_data
+
+        self.no_of_rows_scan[origin] += len(scan_data)
+
 def makeServer(PORT=5006):
     return DataServer(PORT)
 

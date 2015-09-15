@@ -3,6 +3,7 @@ import copy
 import logging
 import h5py
 import traceback
+import numpy as np
 
 SAVE_PATH = 'C:/Data/'
 
@@ -28,6 +29,18 @@ def emptyPipe(q):
             except Exception as e:  # What to do here?
                 pass
     return toSend
+
+def group_per_scan(data,axis):
+    scan_data = data[:,axis]
+    changes_in_scan = scan_data[1:] - scan_data[:-1]
+    index_of_changes =  np.nonzero(changes_in_scan)[0] + 1
+    start = 0
+    parts = {}
+    for index in index_of_changes:
+        parts[scan_data[start]] = data[start:index,:]
+        start = index
+    parts[scan_data[start]] = data[start:-1,:]
+    return(parts)
 
 def make_message(message):
     op,params = message
