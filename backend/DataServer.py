@@ -14,6 +14,7 @@ class DataServer(Dispatcher):
         super(DataServer, self).__init__(PORT, name)
         self.data = {}
         self.scan_data = {}
+        self.mode = 'stream'
         self.current_scan = -1
 
         self.formats = {}
@@ -37,14 +38,23 @@ class DataServer(Dispatcher):
         self.saveProcess.start()
 
     def slice_new_data(self,name_info,no_of_rows,
-                            DS_no_of_rows,data_set):
+                            DS_no_of_rows):
         # decide on the column and from what row onwards
         origin = name_info[0]
         par_name = name_info[1]
 
-        col = self.formats[origin].index(par_name)
-        row = DS_no_of_rows[origin]-no_of_rows[origin]
-        row = min(row,self.buffer_size)
+        try:
+            if self.mode == 'stream':
+                data_set = self.data[origin].T
+            else:
+                data_set = self.scan_data[origin].T
+            col = self.formats[origin].index(par_name)
+            row = DS_no_of_rows[origin]-no_of_rows[origin]
+        except KeyError:
+            # no scans yet
+            return [[],[]]
+            
+            row = min(row,self.buffer_size)
 
         return_list = []
         if row > 0:
@@ -55,41 +65,39 @@ class DataServer(Dispatcher):
             return_list.append([])
             return_list.append([])
 
-        return return_list    
+        return return_list
 
-    @try_call
-    def scan(self,params):
-        self.data(params,stream=False)
-
-    @try_call
-    def stream(self,params):
-        self.data(params,stream=True)
-
-    def data(self,params,stream=True):
+    @try_call    
+    def get_data(self,params):
         x,y = params['x'],params['y']
 
         no_of_rows = params['no_of_rows']
-        if stream:
+        if self.mode == 'stream':
             DS_no_of_rows = self.no_of_rows
-            data_set = self.data[origin].T
         else:
             DS_no_of_rows = self.no_of_rows_scan
-            data_set = self.scan_data[origin].T
 
         if x == [] and y == []:
             # no specific columns sent; user does not know
             # the options yet
             return {'data':[],'format':self.formats,
-                    'no_of_rows':DS_no_of_rows}
+                    'no_of_rows':DS_no_of_rows,
+                    'current_scan':self.current_scan}
 
         return_list = []
         for name_info in [x,y]:
-            ret_list = slice_new_data(i,name_info,
-                    no_of_rows,DS_no_of_rows,data_set=data_set)
+            ret_list = self.slice_new_data(name_info,
+                    no_of_rows,DS_no_of_rows)
             return_list.extend(ret_list)
-
         return {'data': return_list,
-                'no_of_rows':DS_no_of_rows}
+                'no_of_rows':DS_no_of_rows,
+                'current_scan':self.current_scan}
+
+    @try_call
+    def change_mode(self,params):
+        self.mode = params['mode']
+        return {'status': [0]}
+
     @try_call
     def clear_memory(self, *args):
         self._clear_memory = True

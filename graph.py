@@ -76,29 +76,12 @@ class MyGraph(QtGui.QWidget):
  on the X-axis.')
         self.sublayout.addWidget(self.comboX, 0, 3)
 
- #        self.mathCheckBox = QtGui.QCheckBox('Mathy math math')
- #        self.mathCheckBox.setToolTip('Check this box if you want to do some\
- # math on the data before it is plotted.')
- #        self.mathCheckBox.stateChanged.connect(self.enableMathPanel)
- #        self.sublayout.addWidget(self.mathCheckBox, 1, 0)
-
         self.freqUnitSelector = QtGui.QComboBox(parent=None)
         self.freqUnitSelector.setToolTip('Choose the units you want to\
  display the frequency in.')
         self.freqUnitSelector.addItems(['Frequency', 'Wavelength', 'Wavenumber'])
         # self.freqUnitSelector.currentIndexChanged.connect(self.updatePlot)
         self.sublayout.addWidget(self.freqUnitSelector, 0, 5)
-
-        self.meanStyles = ['Give Stream', 'Give Scan']
-        self.meanBox = QtGui.QComboBox(self)
-        self.meanBox.setToolTip('Choose how you want to combine data\
- from all of the scans in the captures this graph plots.')
-        self.meanBox.addItems(self.meanStyles)
-        self.meanBox.setCurrentIndex(0)
-        self.meanBox.setMaximumWidth(110)
-        self.meanBox.currentIndexChanged.connect(lambda: self.dataRequested.emit(str(self.meanBox.currentText())))
-        self.dataRequested.emit(str(self.meanBox.currentText()))
-        self.sublayout.addWidget(self.meanBox, 2, 1)
 
         self.graphStyles = ['Step (histogram)', 'Line']#, 'Point']
 

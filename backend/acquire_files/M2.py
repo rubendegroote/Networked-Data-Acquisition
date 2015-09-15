@@ -61,29 +61,30 @@ class M2(Device):
         self.wavenumber=0
 
     def connect_to_device(self):
-        host,port = self.settings['host'],self.settings['port']
-        for res in socket.getaddrinfo(host, port, socket.AF_UNSPEC, socket.SOCK_STREAM):
-            af, socktype, proto, canonname, sa = res
-            try:
-                self.socket = socket.socket(af, socktype, proto)
-            except OSError as msg:
-                print(msg)
-                self.socket = None
-                continue
-            try:
-                self.socket.connect(sa)
-            except OSError as msg:
-                self.socket.close()
-                self.socket = None
-                print(msg)
-                continue
-            break
-        if not self.socket is None:
-            self.socket.sendall(json.dumps(comm.start_link()))
-            data = self.socket.recv(1024)
-            print(repr(data))
-        else:
-            raise Exception('Failed to connect to M2')
+        # host,port = self.settings['host'],self.settings['port']
+        # for res in socket.getaddrinfo(host, port, socket.AF_UNSPEC, socket.SOCK_STREAM):
+        #     af, socktype, proto, canonname, sa = res
+        #     try:
+        #         self.socket = socket.socket(af, socktype, proto)
+        #     except OSError as msg:
+        #         print(msg)
+        #         self.socket = None
+        #         continue
+        #     try:
+        #         self.socket.connect(sa)
+        #     except OSError as msg:
+        #         self.socket.close()
+        #         self.socket = None
+        #         print(msg)
+        #         continue
+        #     break
+        # if not self.socket is None:
+        #     self.socket.sendall(json.dumps(comm.start_link()))
+        #     data = self.socket.recv(1024)
+        #     print(repr(data))
+        # else:
+        #     raise Exception('Failed to connect to M2')
+        pass
 
     def write_to_device(self):
 

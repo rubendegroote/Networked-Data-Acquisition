@@ -2,11 +2,13 @@ import http.server
 import socketserver
 import os
 import sys
-from Helpers import *
-from connectors import Connector, Acceptor
-import logbook as lb
-from dispatcher import Dispatcher
 import multiprocessing as mp
+
+from backend.Helpers import *
+from backend.connectors import Connector, Acceptor
+import backend.logbook as lb
+from backend.dispatcher import Dispatcher
+
 
 FILE_SERVER_PORT = 5009
 HTTP_SERVER_PORT = 5010
@@ -99,7 +101,7 @@ def run():
 def makeFileServer(PORT=5006):
     return FileServer(PORT=PORT)
 
-def main():
+def start_fileserver():
     try:
         m = makeFileServer(5006)
         style = "QLabel { background-color: green }"
@@ -124,4 +126,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    start_fileserver()

@@ -19,7 +19,8 @@ class RadioApp(QtGui.QMainWindow):
         super(RadioApp, self).__init__()
         self.first_time = True
         self.live_viewing = True
-        self.request = 'stream'
+        self.mode = 'stream'
+        self.scan_number = -1
 
         self.looping = True
         t = th.Thread(target=self.startIOLoop).start()
@@ -31,35 +32,37 @@ class RadioApp(QtGui.QMainWindow):
         self.add_fileserver()
 
     def init_UI(self):
-        self.central = QtGui.QWidget()
-        layout = QtGui.QGridLayout(self.central)
+        self.central = QtGui.QSplitter()
+        widget = QtGui.QWidget()
+        self.central.addWidget(widget)
+        layout = QtGui.QGridLayout(widget)
         self.setCentralWidget(self.central)
 
         self.dataTree = QtGui.QTreeWidget()
         self.dataTree.setColumnCount(1)
-        self.dataTree.itemDoubleClicked.connect(self.test)
+        self.dataTree.itemDoubleClicked.connect(self.change_mode)
         self.liveItem = QtGui.QTreeWidgetItem(['live'])
         self.liveItem.insertChildren(0,[QtGui.QTreeWidgetItem(['stream']),
                                         QtGui.QTreeWidgetItem(['scan'])])
         self.oldItem = QtGui.QTreeWidgetItem(['old'])
         self.dataTree.setHeaderLabels(['Data'])
         self.dataTree.insertTopLevelItems(0,[self.liveItem,self.oldItem])
-        layout.addWidget(self.dataTree,0,0)
+        self.central.addWidget(self.dataTree)
 
         self.graph = MyGraph('data_viewer')
-        layout.addWidget(self.graph,0,1)
+        self.central.addWidget(self.graph)
 
         self.setGeometry(200,100,1200,800)
         self.show()
 
-    def test(self,item):
+    def change_mode(self,item):
         if item.text(0) in ['scan','stream']:
             self.live_viewing = True
         else:
             self.live_viewing = False
 
-        self.no_of_rows = {}
-        self.request = item.text(0)
+        self.mode = item.text(0)
+        self.data_server.add_request(('change_mode',{'mode':self.mode}))
 
     def stopIOLoop(self):
         self.looping = False
@@ -108,12 +111,12 @@ class RadioApp(QtGui.QMainWindow):
                 return 'data_format',{}
             elif self.graph.reset:
                 self.graph.reset_data()
-                return self.request,{'no_of_rows':self.graph.no_of_rows,
+                return 'get_data',{'no_of_rows':self.graph.no_of_rows,
                                'x':self.graph.x_key,
                                'y':self.graph.y_key}
 
             else:
-                return self.request,{'no_of_rows':self.graph.no_of_rows,
+                return 'get_data',{'no_of_rows':self.graph.no_of_rows,
                                'x':self.graph.x_key,
                                'y':self.graph.y_key}
 
@@ -132,13 +135,11 @@ class RadioApp(QtGui.QMainWindow):
     def onCloseCallback(self,connector):
         print('lost connection')
 
-    def scan_reply(self,track,params):
-        self.data_reply(track,params)
+    def change_mode_reply(self,track,params):
+       	self.graph.reset_data()
+       	self.scan_number = -1
 
-    def stream_reply(self,track,params):
-        self.data_reply(track,params)
-
-    def data_reply(self,track,params):
+    def get_data_reply(self,track,params):
         origin, track_id = track
         data = params['data']
 
@@ -153,14 +154,18 @@ class RadioApp(QtGui.QMainWindow):
         data = pd.concat([data_x,data_y])
         data.set_index(['time'],inplace=True)
 
-        if buffers_cleared:
-            self.graph.data=data
-        else:                
-            self.graph.data=self.graph.data.append(data)
-                
+        if self.mode == 'stream':
+            self.graph.data = self.graph.data.append(data)
+        elif self.mode == 'scan':
+            scan_number = params['current_scan']
+            if not self.scan_number == scan_number:
+                self.graph.data = data
+                self.scan_number = scan_number
+            else:
+                self.graph.data = self.graph.data.append(data)
+
     def file_status_reply(self,track,params):
         file_names = params['file_names']
-        print(params)
 
     def data_format_reply(self,track,params):
         origin, track_id = track

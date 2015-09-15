@@ -4,6 +4,8 @@ import multiprocessing as mp
 import json
 import time
 from collections import deque
+import traceback
+
 from backend.Helpers import track, make_message, log_message
 
 class Connector(asynchat.async_chat):
@@ -60,8 +62,9 @@ class Connector(asynchat.async_chat):
             message = json.loads(self.buff.decode('UTF-8'))
             self.buff = b""
             self.callback(message=message)
-        except Exception as e:
-            print('Connector error in found terminator:\n', e)
+        except:
+            print('Connector error in found terminator:\n', \
+          			traceback.format_exc())
         finally:
             self.send_request()
 
