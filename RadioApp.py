@@ -14,18 +14,22 @@ dataserver_channel = ('127.0.0.1',5005)
 fileServer_channel = ('127.0.0.1', 5006)
 
 class RadioApp(QtGui.QMainWindow):
-
+    update_scan_list_signal = QtCore.pyqtSignal()
     def __init__(self):
         super(RadioApp, self).__init__()
         self.first_time = True
         self.live_viewing = True
         self.mode = 'stream'
         self.scan_number = -1
+        self.available_scans = []
+        self.scan_children = {}
 
         self.looping = True
         t = th.Thread(target=self.startIOLoop).start()
 
         self.init_UI()
+
+        self.update_scan_list_signal.connect(self.update_scan_list)
 
         time.sleep(0.1)
         self.add_dataserver()
@@ -41,12 +45,12 @@ class RadioApp(QtGui.QMainWindow):
         self.dataTree = QtGui.QTreeWidget()
         self.dataTree.setColumnCount(1)
         self.dataTree.itemDoubleClicked.connect(self.change_mode)
-        self.liveItem = QtGui.QTreeWidgetItem(['live'])
-        self.liveItem.insertChildren(0,[QtGui.QTreeWidgetItem(['stream']),
+        self.live_item = QtGui.QTreeWidgetItem(['live'])
+        self.live_item.insertChildren(0,[QtGui.QTreeWidgetItem(['stream']),
                                         QtGui.QTreeWidgetItem(['scan'])])
-        self.oldItem = QtGui.QTreeWidgetItem(['old'])
+        self.scan_item = QtGui.QTreeWidgetItem(['old'])
         self.dataTree.setHeaderLabels(['Data'])
-        self.dataTree.insertTopLevelItems(0,[self.liveItem,self.oldItem])
+        self.dataTree.insertTopLevelItems(0,[self.live_item,self.scan_item])
         self.central.addWidget(self.dataTree)
 
         self.graph = MyGraph('data_viewer')
@@ -136,12 +140,12 @@ class RadioApp(QtGui.QMainWindow):
         print('lost connection')
 
     def change_mode_reply(self,track,params):
-       	self.graph.reset_data()
-       	self.scan_number = -1
+           self.graph.reset_data()
 
     def get_data_reply(self,track,params):
         origin, track_id = track
         data = params['data']
+        scan_number = params['current_scan']
 
         if data == []:
             return
@@ -156,8 +160,9 @@ class RadioApp(QtGui.QMainWindow):
 
         if self.mode == 'stream':
             self.graph.data = self.graph.data.append(data)
+            if not str(scan_number) == '-1':
+                self.scan_number = scan_number
         elif self.mode == 'scan':
-            scan_number = params['current_scan']
             if not self.scan_number == scan_number:
                 self.graph.data = data
                 self.scan_number = scan_number
@@ -165,10 +170,25 @@ class RadioApp(QtGui.QMainWindow):
                 self.graph.data = self.graph.data.append(data)
 
     def file_status_reply(self,track,params):
-        file_names = params['file_names']
+        available_scans = params['available_scans']
+        if not available_scans == self.available_scans:
+            self.available_scans = available_scans
+            self.update_scan_list_signal.emit()
+
+    def update_scan_list(self):
+        print('here')
+        print(self.available_scans)
+        for scan in self.available_scans:
+            scan = str(int(scan))
+            if not scan in self.scan_children.keys():
+                self.scan_children[scan] = QtGui.QTreeWidgetItem(['Scan '+scan])
+                if not scan == '-1':
+	                self.scan_item.insertChild(0,self.scan_children[scan])
 
     def data_format_reply(self,track,params):
         origin, track_id = track
+        if not str(params['current_scan']) == '-1':
+            self.scan_number = params['current_scan']
         self.graph.formats = params['data_format']
         self.graph.no_of_rows = {k:0 for k in self.graph.formats.keys()}
 

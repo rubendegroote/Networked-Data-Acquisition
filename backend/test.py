@@ -9,8 +9,10 @@ with h5py.File('C:\\Data\\Gallium Run\\M2_data.h5','r') as store:
 		for k in group.keys():
 			data = group[k]
 			print(data)
-	#x = data[:,0]
-	#y = data[:,4]
+			if not k == '-1':
+				x = data[:,0]
+				y = data[:,4]
 
-	#pl.plot(x,y,'ko')
-	#pl.show()
+				pl.plot(x,y,'o',label = k)
+	pl.legend()
+	pl.show()

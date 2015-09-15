@@ -12,7 +12,7 @@ from scanner import ScannerWidget
 class ManagerApp(QtGui.QMainWindow):
     updateSignal = QtCore.pyqtSignal(tuple)
     messageUpdateSignal = QtCore.pyqtSignal(dict)
-    lost_connection = QtCore.pyqtSignal(str)
+    lost_connection = QtCore.pyqtSignal(object)
     def __init__(self):
         super(ManagerApp, self).__init__()
         self.looping = True

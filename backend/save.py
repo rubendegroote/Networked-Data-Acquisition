@@ -19,9 +19,15 @@ def save(to_save,format,file_name,group_name):
             group = store[group_name]
         except KeyError:
             group = store.create_group(group_name)
+            group.attrs['scans'] = []
 
         for scan, data in to_save_grouped.items():
-            scan = str(int(scan))
+            scan = int(scan)
+            if not scan in group.attrs['scans']:
+            	scans = group.attrs['scans']
+            	group.attrs['scans'] = np.append(scans,scan)
+            scan = str(scan)
+            
             try:
                 newshape = (group[scan].shape[0] + data.shape[0],
                                     data.shape[1])
