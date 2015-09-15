@@ -1,17 +1,12 @@
-
-import pandas as pd
 from PyQt4 import QtCore, QtGui
-import tables
 import threading as th
-import time
-import pickle
 import asyncore
-import os
-# import ScanViewer
+import time
 
 from backend.connectors import Connector
 from connectiondialogs import ConnectionDialog, FieldAdditionDialog
 from logviewerwidgets import LogEntryWidget
+
 SAVE_DIR = 'C:/Data/'
 LOG_PER_PAGE = 20
 
@@ -20,6 +15,8 @@ manager_channel = ('127.0.0.1', 5004)
 class LogbookApp(QtGui.QMainWindow):
     editSignal = QtCore.pyqtSignal(int,object)
     addSignal = QtCore.pyqtSignal(int,object)
+    messageUpdateSignal = QtCore.pyqtSignal(dict)
+
     def __init__(self):
         super(LogbookApp, self).__init__()
 
@@ -40,6 +37,7 @@ class LogbookApp(QtGui.QMainWindow):
 
         self.editSignal.connect(self.edit_entry_ui)
         self.addSignal.connect(self.add_entry_to_ui)
+        self.messageUpdateSignal.connect(self.updateMessages)
 
         self.show()
 
@@ -52,8 +50,10 @@ class LogbookApp(QtGui.QMainWindow):
         self.looping = False
 
     def init_UI(self):
-        self.central = QtGui.QWidget()
-        layout = QtGui.QGridLayout(self.central)
+        self.central = QtGui.QSplitter()
+        widget = QtGui.QWidget()
+        self.central.addWidget(widget)
+        layout = QtGui.QGridLayout(widget)
         self.setCentralWidget(self.central)
 
         self.connectionLabel = QtGui.QLabel('Connections:')
@@ -95,6 +95,9 @@ class LogbookApp(QtGui.QMainWindow):
         layout.addWidget(self.page_widget,8,0,1,2)
         self.pages = []
         self.new_log_page()
+
+        self.messageLog = QtGui.QPlainTextEdit()
+        self.central.addWidget(self.messageLog)
 
     def new_log_page(self):
         new_page_widget = QtGui.QWidget()
@@ -176,7 +179,8 @@ class LogbookApp(QtGui.QMainWindow):
         self.man.add_request(('add_entry_to_log',{}))
 
     def add_entry_to_log_reply(self,track,params):
-        pass
+        self.messageUpdateSignal.emit(
+            {'track':track,'args':[[0],"Add entry instruction received"]})
 
     def submit_change(self):
         number = self.sender().number
@@ -185,7 +189,8 @@ class LogbookApp(QtGui.QMainWindow):
                                               'entry':entry[-1]}))
 
     def change_entry_reply(self,track,params):
-        pass
+        self.messageUpdateSignal.emit(
+            {'track':track,'args':[[0],"Change entry instruction received"]})
 
     def submit_new_field(self):
         field_name, result = FieldAdditionDialog.getInfo()
@@ -193,7 +198,8 @@ class LogbookApp(QtGui.QMainWindow):
             self.man.add_request(('add_new_field', {'field_name':field_name}))
 
     def add_new_field_reply(self,track,params):
-        pass
+        self.messageUpdateSignal.emit(
+            {'track':track,'args':[[0],"Add field instruction received"]})
 
     def submit_new_tag(self):
         number = self.sender().number
@@ -236,13 +242,23 @@ class LogbookApp(QtGui.QMainWindow):
             args = message['reply']['parameters']
             status_updates = message['status_updates']
             for status_update in status_updates:
-                # self.messageUpdateSignal.emit({'track':track,'args':status_update})
-                print(status_update)
+                self.messageUpdateSignal.emit({'track':track,'args':status_update})
             params = getattr(self, function)(track, args)
 
         else:
             exception = message['reply']['parameters']['exception']
-            print("Reply cb exception: " + exception)
+            self.messageUpdateSignal.emit(
+                {'track':track,'args':[[1],"Received status fail in reply\n:{}".format(exception)]})
+    
+    def updateMessages(self,info):
+        track,message = info['track'],info['args']
+        text = '{}: {} reports {}'.format(track[-1][1],track[-1][0],message[1])
+        if message[0][0] == 0:
+            self.messageLog.appendPlainText(text)        
+        else:
+            error_dialog = QtGui.QErrorMessage(self)
+            error_dialog.showMessage(text)
+            error_dialog.exec_()
 
     def logbook_status_reply(self,track,params):
         log_edit_numbers = params['log_edit_numbers']

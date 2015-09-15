@@ -1,7 +1,6 @@
 from PyQt4 import QtCore, QtGui
 import os
 
-
 class CollapsibleArrow(QtGui.QPushButton):
 
     def __init__(self, parent=None, path=None):
@@ -241,7 +240,7 @@ class LogEntryWidget(FrameLayout):
         self.versionSelect.setCurrentIndex(self.selected)
         self.versionSelect.currentIndexChanged.connect(self.selectDifferentVersion)
         
-        for pkey in self.entry[self.selected].keys():
+        for pkey in sorted(self.entry[self.selected].keys()):
             propname = str(pkey)
             if pkey.lower() == 'text':
                 self.texts[pkey] = QtGui.QTextEdit()

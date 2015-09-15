@@ -1,13 +1,9 @@
-import tables  # DO NOT REMOVE!!!
-import pyqtgraph as pg
-from LogbookApp import LogbookApp
-from multiprocessing import freeze_support
 import sys
 from PyQt4 import QtCore, QtGui
-from backend.logbook import *
+from multiprocessing import freeze_support
 
-pg.setConfigOption('background', 'w')
-pg.setConfigOption('foreground', 'k')
+from backend.logbook import *
+from LogbookApp import LogbookApp
 
 if __name__ == "__main__":
     # add freeze support

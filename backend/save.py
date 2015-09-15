@@ -42,7 +42,6 @@ def save_continuously(save_output,saveDir,name,format):
     while True:
         to_save = emptyPipe(save_output)
         if not to_save == []:
-            print(len(flatten(to_save)))
             to_save = np.row_stack(flatten(to_save))
             save(to_save,format,file_name,group_name)
         else:

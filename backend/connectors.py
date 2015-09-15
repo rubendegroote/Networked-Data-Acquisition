@@ -4,10 +4,7 @@ import multiprocessing as mp
 import json
 import time
 from collections import deque
-try:
-    from .Helpers import track, make_message, log_message
-except:
-    from Helpers import track, make_message, log_message
+from backend.Helpers import track, make_message, log_message
 
 class Connector(asynchat.async_chat):
     def __init__(self,name,chan,callback,

@@ -36,8 +36,10 @@ class ManagerApp(QtGui.QMainWindow):
             self.addConnection(respons[0])
 
     def init_UI(self):
-        self.central = QtGui.QWidget()
-        layout = QtGui.QGridLayout(self.central)
+        self.central = QtGui.QSplitter()
+        widget = QtGui.QWidget()
+        self.central.addWidget(widget)
+        layout = QtGui.QGridLayout(widget)
         self.setCentralWidget(self.central)
 
         self.scanner = ScannerWidget()
@@ -57,8 +59,7 @@ class ManagerApp(QtGui.QMainWindow):
         layout.addWidget(self.serverConnectButton, 2, 0, 1, 1)
 
         self.messageLog = QtGui.QPlainTextEdit()
-        self.messageLog.setMinimumWidth(400)
-        layout.addWidget(self.messageLog,0,1,4,1)
+        self.central.addWidget(self.messageLog)
 
         self.disable()
 
