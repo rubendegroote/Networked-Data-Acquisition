@@ -10,7 +10,7 @@ import threading as th
 
 from acquire_files.acquisition import format_map,acquire
 
-SAVE_DIR = "C:\\Data\\Gallium_Run"
+SAVE_DIR = "C:\\Data\\Gallium_Run\\"
 
 # Some exploratory code to understand a bit better how to make the ARTIST
 class Artist(Dispatcher):

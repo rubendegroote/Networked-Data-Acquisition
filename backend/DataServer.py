@@ -6,7 +6,7 @@ import logbook as lb
 from dispatcher import Dispatcher
 import multiprocessing as mp
 
-SAVE_DIR = "C:\\Data\\Gallium_Run"
+SAVE_DIR = "C:\\Data\\Gallium_Run\\"
 
 class DataServer(Dispatcher):
     def __init__(self, PORT=5006, name='DataServer'):

@@ -37,9 +37,9 @@ def group_per_scan(data,axis):
     start = 0
     parts = {}
     for index in index_of_changes:
-        parts[scan_data[start]] = data[start:index,:]
+        parts[scan_data[start]] = data[start:index]
         start = index
-    parts[scan_data[start]] = data[start:-1,:]
+    parts[scan_data[start]] = data[start:]
     return(parts)
 
 def make_message(message):
