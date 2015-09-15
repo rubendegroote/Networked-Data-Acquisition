@@ -21,7 +21,7 @@ def save(to_save,format,file_name,group_name):
             group = store.create_group(group_name)
 
         for scan, data in to_save_grouped.items():
-            scan = str(scan)
+            scan = str(int(scan))
             try:
                 newshape = (group[scan].shape[0] + data.shape[0],
                                     data.shape[1])

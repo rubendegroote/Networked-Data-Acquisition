@@ -14,7 +14,7 @@ class Device():
                       needs_stabilization = False):
 
         self.name = name
-        self.format =  format
+        self.format = format
         self.settings = settings
         self.ns = ns
         self.write_param = write_param

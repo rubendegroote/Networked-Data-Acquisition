@@ -5,7 +5,7 @@ import time
 from . import M2
 
 format_map = {}
-format_map['M2'] = M2.format
+format_map['M2'] = M2.this_format
 
 hardware_map = {}
 hardware_map['M2'] = M2.M2
