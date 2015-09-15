@@ -141,7 +141,7 @@ class DataServer(Dispatcher):
         #turn the list of data lists into a nice array
         data = np.row_stack(data)
         #group it
-        grouped_data = group_per_scan(to_save,
+        grouped_data = group_per_scan(data,
                     axis=format.index('scan_number'))
         scan_no = max(grouped_data.keys())
         if scan_no == -1:
@@ -156,10 +156,10 @@ class DataServer(Dispatcher):
             try:
                 self.scan_data[origin] = \
                     np.concatenate((self.scan_data[origin],scan_data))
+                self.no_of_rows_scan[origin] += len(scan_data)
             except KeyError:
                 self.scan_data[origin] = scan_data
-
-        self.no_of_rows_scan[origin] += len(scan_data)
+                self.no_of_rows_scan[origin] = 0
 
 def makeServer(PORT=5006):
     return DataServer(PORT)
