@@ -10,6 +10,7 @@ import threading as th
 
 from acquire_files.acquisition import format_map,acquire
 
+SAVE_DIR = "C:\\Data\\Gallium_Run"
 
 # Some exploratory code to understand a bit better how to make the ARTIST
 class Artist(Dispatcher):
@@ -55,7 +56,6 @@ class Artist(Dispatcher):
 
         self.start_daq()
 
-        self.saveDir = "C:\\Data\\"
         # save pipe: send data to be saved
         self.save_output,self.save_input = mp.Pipe(duplex=False)
         self.start_saving()
@@ -135,7 +135,7 @@ class Artist(Dispatcher):
             self.notify_connectors(message)
 
     def start_saving(self):
-        args = (self.save_output,self.saveDir,
+        args = (self.save_output,SAVE_DIR,
                   self.name,self.format)
         self.saveProcess = mp.Process(name = 'save_' + self.name,
                                       target = save_continuously,

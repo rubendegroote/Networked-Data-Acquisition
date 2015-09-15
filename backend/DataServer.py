@@ -6,6 +6,8 @@ import logbook as lb
 from dispatcher import Dispatcher
 import multiprocessing as mp
 
+SAVE_DIR = "C:\\Data\\Gallium_Run"
+
 class DataServer(Dispatcher):
     def __init__(self, PORT=5006, name='DataServer'):
         super(DataServer, self).__init__(PORT, name)
@@ -20,7 +22,6 @@ class DataServer(Dispatcher):
 
         self.buffer_size = 50000
 
-        self.saveDir = "C:\\Data\\"
         self.save_output,self.save_input = mp.Pipe(duplex=False)
 
         self.start_saving()
@@ -29,7 +30,7 @@ class DataServer(Dispatcher):
         return 'data', {}
 
     def start_saving(self):
-        args = (self.save_output,self.saveDir)
+        args = (self.save_output,SAVE_DIR)
         self.saveProcess = mp.Process(target = save_continuously_dataserver,
                                       args = args)
         self.saveProcess.start()

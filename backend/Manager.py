@@ -4,8 +4,7 @@ from connectors import Connector, Acceptor
 import logbook as lb
 from dispatcher import Dispatcher
 
-SAVE_PATH = 'C:/Data/'
-LOG_PATH = 'C:/Logbook/'
+LOG_PATH = 'C:\\Logbook\\Gallium_Run\\logbook'
 
 class Manager(Dispatcher):
     def __init__(self, PORT=5007, name='Manager'):
@@ -17,13 +16,12 @@ class Manager(Dispatcher):
         self.on_setpoint = {}
         self.masses = []
 
-        self.logbookPath = LOG_PATH+'logbook'
         try:
-            self.logbook = lb.loadLogbook(self.logbookPath)
+            self.logbook = lb.loadLogbook(LOG_PATH)
             self.log_edits = list(range(len(self.logbook)))
         except:
             self.logbook = []
-            lb.saveLogbook(self.logbookPath, self.logbook)
+            lb.saveLogbook(LOG_PATH, self.logbook)
             self.log_edits = []
 
     @try_call
@@ -144,7 +142,7 @@ class Manager(Dispatcher):
         number = params['number'][0]
         entry = params['entry']
         lb.editEntry(self.logbook,number,entry)
-        lb.saveEntry(self.logbookPath, self.logbook, number)
+        lb.saveEntry(LOG_PATH, self.logbook, number)
         self.log_edits.append(number) # number of the entry that was edited
         return {}
 
@@ -154,7 +152,7 @@ class Manager(Dispatcher):
         for number,entry in enumerate(self.logbook):
             new_info = {field_name:""}
             lb.editEntry(self.logbook,number,new_info)
-            lb.saveEntry(self.logbookPath, self.logbook, number)
+            lb.saveEntry(LOG_PATH, self.logbook, number)
             self.log_edits.append(number) # number of the entry that was edited
         return {}
 
@@ -164,7 +162,7 @@ class Manager(Dispatcher):
         number = params['number']
         new_info = {'Tags':{tag_name:True}}
         lb.editEntry(self.logbook,number,new_info)
-        lb.saveEntry(self.logbookPath, self.logbook, number)
+        lb.saveEntry(LOG_PATH, self.logbook, number)
         self.log_edits.append(number) # number of the entry that was edited
         return {'tag_name':tag_name}
 
@@ -179,7 +177,7 @@ class Manager(Dispatcher):
 
     def add_to_logbook(self,info_for_log):
         lb.addEntryFromCopy(self.logbook,info_for_log)
-        lb.saveEntry(self.logbookPath, self.logbook, -1)
+        lb.saveEntry(LOG_PATH, self.logbook, -1)
         self.log_edits.append(len(self.logbook)-1) # number of the entry that was added
 
 def makeManager(PORT=5007):
