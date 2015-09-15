@@ -160,20 +160,30 @@ class LogbookApp(QtGui.QMainWindow):
                 self.logEntryWidgets[key].setHidden(True)
 
     def add_entry_to_ui(self,number,entry):
-        self.logEntryWidgets[number] = LogEntryWidget(text='Entry ' + str(int(number)),
-                                                           entry=entry,
-                                                           number=number)
-        self.logEntryWidgets[number].createFrame()
+        if not number in self.logEntryWidgets.keys():
+            widget = LogEntryWidget(text='Entry ' + str(int(number)),
+                                    entry=entry,
+                                    number=number)
+            self.logEntryWidgets[number] = widget
 
-        self.logEntryWidgets[number].submitSig.connect(self.submit_change)
-        self.logEntryWidgets[number].submitTagSig.connect(self.submit_new_tag)
-        self.logEntryWidgets[number].addFieldSig.connect(self.submit_new_field)
+            self.logEntryWidgets[number].createFrame()
+
+            self.logEntryWidgets[number].submitSig.connect(self.submit_change)
+            self.logEntryWidgets[number].submitTagSig.connect(self.submit_new_tag)
+            self.logEntryWidgets[number].addFieldSig.connect(self.submit_new_field)
         
-        self.pages[-1].addWidget(self.logEntryWidgets[number], number, 0)
-        # QtGui.QApplication.processEvents()
+            self.pages[-1].addWidget(self.logEntryWidgets[number], number, 0)
 
-        if self.pages[-1].count() > LOG_PER_PAGE:
-            self.new_log_page()
+            if self.pages[-1].count() >= LOG_PER_PAGE:
+                self.new_log_page()
+        else:
+            self.edit_entry_ui(number,entry)
+
+    def edit_entry_ui(self,number,entry):
+        self.logEntryWidgets[number].entry = entry
+        self.logEntryWidgets[number].clearFrame()
+        self.logEntryWidgets[number].createFrame()
+        self.logEntryWidgets[number].showNew()
 
     def add_entry_to_log(self):
         self.man.add_request(('add_entry_to_log',{}))
@@ -214,12 +224,6 @@ class LogbookApp(QtGui.QMainWindow):
         tag_name = params['tag_name']
         if not tag_name in self.tags:
             self.tags.append(tag_name)
-
-    def edit_entry_ui(self,number,entry):
-        self.logEntryWidgets[number].entry = entry
-        self.logEntryWidgets[number].clearFrame()
-        self.logEntryWidgets[number].createFrame()
-        self.logEntryWidgets[number].showNew()
 
     def add_manager(self):
         try:
@@ -270,7 +274,6 @@ class LogbookApp(QtGui.QMainWindow):
             if 'Tags' in edit[-1].keys():
                 self.tags.extend(edit[-1]['Tags'])
                 self.tags = list(set(self.tags))
-
             if number in self.logEntryWidgets.keys():
                 self.editSignal.emit(number,edit)
             else: # entry is not yet in the logbook

@@ -1,5 +1,4 @@
 import asyncore
-import pickle
 import threading as th
 import time
 import configparser
@@ -22,9 +21,6 @@ class ManagerApp(QtGui.QMainWindow):
         t = th.Thread(target=self.startIOLoop).start()
         self.init_UI()
 
-        # self.timer = QtCore.QTimer()
-        # self.timer.timeout.connect(self.update)
-        # self.timer.start(50)
         self.updateSignal.connect(self.updateUI)
         self.messageUpdateSignal.connect(self.updateMessages)
 
