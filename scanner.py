@@ -14,45 +14,40 @@ class ScannerWidget(QtGui.QWidget):
         super(ScannerWidget, self).__init__()
         self.layout = QtGui.QGridLayout(self)
 
-        self.scanningLabel = QtGui.QLabel('Scanning controls')
-        self.layout.addWidget(self.scanningLabel, 0, 0, 1, 4)
+        self.tuning_parameter_combo = QtGui.QComboBox()
+        self.tuning_parameters = {}
+        self.layout.addWidget(QtGui.QLabel('Tuning parameter'), 0, 0, 1, 1)
+        self.layout.addWidget(self.tuning_parameter_combo, 0, 1, 1, 1)
+
+        self.scanLabel = QtGui.QLabel('Scan number')
+        self.layout.addWidget(self.scanLabel, 0, 2, 1, 1)
+        self.scanNumberLabel = QtGui.QLabel(str(-1))
+        self.layout.addWidget(self.scanNumberLabel, 0, 3, 1, 1)
+
+        self.scanningLabel = QtGui.QLabel('<font size="4"><b>Scanning<\b><\font>')
+        self.layout.addWidget(self.scanningLabel, 2, 0, 1, 4)
 
         self.progressBar = QtGui.QProgressBar()
         self.progressBar.setMinimum(0)
         self.progressBar.setMaximum(1000)
-        self.layout.addWidget(self.progressBar, 1, 0, 1, 4)
-
-        self.parCombo = QtGui.QComboBox()
-        self.pars = {}
-        # self.layout.addWidget(self.parCombo, 2, 0, 1, 1)
+        self.layout.addWidget(self.progressBar, 3, 0, 1, 4)
 
         self.startEdit = QtGui.QLineEdit("15407.3")
-        self.layout.addWidget(self.startEdit, 2, 1, 1, 1)
+        self.layout.addWidget(self.startEdit, 4, 0, 1, 1)
         self.stepsBox = PicSpinBox(iconName='step.png',
                                    step=1,
                                    value=10,
                                    integer=True)
-        self.layout.addWidget(self.stepsBox, 2, 2, 1, 1)
+        self.layout.addWidget(self.stepsBox, 4, 1, 1, 1)
         self.stopEdit = QtGui.QLineEdit("15407.35")
-        self.layout.addWidget(self.stopEdit, 2, 3, 1, 1)
+        self.layout.addWidget(self.stopEdit, 4, 2, 1, 1)
 
         self.controlButton = PicButton('start',
                                        checkable=False,
                                        size=100)
         self.state = 'START'
         self.controlButton.clicked.connect(self.control)
-        self.layout.addWidget(self.controlButton, 1, 5, 2, 1)
-
-        self.modeCombo = QtGui.QComboBox()
-        self.modeCombo.setToolTip('Choose the criterium to be used for deciding\
- the length of a step in a scan. <b>Time</b>: wait for a specified time, \
- <b>Triggers</b>: wait for a specified number of triggers,<b>Supercycle</b>:\
- wait for a specified number of supercycles, <b>Proton Pulse</b>:\
- wait for a specified number of proton pulses.')
-        self.modes = ['Time', 'Triggers', 'Supercycle', 'Proton Pulse']
-        self.modeCombo.addItems(self.modes)
-        self.modeCombo.setMaximumWidth(120)
-        self.layout.addWidget(self.modeCombo, 1, 4, 1, 1)
+        self.layout.addWidget(self.controlButton, 3, 4, 2, 1)
 
         self.timeEdit = PicSpinBox(value=10,
                                    step=1,
@@ -61,31 +56,26 @@ class ScannerWidget(QtGui.QWidget):
         self.timeEdit.setToolTip('Use this to specify the waiting\
  information per step for the chosen criterium (see combobox above).')
         self.timeEdit.setMaximumWidth(120)
-        self.layout.addWidget(self.timeEdit, 2, 4, 1, 1)
+        self.layout.addWidget(self.timeEdit, 4, 3, 1, 1)
 
-        self.setpointlabel = QtGui.QLabel('Setpoint controls')
-        self.layout.addWidget(self.setpointlabel, 5, 0, 1, 1)
+        self.setpointlabel = QtGui.QLabel('<font size="4"><b>Setpoint<\b><\font>')
+        self.layout.addWidget(self.setpointlabel, 7, 0, 1, 1)
 
         self.setpointCombo = QtGui.QComboBox()
         # self.layout.addWidget(self.setpointCombo, 6, 0, 1, 1)
         self.setpointEdit = QtGui.QLineEdit('15407.31')
-        self.layout.addWidget(self.setpointEdit, 6, 1, 1, 4)
+        self.layout.addWidget(self.setpointEdit, 8, 0, 1, 4)
 
         self.setpointButton = PicButton('manual',
                                         checkable=False,
-                                        size=100)
-        self.layout.addWidget(self.setpointButton, 6, 5, 1, 1)
+                                        size=40)
+        self.layout.addWidget(self.setpointButton, 8, 4, 1, 1)
         self.setpointButton.clicked.connect(self.makeSetpoint)
 
         self.repeatLabel = QtGui.QLabel('Repeats')
-        self.layout.addWidget(self.repeatLabel, 3, 1, 1, 1)
+        self.layout.addWidget(self.repeatLabel, 5, 0, 1, 1)
         self.repeatBox = QtGui.QLineEdit("1")
-        self.layout.addWidget(self.repeatBox, 3, 2, 1, 3)
-
-        self.scanLabel = QtGui.QLabel('Scan number')
-        self.layout.addWidget(self.scanLabel, 4, 1, 1, 1)
-        self.scanNumberLabel = QtGui.QLabel(str(-1))
-        self.layout.addWidget(self.scanNumberLabel, 4, 2, 1, 1)
+        self.layout.addWidget(self.repeatBox, 5, 1, 1, 3)
 
     def updateScanNumber(self, scan_number):
         self.scanNumberLabel.setText(str(scan_number))
@@ -100,8 +90,8 @@ class ScannerWidget(QtGui.QWidget):
             self.state = "START"
 
     def makeScan(self):
-        artist = ['M2']
-        parameter = ['wavelength']
+        parameter = self.tuning_parameter_combo.currentText()
+        artist,parameter = parameter.split(': ')
 
         start = float(self.startEdit.text())
         stop = float(self.stopEdit.text())
@@ -123,18 +113,18 @@ class ScannerWidget(QtGui.QWidget):
 
         dt = [float(self.timeEdit.text())]
 
-        self.scanInfoSig.emit({'artist':artist,
-                               'scan_parameter':parameter,
+        self.scanInfoSig.emit({'artist':[artist],
+                               'scan_parameter':[parameter],
                                'scan_array':rng,
                                'time_per_step':dt})
 
     def makeSetpoint(self):
-        artist = ['M2']
-        parameter = ['wavelength']
+        parameter = str(self.tuning_parameter_combo.currentText())
+        artist,parameter = parameter.split(': ')
         value = [float(self.setpointEdit.text())]
 
-        self.setPointSig.emit({'artist':artist,
-                               'parameter':parameter,
+        self.setPointSig.emit({'artist':[artist],
+                               'parameter':[parameter],
                                'setpoint': value})
 
     def stopScan(self):
@@ -144,7 +134,7 @@ class ScannerWidget(QtGui.QWidget):
         origin, track_id = track[-1]
         scanning,on_setpoint = info['scanning'],info['on_setpoint']
         scan_number, progress = info['scan_number'][0],info['progress']
-
+        write_params = info['write_params']
         if len(progress) > 0:
             scanning = any(scanning.values())
             progress = max(progress.values())
@@ -167,39 +157,19 @@ class ScannerWidget(QtGui.QWidget):
                 self.setpointButton.setCheckable(False)
                 self.toggleConnectionsSig.emit(False)
 
-        # try:
-        #     form = {}
-        #     for k, v in artists.items():
-        #         if v[0]:
-        #             form[k] = format[k]
-        #     self.setParCombo(form)
-        # except Exception as e:
-        #     pass
+        if not write_params == self.tuning_parameters:
+        	self.tuning_parameters = write_params
+        	self.set_tuning_parameters()
 
-    def setParCombo(self, format):
-        if self.pars == format:
-            return
-
-        self.pars = format
+    def set_tuning_parameters(self):
+        self.tuning_parameter_combo.clear()
         items = []
-        for key, val in self.pars.items():
-            for v in val:
-                if 'time' not in v and 'scan' not in v:
-                    items.append(key + ': ' + v)
-
-        curPar = int(self.parCombo.currentIndex())
-        if curPar == -1:
-            curPar = 0
-        self.parCombo.clear()
-        self.parCombo.addItems(items)
-        self.parCombo.setCurrentIndex(curPar)
-
-        curPar = int(self.setpointCombo.currentIndex())
-        if curPar == -1:
-            curPar = 0
-        self.setpointCombo.clear()
-        self.setpointCombo.addItems(items)
-        self.setpointCombo.setCurrentIndex(curPar)
+        for key,val in self.tuning_parameters.items():
+        	for item in val:
+        		items.append(str(key) + ': ' + str(item) )
+        self.tuning_parameter_combo.addItems(items)
+        print('added',items)
+        print(self.tuning_parameter_combo.currentText())
 
     def updateProgress(self, val):
         self.progressBar.setValue(1000*val)

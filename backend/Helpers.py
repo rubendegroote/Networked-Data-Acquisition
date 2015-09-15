@@ -72,8 +72,9 @@ def try_call(func):
             if reply_dict is None:
                 reply_dict = {}
             reply_dict['status'] = [0]
-        except Exception as e:
-            reply_dict = {'status': [1], 'exception': str(e)}
+        except:
+            reply_dict = {'status': [1], 
+                          'exception': traceback.format_exc()}
         return reply_dict
     return func_wrapper
 

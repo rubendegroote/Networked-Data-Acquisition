@@ -5,7 +5,7 @@ from backend.connectors import Connector, Acceptor
 import backend.logbook as lb
 from backend.dispatcher import Dispatcher
 
-LOG_PATH = 'C:\\Logbook\\Gallium_Run\\logbook'
+LOG_PATH = 'C:\\Logbook\\Gallium Run\\logbook'
 
 class Manager(Dispatcher):
     def __init__(self, PORT=5007, name='Manager'):
@@ -14,13 +14,15 @@ class Manager(Dispatcher):
         self.progress = {}
         self.scanning = {}
         self.format = {}
+        self.write_params = {}
         self.on_setpoint = {}
         self.masses = []
 
         try:
             self.logbook = lb.loadLogbook(LOG_PATH)
             self.log_edits = list(range(len(self.logbook)))
-        except:
+        except Exception as e:
+            print(e)
             self.logbook = []
             lb.saveLogbook(LOG_PATH, self.logbook)
             self.log_edits = []
@@ -33,6 +35,7 @@ class Manager(Dispatcher):
                   'on_setpoint': self.on_setpoint,
                   'progress': self.progress,
                   'format': self.format,
+                  'write_params': self.write_params,
                   'masses':self.masses}
         return params
 
@@ -170,6 +173,7 @@ class Manager(Dispatcher):
     def status_reply(self, track, params):
         origin, track_id = track[-1]
         self.format[origin] = params['format']
+        self.write_params[origin] = params['write_params']
         self.scanning[origin] = params['scanning']
         self.progress[origin] = params['progress']
         self.on_setpoint[origin] = params['on_setpoint']

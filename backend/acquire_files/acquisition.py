@@ -9,6 +9,10 @@ format_map = {}
 format_map['M2'] = M2.this_format
 format_map['Matisse'] = Matisse.this_format
 
+write_params_map = {}
+write_params_map['M2'] = M2.write_params
+write_params_map['Matisse'] = Matisse.write_params
+
 hardware_map = {}
 hardware_map['M2'] = M2.M2
 hardware_map['Matisse'] = Matisse.Matisse
@@ -39,7 +43,6 @@ def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
             return_message = hardware.interpret(instr)
             # never returns None
             mQ.put(return_message)
-            print(ns.on_setpoint)
 
         ### Scanning logic
         ## iterates through the scan array

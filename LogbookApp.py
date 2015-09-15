@@ -177,13 +177,14 @@ class LogbookApp(QtGui.QMainWindow):
             if self.pages[-1].count() >= LOG_PER_PAGE:
                 self.new_log_page()
         else:
-            self.edit_entry_ui(number,entry)
+            self.edit_entry_ui(number,entry,suppress_new = True)
 
-    def edit_entry_ui(self,number,entry):
+    def edit_entry_ui(self,number,entry,suppress_new = False):
         self.logEntryWidgets[number].entry = entry
         self.logEntryWidgets[number].clearFrame()
         self.logEntryWidgets[number].createFrame()
-        self.logEntryWidgets[number].showNew()
+        if not suppress_new:
+            self.logEntryWidgets[number].showNew()
 
     def add_entry_to_log(self):
         self.man.add_request(('add_entry_to_log',{}))

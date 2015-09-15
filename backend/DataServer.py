@@ -7,7 +7,7 @@ from backend.dispatcher import Dispatcher
 import sys
 import multiprocessing as mp
 
-SAVE_DIR = "C:\\Data\\Gallium_Run\\"
+SAVE_DIR = "C:\\Data\\Gallium Run\\"
 
 class DataServer(Dispatcher):
     def __init__(self, PORT=5006, name='DataServer'):

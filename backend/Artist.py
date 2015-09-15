@@ -9,9 +9,9 @@ import multiprocessing as mp
 from collections import deque
 import threading as th
 
-from backend.acquire_files.acquisition import format_map,acquire
+from backend.acquire_files.acquisition import format_map,write_params_map,acquire
 
-SAVE_DIR = "C:\\Data\\Gallium_Run\\"
+SAVE_DIR = "C:\\Data\\Gallium Run\\"
 
 # Some exploratory code to understand a bit better how to make the ARTIST
 class Artist(Dispatcher):
@@ -53,6 +53,8 @@ class Artist(Dispatcher):
         self.format = format_map[name]
         self.ns.format = self.format
 
+        self.write_params = write_params_map[name]
+
         self.data_deque = deque()
 
         self.start_daq()
@@ -64,6 +66,7 @@ class Artist(Dispatcher):
     @hp.try_call
     def status(self, params):
         return {'format': self.format,
+        		'write_params':self.write_params,
                 'scanning': self.ns.scanning,
                 'on_setpoint': self.ns.on_setpoint,
                 'progress': self.ns.progress,
@@ -133,6 +136,7 @@ class Artist(Dispatcher):
     def handle_messages(self):
         message = hp.GetFromQueue(self.mQ)
         if not message == None:
+            print(message)
             self.notify_connectors(message)
 
     def start_saving(self):

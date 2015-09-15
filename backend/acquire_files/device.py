@@ -9,7 +9,7 @@ class Device():
                       format = (),
                       settings = {},
                       ns = None,
-                      write_param = 'name_of_parameter',
+                      write_params = 'name_of_parameter',
                       mapping = {},
                       needs_stabilization = False):
 
@@ -17,7 +17,7 @@ class Device():
         self.format = format
         self.settings = settings
         self.ns = ns
-        self.write_param = write_param
+        self.write_params = write_params
         self.mapping = mapping
 
         self.needs_stabilization = needs_stabilization
@@ -42,7 +42,7 @@ class Device():
     @hp.try_deco
     def interpret(self,instr):
         if instr == 'scan':
-            if self.ns.scan_parameter == self.write_param:
+            if self.ns.scan_parameter in self.write_params:
                 self.ns.current_position = 0
                 self.ns.scanning = True
                 return ([0],'Starting {} scan.'.format(self.ns.scan_parameter))
@@ -50,9 +50,9 @@ class Device():
                 return ([1],'{} cannot be scanned.'.format(self.ns.scan_parameter))
 
         elif instr == 'go_to_setpoint':
-            if self.ns.parameter == self.write_param:
+            if self.ns.parameter in self.write_params:
                 self.ns.on_setpoint = False
-                return ([0],'{} setpoint acknowledged.'.format(self.write_param))
+                return ([0],'{} setpoint acknowledged.'.format(self.write_params))
 
             else:
                 return ([1],'{} cannot be set.'.format(self.ns.parameter))
@@ -72,6 +72,7 @@ class Device():
             if self.ns.current_position == len(self.ns.scan_array):
                 self.ns.scanning = False
                 self.ns.progress = 1.0
+                self.ns.scan_number = -1 #back to the stream
                 return ([0],'Stopped {} scan.'.format(self.ns.scan_parameter))
             else:
                 self.ns.setpoint = self.ns.scan_array[self.ns.current_position]

@@ -14,10 +14,10 @@ class ArtistConnections(QtGui.QWidget):
         self.l = 0
         self.layout = QtGui.QGridLayout(self)
 
-        self.options = ['ABU', 'CRIS', 'Laser', 'Diodes','M2']
+        self.options = ['ABU', 'CRIS', 'Matisse', 'Diodes','M2']
         self.address = {'ABU': ('127.0.0.1', 6005),
                         'CRIS': ('127.0.0.1', 6005),
-                        'Laser': ('127.0.0.1', 6004),
+                        'Matisse': ('PCCRIS15', 6004),
                         'Diodes': ('127.0.0.1', 6003),
                         'M2': ('127.0.0.1', 6002)}
         self.artistSelection = QtGui.QComboBox()

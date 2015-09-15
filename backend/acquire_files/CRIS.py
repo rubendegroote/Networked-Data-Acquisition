@@ -9,6 +9,7 @@ from PyDAQmx.DAQmxFunctions import *
 from .device import format,Device
 
 this_format = format + ('AOV','Counts','AIChannel1','AIChannel2')
+write_params = ['AOV']
 
 class CRIS(Device):
     def __init__(self):
@@ -17,13 +18,10 @@ class CRIS(Device):
                                aiChannel="/Dev1/ai1,/Dev1/ai2",
                                noOfAi=2,
                                clockChannel="/Dev1/PFI1")
-
-        write_param = 'AOV'
-
         super(CRIS,self).__init__(name = 'CRIS',
                                   format=this_format,
                                   settings=settings,
-                                  write_param = write_param)
+                                  write_params = write_params)
 
     def connect_to_device(self):
         timeout = 10.0

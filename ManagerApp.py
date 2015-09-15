@@ -12,6 +12,7 @@ from scanner import ScannerWidget
 class ManagerApp(QtGui.QMainWindow):
     updateSignal = QtCore.pyqtSignal(tuple)
     messageUpdateSignal = QtCore.pyqtSignal(dict)
+    lost_connection = QtCore.pyqtSignal(str)
     def __init__(self):
         super(ManagerApp, self).__init__()
         self.looping = True
@@ -23,6 +24,7 @@ class ManagerApp(QtGui.QMainWindow):
 
         self.updateSignal.connect(self.updateUI)
         self.messageUpdateSignal.connect(self.updateMessages)
+        self.lost_connection.connect(self.update_ui_connection_lost)
 
         self.show()
 
@@ -38,21 +40,27 @@ class ManagerApp(QtGui.QMainWindow):
         layout = QtGui.QGridLayout(widget)
         self.setCentralWidget(self.central)
 
+        self.connLabel = QtGui.QLabel('<font size="5"><b>Tuning <\b><\font>')
+        layout.addWidget(self.connLabel, 0, 0, 1, 1)
+
         self.scanner = ScannerWidget()
         self.scanner.scanInfoSig.connect(self.start_scan)
         self.scanner.stopScanSig.connect(self.stop_scan)
         self.scanner.setPointSig.connect(self.go_to_setpoint)
         self.scanner.toggleConnectionsSig.connect(self.toggleConnectionsUI)
-        layout.addWidget(self.scanner, 0, 0, 1, 1)
+        layout.addWidget(self.scanner, 1, 0, 1, 1)
+
+        self.connLabel = QtGui.QLabel('<font size="5"><b>Connections <\b><\font>')
+        layout.addWidget(self.connLabel, 2, 0, 1, 1)
 
         self.connWidget = ArtistConnections()
         self.connWidget.connectSig.connect(self.add_artist)
         self.connWidget.removeSig.connect(self.remove_connector)
-        layout.addWidget(self.connWidget, 1, 0, 1, 1)
+        layout.addWidget(self.connWidget, 3, 0, 1, 1)
 
         self.serverConnectButton = QtGui.QPushButton('Connect to Servers')
         self.serverConnectButton.clicked.connect(self.connectToServers)
-        layout.addWidget(self.serverConnectButton, 2, 0, 1, 1)
+        layout.addWidget(self.serverConnectButton, 4, 0, 1, 1)
 
         self.messageLog = QtGui.QPlainTextEdit()
         self.central.addWidget(self.messageLog)
@@ -105,7 +113,9 @@ class ManagerApp(QtGui.QMainWindow):
         return 'status',{}
 
     def lostConn(self, connector):
-        print('lostConn')
+        self.lost_connection.emit(connector)
+
+    def update_ui_connection_lost(self,connector):
         self.statusBar().showMessage(
             connector.acceptor_name + ' connection failure')
         self.serverConnectButton.setEnabled(True)

@@ -5,14 +5,13 @@ import numpy as np
 
 from .device import format,Device
 
-this_format = format + ('status', 'wavelength', 'temperature', 'temperature_status',
+this_format = format + ('status', 'wavenumber', 'temperature', 'temperature_status',
     'etalon_lock', 'etalon_voltage', 'ref_cavity_lock', 'resonator_voltage',
     'ecd_lock', 'ecd_voltage', 'output_monitor', 'etalon_pd_dc', 'dither')
+write_params = ['wavenumber']
 
 class M2(Device):
     def __init__(self):
-        write_param = 'wavelength'
-
         mapping = {
             "Set Wavelength": comm.set_wave_m,
             "Poll Wavelength": comm.poll_wave_m,
@@ -52,44 +51,45 @@ class M2(Device):
 
         super(M2,self).__init__(name = 'M2',
                                      format=this_format,
-                                     write_param = write_param,
+                                     write_params = write_params,
                                      mapping = mapping,
                                      needs_stabilization = True)
         
         self.settings = {'host': '192.168.1.216',
                          'port':39933}
 
-        self.wavelength=0
-
-        print('Note: the methods below should be reworked with raise statements')
+        self.wavenumber=0
 
     def connect_to_device(self):
-        # host,port = self.settings['host'],self.settings['port']
-        # for res in socket.getaddrinfo(self.host, self.port, socket.AF_UNSPEC, socket.SOCK_STREAM):
-        #     af, socktype, proto, canonname, sa = res
-        #     try:
-        #         self.socket = socket.socket(af, socktype, proto)
-        #     except OSError as msg:
-        #         print(msg)
-        #         self.socket = None
-        #         continue
-        #     try:
-        #         self.socket.connect(sa)
-        #     except OSError as msg:
-        #         self.socket.close()
-        #         self.socket = None
-        #         print(msg)
-        #         continue
-        #     break
-        # if not self.socket is None:
-        #     self.socket.sendall(json.dumps(comm.start_link()))
-        #     data = self.socket.recv(1024)
-        #     print(repr(data))
-        # else:
-        #     print('derp')
-        pass
+        host,port = self.settings['host'],self.settings['port']
+        for res in socket.getaddrinfo(host, port, socket.AF_UNSPEC, socket.SOCK_STREAM):
+            af, socktype, proto, canonname, sa = res
+            try:
+                self.socket = socket.socket(af, socktype, proto)
+            except OSError as msg:
+                print(msg)
+                self.socket = None
+                continue
+            try:
+                self.socket.connect(sa)
+            except OSError as msg:
+                self.socket.close()
+                self.socket = None
+                print(msg)
+                continue
+            break
+        if not self.socket is None:
+            self.socket.sendall(json.dumps(comm.start_link()))
+            data = self.socket.recv(1024)
+            print(repr(data))
+        else:
+            raise Exception('Failed to connect to M2')
 
     def write_to_device(self):
+
+    	##### remember to convert from wavenumber to
+    	##### wavelength!!!!
+
         # self.socket.sendall(json.dumps(comm.move_wave_t(self.ns.setpoint)))
         # response = json.loads(self.socket.recv(1024))
         # if response['operator'] == 'move_wave_t_reply':
