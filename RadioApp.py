@@ -17,7 +17,7 @@ class RadioApp(QtGui.QMainWindow):
     update_scan_list_signal = QtCore.pyqtSignal()
     def __init__(self):
         super(RadioApp, self).__init__()
-        self.first_time = True
+        self.initialized = False
         self.live_viewing = True
         self.mode = 'stream'
         self.scan_number = -1
@@ -110,8 +110,7 @@ class RadioApp(QtGui.QMainWindow):
     def default_cb(self):
         if self.live_viewing:
             # data server time!
-            if self.first_time:
-                self.first_time = False
+            if not self.initialized:
                 return 'data_format',{}
             elif self.graph.reset:
                 self.graph.reset_data()
@@ -176,23 +175,25 @@ class RadioApp(QtGui.QMainWindow):
             self.update_scan_list_signal.emit()
 
     def update_scan_list(self):
-        print('here')
-        print(self.available_scans)
         for scan in self.available_scans:
             scan = str(int(scan))
             if not scan in self.scan_children.keys():
                 self.scan_children[scan] = QtGui.QTreeWidgetItem(['Scan '+scan])
                 if not scan == '-1':
-	                self.scan_item.insertChild(0,self.scan_children[scan])
+                    self.scan_item.insertChild(-1,self.scan_children[scan])
 
     def data_format_reply(self,track,params):
         origin, track_id = track
         if not str(params['current_scan']) == '-1':
             self.scan_number = params['current_scan']
-        self.graph.formats = params['data_format']
-        self.graph.no_of_rows = {k:0 for k in self.graph.formats.keys()}
+    
+        formats = params['data_format']
+        if not formats == self.graph.formats:
+            self.graph.formats = formats
+            self.graph.no_of_rows = {k:0 for k in self.graph.formats.keys()}
+            self.graph.setXYOptions(self.graph.formats)
 
-        self.graph.setXYOptions(self.graph.formats)
+            self.initialized = True
 
     def closeEvent(self,event):
         self.stopIOLoop()

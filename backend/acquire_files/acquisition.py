@@ -52,8 +52,12 @@ def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
                 mQ.put(return_message)
 
         ### Stabilizing on setpoint logic
-        if not ns.on_setpoint or \
-                hardware.needs_stabilization:
+        if hardware.needs_stabilization:
+            return_message = hardware.stabilize()
+            if not return_message is None:
+                mQ.put(return_message)
+
+        elif not ns.on_setpoint:
             return_message = hardware.stabilize()
             if not return_message is None:
                 mQ.put(return_message)
@@ -66,7 +70,7 @@ def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
         else: #error to report
             mQ.put(return_message)
 
-        time.sleep(0.001)
+        time.sleep(hardware.sleeptime)
 
     IStoppedFlag.set()
 

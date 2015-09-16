@@ -37,10 +37,10 @@ class Matisse(Device):
         self.opc.write(('Wavemeter.Setpoint',self.ns.setpoint*0.0299792458))
 
     def read_from_device(self):
-        wavenumber = self.wlmdata.GetFrequencyNum(1,0)/0.0299792458
+        self.wavenumber = self.wlmdata.GetFrequencyNum(1,0)/0.0299792458
         wavenumber2 = self.wlmdata.GetFrequencyNum(2,0)/0.0299792458
 
-        data = [wavenumber,wavenumber2]
+        data = [self.wavenumber,wavenumber2]
 
         return data
 

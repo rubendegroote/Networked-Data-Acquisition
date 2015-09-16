@@ -28,7 +28,7 @@ class MyGraph(QtGui.QWidget):
         self.reset = False
         self.options = []
         self.name = name
-
+        self.formats = {}
         self.data = pd.DataFrame()
         self.x_key = []
         self.y_key = []

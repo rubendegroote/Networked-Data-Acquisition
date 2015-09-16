@@ -11,7 +11,8 @@ class Device():
                       ns = None,
                       write_params = 'name_of_parameter',
                       mapping = {},
-                      needs_stabilization = False):
+                      needs_stabilization = False,
+                      sleeptime = 0.001):
 
         self.name = name
         self.format = format
@@ -21,6 +22,8 @@ class Device():
         self.mapping = mapping
 
         self.needs_stabilization = needs_stabilization
+
+        self.sleeptime = sleeptime
 
     def connect_to_device(self):
         # to be overridden
@@ -67,34 +70,38 @@ class Device():
 
     @hp.try_deco
     def scan(self):
-        if time.time() - self.ns.start_of_setpoint > self.ns.time_per_step:
+        if self.ns.on_setpoint and time.time() - self.ns.start_of_setpoint > self.ns.time_per_step:
+            print('scanning')
             self.ns.on_setpoint = False
             if self.ns.current_position == len(self.ns.scan_array):
                 self.ns.scanning = False
                 self.ns.progress = 1.0
+                self.ns.current_position = 0
                 self.ns.scan_number = -1 #back to the stream
                 return ([0],'Stopped {} scan.'.format(self.ns.scan_parameter))
             else:
                 self.ns.setpoint = self.ns.scan_array[self.ns.current_position]
+                print(self.ns.setpoint)
                 return ([0],'{} scan: setpoint acknowledged'.format(self.ns.scan_parameter))
 
     @hp.try_deco
+    def output(self):
+        self.write_to_device()
+        self.ns.on_setpoint = True
+        if self.ns.scanning:
+            self.setpoint_reached()
+        return ([0],'{} setpoint reached'.format(self.ns.scan_parameter))
+
+    def setpoint_reached(self):
+        self.ns.on_setpoint = True
+        if self.ns.scanning:
+            self.ns.progress = self.ns.current_position/len(self.ns.scan_array)
+            self.ns.current_position += 1
+            self.ns.start_of_setpoint = time.time()
+
+    @hp.try_deco
     def stabilize(self):
-        # do stabilization if needed
-        if not self.ns.on_setpoint: # go to setpoint if needed
-            self.write_to_device()
-            self.ns.on_setpoint = True
-            if self.ns.scanning:
-                self.ns.progress = self.ns.current_position/len(self.ns.scan_array)
-                self.ns.current_position += 1
-                self.ns.start_of_setpoint = time.time()
-            return ([0],'{} setpoint reached'.format(self.ns.scan_parameter))
-        
-        if self.needs_stabilization:
-            # do stuff to stabilize on setpoint
-            # this will probz take some self.write_to_device() calls
-            # self.write_to_device()
-            pass
+        self.stabilize_device()
 
     @hp.try_deco
     def input(self):

@@ -2,6 +2,8 @@ import socket
 import time
 import backend.acquire_files.SolsTiScommands as comm
 import numpy as np
+import json
+import ctypes
 
 from .device import format,Device
 
@@ -27,8 +29,8 @@ class M2(Device):
             "Finetune Resonator": comm.fine_tune_resonator,
             "Lock Etalon": comm.etalon_lock,
             "Etalon Lock Status": comm.etalon_lock_status,
-            "Lock Reference Cavity": comm.cavity_lock,
-            "Reference Cavity Lock Status": comm.cavity_lock_status,
+            "Lock Reference Cavity": comm.ref_cavity_lock,
+            "Reference Cavity Lock Status": comm.ref_cavity_lock_status,
             "Lock ECD": comm.ecd_lock,
             "ECD Lock Status": comm.ecd_lock_status,
             "Monitor A": comm.monitor_a,
@@ -53,71 +55,102 @@ class M2(Device):
                                      format=this_format,
                                      write_params = write_params,
                                      mapping = mapping,
-                                     needs_stabilization = True)
+                                     needs_stabilization = True,
+                                     sleeptime = 0.02)
         
         self.settings = {'host': '192.168.1.216',
                          'port':39933}
 
-        self.wavenumber=0
+        self.wavenumber = 0
+        self.cavity_scale = 8
+        self.cavity_value = 51.4
+        self.fine_cavity_scale = 2000
+        self.fine_cavity_value = 50.0
 
     def connect_to_device(self):
-        # host,port = self.settings['host'],self.settings['port']
-        # for res in socket.getaddrinfo(host, port, socket.AF_UNSPEC, socket.SOCK_STREAM):
-        #     af, socktype, proto, canonname, sa = res
-        #     try:
-        #         self.socket = socket.socket(af, socktype, proto)
-        #     except OSError as msg:
-        #         print(msg)
-        #         self.socket = None
-        #         continue
-        #     try:
-        #         self.socket.connect(sa)
-        #     except OSError as msg:
-        #         self.socket.close()
-        #         self.socket = None
-        #         print(msg)
-        #         continue
-        #     break
-        # if not self.socket is None:
-        #     self.socket.sendall(json.dumps(comm.start_link()))
-        #     data = self.socket.recv(1024)
-        #     print(repr(data))
-        # else:
-        #     raise Exception('Failed to connect to M2')
-        pass
+
+        ### Wavemeter stuff
+        # Load the .dll file
+        self.wlmdata = ctypes.WinDLL("c:\\windows\\system32\\wlmData.dll")
+
+        # Specify required argument types and return types for function calls
+        self.wlmdata.GetFrequencyNum.argtypes = [ctypes.c_long, ctypes.c_double]
+        self.wlmdata.GetFrequencyNum.restype  = ctypes.c_double
+
+        self.wlmdata.GetExposureNum.argtypes = [ctypes.c_long, ctypes.c_long, ctypes.c_long]
+        self.wlmdata.GetExposureNum.restype  = ctypes.c_long
+
+        ### M2 stuff
+        host,port = self.settings['host'],self.settings['port']
+        for res in socket.getaddrinfo(host, port, socket.AF_UNSPEC, socket.SOCK_STREAM):
+            af, socktype, proto, canonname, sa = res
+            try:
+                self.socket = socket.socket(af, socktype, proto)
+            except OSError as msg:
+                print(msg)
+                self.socket = None
+                continue
+            try:
+                self.socket.connect(sa)
+            except OSError as msg:
+                self.socket.close()
+                self.socket = None
+                print(msg)
+                continue
+            break
+        if not self.socket is None:
+            self.socket.sendall(comm.start_link())
+            data = self.socket.recv(1024)
+            return(data.decode('utf-8'))
+        else:
+            raise Exception('Failed to connect to M2')
+
 
     def write_to_device(self):
+        pass
 
-    	##### remember to convert from wavenumber to
-    	##### wavelength!!!!
+    def stabilize_device(self):
+        error = self.wavenumber - self.ns.setpoint
+        if abs(error) < 0.01:
+            print(0,error)
+            if abs(error) > 3*10**-5:
+                correction = self.cavity_scale * error
+                self.cavity_value += correction
+                print(1,self.cavity_value)
+                self.socket.sendall(comm.tune_cavity(self.cavity_value))
 
-        # self.socket.sendall(json.dumps(comm.move_wave_t(self.ns.setpoint)))
-        # response = json.loads(self.socket.recv(1024))
-        # if response['operator'] == 'move_wave_t_reply':
-        #     stat = response['parameters']['status']
+                response = json.loads(self.socket.recv(144).decode('utf-8'))
+
+        if not self.ns.on_setpoint and abs(error) < 5*10**-5:
+            self.setpoint_reached()
+            return ([0],'{} setpoint reached'.format(self.ns.scan_parameter))
+
+
+        # self.socket.sendall(comm.set_wave_m(1.0/self.ns.setpoint*10**7))
+        # response = json.loads(self.socket.recv(1024).decode('utf-8'))
+        # print(response)
+        # if response['message']['op'] == 'set_wave_m_reply':
+        #     stat = response['message']['parameters']['status'][0]
         #     if stat == 0:
         #         return ([0],'Wavelength tuned to {} via table tuning'.format(self.ns.setpoint))
         #     elif stat == 1:
         #         return ([1],'Command failed.')
         #     elif stat == 2:
         #         return ([1],'Wavelength out of range.')
-        # elif response['operator'] == 'parse_fail':
+        # elif response['message']['op'] == 'parse_fail':
         #     return ([1],'Parse fail: received message is "{}"'.format(str(response)))
-        
-        # Given that we have to stabilize, this could remain a 
-        # simple pass, and the stabilization can then take over and 
-        # go to the setpoint as needed. 
-        # So, perhaps this can always return a fail, so that 
-        # ns.on_setpoint is not set to True, so that the stabilization
-        # kicks in??
-        pass
+
 
     def read_from_device(self):
-        # self.socket.sendall(json.dumps(comm.get_status()))
-        # response = self.socket.recv(1024)
-        # data = [response['parameters'][string] for string in data_channels]
+        # self.socket.sendall(comm.get_status())
+        # response = json.loads(self.socket.recv(1024).decode('utf-8'))
+        # data = response['message']['parameters']
+
+        self.wavenumber = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
 
         data = [np.random.rand()] * (len(self.ns.format)-3)
 
         return data
+
+
 

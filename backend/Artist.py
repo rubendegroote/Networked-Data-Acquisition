@@ -48,7 +48,7 @@ class Artist(Dispatcher):
         self.ns.progress = 0
         self.ns.parameter = ''
         self.ns.scan_parameter = ''
-        self.ns.setpoint = 0
+        self.ns.setpoint = 11992.0
 
         self.format = format_map[name]
         self.ns.format = self.format

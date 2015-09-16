@@ -23,13 +23,13 @@ class FileServer(Dispatcher):
 
     @try_call
     def file_status(self,params):
-        scans = []
-        with h5py.File('C:\\Data\\Gallium Run\\M2_data.h5','r') as store:
-            for g in store.keys():
-                print(store[g].attrs['scans'])
-                scans.extend(store[g].attrs['scans'])
+        available_scans = []
+        with open('C:\\Data\\Gallium Run\\server_scans.txt','r') as f:
+            for line in f.readlines():
+            	lines = line.strip('\n')
+            	if not line == -1:
+	            	available_scans.append(str(line))
 
-        available_scans = sorted(list(set(scans)))
         return {'available_scans':available_scans}
 
 def makeFileServer(PORT=5006):
