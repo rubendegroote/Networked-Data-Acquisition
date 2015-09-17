@@ -6,7 +6,7 @@ from PyQt4 import QtCore, QtGui
 
 from backend.connectors import Connector
 from connectiondialogs import Man_DS_ConnectionDialog
-from connectionwidgets import ArtistConnections
+from connectionwidgets import ArtistConnections,ControlWidget
 from scanner import ScannerWidget
 
 class ManagerApp(QtGui.QMainWindow):
@@ -21,6 +21,8 @@ class ManagerApp(QtGui.QMainWindow):
         self.masses = []
         t = th.Thread(target=self.startIOLoop).start()
         self.init_UI()
+
+        self.control_widgets = {}
 
         self.updateSignal.connect(self.updateUI)
         self.messageUpdateSignal.connect(self.updateMessages)
@@ -43,12 +45,15 @@ class ManagerApp(QtGui.QMainWindow):
         self.connLabel = QtGui.QLabel('<font size="5"><b>Tuning <\b><\font>')
         layout.addWidget(self.connLabel, 0, 0, 1, 1)
 
+        self.controltab = QtGui.QTabWidget()
+        layout.addWidget(self.controltab,1,0,1,1)
+
         self.scanner = ScannerWidget()
         self.scanner.scanInfoSig.connect(self.start_scan)
         self.scanner.stopScanSig.connect(self.stop_scan)
         self.scanner.setPointSig.connect(self.go_to_setpoint)
         self.scanner.toggleConnectionsSig.connect(self.toggleConnectionsUI)
-        layout.addWidget(self.scanner, 1, 0, 1, 1)
+        self.controltab.addTab(self.scanner, 'Wavelength tuning')
 
         self.connLabel = QtGui.QLabel('<font size="5"><b>Connections <\b><\font>')
         layout.addWidget(self.connLabel, 2, 0, 1, 1)
@@ -146,9 +151,18 @@ class ManagerApp(QtGui.QMainWindow):
         self.looping = False
 
     def add_artist(self, info):
-        receiver, address = info
+        receiver, name, address = info
         op,params = 'add_connector',{'address': address}
         self.Man_DS_Connector.instruct(receiver, (op,params))
+        if not name in self.control_widgets.keys():
+	        self.add_control_tab(name)
+
+    def add_control_tab(self,name):
+        control_widget = ControlWidget(name)
+        self.control_widgets[name] = control_widget
+        control_widget.refresh_changed.connect(self.change_refresh_time)
+        control_widget.initialize.connect(self.initialize_artist)
+        self.controltab.addTab(control_widget,name)
 
     def closeEvent(self, event):
         self.stopIOLoop()
@@ -169,6 +183,26 @@ class ManagerApp(QtGui.QMainWindow):
         self.updateSignal.emit((self.connWidget.update,
                                        {'track':track,
                                        'args':params['connector_info']}))
+
+    def change_refresh_time(self,info):
+        artist, time = info
+        self.Man_DS_Connector.instruct('Manager',('change_refresh_time',
+                                                  {'artist':[artist],'time':[time]}))
+
+    def change_refresh_time_reply(self,track,params):
+        origin,track_id = track[-1]
+        self.messageUpdateSignal.emit(
+            {'track':track,'args':[[0],"Change refresh time instruction received"]})
+
+    def initialize_artist(self,info):
+        artist, arguments = info
+        self.Man_DS_Connector.instruct('Manager',('initialize_artist',
+                                                  {'artist':[artist],'arguments':arguments}))
+
+    def initialize_artist_reply(self,track,params):
+        origin,track_id = track[-1]
+        self.messageUpdateSignal.emit(
+            {'track':track,'args':[[0],"initialize artist instruction received"]})
 
     def start_scan(self, scanInfo):
         # ask for the isotope mass

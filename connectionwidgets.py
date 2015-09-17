@@ -14,14 +14,14 @@ class ArtistConnections(QtGui.QWidget):
         self.l = 0
         self.layout = QtGui.QGridLayout(self)
 
-        self.options = ['ABU', 'CRIS', 'Matisse', 'Diodes','M2']
         self.address = {'ABU': ('127.0.0.1', 6005),
                         'CRIS': ('127.0.0.1', 6005),
                         'Matisse': ('PCCRIS15', 6004),
                         'Diodes': ('127.0.0.1', 6003),
-                        'M2': ('127.0.0.1', 6002)}
+                        'M2': ('128.141.98.136', 6002),
+                        'wavemeter': ('128.141.98.136', 6001)}
         self.artistSelection = QtGui.QComboBox()
-        self.artistSelection.addItems(self.options)
+        self.artistSelection.addItems(list(self.address.keys()))
         self.artistSelection.setCurrentIndex(0)
         self.layout.addWidget(self.artistSelection, 100, 0, 1, 1)
 
@@ -35,7 +35,7 @@ class ArtistConnections(QtGui.QWidget):
     def addConnection(self):
         selection = self.artistSelection.currentText()
         respons = self.address[selection]
-        self.connectSig.emit(('Both', respons))
+        self.connectSig.emit(('Both', selection, respons))
 
     def addArtistWidget(self, name='', IP='KSF402', PORT='5004'):
         self.artistWidgets[name] = ArtistWidget(self, name, IP, PORT)
@@ -168,7 +168,7 @@ class ArtistWidget(QtGui.QWidget):
     def reConnectArtist(self, sender):
         self.IP = str(self.channel.text().split(': ')[-1])
         self.PORT = int(self.portlabel.text().split(': ')[-1])
-        self.reconnectSig.emit((sender, (self.IP, self.PORT)))
+        self.reconnectSig.emit((sender, self.name, (self.IP, self.PORT)))
 
     def set_disconnected(self,origin):
         if origin == 'Manager':
@@ -186,3 +186,41 @@ class ArtistWidget(QtGui.QWidget):
             self.DSLabel.setStyleSheet(self.ok)
             self.DSReconnectButton.setHidden(True)
            
+
+class ControlWidget(QtGui.QWidget):
+    refresh_changed = QtCore.Signal(tuple)
+    initialize = QtCore.Signal(tuple)
+    def __init__(self, name):
+        super(ControlWidget, self).__init__()
+        self.name = name
+        layout = QtGui.QGridLayout(self)
+
+        layout.addWidget(QtGui.QLabel('Refresh rate'),0,0)
+        self.refresh_field = QtGui.QSpinBox()
+        self.refresh_field.setRange(1,10**4)
+        self.refresh_field.valueChanged.connect(self.emit_refresh_change)
+        layout.addWidget(self.refresh_field,0,1)
+
+        # do this with subclassing later
+        if name == 'M2':
+            layout.addWidget(QtGui.QLabel("Initial M2 settings (see browser)"),1,0,1,2)
+
+            layout.addWidget(QtGui.QLabel("Ref. cavity coarse"),2,0)
+            self.ref_cavity_value = QtGui.QLineEdit()
+            layout.addWidget(self.ref_cavity_value,2,1)
+
+            layout.addWidget(QtGui.QLabel("Current wavenumber (cm-1)"),3,0)
+            self.current_wn = QtGui.QLineEdit()
+            layout.addWidget(self.current_wn,3,1)
+
+            self.confirmButton = QtGui.QPushButton("Confirm initial values")
+            self.confirmButton.clicked.connect(self.emit_initialize)
+            layout.addWidget(self.confirmButton,4,1)
+
+    def emit_refresh_change(self):
+        self.refresh_changed.emit((self.name,int(self.refresh_field.value())))
+
+    def emit_initialize(self):
+        arguments = (float(self.ref_cavity_value.text()),
+                     float(self.current_wn.text()))
+        self.initialize.emit((self.name,arguments))

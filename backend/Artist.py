@@ -48,7 +48,8 @@ class Artist(Dispatcher):
         self.ns.progress = 0
         self.ns.parameter = ''
         self.ns.scan_parameter = ''
-        self.ns.setpoint = 11992.0
+        self.ns.setpoint = 11997.442
+        self.ns.refresh_time = 1
 
         self.format = format_map[name]
         self.ns.format = self.format
@@ -66,7 +67,7 @@ class Artist(Dispatcher):
     @hp.try_call
     def status(self, params):
         return {'format': self.format,
-        		'write_params':self.write_params,
+                'write_params':self.write_params,
                 'scanning': self.ns.scanning,
                 'on_setpoint': self.ns.on_setpoint,
                 'progress': self.ns.progress,
@@ -87,13 +88,27 @@ class Artist(Dispatcher):
         return {}
 
     @hp.try_call
+    def change_refresh_time(self,params):
+        time = params['time'][0]
+        self.ns.refresh_time = time
+
+        return {}
+
+    @hp.try_call
+    def initialize(self,params):
+        arguments = params['arguments']
+        self.iQ.put(['initialize',arguments])
+        
+        return {}
+
+    @hp.try_call
     def start_scan(self,params):
         self.ns.scan_parameter = params['scan_parameter'][0]
         self.ns.scan_array = params['scan_array']
         self.ns.time_per_step = params['time_per_step'][0]
         self.ns.mass = params['mass'][0]
 
-        self.iQ.put('scan')
+        self.iQ.put(['scan'])
 
         return {}
 
@@ -101,7 +116,7 @@ class Artist(Dispatcher):
     def go_to_setpoint(self,params):
         self.ns.parameter = params['parameter'][0]
         self.ns.setpoint = params['setpoint'][0]
-        self.iQ.put('go_to_setpoint')
+        self.iQ.put(['go_to_setpoint'])
         return {}
 
     @hp.try_call
@@ -160,7 +175,8 @@ def makeArtist(name='test'):
              'CRIS':6005,
              'Matisse':6004,
              'diodes':6003,
-             'M2':6002}
+             'M2':6002,
+             'wavemeter':6001}
 
     PORT = ports[name]
     artist = Artist(name=name,PORT=PORT,

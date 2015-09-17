@@ -4,24 +4,28 @@ import time
 
 from . import M2
 from . import Matisse
+from . import wavemeter
 
 format_map = {}
 format_map['M2'] = M2.this_format
 format_map['Matisse'] = Matisse.this_format
+format_map['wavemeter'] = wavemeter.this_format
 
 write_params_map = {}
 write_params_map['M2'] = M2.write_params
 write_params_map['Matisse'] = Matisse.write_params
+write_params_map['wavemeter'] = wavemeter.write_params
 
 hardware_map = {}
 hardware_map['M2'] = M2.M2
 hardware_map['Matisse'] = Matisse.Matisse
+hardware_map['wavemeter'] = wavemeter.Wavemeter
+
 
 ### Main acquire loop
 def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
     ### what hardware?
     hardware = hardware_map[name]()
-
     hardware.ns = ns
 
     ### define format
@@ -30,6 +34,8 @@ def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
     ### set-up connections and initialize
     return_message = hardware.setup()
     mQ.put(return_message)
+    while not hardware.initialized:
+        time.sleep(0.1)  
 
     got_instr = False
     ### start acquisition loop
@@ -69,8 +75,7 @@ def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
             data_pipe.send(data)
         else: #error to report
             mQ.put(return_message)
-
-        time.sleep(hardware.sleeptime)
+        time.sleep(0.001*ns.refresh_time)
 
     IStoppedFlag.set()
 

@@ -168,8 +168,6 @@ class ScannerWidget(QtGui.QWidget):
         	for item in val:
         		items.append(str(key) + ': ' + str(item) )
         self.tuning_parameter_combo.addItems(items)
-        print('added',items)
-        print(self.tuning_parameter_combo.currentText())
 
     def updateProgress(self, val):
         self.progressBar.setValue(1000*val)

@@ -12,7 +12,8 @@ class Device():
                       write_params = 'name_of_parameter',
                       mapping = {},
                       needs_stabilization = False,
-                      sleeptime = 0.001):
+                      needs_initialization = False,
+                      refresh_time = 0.001):
 
         self.name = name
         self.format = format
@@ -22,8 +23,11 @@ class Device():
         self.mapping = mapping
 
         self.needs_stabilization = needs_stabilization
-
-        self.sleeptime = sleeptime
+        self.needs_initialization = needs_initialization
+        if self.needs_initialization:
+            self.initialized = False
+        else:
+            self.initialized = True
 
     def connect_to_device(self):
         # to be overridden
@@ -44,7 +48,8 @@ class Device():
 
     @hp.try_deco
     def interpret(self,instr):
-        if instr == 'scan':
+        name = instr[0]
+        if name == 'scan':
             if self.ns.scan_parameter in self.write_params:
                 self.ns.current_position = 0
                 self.ns.scanning = True
@@ -52,7 +57,7 @@ class Device():
             else:
                 return ([1],'{} cannot be scanned.'.format(self.ns.scan_parameter))
 
-        elif instr == 'go_to_setpoint':
+        elif name == 'go_to_setpoint':
             if self.ns.parameter in self.write_params:
                 self.ns.on_setpoint = False
                 return ([0],'{} setpoint acknowledged.'.format(self.write_params))
@@ -60,13 +65,21 @@ class Device():
             else:
                 return ([1],'{} cannot be set.'.format(self.ns.parameter))
 
-        elif instr in self.mapping.keys():
-            translation = self.mapping[instr]
+        elif name == 'initialize':
+            arguments = instr[1]
+            self.initialize(arguments)
+
+        elif name in self.mapping.keys():
+            translation = self.mapping[name]
             translation()
-            return ([0],'Executed {} instruction.'.format(instr))
+            return ([0],'Executed {} instruction.'.format(name))
         
         else:
-            return ([1],'Unknown instruction {}.'.format(instr))
+            return ([1],'Unknown instruction {}.'.format(name))
+
+    def initialize(self,arguments):
+        # to be overridden
+        pass
 
     @hp.try_deco
     def scan(self):
@@ -102,6 +115,9 @@ class Device():
     @hp.try_deco
     def stabilize(self):
         self.stabilize_device()
+
+    def stabilize_device(self):
+        pass
 
     @hp.try_deco
     def input(self):

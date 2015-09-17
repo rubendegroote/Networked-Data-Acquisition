@@ -4,10 +4,11 @@ import backend.acquire_files.SolsTiScommands as comm
 import numpy as np
 import json
 import ctypes
+import traceback
 
 from .device import format,Device
 
-this_format = format + ('status', 'wavenumber', 'temperature', 'temperature_status',
+this_format = format + ('wavenumber_wsu_1','wavenumber_wsu_2','status', 'wavenumber', 'temperature', 'temperature_status',
     'etalon_lock', 'etalon_voltage', 'ref_cavity_lock', 'resonator_voltage',
     'ecd_lock', 'ecd_voltage', 'output_monitor', 'etalon_pd_dc', 'dither')
 write_params = ['wavenumber']
@@ -56,29 +57,31 @@ class M2(Device):
                                      write_params = write_params,
                                      mapping = mapping,
                                      needs_stabilization = True,
-                                     sleeptime = 0.02)
+                                     needs_initialization = True,
+                                     refresh_time = 0.1)
         
         self.settings = {'host': '192.168.1.216',
                          'port':39933}
 
         self.wavenumber = 0
         self.cavity_scale = 8
-        self.cavity_value = 51.4
-        self.fine_cavity_scale = 2000
-        self.fine_cavity_value = 50.0
+        self.cavity_value = 50.20
 
     def connect_to_device(self):
 
         ### Wavemeter stuff
-        # Load the .dll file
-        self.wlmdata = ctypes.WinDLL("c:\\windows\\system32\\wlmData.dll")
+        try:
+            # Load the .dll file
+            self.wlmdata = ctypes.WinDLL("c:\\windows\\system32\\wlmData.dll")
 
-        # Specify required argument types and return types for function calls
-        self.wlmdata.GetFrequencyNum.argtypes = [ctypes.c_long, ctypes.c_double]
-        self.wlmdata.GetFrequencyNum.restype  = ctypes.c_double
+            # Specify required argument types and return types for function calls
+            self.wlmdata.GetFrequencyNum.argtypes = [ctypes.c_long, ctypes.c_double]
+            self.wlmdata.GetFrequencyNum.restype  = ctypes.c_double
 
-        self.wlmdata.GetExposureNum.argtypes = [ctypes.c_long, ctypes.c_long, ctypes.c_long]
-        self.wlmdata.GetExposureNum.restype  = ctypes.c_long
+            self.wlmdata.GetExposureNum.argtypes = [ctypes.c_long, ctypes.c_long, ctypes.c_long]
+            self.wlmdata.GetExposureNum.restype  = ctypes.c_long
+        except:
+            raise Exception('Failed to connect to wavemeter\n',traceback.format_exc())
 
         ### M2 stuff
         host,port = self.settings['host'],self.settings['port']
@@ -105,52 +108,46 @@ class M2(Device):
         else:
             raise Exception('Failed to connect to M2')
 
-
     def write_to_device(self):
         pass
 
     def stabilize_device(self):
         error = self.wavenumber - self.ns.setpoint
         if abs(error) < 0.01:
-            print(0,error)
-            if abs(error) > 3*10**-5:
+            if abs(error) > 10**-5:
                 correction = self.cavity_scale * error
                 self.cavity_value += correction
-                print(1,self.cavity_value)
+                print(self.cavity_value)
                 self.socket.sendall(comm.tune_cavity(self.cavity_value))
-
                 response = json.loads(self.socket.recv(144).decode('utf-8'))
+                self.last_stabilization = time.time()
 
         if not self.ns.on_setpoint and abs(error) < 5*10**-5:
             self.setpoint_reached()
             return ([0],'{} setpoint reached'.format(self.ns.scan_parameter))
 
-
-        # self.socket.sendall(comm.set_wave_m(1.0/self.ns.setpoint*10**7))
-        # response = json.loads(self.socket.recv(1024).decode('utf-8'))
-        # print(response)
-        # if response['message']['op'] == 'set_wave_m_reply':
-        #     stat = response['message']['parameters']['status'][0]
-        #     if stat == 0:
-        #         return ([0],'Wavelength tuned to {} via table tuning'.format(self.ns.setpoint))
-        #     elif stat == 1:
-        #         return ([1],'Command failed.')
-        #     elif stat == 2:
-        #         return ([1],'Wavelength out of range.')
-        # elif response['message']['op'] == 'parse_fail':
-        #     return ([1],'Parse fail: received message is "{}"'.format(str(response)))
-
-
     def read_from_device(self):
-        # self.socket.sendall(comm.get_status())
-        # response = json.loads(self.socket.recv(1024).decode('utf-8'))
-        # data = response['message']['parameters']
+        self.socket.sendall(comm.get_status())
+        response = json.loads(self.socket.recv(1024).decode('utf-8'))
+        data = response['message']['parameters']
+        data = [convert_data(m) for m in data.values()]
 
         self.wavenumber = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
 
-        data = [np.random.rand()] * (len(self.ns.format)-3)
-
         return data
 
+    def initialize(self,arguments):
+    	self.cavity_value,self.wavenumber = arguments
+    	self.initialized = True
 
 
+
+def convert_data(d):
+    if d == 'on':
+        return 1
+    elif d == 'off' or d == 'error':
+        return 0
+    elif d in ['debug','search','low','not_fitted']:
+        return 2
+    else:
+        return float(d[0])

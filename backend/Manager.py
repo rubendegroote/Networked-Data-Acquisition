@@ -40,6 +40,36 @@ class Manager(Dispatcher):
         return params
 
     @try_call
+    def change_refresh_time(self, params):
+        artist_name = params['artist'][0]
+        time = params['time']        
+        self.change_refresh(artist_name,time)
+        return {}
+
+    def change_refresh(self,artist_name,time):
+        artist = self.connectors[artist_name]
+        artist.add_request(('change_refresh_time',{'time':time}))
+
+    def change_refresh_time_reply(self,track,params):
+        origin, track_id = track[-1]
+        self.notify_connectors(([0],"Artist {} received change refresh time instruction correctly.".format(origin)))
+
+    @try_call
+    def initialize_artist(self, params):
+        artist_name = params['artist'][0]
+        arguments = params['arguments']        
+        self.initialize(artist_name,arguments)
+        return {}
+
+    def initialize(self,artist_name,arguments):
+        artist = self.connectors[artist_name]
+        artist.add_request(('initialize',{'arguments':arguments}))
+
+    def initialize_reply(self,track,params):
+        origin, track_id = track[-1]
+        self.notify_connectors(([0],"Artist {} received initialize artist instruction correctly.".format(origin)))
+
+    @try_call
     def start_scan(self, params):
         artist_name = params['artist'][0]
         scan_parameter = params['scan_parameter']
