@@ -66,6 +66,7 @@ class M2(Device):
         self.wavenumber = 0
         self.cavity_scale = 8
         self.cavity_value = 50.20
+        self.etalon_value = 50.20
 
     def connect_to_device(self):
 
@@ -133,10 +134,15 @@ class M2(Device):
     def read_from_device(self):
         self.socket.sendall(comm.get_status())
         response = json.loads(self.socket.recv(1024).decode('utf-8'))
-        self.ns.status_data = response['message']['parameters']
-        data = [convert_data(self.ns.status_data[m]) for m in M2_format]
+        status_data = response['message']['parameters']       
+        status_data['wavelength_lock'] = self.wavelength_lock
+        status_data['etalon_value'] = self.etalon_value
+        status_data['cavity_value'] = self.cavity_value
+        self.ns.status_data = status_data
 
         self.wavenumber = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
+
+        data = [convert_data(self.ns.status_data[m]) for m in M2_format]
 
         return data
 

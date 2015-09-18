@@ -23,7 +23,8 @@ class Device():
         self.mapping = mapping
 
         self.needs_stabilization = needs_stabilization
-
+        if needs_stabilization:
+            self.wavelength_lock = False
 
     def connect_to_device(self):
         # to be overridden
@@ -60,6 +61,23 @@ class Device():
 
             else:
                 return ([1],'{} cannot be set.'.format(self.ns.parameter))
+
+        elif name == 'lock_wavelength':
+            self.wavelength_lock = args
+
+        elif name == 'set_etalon':
+            self.etalon_value = args
+            message = self.mapping['Tune Etalon'](args)
+            self.socket.sendall(message)
+            response = json.loads(self.socket.recv(1024).decode('utf-8'))
+            return ([0],'Executed {} instruction.'.format(name))
+
+        elif name == 'set_cavity':
+            self.cavity_value = args
+            message = self.mapping['Tune Cavity'](args)
+            self.socket.sendall(message)
+            response = json.loads(self.socket.recv(1024).decode('utf-8'))
+            return ([0],'Executed {} instruction.'.format(name))
 
         elif name in self.mapping.keys():
             message = self.mapping[name](args)
@@ -103,7 +121,8 @@ class Device():
 
     @hp.try_deco
     def stabilize(self):
-        self.stabilize_device()
+        if self.wavelength_lock:
+            self.stabilize_device()
 
     def stabilize_device(self):
         pass

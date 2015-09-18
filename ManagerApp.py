@@ -6,7 +6,8 @@ from PyQt4 import QtCore, QtGui
 
 from backend.connectors import Connector
 from connectiondialogs import Man_DS_ConnectionDialog
-from connectionwidgets import ArtistConnections,ControlWidget
+from connectionwidgets import ArtistConnections
+from controlwidget import ControlWidgets,ControlWidget
 from scanner import ScannerWidget
 
 class ManagerApp(QtGui.QMainWindow):
@@ -22,7 +23,7 @@ class ManagerApp(QtGui.QMainWindow):
         t = th.Thread(target=self.startIOLoop).start()
         self.init_UI()
 
-        self.control_widgets = {}
+        self.control_widgets = ControlWidgets()
 
         self.updateSignal.connect(self.updateUI)
         self.messageUpdateSignal.connect(self.updateMessages)
@@ -166,6 +167,8 @@ class ManagerApp(QtGui.QMainWindow):
             control_widget.etalon_value_sig.connect(self.set_artist_etalon)
             control_widget.lock_cavity_sig.connect(self.lock_artist_cavity)
             control_widget.cavity_value_sig.connect(self.set_artist_cavity)
+            control_widget.lock_wavelength_sig.connect(self.lock_artist_wavelength)
+            control_widget.lock_ecd_sig.connect(self.lock_artist_ecd)
 
         self.controltab.addTab(control_widget,name)
 
@@ -180,6 +183,9 @@ class ManagerApp(QtGui.QMainWindow):
                                     {'track':track,
                                     'args':params}))
             self.masses = params['masses']
+            self.updateSignal.emit((self.control_widgets.update,
+                                    {'track':track,
+                                    'args':params['status_data']}))
         elif origin == 'DataServer':
             self.updateSignal.emit((self.connWidget.updateData,
                                     {'track':track,
@@ -220,7 +226,6 @@ class ManagerApp(QtGui.QMainWindow):
         self.messageUpdateSignal.emit(
             {'track':track,'args':[[0],"set artist etalon instruction received"]})
 
-
     def lock_artist_cavity(self,info):
         artist, lock = info
         self.Man_DS_Connector.instruct('Manager',('lock_artist_cavity',
@@ -241,6 +246,25 @@ class ManagerApp(QtGui.QMainWindow):
         self.messageUpdateSignal.emit(
             {'track':track,'args':[[0],"set artist cavity instruction received"]})
 
+    def lock_artist_wavelength(self,info):
+        artist, lock = info
+        self.Man_DS_Connector.instruct('Manager',('lock_artist_wavelength',
+                                                  {'artist':[artist],'lock':lock}))
+
+    def lock_artist_wavelength_reply(self,track,params):
+        origin,track_id = track[-1]
+        self.messageUpdateSignal.emit(
+            {'track':track,'args':[[0],"lock artist wavelength instruction received"]})
+
+    def lock_artist_ecd(self,info):
+        artist, lock = info
+        self.Man_DS_Connector.instruct('Manager',('lock_artist_ecd',
+                                                  {'artist':[artist],'lock':lock}))
+
+    def lock_artist_ecd_reply(self,track,params):
+        origin,track_id = track[-1]
+        self.messageUpdateSignal.emit(
+            {'track':track,'args':[[0],"lock artist doubler instruction received"]})
 
     def start_scan(self, scanInfo):
         # ask for the isotope mass

@@ -61,7 +61,7 @@ def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
                 mQ.put(return_message)
 
         elif not ns.on_setpoint:
-            return_message = hardware.stabilize()
+            return_message = hardware.output()
             if not return_message is None:
                 mQ.put(return_message)
 

@@ -111,7 +111,7 @@ class Artist(Dispatcher):
     @hp.try_call
     def set_etalon(self,params):
         etalon_value = params['etalon_value']
-        self.iQ.put(['Tune Etalon',etalon_value])
+        self.iQ.put(['set_etalon',etalon_value])
         
         return {}
 
@@ -129,7 +129,25 @@ class Artist(Dispatcher):
     @hp.try_call
     def set_cavity(self,params):
         cavity_value = params['cavity_value']
-        self.iQ.put(['Tune Cavity',cavity_value])
+        self.iQ.put(['set_cavity',cavity_value])
+        
+        return {}
+
+    @hp.try_call
+    def lock_wavelength(self,params):
+        lock = params['lock']
+        self.iQ.put(['lock_wavelength',lock])
+        
+        return {}
+
+    @hp.try_call
+    def lock_ecd(self,params):
+        lock = params['lock']
+        if lock:
+            lock = "on"
+        else:
+            lock = "off"
+        self.iQ.put(['Lock ECD',lock])
         
         return {}
 

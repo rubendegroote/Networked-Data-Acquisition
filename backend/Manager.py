@@ -17,6 +17,7 @@ class Manager(Dispatcher):
         self.write_params = {}
         self.on_setpoint = {}
         self.masses = []
+        self.status_data = {}
 
         try:
             self.logbook = lb.loadLogbook(LOG_PATH)
@@ -36,7 +37,8 @@ class Manager(Dispatcher):
                   'progress': self.progress,
                   'format': self.format,
                   'write_params': self.write_params,
-                  'masses':self.masses}
+                  'masses':self.masses,
+                  'status_data':self.status_data}
         return params
 
     @try_call
@@ -102,7 +104,7 @@ class Manager(Dispatcher):
     @try_call
     def set_artist_cavity(self, params):
         artist_name = params['artist'][0]
-        cavity_value = params['cavity_value']        
+        cavity_value = params['cavity_value']
         self.set_cavity(artist_name,cavity_value)
         return {}
 
@@ -113,6 +115,36 @@ class Manager(Dispatcher):
     def set_cavity_reply(self,track,params):
         origin, track_id = track[-1]
         self.notify_connectors(([0],"Artist {} received set cavity instruction correctly.".format(origin)))
+
+    @try_call
+    def lock_artist_wavelength(self, params):
+        artist_name = params['artist'][0]
+        lock = params['lock']
+        self.lock_wavelength(artist_name,lock)
+        return {}
+
+    def lock_wavelength(self,artist_name,lock):
+        artist = self.connectors[artist_name]
+        artist.add_request(('lock_wavelength',{'lock':lock}))
+
+    def lock_wavelength_reply(self,track,params):
+        origin, track_id = track[-1]
+        self.notify_connectors(([0],"Artist {} received lock wavelength instruction correctly.".format(origin)))
+
+    @try_call
+    def lock_artist_ecd(self, params):
+        artist_name = params['artist'][0]
+        lock = params['lock']
+        self.lock_ecd(artist_name,lock)
+        return {}
+
+    def lock_ecd(self,artist_name,lock):
+        artist = self.connectors[artist_name]
+        artist.add_request(('lock_ecd',{'lock':lock}))
+
+    def lock_ecd_reply(self,track,params):
+        origin, track_id = track[-1]
+        self.notify_connectors(([0],"Artist {} received lock doubler instruction correctly.".format(origin)))
 
     @try_call
     def start_scan(self, params):
@@ -254,6 +286,7 @@ class Manager(Dispatcher):
         self.on_setpoint[origin] = params['on_setpoint']
         if not params['mass'] in self.masses:
             self.masses.append(params['mass'])
+        self.status_data[origin] = params['status_data']
 
     def add_to_logbook(self,info_for_log):
         lb.addEntryFromCopy(self.logbook,info_for_log)
