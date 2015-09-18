@@ -1,6 +1,7 @@
 import socket
 import time
-import backend.Helpers as hp 
+import backend.Helpers as hp
+import json
 
 format = ('timestamp','scan_number','mass','setpoint')
 
@@ -12,7 +13,6 @@ class Device():
                       write_params = 'name_of_parameter',
                       mapping = {},
                       needs_stabilization = False,
-                      needs_initialization = False,
                       refresh_time = 0.001):
 
         self.name = name
@@ -23,11 +23,7 @@ class Device():
         self.mapping = mapping
 
         self.needs_stabilization = needs_stabilization
-        self.needs_initialization = needs_initialization
-        if self.needs_initialization:
-            self.initialized = False
-        else:
-            self.initialized = True
+
 
     def connect_to_device(self):
         # to be overridden
@@ -48,7 +44,7 @@ class Device():
 
     @hp.try_deco
     def interpret(self,instr):
-        name = instr[0]
+        name,args = instr
         if name == 'scan':
             if self.ns.scan_parameter in self.write_params:
                 self.ns.current_position = 0
@@ -65,21 +61,14 @@ class Device():
             else:
                 return ([1],'{} cannot be set.'.format(self.ns.parameter))
 
-        elif name == 'initialize':
-            arguments = instr[1]
-            self.initialize(arguments)
-
         elif name in self.mapping.keys():
-            translation = self.mapping[name]
-            translation()
+            message = self.mapping[name](args)
+            self.socket.sendall(message)
+            response = json.loads(self.socket.recv(1024).decode('utf-8'))
             return ([0],'Executed {} instruction.'.format(name))
         
         else:
             return ([1],'Unknown instruction {}.'.format(name))
-
-    def initialize(self,arguments):
-        # to be overridden
-        pass
 
     @hp.try_deco
     def scan(self):

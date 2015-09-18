@@ -50,6 +50,7 @@ class Artist(Dispatcher):
         self.ns.scan_parameter = ''
         self.ns.setpoint = 11997.442
         self.ns.refresh_time = 1
+        self.ns.status_data = []
 
         self.format = format_map[name]
         self.ns.format = self.format
@@ -72,7 +73,8 @@ class Artist(Dispatcher):
                 'on_setpoint': self.ns.on_setpoint,
                 'progress': self.ns.progress,
                 'scan_number': self.ns.scan_number,
-                'mass':self.ns.mass}
+                'mass':self.ns.mass,
+                'status_data':self.ns.status_data}
 
     @hp.try_call
     def data(self, params):
@@ -95,9 +97,39 @@ class Artist(Dispatcher):
         return {}
 
     @hp.try_call
-    def initialize(self,params):
-        arguments = params['arguments']
-        self.iQ.put(['initialize',arguments])
+    def lock_etalon(self,params):
+        lock = params['lock']
+        if lock:
+            lock = "on"
+        else:
+            lock = "off"
+
+        self.iQ.put(['Lock Etalon',lock])
+        
+        return {}
+
+    @hp.try_call
+    def set_etalon(self,params):
+        etalon_value = params['etalon_value']
+        self.iQ.put(['Tune Etalon',etalon_value])
+        
+        return {}
+
+    @hp.try_call
+    def lock_cavity(self,params):
+        lock = params['lock']
+        if lock:
+            lock = "on"
+        else:
+            lock = "off"
+        self.iQ.put(['Lock Reference Cavity',lock])
+        
+        return {}
+
+    @hp.try_call
+    def set_cavity(self,params):
+        cavity_value = params['cavity_value']
+        self.iQ.put(['Tune Cavity',cavity_value])
         
         return {}
 
@@ -108,7 +140,7 @@ class Artist(Dispatcher):
         self.ns.time_per_step = params['time_per_step'][0]
         self.ns.mass = params['mass'][0]
 
-        self.iQ.put(['scan'])
+        self.iQ.put(['scan',()])
 
         return {}
 
@@ -116,7 +148,7 @@ class Artist(Dispatcher):
     def go_to_setpoint(self,params):
         self.ns.parameter = params['parameter'][0]
         self.ns.setpoint = params['setpoint'][0]
-        self.iQ.put(['go_to_setpoint'])
+        self.iQ.put(['go_to_setpoint',None])
         return {}
 
     @hp.try_call
@@ -151,7 +183,6 @@ class Artist(Dispatcher):
     def handle_messages(self):
         message = hp.GetFromQueue(self.mQ)
         if not message == None:
-            print(message)
             self.notify_connectors(message)
 
     def start_saving(self):

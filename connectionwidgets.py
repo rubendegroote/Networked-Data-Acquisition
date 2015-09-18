@@ -189,7 +189,10 @@ class ArtistWidget(QtGui.QWidget):
 
 class ControlWidget(QtGui.QWidget):
     refresh_changed = QtCore.Signal(tuple)
-    initialize = QtCore.Signal(tuple)
+    lock_etalon_sig = QtCore.Signal(tuple)
+    etalon_value_sig = QtCore.Signal(tuple)
+    lock_cavity_sig = QtCore.Signal(tuple)
+    cavity_value_sig = QtCore.Signal(tuple)
     def __init__(self, name):
         super(ControlWidget, self).__init__()
         self.name = name
@@ -203,24 +206,46 @@ class ControlWidget(QtGui.QWidget):
 
         # do this with subclassing later
         if name == 'M2':
-            layout.addWidget(QtGui.QLabel("Initial M2 settings (see browser)"),1,0,1,2)
-
-            layout.addWidget(QtGui.QLabel("Ref. cavity coarse"),2,0)
-            self.ref_cavity_value = QtGui.QLineEdit()
+            layout.addWidget(QtGui.QLabel("Etalon voltage"),2,0)
+            self.ref_cavity_value = QtGui.QDoubleSpinBox()
+            self.ref_cavity_value.setDecimals(4)
+            self.ref_cavity_value.setSingleStep(0.01)
+            self.ref_cavity_value.setRange(0,100)
             layout.addWidget(self.ref_cavity_value,2,1)
 
-            layout.addWidget(QtGui.QLabel("Current wavenumber (cm-1)"),3,0)
-            self.current_wn = QtGui.QLineEdit()
-            layout.addWidget(self.current_wn,3,1)
+            self.etalon_locked = False
+            self.lock_etalon_button = QtGui.QPushButton("Lock Etalon")
+            self.lock_etalon_button.clicked.connect(self.emit_lock_etalon)
+            layout.addWidget(self.lock_etalon_button,2,2)
 
-            self.confirmButton = QtGui.QPushButton("Confirm initial values")
-            self.confirmButton.clicked.connect(self.emit_initialize)
-            layout.addWidget(self.confirmButton,4,1)
+            layout.addWidget(QtGui.QLabel("Ref. cavity coarse"),3,0)
+            self.ref_cavity_value = QtGui.QDoubleSpinBox()
+            self.ref_cavity_value.setDecimals(4)
+            self.ref_cavity_value.setSingleStep(0.01)
+            self.ref_cavity_value.setRange(0,100)
+            layout.addWidget(self.ref_cavity_value,3,1)
+
+            self.cavity_locked = False
+            self.lock_cavity_button = QtGui.QPushButton("Lock Cavity")
+            self.lock_cavity_button.clicked.connect(self.emit_lock_cavity)
+            layout.addWidget(self.lock_cavity_button,3,2)
+
 
     def emit_refresh_change(self):
         self.refresh_changed.emit((self.name,int(self.refresh_field.value())))
 
-    def emit_initialize(self):
-        arguments = (float(self.ref_cavity_value.text()),
-                     float(self.current_wn.text()))
-        self.initialize.emit((self.name,arguments))
+    def emit_lock_etalon(self):
+        etalon_lock = not self.etalon_locked
+        self.lock_etalon_sig.emit((self.name,etalon_lock))
+
+    def emit_set_etalon(self):
+        etalon_value = float(self.ref_etalon_value.value())
+        self.etalon_value_sig.emit((self.name,etalon_value))
+
+    def emit_lock_cavity(self):
+        cavity_lock = not self.cavity_locked
+        self.lock_cavity_sig.emit((self.name,cavity_lock))
+
+    def emit_set_cavity(self):
+        cavity_value = float(self.ref_cavity_value.value())
+        self.cavity_value_sig.emit((self.name,cavity_value))

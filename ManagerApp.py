@@ -155,13 +155,18 @@ class ManagerApp(QtGui.QMainWindow):
         op,params = 'add_connector',{'address': address}
         self.Man_DS_Connector.instruct(receiver, (op,params))
         if not name in self.control_widgets.keys():
-	        self.add_control_tab(name)
+            self.add_control_tab(name)
 
     def add_control_tab(self,name):
         control_widget = ControlWidget(name)
         self.control_widgets[name] = control_widget
         control_widget.refresh_changed.connect(self.change_refresh_time)
-        control_widget.initialize.connect(self.initialize_artist)
+        if name =='M2':
+            control_widget.lock_etalon_sig.connect(self.lock_artist_etalon)
+            control_widget.etalon_value_sig.connect(self.set_artist_etalon)
+            control_widget.lock_cavity_sig.connect(self.lock_artist_cavity)
+            control_widget.cavity_value_sig.connect(self.set_artist_cavity)
+
         self.controltab.addTab(control_widget,name)
 
     def closeEvent(self, event):
@@ -193,16 +198,49 @@ class ManagerApp(QtGui.QMainWindow):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
             {'track':track,'args':[[0],"Change refresh time instruction received"]})
-
-    def initialize_artist(self,info):
-        artist, arguments = info
-        self.Man_DS_Connector.instruct('Manager',('initialize_artist',
-                                                  {'artist':[artist],'arguments':arguments}))
-
-    def initialize_artist_reply(self,track,params):
+    
+    def lock_artist_etalon(self,info):
+        artist, lock = info
+        self.Man_DS_Connector.instruct('Manager',('lock_artist_etalon',
+                                                  {'artist':[artist],'lock':lock}))
+          
+    def lock_artist_etalon_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"initialize artist instruction received"]})
+            {'track':track,'args':[[0],"lock artist etalon instruction received"]})
+
+
+    def set_artist_etalon(self,info):
+        artist, etalon_value = info
+        self.Man_DS_Connector.instruct('Manager',('set_artist_cavity',
+                                                  {'artist':[artist],'etalon_value':cavity_value}))
+
+    def set_artist_etalon_reply(self,track,params):
+        origin,track_id = track[-1]
+        self.messageUpdateSignal.emit(
+            {'track':track,'args':[[0],"set artist etalon instruction received"]})
+
+
+    def lock_artist_cavity(self,info):
+        artist, lock = info
+        self.Man_DS_Connector.instruct('Manager',('lock_artist_cavity',
+                                                  {'artist':[artist],'lock':lock}))
+
+    def lock_artist_cavity_reply(self,track,params):
+        origin,track_id = track[-1]
+        self.messageUpdateSignal.emit(
+            {'track':track,'args':[[0],"lock artist cavity instruction received"]})
+
+    def set_artist_cavity(self,info):
+        artist, cavity_value = info
+        self.Man_DS_Connector.instruct('Manager',('set_artist_cavity',
+                                                  {'artist':[artist],'cavity_value':cavity_value}))
+
+    def set_artist_cavity_reply(self,track,params):
+        origin,track_id = track[-1]
+        self.messageUpdateSignal.emit(
+            {'track':track,'args':[[0],"set artist cavity instruction received"]})
+
 
     def start_scan(self, scanInfo):
         # ask for the isotope mass

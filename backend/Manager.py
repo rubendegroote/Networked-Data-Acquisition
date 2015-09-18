@@ -55,19 +55,64 @@ class Manager(Dispatcher):
         self.notify_connectors(([0],"Artist {} received change refresh time instruction correctly.".format(origin)))
 
     @try_call
-    def initialize_artist(self, params):
+    def lock_artist_etalon(self, params):
         artist_name = params['artist'][0]
-        arguments = params['arguments']        
-        self.initialize(artist_name,arguments)
+        lock = params['lock']        
+        self.lock_etalon(artist_name,lock)
         return {}
 
-    def initialize(self,artist_name,arguments):
+    def lock_etalon(self,artist_name,lock):
         artist = self.connectors[artist_name]
-        artist.add_request(('initialize',{'arguments':arguments}))
+        artist.add_request(('lock_etalon',{'lock':lock}))
 
-    def initialize_reply(self,track,params):
+    def lock_etalon_reply(self,track,params):
         origin, track_id = track[-1]
-        self.notify_connectors(([0],"Artist {} received initialize artist instruction correctly.".format(origin)))
+        self.notify_connectors(([0],"Artist {} received lock etalon instruction correctly.".format(origin)))
+
+    @try_call
+    def set_artist_etalon(self, params):
+        artist_name = params['artist'][0]
+        etalon_value = params['etalon_value']        
+        self.set_etalon(artist_name,etalon_value)
+        return {}
+
+    def set_etalon(self,artist_name,etalon_value):
+        artist = self.connectors[artist_name]
+        artist.add_request(('set_etalon',{'etalon_value':etalon_value}))
+
+    def set_etalon_reply(self,track,params):
+        origin, track_id = track[-1]
+        self.notify_connectors(([0],"Artist {} received set etalon instruction correctly.".format(origin)))
+
+    @try_call
+    def lock_artist_cavity(self, params):
+        artist_name = params['artist'][0]
+        lock = params['lock']        
+        self.lock_cavity(artist_name,lock)
+        return {}
+
+    def lock_cavity(self,artist_name,lock):
+        artist = self.connectors[artist_name]
+        artist.add_request(('lock_cavity',{'lock':lock}))
+
+    def lock_cavity_reply(self,track,params):
+        origin, track_id = track[-1]
+        self.notify_connectors(([0],"Artist {} received lock cavity instruction correctly.".format(origin)))
+
+    @try_call
+    def set_artist_cavity(self, params):
+        artist_name = params['artist'][0]
+        cavity_value = params['cavity_value']        
+        self.set_cavity(artist_name,cavity_value)
+        return {}
+
+    def set_cavity(self,artist_name,cavity_value):
+        artist = self.connectors[artist_name]
+        artist.add_request(('set_cavity',{'cavity_value':cavity_value}))
+
+    def set_cavity_reply(self,track,params):
+        origin, track_id = track[-1]
+        self.notify_connectors(([0],"Artist {} received set cavity instruction correctly.".format(origin)))
 
     @try_call
     def start_scan(self, params):

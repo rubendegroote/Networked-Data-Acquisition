@@ -33,9 +33,6 @@ def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
 
     ### set-up connections and initialize
     return_message = hardware.setup()
-    mQ.put(return_message)
-    while not hardware.initialized:
-        time.sleep(0.1)  
 
     got_instr = False
     ### start acquisition loop

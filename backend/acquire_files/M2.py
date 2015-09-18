@@ -8,9 +8,10 @@ import traceback
 
 from .device import format,Device
 
-this_format = format + ('wavenumber_wsu_1','wavenumber_wsu_2','status', 'wavenumber', 'temperature', 'temperature_status',
-    'etalon_lock', 'etalon_voltage', 'ref_cavity_lock', 'resonator_voltage',
+M2_format = ('status', 'wavelength', 'temperature', 'temperature_status',
+    'etalon_lock', 'etalon_voltage', 'cavity_lock', 'resonator_voltage',
     'ecd_lock', 'ecd_voltage', 'output_monitor', 'etalon_pd_dc', 'dither')
+this_format = format + M2_format
 write_params = ['wavenumber']
 
 class M2(Device):
@@ -57,7 +58,6 @@ class M2(Device):
                                      write_params = write_params,
                                      mapping = mapping,
                                      needs_stabilization = True,
-                                     needs_initialization = True,
                                      refresh_time = 0.1)
         
         self.settings = {'host': '192.168.1.216',
@@ -113,34 +113,32 @@ class M2(Device):
 
     def stabilize_device(self):
         error = self.wavenumber - self.ns.setpoint
-        if abs(error) < 0.01:
-            if abs(error) > 10**-5:
-                correction = self.cavity_scale * error
-                self.cavity_value += correction
-                print(self.cavity_value)
-                self.socket.sendall(comm.tune_cavity(self.cavity_value))
-                response = json.loads(self.socket.recv(144).decode('utf-8'))
-                self.last_stabilization = time.time()
+        if not (self.ns.status_data["etalon_lock"] \
+                and self.ns.status_data["cavity_lock"]):
+            # etalon and cavity are not locked
+            return
 
-        if not self.ns.on_setpoint and abs(error) < 5*10**-5:
+        if abs(error) < 0.1 and abs(error) > 10**-5:
+            correction = self.cavity_scale * error
+            self.cavity_value += correction
+            print(self.cavity_value)
+            self.socket.sendall(comm.tune_cavity(self.cavity_value))
+            response = json.loads(self.socket.recv(1024).decode('utf-8'))
+            self.last_stabilization = time.time()
+
+        if not self.ns.on_setpoint and abs(error) < 2*10**-5:
             self.setpoint_reached()
             return ([0],'{} setpoint reached'.format(self.ns.scan_parameter))
 
     def read_from_device(self):
         self.socket.sendall(comm.get_status())
         response = json.loads(self.socket.recv(1024).decode('utf-8'))
-        data = response['message']['parameters']
-        data = [convert_data(m) for m in data.values()]
+        self.ns.status_data = response['message']['parameters']
+        data = [convert_data(self.ns.status_data[m]) for m in M2_format]
 
         self.wavenumber = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
 
         return data
-
-    def initialize(self,arguments):
-    	self.cavity_value,self.wavenumber = arguments
-    	self.initialized = True
-
-
 
 def convert_data(d):
     if d == 'on':
