@@ -162,8 +162,9 @@ class ManagerApp(QtGui.QMainWindow):
     def add_control_tab(self,name):
         control_widget = ControlWidget(name)
         self.control_widgets.controls[name] = control_widget
-        control_widget.refresh_changed.connect(self.change_refresh_time)
+        control_widget.refresh_changed_sig.connect(self.change_refresh_time)
         if name =='M2':
+            control_widget.prop_changed_sig.connect(self.change_artist_prop)
             control_widget.lock_etalon_sig.connect(self.lock_artist_etalon)
             control_widget.etalon_value_sig.connect(self.set_artist_etalon)
             control_widget.lock_cavity_sig.connect(self.lock_artist_cavity)
@@ -181,6 +182,7 @@ class ManagerApp(QtGui.QMainWindow):
     def status_reply(self, track, params):
         origin, track_id = track[-1]
         if origin == 'Manager':
+            print(params['on_setpoint'])
             self.updateSignal.emit((self.scanner.update,
                                     {'track':track,
                                     'args':params}))
@@ -200,13 +202,23 @@ class ManagerApp(QtGui.QMainWindow):
 
     def change_refresh_time(self,info):
         artist, time = info
-        self.Man_DS_Connector.instruct('Manager',('change_refresh_time',
+        self.Man_DS_Connector.instruct('Manager',('change_artist_refresh',
                                                   {'artist':[artist],'time':[time]}))
 
-    def change_refresh_time_reply(self,track,params):
+    def change_artist_refresh_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
             {'track':track,'args':[[0],"Change refresh time instruction received"]})
+    
+    def change_artist_prop(self,info):
+        artist, prop = info
+        self.Man_DS_Connector.instruct('Manager',('change_artist_prop',
+                                                  {'artist':[artist],'prop':[prop]}))
+    
+    def change_artist_prop_reply(self,track,params):
+        origin,track_id = track[-1]
+        self.messageUpdateSignal.emit(
+            {'track':track,'args':[[0],"Change proportionality instruction received"]})
     
     def lock_artist_etalon(self,info):
         artist, lock = info
@@ -221,8 +233,8 @@ class ManagerApp(QtGui.QMainWindow):
 
     def set_artist_etalon(self,info):
         artist, etalon_value = info
-        self.Man_DS_Connector.instruct('Manager',('set_artist_cavity',
-                                                  {'artist':[artist],'etalon_value':cavity_value}))
+        self.Man_DS_Connector.instruct('Manager',('set_artist_etalon',
+                                                  {'artist':[artist],'etalon_value':etalon_value}))
 
     def set_artist_etalon_reply(self,track,params):
         origin,track_id = track[-1]

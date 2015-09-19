@@ -44,7 +44,7 @@ class Manager(Dispatcher):
         return params
 
     @try_call
-    def change_refresh_time(self, params):
+    def change_artist_refresh(self, params):
         artist_name = params['artist'][0]
         time = params['time']        
         self.change_refresh(artist_name,time)
@@ -57,6 +57,21 @@ class Manager(Dispatcher):
     def change_refresh_time_reply(self,track,params):
         origin, track_id = track[-1]
         self.notify_connectors(([0],"Artist {} received change refresh time instruction correctly.".format(origin)))
+
+    @try_call
+    def change_artist_prop(self, params):
+        artist_name = params['artist'][0]
+        prop = params['prop']        
+        self.change_prop(artist_name,prop)
+        return {}
+
+    def change_prop(self,artist_name,prop):
+        artist = self.connectors[artist_name]
+        artist.add_request(('change_prop',{'prop':prop}))
+
+    def change_prop_reply(self,track,params):
+        origin, track_id = track[-1]
+        self.notify_connectors(([0],"Artist {} received change proportionality instruction correctly.".format(origin)))
 
     @try_call
     def lock_artist_etalon(self, params):

@@ -25,6 +25,7 @@ class Device():
         self.needs_stabilization = needs_stabilization
         if needs_stabilization:
             self.wavelength_lock = False
+            self.prop = 10
 
     def connect_to_device(self):
         # to be overridden
@@ -77,6 +78,10 @@ class Device():
             message = self.mapping['Tune Cavity'](args)
             self.socket.sendall(message)
             response = json.loads(self.socket.recv(1024).decode('utf-8'))
+            return ([0],'Executed {} instruction.'.format(name))
+
+        elif name == 'change_prop':
+            self.prop = args
             return ([0],'Executed {} instruction.'.format(name))
 
         elif name in self.mapping.keys():

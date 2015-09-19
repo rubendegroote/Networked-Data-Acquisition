@@ -97,6 +97,14 @@ class Artist(Dispatcher):
         return {}
 
     @hp.try_call
+    def change_prop(self,params):
+        prop = params['prop'][0]
+
+        self.iQ.put(['change_prop',prop])
+
+        return {}
+
+    @hp.try_call
     def lock_etalon(self,params):
         lock = params['lock']
         if lock:

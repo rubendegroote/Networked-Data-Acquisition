@@ -14,7 +14,8 @@ class ControlWidgets(QtCore.QObject):
                 self.artist_missing.emit(key)
 
 class ControlWidget(QtGui.QWidget):
-    refresh_changed = QtCore.Signal(tuple)
+    prop_changed_sig = QtCore.Signal(tuple)
+    refresh_changed_sig = QtCore.Signal(tuple)
     lock_etalon_sig = QtCore.Signal(tuple)
     etalon_value_sig = QtCore.Signal(tuple)
     lock_cavity_sig = QtCore.Signal(tuple)
@@ -35,6 +36,12 @@ class ControlWidget(QtGui.QWidget):
 
         # do this with subclassing later
         if name == 'M2':
+            layout.addWidget(QtGui.QLabel('Proportional stab.'),0,2)
+            self.prop_field = QtGui.QSpinBox()
+            self.prop_field.setRange(1,500)
+            self.prop_field.valueChanged.connect(self.emit_prop_change)
+            layout.addWidget(self.prop_field,0,3)
+
             layout.addWidget(QtGui.QLabel("Etalon Tune"),1,2)
             self.etalon_value = QtGui.QDoubleSpinBox()
             self.etalon_value.setDecimals(4)
@@ -158,13 +165,16 @@ class ControlWidget(QtGui.QWidget):
             self.wave_2.setText(str("{0:.5f}".format(wavemeter_info['wavenumber_wsu_2'])))
 
     def emit_refresh_change(self):
-        self.refresh_changed.emit((self.name,int(self.refresh_field.value())))
+        self.refresh_changed_sig.emit((self.name,int(self.refresh_field.value())))
+
+    def emit_prop_change(self):
+        self.prop_changed_sig.emit((self.name,int(self.prop_field.value())))
 
     def emit_lock_etalon(self):
         self.lock_etalon_sig.emit((self.name,not self.etalon_locked))
 
     def emit_set_etalon(self):
-        etalon_value = float(self.ref_etalon_value.value())
+        etalon_value = float(self.etalon_value.value())
         self.etalon_value_sig.emit((self.name,etalon_value))
 
     def emit_lock_cavity(self):

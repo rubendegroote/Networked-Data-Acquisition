@@ -64,7 +64,6 @@ class M2(Device):
                          'port':39933}
 
         self.wavenumber = 0
-        self.cavity_scale = 8
         self.cavity_value = 50.20
         self.etalon_value = 50.20
 
@@ -119,15 +118,15 @@ class M2(Device):
             # etalon and cavity are not locked
             return
 
-        if abs(error) < 0.1 and abs(error) > 10**-6:
-            correction = self.cavity_scale * error
+        if abs(error) < 0.25 and abs(error) > 10**-6:
+            correction = self.prop * error
             self.cavity_value += correction
             print(self.cavity_value)
             self.socket.sendall(comm.tune_cavity(self.cavity_value))
             response = json.loads(self.socket.recv(1024).decode('utf-8'))
             self.last_stabilization = time.time()
 
-        if not self.ns.on_setpoint and abs(error) < 10**-5:
+        if not self.ns.on_setpoint and abs(error) < 5*10**-5:
             self.setpoint_reached()
             return ([0],'{} setpoint reached'.format(self.ns.scan_parameter))
 
