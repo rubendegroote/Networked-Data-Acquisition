@@ -10,6 +10,8 @@ LOG_PATH = 'C:\\Logbook\\Gallium Run\\logbook'
 class Manager(Dispatcher):
     def __init__(self, PORT=5007, name='Manager'):
         super(Manager, self).__init__(PORT, name)
+        self.sleeptime = 0.1
+
         self.scan_number = -1
         self.progress = {}
         self.scanning = {}

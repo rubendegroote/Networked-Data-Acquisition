@@ -24,6 +24,7 @@ class ManagerApp(QtGui.QMainWindow):
         self.init_UI()
 
         self.control_widgets = ControlWidgets()
+        self.control_widgets.artist_missing.connect(self.add_control_tab)
 
         self.updateSignal.connect(self.updateUI)
         self.messageUpdateSignal.connect(self.updateMessages)
@@ -155,12 +156,12 @@ class ManagerApp(QtGui.QMainWindow):
         receiver, name, address = info
         op,params = 'add_connector',{'address': address}
         self.Man_DS_Connector.instruct(receiver, (op,params))
-        if not name in self.control_widgets.keys():
+        if not name in self.control_widgets.controls.keys():
             self.add_control_tab(name)
 
     def add_control_tab(self,name):
         control_widget = ControlWidget(name)
-        self.control_widgets[name] = control_widget
+        self.control_widgets.controls[name] = control_widget
         control_widget.refresh_changed.connect(self.change_refresh_time)
         if name =='M2':
             control_widget.lock_etalon_sig.connect(self.lock_artist_etalon)
@@ -169,6 +170,7 @@ class ManagerApp(QtGui.QMainWindow):
             control_widget.cavity_value_sig.connect(self.set_artist_cavity)
             control_widget.lock_wavelength_sig.connect(self.lock_artist_wavelength)
             control_widget.lock_ecd_sig.connect(self.lock_artist_ecd)
+            control_widget.wavenumber_sig.connect(self.go_to_setpoint)
 
         self.controltab.addTab(control_widget,name)
 
@@ -186,6 +188,7 @@ class ManagerApp(QtGui.QMainWindow):
             self.updateSignal.emit((self.control_widgets.update,
                                     {'track':track,
                                     'args':params['status_data']}))
+
         elif origin == 'DataServer':
             self.updateSignal.emit((self.connWidget.updateData,
                                     {'track':track,

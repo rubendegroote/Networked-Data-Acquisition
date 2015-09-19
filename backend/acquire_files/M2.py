@@ -119,7 +119,7 @@ class M2(Device):
             # etalon and cavity are not locked
             return
 
-        if abs(error) < 0.1 and abs(error) > 10**-5:
+        if abs(error) < 0.1 and abs(error) > 10**-6:
             correction = self.cavity_scale * error
             self.cavity_value += correction
             print(self.cavity_value)
@@ -127,7 +127,7 @@ class M2(Device):
             response = json.loads(self.socket.recv(1024).decode('utf-8'))
             self.last_stabilization = time.time()
 
-        if not self.ns.on_setpoint and abs(error) < 2*10**-5:
+        if not self.ns.on_setpoint and abs(error) < 10**-5:
             self.setpoint_reached()
             return ([0],'{} setpoint reached'.format(self.ns.scan_parameter))
 

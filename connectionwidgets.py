@@ -21,7 +21,7 @@ class ArtistConnections(QtGui.QWidget):
                         'M2': ('128.141.98.136', 6002),
                         'wavemeter': ('128.141.98.136', 6001)}
         self.artistSelection = QtGui.QComboBox()
-        self.artistSelection.addItems(list(self.address.keys()))
+        self.artistSelection.addItems(sorted(list(self.address.keys())))
         self.artistSelection.setCurrentIndex(0)
         self.layout.addWidget(self.artistSelection, 100, 0, 1, 1)
 
@@ -158,9 +158,9 @@ class ArtistWidget(QtGui.QWidget):
         self.rowLabel = QtGui.QLabel()
         self.layout.addWidget(self.rowLabel, 0, 6, 1, 1)
 
-        self.removeButton = QtGui.QPushButton('Remove')
-        self.removeButton.clicked.connect(self.removeArtist)
-        self.layout.addWidget(self.removeButton, 0, 7, 1, 1)
+        #self.removeButton = QtGui.QPushButton('Remove')
+        #self.removeButton.clicked.connect(self.removeArtist)
+        #self.layout.addWidget(self.removeButton, 0, 7, 1, 1)
 
     def removeArtist(self):
         self.removeSig.emit(self)

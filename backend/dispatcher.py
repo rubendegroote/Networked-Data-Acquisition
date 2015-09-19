@@ -27,10 +27,12 @@ class Dispatcher(asyncore.dispatcher):
         self.looping = True
         t = th.Thread(target=self.start).start()
 
+        self.sleeptime = 0.03
+
     def start(self):
         while self.looping:
             asyncore.loop(count=1)
-            time.sleep(0.03)
+            time.sleep(self.sleeptime)
 
     def stop(self):
         self.looping = False

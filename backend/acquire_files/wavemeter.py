@@ -41,5 +41,8 @@ class Wavemeter(Device):
         data = [wavenumber_wsu_1,wavenumber_wsu_2,expos_11,
                 expos_12,expos_21,expos_22]
 
+        self.ns.status_data = {'wavenumber_wsu_1':wavenumber_wsu_1,
+                               'wavenumber_wsu_2':wavenumber_wsu_2}
+
         return data
 
