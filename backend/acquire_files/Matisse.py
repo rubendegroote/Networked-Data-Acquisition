@@ -6,7 +6,7 @@ from ..OpenOPC.OpenOPC import *
 
 from .device import format,Device
 
-this_format = format + ('wavenumber','wavenumber 2')
+this_format = format + ('setpoint','on_setpoint','wavenumber','wavenumber 2')
 write_params = ['wavenumber']
 class Matisse(Device):
     def __init__(self):      

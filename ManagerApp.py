@@ -182,7 +182,6 @@ class ManagerApp(QtGui.QMainWindow):
     def status_reply(self, track, params):
         origin, track_id = track[-1]
         if origin == 'Manager':
-            print(params['on_setpoint'])
             self.updateSignal.emit((self.scanner.update,
                                     {'track':track,
                                     'args':params}))

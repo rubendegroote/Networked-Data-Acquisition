@@ -8,7 +8,7 @@ import traceback
 
 from .device import format,Device
 
-M2_format = ('status', 'wavelength', 'temperature', 'temperature_status',
+M2_format = ('setpoint','on_setpoint','status', 'wavelength', 'temperature', 'temperature_status',
     'etalon_lock', 'etalon_voltage', 'cavity_lock', 'resonator_voltage',
     'ecd_lock', 'ecd_voltage', 'output_monitor', 'etalon_pd_dc', 'dither')
 this_format = format + M2_format
@@ -133,10 +133,14 @@ class M2(Device):
     def read_from_device(self):
         self.socket.sendall(comm.get_status())
         response = json.loads(self.socket.recv(1024).decode('utf-8'))
-        status_data = response['message']['parameters']       
+        status_data = response['message']['parameters']
+
+        status_data['setpoint'] = self.ns.setpoint
+        status_data['on_setpoint'] = self.ns.on_setpoint
         status_data['wavelength_lock'] = self.wavelength_lock
         status_data['etalon_value'] = self.etalon_value
         status_data['cavity_value'] = self.cavity_value
+        
         self.ns.status_data = status_data
 
         self.wavenumber = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458

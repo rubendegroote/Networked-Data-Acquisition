@@ -12,6 +12,7 @@ class Manager(Dispatcher):
         super(Manager, self).__init__(PORT, name)
         self.sleeptime = 0.1
 
+        self.scanner_name = ""
         self.scan_number = -1
         self.progress = {}
         self.scanning = {}
@@ -298,7 +299,11 @@ class Manager(Dispatcher):
         origin, track_id = track[-1]
         self.format[origin] = params['format']
         self.write_params[origin] = params['write_params']
+        if origin == self.scanner_name:
+            if self.scanning[origin] and not params['scanning']:
+                self.set_all_scan_numbers(-1)
         self.scanning[origin] = params['scanning']
+        print(self.scanning)
         self.progress[origin] = params['progress']
         self.on_setpoint[origin] = params['on_setpoint']
         if not params['mass'] in self.masses:

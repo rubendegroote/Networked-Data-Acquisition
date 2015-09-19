@@ -91,7 +91,7 @@ class CRIS(Device):
         counts = countData.value - lastCount.value
         lastCount.value = countData.value
 
-        data = [counts]
+        data = [self.ns.setpoint,counts]
         data.extend(self.aiData)
 
         return data

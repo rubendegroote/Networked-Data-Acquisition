@@ -3,7 +3,7 @@ import time
 import backend.Helpers as hp
 import json
 
-format = ('timestamp','scan_number','mass','setpoint')
+format = ('timestamp','scan_number','mass')
 
 class Device():
     def __init__(self,name = 'device',
@@ -137,8 +137,7 @@ class Device():
         data_from_device = self.read_from_device()
         data = [time.time(),
                 self.ns.scan_number,
-                self.ns.mass, 
-                self.ns.setpoint]
+                self.ns.mass]
         data.extend(data_from_device)
         return ([0],data)
     
