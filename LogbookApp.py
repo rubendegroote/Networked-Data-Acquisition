@@ -61,17 +61,6 @@ class LogbookApp(QtGui.QMainWindow):
         self.connectionLabel = QtGui.QLabel('Connections:')
         layout.addWidget(self.connectionLabel, 0, 0, 1, 1)
 
-        self.controllerLabel = QtGui.QLabel('Controller')
-        self.controllerLabel.setAlignment(QtCore.Qt.AlignCenter)
-        self.controllerLabel.setMinimumWidth(50)
-        self.controllerLabel.setMinimumHeight(25)
-        self.controllerLabel.setStyleSheet("QLabel { background-color: red }")
-        layout.addWidget(self.controllerLabel, 1, 0, 1, 2)
-
-        self.addController = QtGui.QPushButton('Reconnect to Controller')
-        self.addController.clicked.connect(self.add_controller)
-        layout.addWidget(self.addController, 1, 0, 1, 2)
-
         self.editLabel = QtGui.QLabel('Logbook:')
         layout.addWidget(self.editLabel, 3, 0, 1, 1)
 
