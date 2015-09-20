@@ -2,6 +2,8 @@ import asyncore
 import threading as th
 import time
 import configparser
+from multiprocessing import freeze_support
+import sys
 from PyQt4 import QtCore, QtGui
 
 from backend.connectors import Connector
@@ -374,3 +376,15 @@ class Man_DS_Connector():
         elif receiver == 'Both':
             self.man.add_request(instr)
             self.DS.add_request(instr)
+
+
+def main():
+    # add freeze support
+    freeze_support()
+    app = QtGui.QApplication(sys.argv)
+    m = ControllerApp()
+    sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    main()

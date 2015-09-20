@@ -2,6 +2,8 @@ from PyQt4 import QtCore, QtGui
 import threading as th
 import asyncore
 import time
+from multiprocessing import freeze_support
+import sys
 
 from backend.connectors import Connector
 from connectiondialogs import ConnectionDialog, FieldAdditionDialog
@@ -291,3 +293,11 @@ class LogbookApp(QtGui.QMainWindow):
         self.stopIOLoop()
         event.accept()
 
+def main():
+    # add freeze support
+    app = QtGui.QApplication(sys.argv)
+    m = LogbookApp()
+    sys.exit(app.exec_())
+
+if __name__ == "__main__":
+    main()

@@ -1,9 +1,12 @@
 from PyQt4 import QtCore,QtGui
+import pyqtgraph as pg
 import threading as th
 import asyncore
 import time
 import pandas as pd
 import numpy as np
+from multiprocessing import freeze_support
+import sys
 
 from scanner import ScannerWidget
 from connect import ConnectionsWidget
@@ -217,3 +220,16 @@ class DataViewerApp(QtGui.QMainWindow):
     def closeEvent(self,event):
         self.stopIOLoop()
         event.accept()
+
+def main():
+    pg.setConfigOption('background', 'w')
+    pg.setConfigOption('foreground', 'k')
+    # add freeze support
+    freeze_support()
+    app = QtGui.QApplication(sys.argv)
+    m = DataViewerApp()
+    sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    main()

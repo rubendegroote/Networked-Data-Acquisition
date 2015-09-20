@@ -1,0 +1,15 @@
+import sys
+from multiprocessing import freeze_support
+
+def main():
+    freeze_support()
+    if sys.argv[1] == 'controller':
+        from ControllerApp import main as ui_main
+    elif  sys.argv[1] == 'data_viewer':
+        from DataViewerApp import main as ui_main
+    elif  sys.argv[1] == 'log_viewer':
+        from LogbookApp import main as ui_main
+    ui_main()
+
+if __name__ == '__main__':
+    main()
