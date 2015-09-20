@@ -46,7 +46,7 @@ class DeviceConnections(QtGui.QWidget):
         for key in self.deviceWidgets.keys():
             config[key] = {'IP': self.deviceWidgets[name].IP,
                            'Port': self.deviceWidgets[name].PORT}
-        with open('ManagerDeviceConnections.ini', 'w') as configfile:
+        with open('ControllerDeviceConnections.ini', 'w') as configfile:
             config.write(configfile)
 
         self.l += 1
@@ -64,7 +64,7 @@ class DeviceConnections(QtGui.QWidget):
     def update(self,track,params):
         origin, track_id = track[-1]
         # update list of existing connections
-        if origin == 'Manager':
+        if origin == 'Controller':
             self.ManDevices = params.keys()
         elif origin == 'DataServer':
             self.DSDevices = params.keys()
@@ -125,7 +125,7 @@ class DeviceWidget(QtGui.QWidget):
         self.label = QtGui.QLabel(' ' + str(name))
         self.layout.addWidget(self.label, 0, 0, 1, 1)
 
-        self.ManLabel = QtGui.QLabel('Manager')
+        self.ManLabel = QtGui.QLabel('Controller')
         self.ManLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.ManLabel.setMinimumWidth(50)
         self.ManLabel.setMinimumHeight(25)
@@ -145,10 +145,10 @@ class DeviceWidget(QtGui.QWidget):
         self.portlabel = QtGui.QLabel(self, text='Port: ' + PORT)
         self.layout.addWidget(self.portlabel, 0, 4, 1, 1)
 
-        self.ManReconnectButton = QtGui.QPushButton('Reconnect Manager')
+        self.ManReconnectButton = QtGui.QPushButton('Reconnect Controller')
         self.layout.addWidget(self.ManReconnectButton, 0, 1, 1, 1)
         self.ManReconnectButton.clicked.connect(
-            lambda: self.reConnectDevice('Manager'))
+            lambda: self.reConnectDevice('Controller'))
         self.ManReconnectButton.setHidden(True)
 
         self.DSReconnectButton = QtGui.QPushButton('Reconnect Data Server')
@@ -173,7 +173,7 @@ class DeviceWidget(QtGui.QWidget):
         self.reconnectSig.emit((sender, self.name, (self.IP, self.PORT)))
 
     def set_disconnected(self,origin):
-        if origin == 'Manager':
+        if origin == 'Controller':
             self.ManLabel.setStyleSheet(self.not_ok)
             self.ManReconnectButton.setVisible(True)
         else:
@@ -181,7 +181,7 @@ class DeviceWidget(QtGui.QWidget):
             self.DSReconnectButton.setVisible(True)
             
     def set_connected(self,origin):
-        if origin == 'Manager':
+        if origin == 'Controller':
             self.ManLabel.setStyleSheet(self.ok)
             self.ManReconnectButton.setHidden(True)
         else:

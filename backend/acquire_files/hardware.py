@@ -41,8 +41,12 @@ class Hardware():
         # to be overridden
         pass
 
+    def stabilize_device(self):
+        pass
+
     @hp.try_deco
     def setup(self):
+        # wrapper to ensure the try_deco and the return message
         self.connect_to_device()
         return ([0],"Communication with {} achieved.".format(self.name))
 
@@ -112,6 +116,15 @@ class Hardware():
                 return ([0],'{} scan: setpoint acknowledged'.format(self.ns.scan_parameter))
 
     @hp.try_deco
+    def input(self):
+        data_from_device = self.read_from_device()
+        data = [time.time() - TIME_OFFSET,
+                self.ns.scan_number,
+                self.ns.mass]
+        data.extend(data_from_device)
+        return ([0],data)
+    
+    @hp.try_deco
     def output(self):
         self.write_to_device()
         self.ns.on_setpoint = True
@@ -128,19 +141,7 @@ class Hardware():
 
     @hp.try_deco
     def stabilize(self):
+        # wrapper to ensure proper try_deco
         if self.wavelength_lock:
             self.stabilize_device()
-
-    def stabilize_device(self):
-        pass
-
-    @hp.try_deco
-    def input(self):
-        data_from_device = self.read_from_device()
-        data = [time.time() - TIME_OFFSET,
-                self.ns.scan_number,
-                self.ns.mass]
-        data.extend(data_from_device)
-        return ([0],data)
-    
 

@@ -155,7 +155,7 @@ def acquire(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
                     ns.on_setpoint = True
                     # initial guess of when scanNo will be set to the current scan value. This
                     # is not a perfect guess because there is some time required for the 
-                    # change in ns.on_setpoint to propagate to the manager and back.
+                    # change in ns.on_setpoint to propagate to the controller and back.
                     # This initial guess will later be modified by the Device to the actual time
                     # it received the 'Measuring' instruction.
                     ns.t0 = time.time()
@@ -205,7 +205,7 @@ def acquire(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
             mQ.put(e)
             # hold the process...
             contFlag.wait()
-            # ... and wait for a decision to be made by the ARTIST/Manager
+            # ... and wait for a decision to be made by the ARTIST/Controller
             # (is this error a big deal? Can we recover?)
             contFlag.set()
 

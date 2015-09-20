@@ -169,7 +169,7 @@ def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
             mQ.put(([1],str(e)))
             # hold the process...
             contFlag.wait()
-            # ... and wait for a decision to be made by the ARTIST/Manager
+            # ... and wait for a decision to be made by the ARTIST/Controller
             # (is this error a big deal? Can we recover?)
             contFlag.set()
 

@@ -102,16 +102,16 @@ class DataServer(Dispatcher):
         self.mode = params['mode']
         return {'status': [0]}
 
-    @try_call
-    def clear_memory(self, *args):
-        self._clear_memory = True
-        return {'status': [0]}
+    # @try_call
+    # def clear_memory(self, *args):
+    #     self._clear_memory = True
+    #     return {'status': [0]}
 
-    @try_call
-    def set_memory_size(self, **kwargs):
-        mem = np.abs(int(kwargs['memory_size'][0]))
-        self.memory = mem
-        return {'status': [0]}
+    # @try_call
+    # def set_memory_size(self, **kwargs):
+    #     mem = np.abs(int(kwargs['memory_size'][0]))
+    #     self.memory = mem
+    #     return {'status': [0]}
 
     @try_call
     def status(self, *args):

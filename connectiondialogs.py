@@ -7,11 +7,11 @@ class Man_DS_ConnectionDialog(QtGui.QDialog):
 
     def __init__(self, parent=None, message=''):
         super(Man_DS_ConnectionDialog, self).__init__(parent)
-        if os.path.isfile('ManagerDSConnections.ini'):
+        if os.path.isfile('ControllerDSConnections.ini'):
             config = configparser.ConfigParser()
-            config.read('ManagerDSConnections.ini')
-            ManChannelBoxtext = str(config['manager']['address'])
-            ManPortBoxtext = str(config['manager']['port'])
+            config.read('ControllerDSConnections.ini')
+            ManChannelBoxtext = str(config['controller']['address'])
+            ManPortBoxtext = str(config['controller']['port'])
             DSChannelBoxtext = str(config['data server']['address'])
             DSPortBoxtext = str(config['data server']['port'])
         else:

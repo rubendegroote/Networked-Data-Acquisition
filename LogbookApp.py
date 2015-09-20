@@ -10,7 +10,7 @@ from logviewerwidgets import LogEntryWidget
 SAVE_DIR = 'C:/Data/'
 LOG_PER_PAGE = 50
 
-manager_channel = ('127.0.0.1', 5004)
+controller_channel = ('127.0.0.1', 5004)
 
 class LogbookApp(QtGui.QMainWindow):
     editSignal = QtCore.pyqtSignal(int,object)
@@ -29,7 +29,7 @@ class LogbookApp(QtGui.QMainWindow):
         self.man = None
         self.init_UI()
 
-        self.add_manager()
+        self.add_controller()
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update)
@@ -59,16 +59,16 @@ class LogbookApp(QtGui.QMainWindow):
         self.connectionLabel = QtGui.QLabel('Connections:')
         layout.addWidget(self.connectionLabel, 0, 0, 1, 1)
 
-        self.managerLabel = QtGui.QLabel('Manager')
-        self.managerLabel.setAlignment(QtCore.Qt.AlignCenter)
-        self.managerLabel.setMinimumWidth(50)
-        self.managerLabel.setMinimumHeight(25)
-        self.managerLabel.setStyleSheet("QLabel { background-color: red }")
-        layout.addWidget(self.managerLabel, 1, 0, 1, 2)
+        self.controllerLabel = QtGui.QLabel('Controller')
+        self.controllerLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.controllerLabel.setMinimumWidth(50)
+        self.controllerLabel.setMinimumHeight(25)
+        self.controllerLabel.setStyleSheet("QLabel { background-color: red }")
+        layout.addWidget(self.controllerLabel, 1, 0, 1, 2)
 
-        self.addManager = QtGui.QPushButton('Reconnect to Manager')
-        self.addManager.clicked.connect(self.add_manager)
-        layout.addWidget(self.addManager, 1, 0, 1, 2)
+        self.addController = QtGui.QPushButton('Reconnect to Controller')
+        self.addController.clicked.connect(self.add_controller)
+        layout.addWidget(self.addController, 1, 0, 1, 2)
 
         self.editLabel = QtGui.QLabel('Logbook:')
         layout.addWidget(self.editLabel, 3, 0, 1, 1)
@@ -226,17 +226,17 @@ class LogbookApp(QtGui.QMainWindow):
         if not tag_name in self.tags:
             self.tags.append(tag_name)
 
-    def add_manager(self):
+    def add_controller(self):
         try:
             self.man = Connector(name='LGUI_to_M',
-                                        chan=manager_channel,
+                                        chan=controller_channel,
                                         callback=self.reply_cb,
                                         onCloseCallback=self.onCloseCallback,
                                         default_callback=self.default_cb)
-            self.managerLabel.setStyleSheet("QLabel { background-color: green }")
+            self.controllerLabel.setStyleSheet("QLabel { background-color: green }")
             self.searchStringLabel.setEnabled(True)
             self.searchTagLabel.setEnabled(True)
-            self.addManager.setHidden(True)
+            self.addController.setHidden(True)
         except Exception as e:
             print(e)
 

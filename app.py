@@ -7,7 +7,7 @@ from connect import ConnectionsWidget
 from central import CentralDock
 
 from backend.DataViewer import DataViewer
-from backend.Manager import Manager
+from backend.Controller import Controller
 
 
 class Application(QtGui.QMainWindow):
@@ -59,8 +59,8 @@ class Application(QtGui.QMainWindow):
         elif data[0] == 'FileServer':
             self.fileServer = FileServer(devices=[(data[1], data[2])],
                                          save=False, remember=True)
-        elif data[0] == 'Manager':
-            self.manager = Manager(devices=[(data[1], data[2])])
+        elif data[0] == 'Controller':
+            self.controller = Controller(devices=[(data[1], data[2])])
 
     def plot(self):
         try:
@@ -72,7 +72,7 @@ class Application(QtGui.QMainWindow):
             pass
 
     def startScan(self, scanInfo):
-        self.manager.scan(scanInfo)
+        self.controller.scan(scanInfo)
 
     def closeEvent(self, event):
         self.stopIOLoop()

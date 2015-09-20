@@ -9,9 +9,9 @@ from backend.dispatcher import Dispatcher
 LOG_PATH = 'C:\\Logbook\\Gallium Run\\logbook'
 INI_PATH = 'C:\\Logbook\\Gallium Run\\scan_init.ini'
 
-class Manager(Dispatcher):
-    def __init__(self, PORT=5007, name='Manager'):
-        super(Manager, self).__init__(PORT, name)
+class Controller(Dispatcher):
+    def __init__(self, PORT=5007, name='Controller'):
+        super(Controller, self).__init__(PORT, name)
 
         self.scanner_name = ""
         self.scan_number = -1
@@ -331,6 +331,6 @@ class Manager(Dispatcher):
         lb.saveEntry(LOG_PATH, self.logbook, -1)
         self.log_edits.append(len(self.logbook)-1) # number of the entry that was added
 
-def makeManager(PORT=5007):
-    return Manager(PORT=PORT)
+def makeController(PORT=5007):
+    return Controller(PORT=PORT)
 

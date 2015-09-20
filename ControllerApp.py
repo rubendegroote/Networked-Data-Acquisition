@@ -10,12 +10,12 @@ from connectionwidgets import DeviceConnections
 from controlwidget import ControlWidgets,ControlWidget
 from scanner import ScannerWidget
 
-class ManagerApp(QtGui.QMainWindow):
+class ControllerApp(QtGui.QMainWindow):
     updateSignal = QtCore.pyqtSignal(tuple)
     messageUpdateSignal = QtCore.pyqtSignal(dict)
     lost_connection = QtCore.pyqtSignal(object)
     def __init__(self):
-        super(ManagerApp, self).__init__()
+        super(ControllerApp, self).__init__()
         self.looping = True
         self.hasMan = False
         self.hasDS = False
@@ -91,11 +91,11 @@ class ManagerApp(QtGui.QMainWindow):
         if self.Man_DS_Connector.man and self.Man_DS_Connector.DS:
             self.enable()
             self.statusBar().showMessage(
-                'Connected to Manager and Data Server')
+                'Connected to Controller and Data Server')
             config = configparser.ConfigParser()
-            config['manager'] = {'address': data[0], 'port': int(data[1])}
+            config['controller'] = {'address': data[0], 'port': int(data[1])}
             config['data server'] = {'address': data[2], 'port': int(data[3])}
-            with open('ManagerDSConnections.ini', 'w') as configfile:
+            with open('ControllerDSConnections.ini', 'w') as configfile:
                 config.write(configfile)
 
             self.serverConnectButton.setDisabled(True)
@@ -182,7 +182,7 @@ class ManagerApp(QtGui.QMainWindow):
             
     def status_reply(self, track, params):
         origin, track_id = track[-1]
-        if origin == 'Manager':
+        if origin == 'Controller':
             self.updateSignal.emit((self.scanner.update,
                                     {'track':track,
                                     'args':params}))
@@ -202,7 +202,7 @@ class ManagerApp(QtGui.QMainWindow):
 
     def change_refresh_time(self,info):
         device, time = info
-        self.Man_DS_Connector.instruct('Manager',('change_device_refresh',
+        self.Man_DS_Connector.instruct('Controller',('change_device_refresh',
                                                   {'device':[device],'time':[time]}))
 
     def change_device_refresh_reply(self,track,params):
@@ -212,7 +212,7 @@ class ManagerApp(QtGui.QMainWindow):
     
     def change_device_prop(self,info):
         device, prop = info
-        self.Man_DS_Connector.instruct('Manager',('change_device_prop',
+        self.Man_DS_Connector.instruct('Controller',('change_device_prop',
                                                   {'device':[device],'prop':[prop]}))
     
     def change_device_prop_reply(self,track,params):
@@ -222,7 +222,7 @@ class ManagerApp(QtGui.QMainWindow):
     
     def lock_device_etalon(self,info):
         device, lock = info
-        self.Man_DS_Connector.instruct('Manager',('lock_device_etalon',
+        self.Man_DS_Connector.instruct('Controller',('lock_device_etalon',
                                                   {'device':[device],'lock':lock}))
           
     def lock_device_etalon_reply(self,track,params):
@@ -233,7 +233,7 @@ class ManagerApp(QtGui.QMainWindow):
 
     def set_device_etalon(self,info):
         device, etalon_value = info
-        self.Man_DS_Connector.instruct('Manager',('set_device_etalon',
+        self.Man_DS_Connector.instruct('Controller',('set_device_etalon',
                                                   {'device':[device],'etalon_value':etalon_value}))
 
     def set_device_etalon_reply(self,track,params):
@@ -243,7 +243,7 @@ class ManagerApp(QtGui.QMainWindow):
 
     def lock_device_cavity(self,info):
         device, lock = info
-        self.Man_DS_Connector.instruct('Manager',('lock_device_cavity',
+        self.Man_DS_Connector.instruct('Controller',('lock_device_cavity',
                                                   {'device':[device],'lock':lock}))
 
     def lock_device_cavity_reply(self,track,params):
@@ -253,7 +253,7 @@ class ManagerApp(QtGui.QMainWindow):
 
     def set_device_cavity(self,info):
         device, cavity_value = info
-        self.Man_DS_Connector.instruct('Manager',('set_device_cavity',
+        self.Man_DS_Connector.instruct('Controller',('set_device_cavity',
                                                   {'device':[device],'cavity_value':cavity_value}))
 
     def set_device_cavity_reply(self,track,params):
@@ -263,7 +263,7 @@ class ManagerApp(QtGui.QMainWindow):
 
     def lock_device_wavelength(self,info):
         device, lock = info
-        self.Man_DS_Connector.instruct('Manager',('lock_device_wavelength',
+        self.Man_DS_Connector.instruct('Controller',('lock_device_wavelength',
                                                   {'device':[device],'lock':lock}))
 
     def lock_device_wavelength_reply(self,track,params):
@@ -273,7 +273,7 @@ class ManagerApp(QtGui.QMainWindow):
 
     def lock_device_ecd(self,info):
         device, lock = info
-        self.Man_DS_Connector.instruct('Manager',('lock_device_ecd',
+        self.Man_DS_Connector.instruct('Controller',('lock_device_ecd',
                                                   {'device':[device],'lock':lock}))
 
     def lock_device_ecd_reply(self,track,params):
@@ -288,7 +288,7 @@ class ManagerApp(QtGui.QMainWindow):
                 'Choose a mass or enter new mass:', masses)
         if result:
             scanInfo['mass'] = [int(mass)]
-            self.Man_DS_Connector.instruct('Manager', ('start_scan', scanInfo))
+            self.Man_DS_Connector.instruct('Controller', ('start_scan', scanInfo))
         else:
             pass
 
@@ -298,7 +298,7 @@ class ManagerApp(QtGui.QMainWindow):
             {'track':track,'args':[[0],"Start scan instruction received"]})
 
     def stop_scan(self):
-        self.Man_DS_Connector.instruct('Manager', ('stop_scan',{}))
+        self.Man_DS_Connector.instruct('Controller', ('stop_scan',{}))
         
     def stop_scan_reply(self,track,params):
         origin,track_id = track[-1]
@@ -306,7 +306,7 @@ class ManagerApp(QtGui.QMainWindow):
             {'track':track,'args':[[0],"Stop scan instruction received"]})
 
     def go_to_setpoint(self, setpointInfo):
-        self.Man_DS_Connector.instruct('Manager', ('go_to_setpoint', setpointInfo))
+        self.Man_DS_Connector.instruct('Controller', ('go_to_setpoint', setpointInfo))
 
     def go_to_setpoint_reply(self,track,params):
         origin,track_id = track[-1]
@@ -363,11 +363,11 @@ class Man_DS_Connector():
 
         except Exception as e:
             self.man_error = e
-            print('Error connecting to manager \n'+ str(e))
+            print('Error connecting to controller \n'+ str(e))
             self.man = None
 
     def instruct(self, receiver, instr):
-        if receiver == 'Manager':
+        if receiver == 'Controller':
             self.man.add_request(instr)
         elif receiver == 'Data Server':
             self.DS.add_request(instr)

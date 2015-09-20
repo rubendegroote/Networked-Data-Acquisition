@@ -20,7 +20,7 @@ class Device(Dispatcher):
         self.acquire = acquire
 
         # instructions queue:
-        # Manager -> InstructionReceiver -> acquire
+        # Controller -> InstructionReceiver -> acquire
         self.iQ = mp.Queue()
         # message queue: acquire -> ARTIST
         self.mQ = mp.Queue()
@@ -34,8 +34,8 @@ class Device(Dispatcher):
         self.IStoppedFlag = mp.Event()
         self.IStoppedFlag.clear()
 
-        # Shared memory values: manager
-        self.mgr = mp.Manager()
+        # Shared memory values: controller
+        self.mgr = mp.Controller()
         # Shared scan number
         self.ns = self.mgr.Namespace()
         self.ns.start_of_setpoint = time.time()
@@ -224,9 +224,9 @@ class Device(Dispatcher):
         self.saveProcess.start()
 
     def handle_accept(self):
-        # we want only one data server or manager
+        # we want only one data server or controller
         # to be active at a time
         if len(self.acceptors) == 2:
-            print('Data Server and Manager already present! Aborting.')
+            print('Data Server and Controller already present! Aborting.')
         super(Device,self).handle_accept()
 

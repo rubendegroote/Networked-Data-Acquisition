@@ -47,6 +47,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 *.log
-backend/Manager.log
+backend/Controller.log
 *.pyc
 backend/message_log
