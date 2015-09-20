@@ -1,4 +1,5 @@
 import sys
+import configparser
 
 from backend.Helpers import *
 from backend.connectors import Connector, Acceptor
@@ -6,6 +7,7 @@ import backend.logbook as lb
 from backend.dispatcher import Dispatcher
 
 LOG_PATH = 'C:\\Logbook\\Gallium Run\\logbook'
+INI_PATH = 'C:\\Logbook\\Gallium Run\\scan_init.ini'
 
 class Manager(Dispatcher):
     def __init__(self, PORT=5007, name='Manager'):
@@ -21,6 +23,7 @@ class Manager(Dispatcher):
         self.masses = []
         self.status_data = {}
 
+        # logbook
         try:
             self.logbook = lb.loadLogbook(LOG_PATH)
             self.log_edits = list(range(len(self.logbook)))
@@ -29,6 +32,14 @@ class Manager(Dispatcher):
             self.logbook = []
             lb.saveLogbook(LOG_PATH, self.logbook)
             self.log_edits = []
+
+        # get last scan number from config file
+        self.scan_parser = configparser.ConfigParser()
+        try:
+            self.scan_parser.read(INI_PATH)
+            self.scan_number = int(self.scan_parser['scan_number']['scan_number'])
+        except:
+            print('No scan ini file found')
 
     @try_call
     def status(self, *args):
@@ -187,7 +198,7 @@ class Manager(Dispatcher):
                                      'scan_array':scan_array,
                                      'time_per_step':time_per_step,
                                      'mass':mass}))
-        
+        # lgobook updating
         info_for_log = {'Scan Number': self.scan_number,
              'Author': 'Automatic Entry',
              'Mass':mass[0],
@@ -198,6 +209,11 @@ class Manager(Dispatcher):
                                      time_per_step[0])}
         self.add_to_logbook(info_for_log)
         self.current_scan_log_number = len(self.logbook)-1
+
+        # update scan progress in ini file
+        self.scan_parser['scan_number'] = {'scan_number': self.scan_number}
+        with open(INI_PATH, 'w') as scanfile:
+            self.scan_parser.write(scanfile)
 
     def start_scan_reply(self,track,params):
         origin, track_id = track[-1]
