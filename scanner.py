@@ -75,7 +75,12 @@ class ScannerWidget(QtGui.QWidget):
         self.repeatLabel = QtGui.QLabel('Repeats')
         self.layout.addWidget(self.repeatLabel, 5, 0, 1, 1)
         self.repeatBox = QtGui.QLineEdit("1")
-        self.layout.addWidget(self.repeatBox, 5, 1, 1, 3)
+        self.layout.addWidget(self.repeatBox, 5, 1, 1, 1)
+
+        self.reverse_button = QtGui.QPushButton('Reverse')
+        self.layout.addWidget(self.reverse_button, 5, 2, 1, 1)
+        self.reverse_button.clicked.connect(self.reverse_scan)
+
 
     def updateScanNumber(self, scan_number):
         self.scanNumberLabel.setText(str(scan_number))
@@ -117,6 +122,13 @@ class ScannerWidget(QtGui.QWidget):
                                'scan_parameter':[parameter],
                                'scan_array':rng,
                                'time_per_step':dt})
+
+    def reverse_scan(self):
+        start = self.startEdit.text()
+        stop = self.stopEdit.text()
+
+        self.startEdit.setText(stop)
+        self.stopEdit.setText(start)
 
     def makeSetpoint(self):
         parameter = str(self.tuning_parameter_combo.currentText())

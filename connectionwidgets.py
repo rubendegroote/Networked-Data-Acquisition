@@ -128,12 +128,14 @@ class ArtistWidget(QtGui.QWidget):
         self.ManLabel = QtGui.QLabel('Manager')
         self.ManLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.ManLabel.setMinimumWidth(50)
+        self.ManLabel.setMinimumHeight(25)
         self.ManLabel.setStyleSheet(self.not_ok)
         self.layout.addWidget(self.ManLabel, 0, 1, 1, 1)
 
         self.DSLabel = QtGui.QLabel('Data Server')
         self.DSLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.DSLabel.setMinimumWidth(50)
+        self.DSLabel.setMinimumHeight(25)
         self.DSLabel.setStyleSheet(self.not_ok)
         self.layout.addWidget(self.DSLabel, 0, 2, 1, 1)
 

@@ -19,9 +19,6 @@ class MyGraph(QtGui.QWidget):
 
     dataRequested = QtCore.pyqtSignal(str)
     scanRequested = QtCore.pyqtSignal(str)
-    memoryChanged = QtCore.pyqtSignal(int)
-    memoryClear = QtCore.pyqtSignal()
-
     def __init__(self, name):
         super(QtGui.QWidget, self).__init__()
 
@@ -76,13 +73,6 @@ class MyGraph(QtGui.QWidget):
  on the X-axis.')
         self.sublayout.addWidget(self.comboX, 0, 3)
 
-        self.freqUnitSelector = QtGui.QComboBox(parent=None)
-        self.freqUnitSelector.setToolTip('Choose the units you want to\
- display the frequency in.')
-        self.freqUnitSelector.addItems(['Frequency', 'Wavelength', 'Wavenumber'])
-        # self.freqUnitSelector.currentIndexChanged.connect(self.updatePlot)
-        self.sublayout.addWidget(self.freqUnitSelector, 0, 5)
-
         self.graphStyles = ['Step (histogram)', 'Line']#, 'Point']
 
         self.graphBox = QtGui.QComboBox(self)
@@ -92,7 +82,7 @@ class MyGraph(QtGui.QWidget):
         self.graphBox.setCurrentIndex(0)
         self.graphBox.setMaximumWidth(110)
         # self.graphBox.currentIndexChanged.connect(self.updatePlot)
-        self.sublayout.addWidget(self.graphBox, 2, 3)
+        self.sublayout.addWidget(self.graphBox, 0, 5)
 
         self.binLabel = QtGui.QLabel(self, text="Bin size: ")
         self.binSpinBox = pg.SpinBox(value=1000,
@@ -106,43 +96,16 @@ class MyGraph(QtGui.QWidget):
         self.sublayout.addWidget(self.binLabel, 2, 4)
         self.sublayout.addWidget(self.binSpinBox, 2, 5)
 
-        self.memoryLabel = QtGui.QLabel(self, text="Memory size: ")
-        self.memorySpinBox = pg.SpinBox(value=5000,
-                                        bounds=(0, 60000),
-                                        int=True)
-        self.memorySpinBox.setToolTip('Choose the memory size on the dataserver.')
-        self.memorySpinBox.setMaximumWidth(110)
-        self.memorySpinBox.sigValueChanged.connect(lambda : self.memoryChanged.emit(self.memorySpinBox.value()))
+        self.sublayout.addWidget(QtGui.QLabel("y offset"),2,0)
+        self.y_offset = QtGui.QLineEdit("0")
+        self.sublayout.addWidget(self.y_offset, 2, 1)
 
-        self.sublayout.addWidget(self.memoryLabel, 2, 6)
-        self.sublayout.addWidget(self.memorySpinBox, 2, 7)
-
-        self.clearMemory = QtGui.QPushButton('Clear memory')
-        self.clearMemory.clicked.connect(lambda : self.memoryClear.emit())
-
-        self.sublayout.addWidget(self.clearMemory, 2, 8)
-
-        # self.saveButton = PicButton('save', checkable=False, size=25)
-        # self.saveButton.setToolTip('Save the current graph to file.')
-        # # self.saveButton.clicked.connect(self.saveSpectrum)
-        # self.sublayout.addWidget(self.saveButton, 0, 7, 1, 1)
-
-        # self.settingsButton = PicButton('settings', checkable=True, size=25)
-        # self.settingsButton.setToolTip('Display the advanced plotting options.')
-        # # self.settingsButton.clicked.connect(self.showSettings)
-        # self.sublayout.addWidget(self.settingsButton, 0, 8, 1, 1)
-
+        self.sublayout.addWidget(QtGui.QLabel("x offset"),2,2)
+        self.x_offset = QtGui.QLineEdit("0")
+        self.sublayout.addWidget(self.x_offset, 2, 3)
 
         self.sublayout.setColumnStretch(6, 1)
-
-        # self.settingsWidget = GraphSettingsWidget()
-        # self.settingsWidget.updatePlot.connect(self.updatePlot)
-        # self.meanBox.currentIndexChanged.connect(self.settingsWidget.onStyleChanged)
-            #line above is MEGAHACK to have updating results table in analysiswidget
-        # self.settingsWidget.setVisible(False)
-
         self.layout.addWidget(gView, 0, 0)
-        # self.layout.addWidget(self.settingsWidget,0,1)
 
     def calcHist(self, x, y, binsize):
 
@@ -206,12 +169,12 @@ class MyGraph(QtGui.QWidget):
             if 'timestamp' in self.x_key:
                 data['x'] = data['x'] - data['x'].values[0]
             elif 'timestamp' in self.y_key:
-                data['y'] = data['y'] - data['y'][0]
+                data['y'] = data['y'] - data['y'].values[0]
 
             data['x'].fillna(method='ffill', inplace=True)
             data.dropna(inplace=True)
-            x = data['x'].values
-            y = data['y'].values
+            x = data['x'].values - float(self.x_offset.text())
+            y = data['y'].values - float(self.y_offset.text())
             if histmode:
                 binsize = self.binSpinBox.value()
                 x, y, errors = self.calcHist(x, y, binsize)
@@ -221,6 +184,3 @@ class MyGraph(QtGui.QWidget):
                                # fillLevel=0,
                                stepMode=histmode,
                                brush='g')
-
-        # except:
-        #     pass

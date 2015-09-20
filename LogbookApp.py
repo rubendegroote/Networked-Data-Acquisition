@@ -37,7 +37,7 @@ class LogbookApp(QtGui.QMainWindow):
 
         self.editSignal.connect(self.edit_entry_ui)
         self.addSignal.connect(self.add_entry_to_ui)
-        self.messageUpdateSignal.connect(self.updateMessages)
+        #self.messageUpdateSignal.connect(self.updateMessages)
 
         self.show()
 
@@ -96,8 +96,8 @@ class LogbookApp(QtGui.QMainWindow):
         self.pages = []
         self.new_log_page()
 
-        self.messageLog = QtGui.QPlainTextEdit()
-        self.central.addWidget(self.messageLog)
+        #self.messageLog = QtGui.QPlainTextEdit()
+        #self.central.addWidget(self.messageLog)
 
     def new_log_page(self):
         new_page_widget = QtGui.QWidget()
