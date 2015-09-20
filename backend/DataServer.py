@@ -65,7 +65,7 @@ class DataServer(Dispatcher):
             return_list.append(list(data_set[0,-row:])) #timestamp as well
             return_list.append(list(data_set[col,-row:]))
         else:
-            # row == 0 means the radio is up to date, nothing to send
+            # row == 0 means the DataViewer is up to date, nothing to send
             return_list.append([])
             return_list.append([])
 
@@ -146,7 +146,7 @@ class DataServer(Dispatcher):
             self.data[origin] = data
             self.no_of_rows[origin] = 0
         finally:
-            # some bookkeeping for radio communications
+            # some bookkeeping for DataViewer communications
             self.no_of_rows[origin] += len(data)
             self.formats[origin] = format
 

@@ -5,10 +5,10 @@ import threading as th
 import time
 
 
-class RadioConnector(Connector):
+class DataViewerConnector(Connector):
 
     def __init__(self, chan, callback, onCloseCallback):
-        super(RadioConnector, self).__init__(chan, callback, t='R_to_DS')
+        super(DataViewerConnector, self).__init__(chan, callback, t='R_to_DS')
 
         self.format = tuple()
         self.xy = ['time', 'Rubeny']
@@ -137,7 +137,7 @@ class RadioConnector(Connector):
             print(e)
             latest = None
         print(latest)
-        # print('Radio:', latest)
+        # print('DataViewer:', latest)
         # self.data_lock.release()
         # self.push(pickle.dumps(['data', ([self.giveScan, self.currentScan], latest, cols)]))
         self.push(

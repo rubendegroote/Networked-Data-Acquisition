@@ -14,10 +14,10 @@ from backend.connectors import Connector
 dataserver_channel = ('127.0.0.1',5005)
 fileServer_channel = ('127.0.0.1', 5006)
 
-class RadioApp(QtGui.QMainWindow):
+class DataViewerApp(QtGui.QMainWindow):
     update_scan_list_signal = QtCore.pyqtSignal()
     def __init__(self):
-        super(RadioApp, self).__init__()
+        super(DataViewerApp, self).__init__()
         self.initialized = False
         self.live_viewing = True
         self.mode = 'stream'
@@ -106,7 +106,7 @@ class RadioApp(QtGui.QMainWindow):
             params = getattr(self, function)(track, args)
 
         else:
-            print('Radio received fail message', message)
+            print('DataViewer received fail message', message)
 
     def default_cb(self):
         if self.live_viewing:

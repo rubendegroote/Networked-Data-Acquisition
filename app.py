@@ -6,7 +6,7 @@ from scanner import ScannerWidget
 from connect import ConnectionsWidget
 from central import CentralDock
 
-from backend.Radio import Radio
+from backend.DataViewer import DataViewer
 from backend.Manager import Manager
 
 
@@ -54,8 +54,8 @@ class Application(QtGui.QMainWindow):
             time.sleep(0.01)
 
     def addConnection(self, data):
-        if data[0] == 'Radio':
-            self.radio = Radio(IP=data[1], PORT=int(data[2]))
+        if data[0] == 'DataViewer':
+            self.DataViewer = DataViewer(IP=data[1], PORT=int(data[2]))
         elif data[0] == 'FileServer':
             self.fileServer = FileServer(devices=[(data[1], data[2])],
                                          save=False, remember=True)
@@ -65,9 +65,9 @@ class Application(QtGui.QMainWindow):
     def plot(self):
         try:
             for g in self.centralDock.graphDocks:
-                g.graph.setXYOptions(list(self.radio.format))
-                g.graph.plot(self.radio.data)
-                self.radio.xy = [g.graph.xkey, g.graph.ykey]
+                g.graph.setXYOptions(list(self.DataViewer.format))
+                g.graph.plot(self.DataViewer.data)
+                self.DataViewer.xy = [g.graph.xkey, g.graph.ykey]
         except AttributeError as e:
             pass
 

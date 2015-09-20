@@ -62,7 +62,7 @@
 2015-09-11 10:02:31,867: {'message': {'parameters': {'parameter': ['wavelength'], 'setpoint': [15407.31], 'device': ['M2']}, 'op': 'go_to_setpoint'}, 'track': [('MGui_to_M', 103)]}
 2015-09-11 10:02:32,681: {'message': {'parameters': {'parameter': ['wavelength'], 'setpoint': [15407.31], 'device': ['M2']}, 'op': 'go_to_setpoint'}, 'track': [('MGui_to_M', 119)]}
 2015-09-11 10:02:33,384: {'message': {'parameters': {'parameter': ['wavelength'], 'setpoint': [15407.31], 'device': ['M2']}, 'op': 'go_to_setpoint'}, 'track': [('MGui_to_M', 133)]}
-2015-09-11 10:03:08,238: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('Radio', 0)]}
+2015-09-11 10:03:08,238: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('DataViewer', 0)]}
 2015-09-11 10:03:37,989: {'message': {'parameters': {'scan_array': [15407.299999999999, 15407.305555555555, 15407.31111111111, 15407.316666666666, 15407.322222222221, 15407.327777777778, 15407.333333333334, 15407.338888888889, 15407.344444444445, 15407.35], 'time_per_step': [1.0], 'device': ['M2'], 'scan_parameter': ['wavelength']}, 'op': 'start_scan'}, 'track': [('MGui_to_M', 1384)]}
 2015-09-11 10:07:16,044: {'track': [('MGui_to_M', 19)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
 2015-09-11 10:07:16,045: {'track': [('MGUI_to_DS', 21)], 'message': {'parameters': {'address': ('127.0.0.1', 6002)}, 'op': 'add_connector'}}
@@ -113,7 +113,7 @@
 2015-09-11 10:15:00,509: {'track': [('LGUI_to_FS', 19)], 'message': {'op': 'data_status', 'parameters': {}}}
 2015-09-11 10:15:00,710: {'track': [('LGUI_to_FS', 20)], 'message': {'op': 'data_status', 'parameters': {}}}
 2015-09-11 10:15:00,912: {'track': [('LGUI_to_FS', 21)], 'message': {'op': 'data_status', 'parameters': {}}}
-2015-09-11 10:38:00,461: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('Radio', 0)]}
+2015-09-11 10:38:00,461: {'message': {'op': 'data_format', 'parameters': {}}, 'track': [('DataViewer', 0)]}
 2015-09-11 10:40:10,404: {'message': {'parameters': {}, 'op': 'data_format'}, 'track': [('R_to_DS', 0)]}
 2015-09-11 10:40:51,516: {'track': [('R_to_DS', 0)], 'message': {'op': 'data_format', 'parameters': {}}}
 2015-09-11 10:41:05,100: {'track': [('R_to_DS', 0)], 'message': {'parameters': {}, 'op': 'data_format'}}
