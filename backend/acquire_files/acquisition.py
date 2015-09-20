@@ -44,7 +44,8 @@ def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
     ### what hardware?
     hardware = hardware_map[name]()
     hardware.ns = ns
-
+    hardware.ns.refresh_time = hardware.refresh_time
+    
     ### define format
     ns.format = hardware.format
 

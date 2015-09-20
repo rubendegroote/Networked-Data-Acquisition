@@ -72,6 +72,7 @@ class ManagerApp(QtGui.QMainWindow):
         self.messageLog = QtGui.QPlainTextEdit()
         self.central.addWidget(self.messageLog)
 
+
         self.disable()
 
     def updateUI(self,*args):

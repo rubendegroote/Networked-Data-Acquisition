@@ -58,7 +58,7 @@ class M2(Device):
                                      write_params = write_params,
                                      mapping = mapping,
                                      needs_stabilization = True,
-                                     refresh_time = 0.1)
+                                     refresh_time = 0.3)
         
         self.settings = {'host': '192.168.1.216',
                          'port':39933}

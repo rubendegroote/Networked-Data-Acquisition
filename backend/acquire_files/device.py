@@ -22,6 +22,7 @@ class Device():
         self.ns = ns
         self.write_params = write_params
         self.mapping = mapping
+        self.refresh_time = refresh_time
 
         self.needs_stabilization = needs_stabilization
         if needs_stabilization:
