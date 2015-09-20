@@ -33,7 +33,7 @@ def acquireMatisse(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     stopFlag: an Event which indicates if the process needs to exit
         for some reason (e.g. to allow for a reboot)
     IStoppedFlag: an Event WHICH RUBEN HAS TO CLARIFY
-    ns: shared namespace with the Artist running the acquire process
+    ns: shared namespace with the Device running the acquire process
     """
     t0 = 0
 
@@ -95,7 +95,7 @@ def acquireMatisse(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
                     # initial guess of when scanNo will be set to the current scan value. This
                     # is not a perfect guess because there is some time required for the 
                     # change in ns.on_setpoint to propagate to the manager and back.
-                    # This initial guess will later be modified by the Artist to the actual time
+                    # This initial guess will later be modified by the Device to the actual time
                     # it received the 'Measuring' instruction.
                     ns.t0 = time.time()
                 elif instr[0] == 'Setpoint Change':

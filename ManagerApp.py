@@ -6,7 +6,7 @@ from PyQt4 import QtCore, QtGui
 
 from backend.connectors import Connector
 from connectiondialogs import Man_DS_ConnectionDialog
-from connectionwidgets import ArtistConnections
+from connectionwidgets import DeviceConnections
 from controlwidget import ControlWidgets,ControlWidget
 from scanner import ScannerWidget
 
@@ -24,7 +24,7 @@ class ManagerApp(QtGui.QMainWindow):
         self.init_UI()
 
         self.control_widgets = ControlWidgets()
-        self.control_widgets.artist_missing.connect(self.add_control_tab)
+        self.control_widgets.device_missing.connect(self.add_control_tab)
 
         self.updateSignal.connect(self.updateUI)
         self.messageUpdateSignal.connect(self.updateMessages)
@@ -60,8 +60,8 @@ class ManagerApp(QtGui.QMainWindow):
         self.connLabel = QtGui.QLabel('<font size="5"><b>Connections <\b><\font>')
         layout.addWidget(self.connLabel, 2, 0, 1, 1)
 
-        self.connWidget = ArtistConnections()
-        self.connWidget.connectSig.connect(self.add_artist)
+        self.connWidget = DeviceConnections()
+        self.connWidget.connectSig.connect(self.add_device)
         self.connWidget.removeSig.connect(self.remove_connector)
         layout.addWidget(self.connWidget, 3, 0, 1, 1)
 
@@ -153,7 +153,7 @@ class ManagerApp(QtGui.QMainWindow):
     def stopIOLoop(self):
         self.looping = False
 
-    def add_artist(self, info):
+    def add_device(self, info):
         receiver, name, address = info
         op,params = 'add_connector',{'address': address}
         self.Man_DS_Connector.instruct(receiver, (op,params))
@@ -165,13 +165,13 @@ class ManagerApp(QtGui.QMainWindow):
         self.control_widgets.controls[name] = control_widget
         control_widget.refresh_changed_sig.connect(self.change_refresh_time)
         if name =='M2':
-            control_widget.prop_changed_sig.connect(self.change_artist_prop)
-            control_widget.lock_etalon_sig.connect(self.lock_artist_etalon)
-            control_widget.etalon_value_sig.connect(self.set_artist_etalon)
-            control_widget.lock_cavity_sig.connect(self.lock_artist_cavity)
-            control_widget.cavity_value_sig.connect(self.set_artist_cavity)
-            control_widget.lock_wavelength_sig.connect(self.lock_artist_wavelength)
-            control_widget.lock_ecd_sig.connect(self.lock_artist_ecd)
+            control_widget.prop_changed_sig.connect(self.change_device_prop)
+            control_widget.lock_etalon_sig.connect(self.lock_device_etalon)
+            control_widget.etalon_value_sig.connect(self.set_device_etalon)
+            control_widget.lock_cavity_sig.connect(self.lock_device_cavity)
+            control_widget.cavity_value_sig.connect(self.set_device_cavity)
+            control_widget.lock_wavelength_sig.connect(self.lock_device_wavelength)
+            control_widget.lock_ecd_sig.connect(self.lock_device_ecd)
             control_widget.wavenumber_sig.connect(self.go_to_setpoint)
 
         self.controltab.addTab(control_widget,name)
@@ -201,85 +201,85 @@ class ManagerApp(QtGui.QMainWindow):
                                        'args':params['connector_info']}))
 
     def change_refresh_time(self,info):
-        artist, time = info
-        self.Man_DS_Connector.instruct('Manager',('change_artist_refresh',
-                                                  {'artist':[artist],'time':[time]}))
+        device, time = info
+        self.Man_DS_Connector.instruct('Manager',('change_device_refresh',
+                                                  {'device':[device],'time':[time]}))
 
-    def change_artist_refresh_reply(self,track,params):
+    def change_device_refresh_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
             {'track':track,'args':[[0],"Change refresh time instruction received"]})
     
-    def change_artist_prop(self,info):
-        artist, prop = info
-        self.Man_DS_Connector.instruct('Manager',('change_artist_prop',
-                                                  {'artist':[artist],'prop':[prop]}))
+    def change_device_prop(self,info):
+        device, prop = info
+        self.Man_DS_Connector.instruct('Manager',('change_device_prop',
+                                                  {'device':[device],'prop':[prop]}))
     
-    def change_artist_prop_reply(self,track,params):
+    def change_device_prop_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
             {'track':track,'args':[[0],"Change proportionality instruction received"]})
     
-    def lock_artist_etalon(self,info):
-        artist, lock = info
-        self.Man_DS_Connector.instruct('Manager',('lock_artist_etalon',
-                                                  {'artist':[artist],'lock':lock}))
+    def lock_device_etalon(self,info):
+        device, lock = info
+        self.Man_DS_Connector.instruct('Manager',('lock_device_etalon',
+                                                  {'device':[device],'lock':lock}))
           
-    def lock_artist_etalon_reply(self,track,params):
+    def lock_device_etalon_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"lock artist etalon instruction received"]})
+            {'track':track,'args':[[0],"lock device etalon instruction received"]})
 
 
-    def set_artist_etalon(self,info):
-        artist, etalon_value = info
-        self.Man_DS_Connector.instruct('Manager',('set_artist_etalon',
-                                                  {'artist':[artist],'etalon_value':etalon_value}))
+    def set_device_etalon(self,info):
+        device, etalon_value = info
+        self.Man_DS_Connector.instruct('Manager',('set_device_etalon',
+                                                  {'device':[device],'etalon_value':etalon_value}))
 
-    def set_artist_etalon_reply(self,track,params):
+    def set_device_etalon_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"set artist etalon instruction received"]})
+            {'track':track,'args':[[0],"set device etalon instruction received"]})
 
-    def lock_artist_cavity(self,info):
-        artist, lock = info
-        self.Man_DS_Connector.instruct('Manager',('lock_artist_cavity',
-                                                  {'artist':[artist],'lock':lock}))
+    def lock_device_cavity(self,info):
+        device, lock = info
+        self.Man_DS_Connector.instruct('Manager',('lock_device_cavity',
+                                                  {'device':[device],'lock':lock}))
 
-    def lock_artist_cavity_reply(self,track,params):
+    def lock_device_cavity_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"lock artist cavity instruction received"]})
+            {'track':track,'args':[[0],"lock device cavity instruction received"]})
 
-    def set_artist_cavity(self,info):
-        artist, cavity_value = info
-        self.Man_DS_Connector.instruct('Manager',('set_artist_cavity',
-                                                  {'artist':[artist],'cavity_value':cavity_value}))
+    def set_device_cavity(self,info):
+        device, cavity_value = info
+        self.Man_DS_Connector.instruct('Manager',('set_device_cavity',
+                                                  {'device':[device],'cavity_value':cavity_value}))
 
-    def set_artist_cavity_reply(self,track,params):
+    def set_device_cavity_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"set artist cavity instruction received"]})
+            {'track':track,'args':[[0],"set device cavity instruction received"]})
 
-    def lock_artist_wavelength(self,info):
-        artist, lock = info
-        self.Man_DS_Connector.instruct('Manager',('lock_artist_wavelength',
-                                                  {'artist':[artist],'lock':lock}))
+    def lock_device_wavelength(self,info):
+        device, lock = info
+        self.Man_DS_Connector.instruct('Manager',('lock_device_wavelength',
+                                                  {'device':[device],'lock':lock}))
 
-    def lock_artist_wavelength_reply(self,track,params):
+    def lock_device_wavelength_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"lock artist wavelength instruction received"]})
+            {'track':track,'args':[[0],"lock device wavelength instruction received"]})
 
-    def lock_artist_ecd(self,info):
-        artist, lock = info
-        self.Man_DS_Connector.instruct('Manager',('lock_artist_ecd',
-                                                  {'artist':[artist],'lock':lock}))
+    def lock_device_ecd(self,info):
+        device, lock = info
+        self.Man_DS_Connector.instruct('Manager',('lock_device_ecd',
+                                                  {'device':[device],'lock':lock}))
 
-    def lock_artist_ecd_reply(self,track,params):
+    def lock_device_ecd_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"lock artist doubler instruction received"]})
+            {'track':track,'args':[[0],"lock device doubler instruction received"]})
 
     def start_scan(self, scanInfo):
         # ask for the isotope mass

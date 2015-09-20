@@ -5,14 +5,14 @@ from multiprocessing import freeze_support
 from backend.FileServer import FileServer
 from backend.DataServer import DataServer
 from backend.Manager import Manager
-from backend.Artist import Artist
+from backend.Device import Device
 import traceback
 
 translation = {}
 translation['fileserver'] = FileServer
 translation['dataserver'] = DataServer
 translation['manager'] = Manager
-translation['device'] = Artist
+translation['device'] = Device
 
 ports = {}
 ports['fileserver'] = 5006

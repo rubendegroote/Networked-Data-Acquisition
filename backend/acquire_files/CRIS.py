@@ -5,12 +5,12 @@ from PyDAQmx import *
 from PyDAQmx.DAQmxConstants import *
 from PyDAQmx.DAQmxFunctions import *
 
-from .device import format,Device
+from .hardware import format,Hardware
 
 this_format = format + ('AOV','Counts','AIChannel1','AIChannel2')
 write_params = ['AOV']
 
-class CRIS(Device):
+class CRIS(Hardware):
     def __init__(self):
         settings = dict(counterChannel="/Dev1/ctr1",  # corresponds to PFI3
                                aoChannel="/Dev1/ao0",

@@ -1,9 +1,9 @@
-from Artist import makeArtist
+from Device import makeDevice
 import threading as th
 import asyncore
 
 def main():
-    m = makeArtist('ABU')
+    m = makeDevice('ABU')
 
 if __name__ == '__main__':
     main()

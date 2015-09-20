@@ -13,10 +13,10 @@ from backend.acquire_files.acquisition import format_map,write_params_map,acquir
 
 SAVE_DIR = "C:\\Data\\Gallium Run\\"
 
-# Some exploratory code to understand a bit better how to make the ARTIST
-class Artist(Dispatcher):
+# Some exploratory code to understand a bit better how to make the Devices
+class Device(Dispatcher):
     def __init__(self, name='', PORT=5005):
-        super(Artist, self).__init__(PORT, name)
+        super(Device, self).__init__(PORT, name)
         self.acquire = acquire
 
         # instructions queue:
@@ -67,7 +67,7 @@ class Artist(Dispatcher):
     def stop():
         self.saveProcess.terminate()
         self.DAQProcess.terminate()
-        super(Artist.stop())
+        super(Device.stop())
         
     @hp.try_call
     def status(self, params):
@@ -228,5 +228,5 @@ class Artist(Dispatcher):
         # to be active at a time
         if len(self.acceptors) == 2:
             print('Data Server and Manager already present! Aborting.')
-        super(Artist,self).handle_accept()
+        super(Device,self).handle_accept()
 

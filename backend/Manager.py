@@ -55,143 +55,143 @@ class Manager(Dispatcher):
         return params
 
     @try_call
-    def change_artist_refresh(self, params):
-        artist_name = params['artist'][0]
+    def change_device_refresh(self, params):
+        device_name = params['device'][0]
         time = params['time']        
-        self.change_refresh(artist_name,time)
+        self.change_refresh(device_name,time)
         return {}
 
-    def change_refresh(self,artist_name,time):
-        artist = self.connectors[artist_name]
-        artist.add_request(('change_refresh_time',{'time':time}))
+    def change_refresh(self,device_name,time):
+        device = self.connectors[device_name]
+        device.add_request(('change_refresh_time',{'time':time}))
 
     def change_refresh_time_reply(self,track,params):
         origin, track_id = track[-1]
-        self.notify_connectors(([0],"Artist {} received change refresh time instruction correctly.".format(origin)))
+        self.notify_connectors(([0],"Device {} received change refresh time instruction correctly.".format(origin)))
 
     @try_call
-    def change_artist_prop(self, params):
-        artist_name = params['artist'][0]
+    def change_device_prop(self, params):
+        device_name = params['device'][0]
         prop = params['prop']        
-        self.change_prop(artist_name,prop)
+        self.change_prop(device_name,prop)
         return {}
 
-    def change_prop(self,artist_name,prop):
-        artist = self.connectors[artist_name]
-        artist.add_request(('change_prop',{'prop':prop}))
+    def change_prop(self,device_name,prop):
+        device = self.connectors[device_name]
+        device.add_request(('change_prop',{'prop':prop}))
 
     def change_prop_reply(self,track,params):
         origin, track_id = track[-1]
-        self.notify_connectors(([0],"Artist {} received change proportionality instruction correctly.".format(origin)))
+        self.notify_connectors(([0],"Device {} received change proportionality instruction correctly.".format(origin)))
 
     @try_call
-    def lock_artist_etalon(self, params):
-        artist_name = params['artist'][0]
+    def lock_device_etalon(self, params):
+        device_name = params['device'][0]
         lock = params['lock']        
-        self.lock_etalon(artist_name,lock)
+        self.lock_etalon(device_name,lock)
         return {}
 
-    def lock_etalon(self,artist_name,lock):
-        artist = self.connectors[artist_name]
-        artist.add_request(('lock_etalon',{'lock':lock}))
+    def lock_etalon(self,device_name,lock):
+        device = self.connectors[device_name]
+        device.add_request(('lock_etalon',{'lock':lock}))
 
     def lock_etalon_reply(self,track,params):
         origin, track_id = track[-1]
-        self.notify_connectors(([0],"Artist {} received lock etalon instruction correctly.".format(origin)))
+        self.notify_connectors(([0],"Device {} received lock etalon instruction correctly.".format(origin)))
 
     @try_call
-    def set_artist_etalon(self, params):
-        artist_name = params['artist'][0]
+    def set_device_etalon(self, params):
+        device_name = params['device'][0]
         etalon_value = params['etalon_value']        
-        self.set_etalon(artist_name,etalon_value)
+        self.set_etalon(device_name,etalon_value)
         return {}
 
-    def set_etalon(self,artist_name,etalon_value):
-        artist = self.connectors[artist_name]
-        artist.add_request(('set_etalon',{'etalon_value':etalon_value}))
+    def set_etalon(self,device_name,etalon_value):
+        device = self.connectors[device_name]
+        device.add_request(('set_etalon',{'etalon_value':etalon_value}))
 
     def set_etalon_reply(self,track,params):
         origin, track_id = track[-1]
-        self.notify_connectors(([0],"Artist {} received set etalon instruction correctly.".format(origin)))
+        self.notify_connectors(([0],"Device {} received set etalon instruction correctly.".format(origin)))
 
     @try_call
-    def lock_artist_cavity(self, params):
-        artist_name = params['artist'][0]
+    def lock_device_cavity(self, params):
+        device_name = params['device'][0]
         lock = params['lock']        
-        self.lock_cavity(artist_name,lock)
+        self.lock_cavity(device_name,lock)
         return {}
 
-    def lock_cavity(self,artist_name,lock):
-        artist = self.connectors[artist_name]
-        artist.add_request(('lock_cavity',{'lock':lock}))
+    def lock_cavity(self,device_name,lock):
+        device = self.connectors[device_name]
+        device.add_request(('lock_cavity',{'lock':lock}))
 
     def lock_cavity_reply(self,track,params):
         origin, track_id = track[-1]
-        self.notify_connectors(([0],"Artist {} received lock cavity instruction correctly.".format(origin)))
+        self.notify_connectors(([0],"Device {} received lock cavity instruction correctly.".format(origin)))
 
     @try_call
-    def set_artist_cavity(self, params):
-        artist_name = params['artist'][0]
+    def set_device_cavity(self, params):
+        device_name = params['device'][0]
         cavity_value = params['cavity_value']
-        self.set_cavity(artist_name,cavity_value)
+        self.set_cavity(device_name,cavity_value)
         return {}
 
-    def set_cavity(self,artist_name,cavity_value):
-        artist = self.connectors[artist_name]
-        artist.add_request(('set_cavity',{'cavity_value':cavity_value}))
+    def set_cavity(self,device_name,cavity_value):
+        device = self.connectors[device_name]
+        device.add_request(('set_cavity',{'cavity_value':cavity_value}))
 
     def set_cavity_reply(self,track,params):
         origin, track_id = track[-1]
-        self.notify_connectors(([0],"Artist {} received set cavity instruction correctly.".format(origin)))
+        self.notify_connectors(([0],"Device {} received set cavity instruction correctly.".format(origin)))
 
     @try_call
-    def lock_artist_wavelength(self, params):
-        artist_name = params['artist'][0]
+    def lock_device_wavelength(self, params):
+        device_name = params['device'][0]
         lock = params['lock']
-        self.lock_wavelength(artist_name,lock)
+        self.lock_wavelength(device_name,lock)
         return {}
 
-    def lock_wavelength(self,artist_name,lock):
-        artist = self.connectors[artist_name]
-        artist.add_request(('lock_wavelength',{'lock':lock}))
+    def lock_wavelength(self,device_name,lock):
+        device = self.connectors[device_name]
+        device.add_request(('lock_wavelength',{'lock':lock}))
 
     def lock_wavelength_reply(self,track,params):
         origin, track_id = track[-1]
-        self.notify_connectors(([0],"Artist {} received lock wavelength instruction correctly.".format(origin)))
+        self.notify_connectors(([0],"Device {} received lock wavelength instruction correctly.".format(origin)))
 
     @try_call
-    def lock_artist_ecd(self, params):
-        artist_name = params['artist'][0]
+    def lock_device_ecd(self, params):
+        device_name = params['device'][0]
         lock = params['lock']
-        self.lock_ecd(artist_name,lock)
+        self.lock_ecd(device_name,lock)
         return {}
 
-    def lock_ecd(self,artist_name,lock):
-        artist = self.connectors[artist_name]
-        artist.add_request(('lock_ecd',{'lock':lock}))
+    def lock_ecd(self,device_name,lock):
+        device = self.connectors[device_name]
+        device.add_request(('lock_ecd',{'lock':lock}))
 
     def lock_ecd_reply(self,track,params):
         origin, track_id = track[-1]
-        self.notify_connectors(([0],"Artist {} received lock doubler instruction correctly.".format(origin)))
+        self.notify_connectors(([0],"Device {} received lock doubler instruction correctly.".format(origin)))
 
     @try_call
     def start_scan(self, params):
-        artist_name = params['artist'][0]
+        device_name = params['device'][0]
         scan_parameter = params['scan_parameter']
         scan_array = params['scan_array']
         time_per_step = params['time_per_step']
         mass = params['mass']
         
-        self.scan_artist(artist_name,scan_parameter,
+        self.scan_device(device_name,scan_parameter,
                          scan_array,time_per_step,mass)
 
         return {}
 
-    def scan_artist(self,artist_name,scan_parameter,
+    def scan_device(self,device_name,scan_parameter,
                          scan_array,time_per_step,
                          mass):
-        self.scanner_name = artist_name
-        scanner = self.connectors[artist_name]
+        self.scanner_name = device_name
+        scanner = self.connectors[device_name]
         self.scan_number += 1
         self.set_all_scan_numbers(self.scan_number)
         scanner.add_request(('start_scan',{'scan_parameter':scan_parameter,
@@ -203,7 +203,7 @@ class Manager(Dispatcher):
              'Author': 'Automatic Entry',
              'Mass':mass[0],
              'Tags': {"Scan":True},
-             'Text': lb.START.format(artist_name,scan_array[0],
+             'Text': lb.START.format(device_name,scan_array[0],
                                      scan_array[-1],
                                      len(scan_array),
                                      time_per_step[0])}
@@ -217,7 +217,7 @@ class Manager(Dispatcher):
 
     def start_scan_reply(self,track,params):
         origin, track_id = track[-1]
-        self.notify_connectors(([0],"Artist {} received scanning instruction correctly.".format(origin)))
+        self.notify_connectors(([0],"Device {} received scanning instruction correctly.".format(origin)))
 
     @try_call
     def set_all_scan_numbers(self, number):
@@ -228,7 +228,7 @@ class Manager(Dispatcher):
 
     def set_scan_number_reply(self,track,params):
         origin, track_id = track[-1]
-        self.notify_connectors(([0],"Artist {} received scan number setting instruction correctly.".format(origin)))
+        self.notify_connectors(([0],"Device {} received scan number setting instruction correctly.".format(origin)))
 
     @try_call
     def stop_scan(self,params):
@@ -239,30 +239,30 @@ class Manager(Dispatcher):
 
     def stop_scan_reply(self,track,params):
         origin, track_id = track[-1]
-        self.notify_connectors(([0],"Artist {} received stopping instruction correctly.".format(origin)))
+        self.notify_connectors(([0],"Device {} received stopping instruction correctly.".format(origin)))
 
     @try_call
     def go_to_setpoint(self, params):
-        artist_name = params['artist'][0]
+        device_name = params['device'][0]
         parameter = params['parameter']
         setpoint = params['setpoint']
         
-        self.set_artist(artist_name,parameter,setpoint)
+        self.set_device(device_name,parameter,setpoint)
 
         return {}
 
-    def set_artist(self,artist_name,parameter,setpoint):
-        artist_to_set = self.connectors[artist_name]
-        artist_to_set.add_request(('go_to_setpoint',{'parameter':parameter,
+    def set_device(self,device_name,parameter,setpoint):
+        device_to_set = self.connectors[device_name]
+        device_to_set.add_request(('go_to_setpoint',{'parameter':parameter,
                                                      'setpoint':setpoint}))
         info_for_log =  {'Author': 'Automatic Entry',
                  'Tags': {"Setpoint":True},
-                 'Text': lb.SET.format(artist_name, parameter[0], setpoint[0])}
+                 'Text': lb.SET.format(device_name, parameter[0], setpoint[0])}
         self.add_to_logbook(info_for_log)
 
     def go_to_setpoint_reply(self,track,params):
         origin, track_id = track[-1]
-        self.notify_connectors(([0],"Artist {} received setpoint instruction correctly.".format(origin)))
+        self.notify_connectors(([0],"Device {} received setpoint instruction correctly.".format(origin)))
         
     @try_call
     def logbook_status(self,params):

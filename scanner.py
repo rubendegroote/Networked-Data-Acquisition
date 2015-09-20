@@ -96,7 +96,7 @@ class ScannerWidget(QtGui.QWidget):
 
     def makeScan(self):
         parameter = self.tuning_parameter_combo.currentText()
-        artist,parameter = parameter.split(': ')
+        device,parameter = parameter.split(': ')
 
         start = float(self.startEdit.text())
         stop = float(self.stopEdit.text())
@@ -118,7 +118,7 @@ class ScannerWidget(QtGui.QWidget):
 
         dt = [float(self.timeEdit.text())]
 
-        self.scanInfoSig.emit({'artist':[artist],
+        self.scanInfoSig.emit({'device':[device],
                                'scan_parameter':[parameter],
                                'scan_array':rng,
                                'time_per_step':dt})
@@ -132,10 +132,10 @@ class ScannerWidget(QtGui.QWidget):
 
     def makeSetpoint(self):
         parameter = str(self.tuning_parameter_combo.currentText())
-        artist,parameter = parameter.split(': ')
+        device,parameter = parameter.split(': ')
         value = [float(self.setpointEdit.text())]
 
-        self.setPointSig.emit({'artist':[artist],
+        self.setPointSig.emit({'device':[device],
                                'parameter':[parameter],
                                'setpoint': value})
 

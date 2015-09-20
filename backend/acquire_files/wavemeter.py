@@ -1,14 +1,14 @@
 import ctypes
 import traceback
 
-from .device import format,Device
+from .hardware import format,Hardware
 
 this_format = format + ('wavenumber_wsu_1','wavenumber_wsu_2',
 	                    'expos_12','expos_21','expos_21','expos_22')
 
 write_params = []
 
-class Wavemeter(Device):
+class Wavemeter(Hardware):
     def __init__(self):
     	super(Wavemeter,self).__init__(name = 'Wavemeter',
                              format=this_format,

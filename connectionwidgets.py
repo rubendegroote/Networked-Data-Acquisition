@@ -3,14 +3,14 @@ import configparser
 from connectiondialogs import ConnectionDialog
 
 
-class ArtistConnections(QtGui.QWidget):
+class DeviceConnections(QtGui.QWidget):
     connectSig = QtCore.Signal(tuple)
     removeSig = QtCore.Signal(tuple)
     removeAllSig = QtCore.Signal(bool)
 
     def __init__(self, parent=None):
-        super(ArtistConnections, self).__init__(parent)
-        self.artistWidgets = {}
+        super(DeviceConnections, self).__init__(parent)
+        self.deviceWidgets = {}
         self.l = 0
         self.layout = QtGui.QGridLayout(self)
 
@@ -20,33 +20,33 @@ class ArtistConnections(QtGui.QWidget):
                         'Diodes': ('127.0.0.1', 6003),
                         'M2': ('128.141.98.136', 6002),
                         'wavemeter': ('128.141.98.136', 6001)}
-        self.artistSelection = QtGui.QComboBox()
-        self.artistSelection.addItems(sorted(list(self.address.keys())))
-        self.artistSelection.setCurrentIndex(0)
-        self.layout.addWidget(self.artistSelection, 100, 0, 1, 1)
+        self.deviceSelection = QtGui.QComboBox()
+        self.deviceSelection.addItems(sorted(list(self.address.keys())))
+        self.deviceSelection.setCurrentIndex(0)
+        self.layout.addWidget(self.deviceSelection, 100, 0, 1, 1)
 
-        self.addArtistButton = QtGui.QPushButton('Add Artist')
-        self.addArtistButton.clicked.connect(self.addConnection)
-        self.layout.addWidget(self.addArtistButton, 100, 1, 1, 1)
+        self.addDeviceButton = QtGui.QPushButton('Add Device')
+        self.addDeviceButton.clicked.connect(self.addConnection)
+        self.layout.addWidget(self.addDeviceButton, 100, 1, 1, 1)
 
-        self.ManArtists = []
-        self.DSArtists = []
+        self.ManDevices = []
+        self.DSDevices = []
 
     def addConnection(self):
-        selection = self.artistSelection.currentText()
+        selection = self.deviceSelection.currentText()
         respons = self.address[selection]
         self.connectSig.emit(('Both', selection, respons))
 
-    def addArtistWidget(self, name='', IP='KSF402', PORT='5004'):
-        self.artistWidgets[name] = ArtistWidget(self, name, IP, PORT)
-        self.artistWidgets[name].removeSig.connect(self.remove)
-        self.artistWidgets[name].reconnectSig.connect(self.reconnect)
-        self.layout.addWidget(self.artistWidgets[name], self.l, 0, 1, 2)
+    def addDeviceWidget(self, name='', IP='KSF402', PORT='5004'):
+        self.deviceWidgets[name] = DeviceWidget(self, name, IP, PORT)
+        self.deviceWidgets[name].removeSig.connect(self.remove)
+        self.deviceWidgets[name].reconnectSig.connect(self.reconnect)
+        self.layout.addWidget(self.deviceWidgets[name], self.l, 0, 1, 2)
         config = configparser.ConfigParser()
-        for key in self.artistWidgets.keys():
-            config[key] = {'IP': self.artistWidgets[name].IP,
-                           'Port': self.artistWidgets[name].PORT}
-        with open('ManagerArtistConnections.ini', 'w') as configfile:
+        for key in self.deviceWidgets.keys():
+            config[key] = {'IP': self.deviceWidgets[name].IP,
+                           'Port': self.deviceWidgets[name].PORT}
+        with open('ManagerDeviceConnections.ini', 'w') as configfile:
             config.write(configfile)
 
         self.l += 1
@@ -54,8 +54,8 @@ class ArtistConnections(QtGui.QWidget):
     def remove(self, connWidget):
         self.removeSig.emit((connWidget.IP, connWidget.PORT))
 
-    def remove_all_artists(self):
-        for name in self.artistWidgets:
+    def remove_all_devices(self):
+        for name in self.deviceWidgets:
             self.removeAllSig.emit(True)
 
     def reconnect(self, info):
@@ -65,25 +65,25 @@ class ArtistConnections(QtGui.QWidget):
         origin, track_id = track[-1]
         # update list of existing connections
         if origin == 'Manager':
-            self.ManArtists = params.keys()
+            self.ManDevices = params.keys()
         elif origin == 'DataServer':
-            self.DSArtists = params.keys()
+            self.DSDevices = params.keys()
 
         for key,val in params.items():
-            # if there is a new artist, create a new widget
-            if key not in self.artistWidgets.keys():
-                self.addArtistWidget(name=key,
+            # if there is a new device, create a new widget
+            if key not in self.deviceWidgets.keys():
+                self.addDeviceWidget(name=key,
                     IP=str(val[1]), PORT=str(val[2]))
             # if it is not new: check if origin is still connected 
             # and update widget accordingly
             else:
                 if not val[0]:
-                    self.artistWidgets[key].set_disconnected(origin)
+                    self.deviceWidgets[key].set_disconnected(origin)
 
         # update the status of the widget, delete if needed
         toDelete = []
-        for key,val in self.artistWidgets.items():
-            if key not in self.ManArtists and key not in self.DSArtists:
+        for key,val in self.deviceWidgets.items():
+            if key not in self.ManDevices and key not in self.DSDevices:
                 toDelete.append(key)
             else:
                 if key not in params.keys():
@@ -93,26 +93,26 @@ class ArtistConnections(QtGui.QWidget):
 
         for key in toDelete:
             try:
-                self.artistWidgets[key].close()
-                del self.artistWidgets[key]
+                self.deviceWidgets[key].close()
+                del self.deviceWidgets[key]
             except KeyError as e:
                 # raised when the widget has already been removed 
                 # due to an earlier status update
                 pass
 
     def updateData(self,track,params):
-        for key,val in self.artistWidgets.items():
+        for key,val in self.deviceWidgets.items():
             try:
                 val.rowLabel.setText('data rows: ' + str(params['no_of_rows'][key]))
             except KeyError:
                 pass
 
-class ArtistWidget(QtGui.QWidget):
+class DeviceWidget(QtGui.QWidget):
     removeSig = QtCore.Signal(object)
     reconnectSig = QtCore.Signal(object)
 
     def __init__(self, parent=None, name='', IP='KSF402', PORT='5004'):
-        super(ArtistWidget, self).__init__(parent)
+        super(DeviceWidget, self).__init__(parent)
         self.IP = IP
         self.PORT = PORT
         self.name = name
@@ -148,26 +148,26 @@ class ArtistWidget(QtGui.QWidget):
         self.ManReconnectButton = QtGui.QPushButton('Reconnect Manager')
         self.layout.addWidget(self.ManReconnectButton, 0, 1, 1, 1)
         self.ManReconnectButton.clicked.connect(
-            lambda: self.reConnectArtist('Manager'))
+            lambda: self.reConnectDevice('Manager'))
         self.ManReconnectButton.setHidden(True)
 
         self.DSReconnectButton = QtGui.QPushButton('Reconnect Data Server')
         self.layout.addWidget(self.DSReconnectButton, 0, 2, 1, 1)
         self.DSReconnectButton.clicked.connect(
-            lambda: self.reConnectArtist('Data Server'))
+            lambda: self.reConnectDevice('Data Server'))
         self.DSReconnectButton.setHidden(True)
 
         self.rowLabel = QtGui.QLabel()
         self.layout.addWidget(self.rowLabel, 0, 6, 1, 1)
 
         #self.removeButton = QtGui.QPushButton('Remove')
-        #self.removeButton.clicked.connect(self.removeArtist)
+        #self.removeButton.clicked.connect(self.removeDevice)
         #self.layout.addWidget(self.removeButton, 0, 7, 1, 1)
 
-    def removeArtist(self):
+    def removeDevice(self):
         self.removeSig.emit(self)
 
-    def reConnectArtist(self, sender):
+    def reConnectDevice(self, sender):
         self.IP = str(self.channel.text().split(': ')[-1])
         self.PORT = int(self.portlabel.text().split(': ')[-1])
         self.reconnectSig.emit((sender, self.name, (self.IP, self.PORT)))

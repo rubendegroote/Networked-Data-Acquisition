@@ -6,8 +6,8 @@ import json
 format = ('timestamp','scan_number','mass')
 TIME_OFFSET = 1420070400 # 01/01/2015
 
-class Device():
-    def __init__(self,name = 'device',
+class Hardware():
+    def __init__(self,name = 'hardware',
                       format = (),
                       settings = {},
                       ns = None,

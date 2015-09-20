@@ -57,10 +57,10 @@ class Application(QtGui.QMainWindow):
         if data[0] == 'Radio':
             self.radio = Radio(IP=data[1], PORT=int(data[2]))
         elif data[0] == 'FileServer':
-            self.fileServer = FileServer(artists=[(data[1], data[2])],
+            self.fileServer = FileServer(devices=[(data[1], data[2])],
                                          save=False, remember=True)
         elif data[0] == 'Manager':
-            self.manager = Manager(artists=[(data[1], data[2])])
+            self.manager = Manager(devices=[(data[1], data[2])])
 
     def plot(self):
         try:

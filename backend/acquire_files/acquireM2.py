@@ -36,7 +36,7 @@ def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     stopFlag: an Event which indicates if the process needs to exit
         for some reason (e.g. to allow for a reboot)
     IStoppedFlag: an Event WHICH RUBEN HAS TO CLARIFY
-    ns: shared namespace with the Artist running the acquire process
+    ns: shared namespace with the Device running the acquire process
     """
     t0 = 0
 
@@ -157,7 +157,7 @@ def acquireM2(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
             # response = s.recv(1024)
             # data = [response['parameters'][string] for string in data_channels]
 
-            ### Sending data to Artist
+            ### Sending data to Device
             now = time.time()
             # put data on the queue
             data = [now,1,wavelength]

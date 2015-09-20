@@ -1,7 +1,7 @@
 from PyQt4 import QtCore, QtGui
 
 class ControlWidgets(QtCore.QObject):
-    artist_missing = QtCore.Signal(str)
+    device_missing = QtCore.Signal(str)
     def __init__(self):
         super(ControlWidgets,self).__init__()
         self.controls = {}
@@ -11,7 +11,7 @@ class ControlWidgets(QtCore.QObject):
             try:
                 self.controls[key].update(info)
             except KeyError:
-                self.artist_missing.emit(key)
+                self.device_missing.emit(key)
 
 class ControlWidget(QtGui.QWidget):
     prop_changed_sig = QtCore.Signal(tuple)
@@ -192,6 +192,6 @@ class ControlWidget(QtGui.QWidget):
 
     def emit_set_wavenumber(self):
         wavenumber = float(self.wavenumber_value.text())
-        self.wavenumber_sig.emit({'artist':['M2'],
+        self.wavenumber_sig.emit({'device':['M2'],
                                   'parameter':["wavenumber"],
                                   'setpoint': [wavenumber]})

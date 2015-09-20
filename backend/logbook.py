@@ -6,8 +6,8 @@ from collections import OrderedDict
 # import time
 # import os
 
-START = 'Started scanning Artist {} from {:.8f} to {:.8f} cm-1, in {:.0f} steps with {:.8f} seconds per step.'
-SET   = 'Set Artist {} parameter {} to {:.8f} cm-1.'
+START = 'Started scanning Device {} from {:.8f} to {:.8f} cm-1, in {:.0f} steps with {:.8f} seconds per step.'
+SET   = 'Set Device {} parameter {} to {:.8f} cm-1.'
 
 def prettyPrint(snap):
     return "\n".join([str(key) + ': ' + str(val) for key, val in snap.items()]) + "\n"

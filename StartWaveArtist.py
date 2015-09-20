@@ -1,10 +1,10 @@
-from backend.Artist import makeArtist
+from backend.Device import makeDevice
 import threading as th
 import asyncore
 
 
 def main():
-    m = makeArtist('wavemeter')
+    m = makeDevice('wavemeter')
 
 if __name__ == '__main__':
     main()

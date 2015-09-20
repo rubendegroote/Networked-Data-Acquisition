@@ -142,7 +142,7 @@ class DataServer(Dispatcher):
                 self.data[origin][-len(data):] = data
 
         except KeyError:
-            # first time we see this artist
+            # first time we see this device
             self.data[origin] = data
             self.no_of_rows[origin] = 0
         finally:

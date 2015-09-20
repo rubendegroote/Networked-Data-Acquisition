@@ -35,7 +35,7 @@ def acquireDiodes(settings, dQ, iQ, mQ, contFlag, stopFlag, IStoppedFlag, ns):
     stopFlag: an Event which indicates if the process needs to exit
         for some reason (e.g. to allow for a reboot)
     IStoppedFlag: an Event WHICH RUBEN HAS TO CLARIFY
-    ns: shared namespace with the Artist running the acquire process
+    ns: shared namespace with the Device running the acquire process
     """
     t0 = 0
 

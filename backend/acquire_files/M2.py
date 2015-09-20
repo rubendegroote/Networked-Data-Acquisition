@@ -6,7 +6,7 @@ import json
 import ctypes
 import traceback
 
-from .device import format,Device
+from .hardware import format,Hardware
 
 M2_format = ('setpoint','on_setpoint','status', 'wavelength', 'temperature', 'temperature_status',
     'etalon_lock', 'etalon_voltage', 'cavity_lock', 'resonator_voltage',
@@ -14,7 +14,7 @@ M2_format = ('setpoint','on_setpoint','status', 'wavelength', 'temperature', 'te
 this_format = format + M2_format
 write_params = ['wavenumber']
 
-class M2(Device):
+class M2(Hardware):
     def __init__(self):
         mapping = {
             "Set Wavelength": comm.set_wave_m,

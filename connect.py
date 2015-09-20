@@ -3,7 +3,7 @@ from PyQt4 import QtCore, QtGui
 
 class ConnectionsWidget(QtGui.QWidget):
     newConn = QtCore.Signal(tuple)
-    newArtist = QtCore.Signal(tuple)
+    newDevice = QtCore.Signal(tuple)
 
     def __init__(self):
         super(ConnectionsWidget, self).__init__()
@@ -13,9 +13,9 @@ class ConnectionsWidget(QtGui.QWidget):
         self.addConButton.clicked.connect(self.addConn)
         self.layout.addWidget(self.addConButton)
 
-        self.artistsLabel = QtGui.QLabel()
-        self.artistText = ""
-        self.layout.addWidget(self.artistsLabel)
+        self.devicesLabel = QtGui.QLabel()
+        self.deviceText = ""
+        self.layout.addWidget(self.devicesLabel)
 
     def addConn(self):
         respons = ConnectionDialog.getInfo(self)

@@ -19,7 +19,7 @@ def update_scan_info(file_path,scan,group):
             scanfile.write(str(scan)+'\n')
 
 def save(to_save,format,file_path,group_name):
-    # saves data, per group (for each Artist) and per scan
+    # saves data, per group (for each Device) and per scan
     to_save_grouped = group_per_scan(to_save,
                     axis=format.index(b'scan_number'))
     with h5py.File(file_path+'_data.h5','a') as store:
