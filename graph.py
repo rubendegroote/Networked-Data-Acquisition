@@ -166,13 +166,13 @@ class MyGraph(QtGui.QWidget):
 
         if len(self.data)>0:
             data = self.data.sort_index()
+            data['x'].fillna(method='ffill', inplace=True)
+            data.dropna(inplace=True)
             if 'timestamp' in self.x_key:
                 data['x'] = data['x'] - data['x'].values[0]
             elif 'timestamp' in self.y_key:
                 data['y'] = data['y'] - data['y'].values[0]
-
-            data['x'].fillna(method='ffill', inplace=True)
-            data.dropna(inplace=True)
+            
             x = data['x'].values - float(self.x_offset.text())
             y = data['y'].values - float(self.y_offset.text())
             if histmode:
