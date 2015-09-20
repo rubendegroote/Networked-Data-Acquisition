@@ -1,7 +1,6 @@
 import socket
 import time
 import numpy as np
-from .Helpers import try_deco
 from PyDAQmx import *
 from PyDAQmx.DAQmxConstants import *
 from PyDAQmx.DAQmxFunctions import *

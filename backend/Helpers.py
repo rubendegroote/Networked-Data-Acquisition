@@ -86,7 +86,10 @@ def log_message(func):
     def func_wrapper(self,message):
         if not message['message']['op'] == 'status' and \
            not message['message']['op'] == 'data' and \
-           not message['message']['op'] == 'logbook_status':
+           not message['message']['op'] == 'logbook_status' and\
+           not message['message']['op'] == 'get_data' and\
+           not message['message']['op'] == 'request_data' and\
+           not message['message']['op'] == 'data_format':
             logging.info(message)
         if 'reply' in message.keys():
             if not message['reply']['parameters']['status'][0] == 0:

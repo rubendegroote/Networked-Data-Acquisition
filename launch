@@ -1,0 +1,67 @@
+from PyQt4 import QtCore,QtGui
+import sys
+from multiprocessing import freeze_support
+
+from backend.FileServer import FileServer
+from backend.DataServer import DataServer
+from backend.Manager import Manager
+from backend.Artist import Artist
+import traceback
+
+translation = {}
+translation['fileserver'] = FileServer
+translation['dataserver'] = DataServer
+translation['manager'] = Manager
+translation['device'] = Artist
+
+ports = {}
+ports['fileserver'] = 5006
+ports['dataserver'] = 5005
+ports['manager'] = 5004
+ports['device'] = {'ABU':6005,
+                   'CRIS':6005,
+                   'Matisse':6004,
+                   'diodes':6003,
+                   'M2':6002,
+                   'wavemeter':6001}
+
+class Launcher(QtGui.QWidget):
+    def __init__(self,arguments):
+        super(Launcher,self).__init__()
+        name = sys.argv[1]
+        self.setWindowTitle(name)
+        try:
+            if not name == 'device':
+                port = ports[name]
+                self.program = translation[name](port)
+            else:
+                device_name = sys.argv[2]
+                port = ports[name][device_name]
+                self.program = translation[name](device_name,port)
+            style = "QLabel { background-color: green }"
+            e=''
+        except:
+            self.program = None
+            e = str(traceback.format_exc())
+            style = "QLabel { background-color: red }"
+    
+        layout = QtGui.QGridLayout(self)
+        label = QtGui.QLabel(e)
+        label.setStyleSheet(style)
+        layout.addWidget(label)
+        self.show()
+
+    def closeEvent(self,event):
+        if not self.program is None:
+            self.program.stop()
+
+
+def main():
+    freeze_support()
+    app = QtGui.QApplication(sys.argv)
+    launcher = Launcher(sys.argv)
+    sys.exit(app.exec_())
+
+if __name__ == '__main__':
+	main()
+

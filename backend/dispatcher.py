@@ -25,13 +25,13 @@ class Dispatcher(asyncore.dispatcher):
         self.defaultRequest = defaultRequest
 
         self.looping = True
-        t = th.Thread(target=self.start).start()
-
         self.sleeptime = 0.03
+        t = th.Thread(target=self.start).start()
 
     def start(self):
         while self.looping:
-            asyncore.loop(count=1)
+            print(1)
+            asyncore.loop(timeout = self.sleeptime)
             time.sleep(self.sleeptime)
 
     def stop(self):

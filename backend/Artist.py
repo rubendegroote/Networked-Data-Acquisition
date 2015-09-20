@@ -15,10 +15,9 @@ SAVE_DIR = "C:\\Data\\Gallium Run\\"
 
 # Some exploratory code to understand a bit better how to make the ARTIST
 class Artist(Dispatcher):
-    def __init__(self, name='', PORT=5005, acquireFunction=None,
-            format = tuple()):
+    def __init__(self, name='', PORT=5005):
         super(Artist, self).__init__(PORT, name)
-        self.acquireFunction = acquireFunction
+        self.acquire = acquire
 
         # instructions queue:
         # Manager -> InstructionReceiver -> acquire
@@ -65,6 +64,11 @@ class Artist(Dispatcher):
         self.save_output,self.save_input = mp.Pipe(duplex=False)
         self.start_saving()
 
+    def stop():
+        super(Artist.stop())
+        self.saveProcess.terminate()
+        self.DAQProcess.terminate()
+        
     @hp.try_call
     def status(self, params):
         return {'format': self.format,
@@ -189,7 +193,7 @@ class Artist(Dispatcher):
                 self.iQ, self.mQ,self.stopFlag,
                 self.IStoppedFlag, self.ns)
         self.DAQProcess = mp.Process(name = 'daq' + self.name,
-                  target=self.acquireFunction,
+                  target=self.acquire,
                   args=args)
         self.DAQProcess.start()
 
@@ -226,23 +230,3 @@ class Artist(Dispatcher):
             print('Data Server and Manager already present! Aborting.')
         super(Artist,self).handle_accept()
 
-
-def makeArtist(name='test'):
-    ports = {'ABU':6005,
-             'CRIS':6005,
-             'Matisse':6004,
-             'diodes':6003,
-             'M2':6002,
-             'wavemeter':6001}
-
-    PORT = ports[name]
-    artist = Artist(name=name,PORT=PORT,
-            acquireFunction=acquire)
-    
-    return artist
-
-def main():
-    pass
-
-if __name__ == '__main__':
-    main()

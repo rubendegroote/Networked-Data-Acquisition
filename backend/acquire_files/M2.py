@@ -150,6 +150,7 @@ class M2(Device):
         return data
 
 def convert_data(d):
+    # messy as fuck.
     if d == 'on':
         return 1
     elif d == 'off' or d == 'error':
@@ -157,4 +158,7 @@ def convert_data(d):
     elif d in ['debug','search','low','not_fitted']:
         return 2
     else:
-        return float(d[0])
+        try:
+            return float(d[0])
+        except:
+            return float(d)

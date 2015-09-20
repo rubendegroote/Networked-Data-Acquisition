@@ -1,25 +1,45 @@
 import json
 import numpy
 import time
+import traceback
 
 from . import M2
 from . import Matisse
 from . import wavemeter
+from . import CRIS
 
 format_map = {}
-format_map['M2'] = M2.this_format
-format_map['Matisse'] = Matisse.this_format
-format_map['wavemeter'] = wavemeter.this_format
-
 write_params_map = {}
-write_params_map['M2'] = M2.write_params
-write_params_map['Matisse'] = Matisse.write_params
-write_params_map['wavemeter'] = wavemeter.write_params
-
 hardware_map = {}
-hardware_map['M2'] = M2.M2
-hardware_map['Matisse'] = Matisse.Matisse
-hardware_map['wavemeter'] = wavemeter.Wavemeter
+
+try:
+    format_map['M2'] = M2.this_format
+    write_params_map['M2'] = M2.write_params
+    hardware_map['M2'] = M2.M2
+except ImportError:
+    print('Could not import M2\n',str(traceback.format_exc()))
+    
+try:
+    format_map['Matisse'] = Matisse.this_format
+    write_params_map['Matisse'] = Matisse.write_params
+    hardware_map['Matisse'] = Matisse.Matisse
+except ImportError:
+    print('Could not import Matisse\n',str(traceback.format_exc()))
+
+try:
+    format_map['wavemeter'] = wavemeter.this_format
+    write_params_map['wavemeter'] = wavemeter.write_params
+    hardware_map['wavemeter'] = wavemeter.Wavemeter
+except ImportError:
+    print('Could not import wavemeter\n',str(traceback.format_exc()))
+
+try:
+    format_map['CRIS'] = CRIS.this_format
+    write_params_map['CRIS'] = CRIS.write_params
+    hardware_map['CRIS'] = CRIS.CRIS
+except ImportError:
+    print('Could not import CRIS\n',str(traceback.format_exc()))
+
 
 
 ### Main acquire loop

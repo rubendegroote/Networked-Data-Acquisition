@@ -318,29 +318,3 @@ class Manager(Dispatcher):
 def makeManager(PORT=5007):
     return Manager(PORT=PORT)
 
-def start_manager():
-    try:
-        m = makeManager(5004)
-        style = "QLabel { background-color: green }"
-        e=''
-    except Exception as error:
-        e = str(error)
-        style = "QLabel { background-color: red }"
-
-    from PyQt4 import QtCore,QtGui
-    # Small visual indicator that this is running
-    app = QtGui.QApplication(sys.argv)
-    w = QtGui.QWidget()
-
-    w.setWindowTitle('Manager')
-    layout = QtGui.QGridLayout(w)
-    label = QtGui.QLabel(e)
-    label.setStyleSheet(style)
-    layout.addWidget(label)
-    w.show()
-    
-    sys.exit(app.exec_())
-
-
-if __name__ == '__main__':
-    start_manager()

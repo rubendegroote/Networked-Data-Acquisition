@@ -62,11 +62,11 @@ class RadioApp(QtGui.QMainWindow):
     def change_mode(self,item):
         if item.text(0) in ['scan','stream']:
             self.live_viewing = True
+            self.mode = item.text(0)
+            self.data_server.add_request(('change_mode',{'mode':self.mode}))
         else:
             self.live_viewing = False
-
-        self.mode = item.text(0)
-        self.data_server.add_request(('change_mode',{'mode':self.mode}))
+            self.scan = int(item.text(0).strip('Scan '))
 
     def stopIOLoop(self):
         self.looping = False
@@ -124,7 +124,7 @@ class RadioApp(QtGui.QMainWindow):
                                'y':self.graph.y_key}
 
         else:
-            # file sesrver time
+            # file server time
             return 'data_format',{}
 
     def default_fileserver_cb(self):
@@ -132,14 +132,18 @@ class RadioApp(QtGui.QMainWindow):
             # data server time
             return 'file_status',{}
         else:
-            # file server time!
-            return 'file_status',{}
+            if not self.initialized:
+                return 'data_format',{"scan_number":[self.scan]}
+            else:
+                return 'request_data',{'scan_number':[self.scan],
+                                   'x':self.graph.x_key,
+                                   'y':self.graph.y_key}
 
     def onCloseCallback(self,connector):
         print('lost connection')
 
     def change_mode_reply(self,track,params):
-           self.graph.reset_data()
+        self.graph.reset_data()
 
     def get_data_reply(self,track,params):
         origin, track_id = track
@@ -169,31 +173,47 @@ class RadioApp(QtGui.QMainWindow):
                 self.graph.data = self.graph.data.append(data)
 
     def file_status_reply(self,track,params):
-        available_scans = params['available_scans']
+        available_scans = sorted(params['available_scans'])
         if not available_scans == self.available_scans:
             self.available_scans = available_scans
             self.update_scan_list_signal.emit()
 
+    def request_data_reply(self,track,params):
+        origin, track_id = track
+        data = params['data']
+
+        print(data)
+        
+        data_x = pd.DataFrame({'time':data[0],'x':data[1]})
+        data_y = pd.DataFrame({'time':data[2],'y':data[3]})
+
+        data = pd.concat([data_x,data_y])
+        data.set_index(['time'],inplace=True)
+
+        self.graph.data = data
+
     def update_scan_list(self):
         for scan in self.available_scans:
-            scan = str(int(scan))
+            scan = int(scan)
             if not scan in self.scan_children.keys():
-                self.scan_children[scan] = QtGui.QTreeWidgetItem(['Scan '+scan])
-                if not scan == '-1':
-                    self.scan_item.insertChild(-1,self.scan_children[scan])
+                self.scan_children[scan] = QtGui.QTreeWidgetItem(['Scan '+str(scan)])
+                if not scan == -1:
+                    self.scan_item.insertChild(0,self.scan_children[scan])
 
     def data_format_reply(self,track,params):
         origin, track_id = track
-        if not str(params['current_scan']) == '-1':
-            self.scan_number = params['current_scan']
-    
         formats = params['data_format']
-        if not formats == self.graph.formats:
+
+        if not formats == {} and not formats == self.graph.formats:
             self.graph.formats = formats
             self.graph.no_of_rows = {k:0 for k in self.graph.formats.keys()}
             self.graph.setXYOptions(self.graph.formats)
 
             self.initialized = True
+
+        if 'current_scan' in params.keys(): #this is from the  data server
+            if not str(params['current_scan']) == '-1':
+                self.scan_number = params['current_scan']
 
     def closeEvent(self,event):
         self.stopIOLoop()

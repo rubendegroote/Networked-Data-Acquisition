@@ -28,6 +28,10 @@ class DataServer(Dispatcher):
 
         self.start_saving()
 
+    def stop():
+        super(DataServer.stop())
+        self.saveProcess.terminate()
+
     def default_cb(self):
         return 'data', {}
 
@@ -116,7 +120,7 @@ class DataServer(Dispatcher):
     @try_call
     def data_format(self, *args):
         return {'data_format': self.formats,
-        		'current_scan':self.current_scan}
+                'current_scan':self.current_scan}
 
     def data_reply(self,track,params):
         data = params['data']
@@ -169,32 +173,3 @@ class DataServer(Dispatcher):
             except KeyError:
                 self.scan_data[origin] = scan_data
                 self.no_of_rows_scan[origin] = 0
-
-def makeServer(PORT=5006):
-    return DataServer(PORT)
-
-def start_dataserver():
-    try:
-        d = makeServer(5005)
-        style = "QLabel { background-color: green }"
-        e = ''
-    except Exception as error:
-        e = str(error)
-        style = "QLabel { background-color: red }"
-
-    from PyQt4 import QtCore, QtGui
-    # Small visual indicator that this is running
-    app = QtGui.QApplication(sys.argv)
-    w = QtGui.QWidget()
-
-    w.setWindowTitle('Data Server')
-    layout = QtGui.QGridLayout(w)
-    label = QtGui.QLabel(e)
-    label.setStyleSheet(style)
-    layout.addWidget(label)
-    w.show()
-
-    sys.exit(app.exec_())
-
-if __name__ == '__main__':
-    start_dataserver()

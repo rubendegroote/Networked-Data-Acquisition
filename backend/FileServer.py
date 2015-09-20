@@ -18,46 +18,52 @@ class FileServer(Dispatcher):
         
     @try_call
     def request_data(self,params):
-        file_name = params['file_name']
+        scan_number = params['scan_number'][0]
         x,y = params['x'],params['y']
+
+        if x == [] and y == []:
+            return {'data':[[],[],[],[]]}
+
+        return_list = []
+        with h5py.File('C:\\Data\\Gallium Run\\server_data.h5','r') as store:
+            for name_info in [x,y]:
+                origin,par_name = name_info
+                data_set = store[origin][str(scan_number)]
+                try:
+                    format = list(data_set.attrs['format'])
+                    format = [f.decode('utf-8') for f in format]
+                    col = format.index(par_name)
+                    return_list.append(list(data_set[:,0])) #timestamp as well
+                    return_list.append(list(data_set[:,col]))
+                except Exception as e:
+                    print(e)
+                    return_list.append([])
+                    return_list.append([])
+        return {'data':return_list}
+    
+    @try_call
+    def data_format(self,params):
+        scan_number = params['scan_number'][0]
+        formats = {}
+        with h5py.File('C:\\Data\\Gallium Run\\server_data.h5','r') as store:
+            for g in store.keys():
+                group = store[g]
+                formats[g] = list(group[str(scan_number)].attrs['format'])
+                formats[g] = [f.decode('utf-8') for f in formats[g]]
+        return {'data_format':formats}
+
 
     @try_call
     def file_status(self,params):
         available_scans = []
         with open('C:\\Data\\Gallium Run\\server_scans.txt','r') as f:
             for line in f.readlines():
-            	lines = line.strip('\n')
-            	if not line == -1:
-	            	available_scans.append(str(line))
+                lines = line.strip('\n')
+                if not line == -1:
+                    available_scans.append(str(line).strip('\n'))
 
-        return {'available_scans':available_scans}
+        return {'available_scans':list(set(available_scans))}
 
 def makeFileServer(PORT=5006):
+    print('here')
     return FileServer(PORT=PORT)
-
-def start_fileserver():
-    try:
-        m = makeFileServer(5006)
-        style = "QLabel { background-color: green }"
-        e=''
-    except Exception as error:
-        e = str(error)
-        style = "QLabel { background-color: red }"
-
-    from PyQt4 import QtCore,QtGui
-    # Small visual indicator that this is running
-    app = QtGui.QApplication(sys.argv)
-    w = QtGui.QWidget()
-
-    w.setWindowTitle('FileServer')
-    layout = QtGui.QGridLayout(w)
-    label = QtGui.QLabel(e)
-    label.setStyleSheet(style)
-    layout.addWidget(label)
-    w.show()
-    
-    sys.exit(app.exec_())
-
-
-if __name__ == '__main__':
-    start_fileserver()
