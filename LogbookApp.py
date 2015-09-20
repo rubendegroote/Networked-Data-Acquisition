@@ -58,34 +58,29 @@ class LogbookApp(QtGui.QMainWindow):
         layout = QtGui.QGridLayout(widget)
         self.setCentralWidget(self.central)
 
-        self.connectionLabel = QtGui.QLabel('Connections:')
-        layout.addWidget(self.connectionLabel, 0, 0, 1, 1)
-
-        self.editLabel = QtGui.QLabel('Logbook:')
-        layout.addWidget(self.editLabel, 3, 0, 1, 1)
-
-        self.addEntryButton = QtGui.QPushButton('Add entry')
-        self.addEntryButton.clicked.connect(self.add_entry_to_log)
-        layout.addWidget(self.addEntryButton, 5, 0, 1, 2)
 
         self.searchStringLabel = QtGui.QPushButton('String search')
         self.searchStringLabel.clicked.connect(self.filterLogbookOnString)
         self.searchStringLabel.setDisabled(True)
         self.searchStringEdit = QtGui.QLineEdit('')
-        layout.addWidget(self.searchStringLabel, 6, 0)
-        layout.addWidget(self.searchStringEdit, 6, 1)
+        layout.addWidget(self.searchStringLabel, 1, 1)
+        layout.addWidget(self.searchStringEdit, 1, 0)
 
         self.searchTagLabel = QtGui.QPushButton('Tag search')
         self.searchTagLabel.clicked.connect(self.filterLogbookOnTag)
         self.searchTagLabel.setDisabled(True)
         self.searchTagEdit = QtGui.QLineEdit('')
-        layout.addWidget(self.searchTagLabel, 7, 0)
-        layout.addWidget(self.searchTagEdit, 7, 1)
+        layout.addWidget(self.searchTagEdit, 2, 0)
+        layout.addWidget(self.searchTagLabel, 2, 1)
 
         self.page_widget = QtGui.QTabWidget()
-        layout.addWidget(self.page_widget,8,0,1,2)
+        layout.addWidget(self.page_widget,3,0,1,2)
         self.pages = []
         self.new_log_page()
+
+        self.addEntryButton = QtGui.QPushButton('Add entry')
+        self.addEntryButton.clicked.connect(self.add_entry_to_log)
+        layout.addWidget(self.addEntryButton, 4, 0, 1, 2)
 
         #self.messageLog = QtGui.QPlainTextEdit()
         #self.central.addWidget(self.messageLog)
