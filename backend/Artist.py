@@ -65,9 +65,9 @@ class Artist(Dispatcher):
         self.start_saving()
 
     def stop():
-        super(Artist.stop())
         self.saveProcess.terminate()
         self.DAQProcess.terminate()
+        super(Artist.stop())
         
     @hp.try_call
     def status(self, params):

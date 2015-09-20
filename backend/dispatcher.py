@@ -25,17 +25,20 @@ class Dispatcher(asyncore.dispatcher):
         self.defaultRequest = defaultRequest
 
         self.looping = True
-        self.sleeptime = 0.03
-        t = th.Thread(target=self.start).start()
+        self.thread =  th.Thread(target=self.start)
+        self.thread.start()    
 
     def start(self):
         while self.looping:
-            print(1)
-            asyncore.loop(timeout = self.sleeptime)
-            time.sleep(self.sleeptime)
+            asyncore.loop(count=1,timeout=1)
 
     def stop(self):
+        for acc in self.acceptors:
+            acc.close()
+        for conn in self.connectors.values():
+            conn.close()
         self.looping = False
+        self.thread.join()
 
     def writeable(self):
         return False
@@ -143,4 +146,5 @@ class Dispatcher(asyncore.dispatcher):
     def handle_close(self):
         self.stop()
         super(Dispatcher, self).handle_close()
+
 

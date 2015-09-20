@@ -28,9 +28,9 @@ class DataServer(Dispatcher):
 
         self.start_saving()
 
-    def stop():
-        super(DataServer.stop())
+    def stop(self):
         self.saveProcess.terminate()
+        super(DataServer,self).stop()
 
     def default_cb(self):
         return 'data', {}

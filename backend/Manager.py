@@ -10,7 +10,6 @@ LOG_PATH = 'C:\\Logbook\\Gallium Run\\logbook'
 class Manager(Dispatcher):
     def __init__(self, PORT=5007, name='Manager'):
         super(Manager, self).__init__(PORT, name)
-        self.sleeptime = 0.1
 
         self.scanner_name = ""
         self.scan_number = -1
@@ -192,6 +191,7 @@ class Manager(Dispatcher):
         info_for_log = {'Scan Number': self.scan_number,
              'Author': 'Automatic Entry',
              'Mass':mass[0],
+             'Tags': {"Scan":True},
              'Text': lb.START.format(artist_name,scan_array[0],
                                      scan_array[-1],
                                      len(scan_array),
@@ -240,6 +240,7 @@ class Manager(Dispatcher):
         artist_to_set.add_request(('go_to_setpoint',{'parameter':parameter,
                                                      'setpoint':setpoint}))
         info_for_log =  {'Author': 'Automatic Entry',
+                 'Tags': {"Setpoint":True},
                  'Text': lb.SET.format(artist_name, parameter[0], setpoint[0])}
         self.add_to_logbook(info_for_log)
 
@@ -303,7 +304,6 @@ class Manager(Dispatcher):
             if self.scanning[origin] and not params['scanning']:
                 self.set_all_scan_numbers(-1)
         self.scanning[origin] = params['scanning']
-        print(self.scanning)
         self.progress[origin] = params['progress']
         self.on_setpoint[origin] = params['on_setpoint']
         if not params['mass'] in self.masses:

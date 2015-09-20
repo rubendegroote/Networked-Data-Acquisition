@@ -8,7 +8,7 @@ from connectiondialogs import ConnectionDialog, FieldAdditionDialog
 from logviewerwidgets import LogEntryWidget
 
 SAVE_DIR = 'C:/Data/'
-LOG_PER_PAGE = 20
+LOG_PER_PAGE = 50
 
 manager_channel = ('127.0.0.1', 5004)
 

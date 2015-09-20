@@ -3,44 +3,41 @@ import numpy
 import time
 import traceback
 
-from . import M2
-from . import Matisse
-from . import wavemeter
-from . import CRIS
-
 format_map = {}
 write_params_map = {}
 hardware_map = {}
 
 try:
+    from . import M2
     format_map['M2'] = M2.this_format
     write_params_map['M2'] = M2.write_params
     hardware_map['M2'] = M2.M2
 except ImportError:
-    print('Could not import M2\n',str(traceback.format_exc()))
+    print('Could not import M2')
     
 try:
+    from . import Matisse
     format_map['Matisse'] = Matisse.this_format
     write_params_map['Matisse'] = Matisse.write_params
     hardware_map['Matisse'] = Matisse.Matisse
 except ImportError:
-    print('Could not import Matisse\n',str(traceback.format_exc()))
+    print('Could not import Matisse')
 
 try:
+    from . import wavemeter
     format_map['wavemeter'] = wavemeter.this_format
     write_params_map['wavemeter'] = wavemeter.write_params
     hardware_map['wavemeter'] = wavemeter.Wavemeter
 except ImportError:
-    print('Could not import wavemeter\n',str(traceback.format_exc()))
+    print('Could not import wavemeter')
 
 try:
+    from . import CRIS
     format_map['CRIS'] = CRIS.this_format
     write_params_map['CRIS'] = CRIS.write_params
     hardware_map['CRIS'] = CRIS.CRIS
 except ImportError:
-    print('Could not import CRIS\n',str(traceback.format_exc()))
-
-
+    print('Could not import CRIS')
 
 ### Main acquire loop
 def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):

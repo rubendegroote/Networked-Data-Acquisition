@@ -14,7 +14,7 @@ class ArtistConnections(QtGui.QWidget):
         self.l = 0
         self.layout = QtGui.QGridLayout(self)
 
-        self.address = {'ABU': ('127.0.0.1', 6005),
+        self.address = {'ABU': ('127.0.0.1', 6006),
                         'CRIS': ('127.0.0.1', 6005),
                         'Matisse': ('PCCRIS15', 6004),
                         'Diodes': ('127.0.0.1', 6003),
