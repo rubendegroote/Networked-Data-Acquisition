@@ -9,6 +9,16 @@ def main():
         from DataViewerApp import main as ui_main
     elif  sys.argv[1] == 'log_viewer':
         from LogbookApp import main as ui_main
+    else:
+        print("Invalid option supplied to launch_ui")
+        print("Usage: python launch_ui <name>")
+        print("Possible values of <name>:")
+        print("\t controller")
+        print("\t data_viewer")
+        print("\t log_viewer")
+
+        return
+
     ui_main()
 
 if __name__ == '__main__':

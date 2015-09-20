@@ -9,14 +9,14 @@ from backend.Device import Device
 import traceback
 
 translation = {}
-translation['fileserver'] = FileServer
-translation['dataserver'] = DataServer
+translation['file_server'] = FileServer
+translation['data_server'] = DataServer
 translation['controller'] = Controller
 translation['device'] = Device
 
 ports = {}
-ports['fileserver'] = 5006
-ports['dataserver'] = 5005
+ports['file_server'] = 5006
+ports['data_server'] = 5005
 ports['controller'] = 5004
 ports['device'] = {'ABU':6006,
                    'CRIS':6005,
@@ -26,17 +26,15 @@ ports['device'] = {'ABU':6006,
                    'wavemeter':6001}
 
 class Launcher(QtGui.QWidget):
-    def __init__(self,arguments):
+    def __init__(self,name="",device_name = None,port=5000):
         super(Launcher,self).__init__()
-        name = sys.argv[1]
+
         self.setWindowTitle(name)
+
         try:
-            if not name == 'device':
-                port = ports[name]
+            if device_name is None:
                 self.program = translation[name](port)
             else:
-                device_name = sys.argv[2]
-                port = ports[name][device_name]
                 self.program = translation[name](device_name,port)
             style = "QLabel { background-color: green }"
             e=''
@@ -57,8 +55,35 @@ class Launcher(QtGui.QWidget):
 
 def main():
     freeze_support()
+    try:
+        name = sys.argv[1]
+        port = ports[name]
+        if name == 'device':
+            device_name = sys.argv[2]
+            port = ports[name][device_name]
+        else:
+            device_name = None
+
+    except KeyError as e:
+        print("Invalid option supplied to launch")
+        print("Usage: python launch <name> (<device_name>)")
+        print("Possible values of <name>:")
+        print("\t file_server")
+        print("\t data_server")
+        print("\t controller")
+        print("\t device")
+        print("In case of device, Possible values of <device_name>:")
+        print("\t M2")
+        print("\t wavemeter")
+        print("\t CRIS")
+        print("\t diodes")
+        print("\t ABU")
+        print("\t Matisse")
+
+        return
+
     app = QtGui.QApplication(sys.argv)
-    launcher = Launcher(sys.argv)
+    launcher = Launcher(name,device_name,port)
     sys.exit(app.exec_())
 
 if __name__ == '__main__':

@@ -34,8 +34,8 @@ class Device(Dispatcher):
         self.IStoppedFlag = mp.Event()
         self.IStoppedFlag.clear()
 
-        # Shared memory values: controller
-        self.mgr = mp.Controller()
+        # Shared memory values: manager
+        self.mgr = mp.Manager()
         # Shared scan number
         self.ns = self.mgr.Namespace()
         self.ns.start_of_setpoint = time.time()
@@ -64,10 +64,12 @@ class Device(Dispatcher):
         self.save_output,self.save_input = mp.Pipe(duplex=False)
         self.start_saving()
 
-    def stop():
+    def stop(self):
+        self.stopFlag.set()
+        self.readThread.join()
         self.saveProcess.terminate()
         self.DAQProcess.terminate()
-        super(Device.stop())
+        super(Device,self).stop()
         
     @hp.try_call
     def status(self, params):
@@ -197,7 +199,8 @@ class Device(Dispatcher):
                   args=args)
         self.DAQProcess.start()
 
-        self.readThread = th.Timer(0, self.read_data).start()
+        self.readThread = th.Timer(0, self.read_data)
+        self.readThread.start()
 
     def read_data(self):
         while not self.stopFlag.is_set():
