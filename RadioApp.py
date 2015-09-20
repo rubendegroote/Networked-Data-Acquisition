@@ -3,6 +3,7 @@ import threading as th
 import asyncore
 import time
 import pandas as pd
+import numpy as np
 
 from scanner import ScannerWidget
 from connect import ConnectionsWidget
@@ -156,7 +157,7 @@ class RadioApp(QtGui.QMainWindow):
         self.graph.no_of_rows = params['no_of_rows']
 
         data_x = pd.DataFrame({'time':data[0],'x':data[1]})
-        data_y = pd.DataFrame({'time':data[2],'y':data[3]})
+        data_y = pd.DataFrame({'time':np.array(data[2])+10**(-6),'y':data[3]})
 
         data = pd.concat([data_x,data_y])
         data.set_index(['time'],inplace=True)
@@ -182,10 +183,8 @@ class RadioApp(QtGui.QMainWindow):
         origin, track_id = track
         data = params['data']
 
-        print(data)
-        
         data_x = pd.DataFrame({'time':data[0],'x':data[1]})
-        data_y = pd.DataFrame({'time':data[2],'y':data[3]})
+        data_y = pd.DataFrame({'time':np.array(data[2])+10**(-6),'y':data[3]})
 
         data = pd.concat([data_x,data_y])
         data.set_index(['time'],inplace=True)

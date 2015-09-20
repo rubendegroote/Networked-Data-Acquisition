@@ -175,6 +175,9 @@ class MyGraph(QtGui.QWidget):
             
             x = data['x'].values - float(self.x_offset.text())
             y = data['y'].values - float(self.y_offset.text())
+
+            print(len(x),len(y))
+
             if histmode:
                 binsize = self.binSpinBox.value()
                 x, y, errors = self.calcHist(x, y, binsize)
