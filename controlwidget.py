@@ -112,6 +112,10 @@ class ControlWidget(QtGui.QWidget):
             self.wave_1 = QtGui.QLabel()
             layout.addWidget(self.wave_1,4,1)
 
+            layout.addWidget(QtGui.QLabel('On setpoint'), 5, 0)
+            self.setpoint_reached = QtGui.QLabel()
+            layout.addWidget(self.setpoint_reached, 5, 1)
+
         elif name == 'wavemeter':
             layout.addWidget(QtGui.QLabel('Laser wavenumber'),1,0)
             self.wave_1 = QtGui.QLabel()
@@ -163,6 +167,11 @@ class ControlWidget(QtGui.QWidget):
                 self.wave_1.setText(str("{0:.5f}".format(wavemeter_info['wavenumber_wsu_1'])))
             except KeyError:
                 pass
+
+            if M2_info['on_setpoint']:
+                self.setpoint_reached.setText('Yes')
+            else:
+                self.setpoint_reached.setText('No')
 
         elif self.name == 'wavemeter':
             wavemeter_info = info['wavemeter']
