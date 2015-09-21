@@ -56,7 +56,7 @@ class ControllerApp(QtGui.QMainWindow):
         self.scanner.scanInfoSig.connect(self.start_scan)
         self.scanner.stopScanSig.connect(self.stop_scan)
         self.scanner.setPointSig.connect(self.go_to_setpoint)
-        self.scanner.toggleConnectionsSig.connect(self.toggleConnectionsUI)
+        #self.scanner.toggleConnectionsSig.connect(self.toggleConnectionsUI)
         self.controltab.addTab(self.scanner, 'Wavelength tuning')
 
         self.connLabel = QtGui.QLabel('<font size="5"><b>Connections <\b><\font>')
@@ -73,7 +73,6 @@ class ControllerApp(QtGui.QMainWindow):
 
         self.messageLog = QtGui.QPlainTextEdit()
         self.central.addWidget(self.messageLog)
-
 
         self.disable()
 

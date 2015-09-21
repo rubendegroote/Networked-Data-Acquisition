@@ -26,7 +26,9 @@ class DataViewerApp(QtGui.QMainWindow):
         self.mode = 'stream'
         self.scan_number = -1
         self.available_scans = []
+        self.masses = []
         self.scan_children = {}
+        self.mass_children = {}
 
         self.looping = True
         t = th.Thread(target=self.startIOLoop).start()
@@ -52,9 +54,9 @@ class DataViewerApp(QtGui.QMainWindow):
         self.live_item = QtGui.QTreeWidgetItem(['live'])
         self.live_item.insertChildren(0,[QtGui.QTreeWidgetItem(['stream']),
                                         QtGui.QTreeWidgetItem(['scan'])])
-        self.scan_item = QtGui.QTreeWidgetItem(['old'])
+        self.scans_item = QtGui.QTreeWidgetItem(['old'])
         self.dataTree.setHeaderLabels(['Data'])
-        self.dataTree.insertTopLevelItems(0,[self.live_item,self.scan_item])
+        self.dataTree.insertTopLevelItems(0,[self.live_item,self.scans_item])
         self.central.addWidget(self.dataTree)
 
         self.graph = MyGraph('data_viewer')
@@ -177,9 +179,13 @@ class DataViewerApp(QtGui.QMainWindow):
                 self.graph.data = self.graph.data.append(data)
 
     def file_status_reply(self,track,params):
-        available_scans = sorted(params['available_scans'])
+        available_scans = params['available_scans']
+        masses = params['masses']
+        sorted_results = sorted(zip(available_scans,masses),key=lambda x:x[0])
+        available_scans,masses = [[x[i] for x in sorted_results] for i in range(2)]
         if not available_scans == self.available_scans:
             self.available_scans = available_scans
+            self.masses = masses
             self.update_scan_list_signal.emit()
 
     def request_data_reply(self,track,params):
@@ -195,12 +201,17 @@ class DataViewerApp(QtGui.QMainWindow):
         self.graph.data = data
 
     def update_scan_list(self):
-        for scan in self.available_scans:
+        for scan,mass in zip(self.available_scans,self.masses):
             scan = int(scan)
+            mass = int(mass)
             if not scan in self.scan_children.keys():
                 self.scan_children[scan] = QtGui.QTreeWidgetItem(['Scan '+str(scan)])
                 if not scan == -1:
-                    self.scan_item.insertChild(0,self.scan_children[scan])
+                    if not mass in self.mass_children.keys():
+                        self.mass_children[mass] = QtGui.QTreeWidgetItem(['Mass '+str(mass)])
+                        self.scans_item.insertChild(0,self.mass_children[mass])
+
+                    self.mass_children[mass].insertChild(0,self.scan_children[scan])
 
     def data_format_reply(self,track,params):
         origin, track_id = track

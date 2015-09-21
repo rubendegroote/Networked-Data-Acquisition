@@ -1,6 +1,7 @@
 import os
 import sys
 import multiprocessing as mp
+import numpy as np
 
 from backend.Helpers import *
 from backend.connectors import Connector, Acceptor
@@ -47,8 +48,8 @@ class FileServer(Dispatcher):
         formats = {}
         with h5py.File('C:\\Data\\Gallium Run\\server_data.h5','r') as store:
             for g in store.keys():
-                group = store[g]
-                formats[g] = list(group[str(scan_number)].attrs['format'])
+                data_set = store[g][str(scan_number)]
+                formats[g] = list(data_set.attrs['format'])
                 formats[g] = [f.decode('utf-8') for f in formats[g]]
         return {'data_format':formats}
 
@@ -56,13 +57,11 @@ class FileServer(Dispatcher):
     @try_call
     def file_status(self,params):
         available_scans = []
-        with open('C:\\Data\\Gallium Run\\server_scans.txt','r') as f:
-            for line in f.readlines():
-                lines = line.strip('\n')
-                if not line == -1:
-                    available_scans.append(str(line).strip('\n'))
-
-        return {'available_scans':list(set(available_scans))}
+        info = np.loadtxt('C:\\Data\\Gallium Run\\server_scans.txt',delimiter = ';')
+        available_scans = list(info.T[0])
+        masses = list(info.T[1])
+        return {'available_scans':available_scans,
+                'masses':masses}
 
 def makeFileServer(PORT=5006):
     print('here')
