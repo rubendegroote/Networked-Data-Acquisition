@@ -57,7 +57,7 @@ class Controller(Dispatcher):
     @try_call
     def change_device_refresh(self, params):
         device_name = params['device'][0]
-        time = params['time']        
+        time = params['time']
         self.change_refresh(device_name,time)
         return {}
 
@@ -72,7 +72,7 @@ class Controller(Dispatcher):
     @try_call
     def change_device_prop(self, params):
         device_name = params['device'][0]
-        prop = params['prop']        
+        prop = params['prop']
         self.change_prop(device_name,prop)
         return {}
 
@@ -87,7 +87,7 @@ class Controller(Dispatcher):
     @try_call
     def lock_device_etalon(self, params):
         device_name = params['device'][0]
-        lock = params['lock']        
+        lock = params['lock']
         self.lock_etalon(device_name,lock)
         return {}
 
@@ -102,7 +102,7 @@ class Controller(Dispatcher):
     @try_call
     def set_device_etalon(self, params):
         device_name = params['device'][0]
-        etalon_value = params['etalon_value']        
+        etalon_value = params['etalon_value']
         self.set_etalon(device_name,etalon_value)
         return {}
 
@@ -117,7 +117,7 @@ class Controller(Dispatcher):
     @try_call
     def lock_device_cavity(self, params):
         device_name = params['device'][0]
-        lock = params['lock']        
+        lock = params['lock']
         self.lock_cavity(device_name,lock)
         return {}
 
@@ -181,7 +181,7 @@ class Controller(Dispatcher):
         scan_array = params['scan_array']
         time_per_step = params['time_per_step']
         mass = params['mass']
-        
+
         self.scan_device(device_name,scan_parameter,
                          scan_array,time_per_step,mass)
 
@@ -194,19 +194,21 @@ class Controller(Dispatcher):
         scanner = self.connectors[device_name]
         self.scan_number += 1
         self.set_all_scan_numbers(self.scan_number)
+        self.set_all_masses(mass[0])
         scanner.add_request(('start_scan',{'scan_parameter':scan_parameter,
                                      'scan_array':scan_array,
                                      'time_per_step':time_per_step,
                                      'mass':mass}))
         # lgobook updating
         info_for_log = {'Scan Number': self.scan_number,
-             'Author': 'Automatic Entry',
-             'Mass':mass[0],
-             'Tags': {"Scan":True},
-             'Text': lb.START.format(device_name,scan_array[0],
-                                     scan_array[-1],
-                                     len(scan_array),
-                                     time_per_step[0])}
+                        'Author': 'Automatic Entry',
+                        'Mass': mass[0],
+                        'Tags': {"Scan": True},
+                        'Text': lb.START.format(device_name,
+                                                scan_array[0],
+                                                scan_array[-1],
+                                                len(scan_array),
+                                                time_per_step[0])}
         self.add_to_logbook(info_for_log)
         self.current_scan_log_number = len(self.logbook)-1
 
@@ -231,6 +233,17 @@ class Controller(Dispatcher):
         self.notify_connectors(([0],"Device {} received scan number setting instruction correctly.".format(origin)))
 
     @try_call
+    def set_all_masses(self, mass):
+        op, params = 'set_mass', {'mass': [mass]}
+        for instr in self.connector.values():
+            instr.add_request((op, params))
+        return {}
+
+    def set_mass_reply(self, track, params):
+        origin, track_id = track[-1]
+        self.notify_connectors(([0], "Device {} received mass setting instruction correctly.".format(origin)))
+
+    @try_call
     def stop_scan(self,params):
         self.set_all_scan_numbers(-1)
         self.connectors[self.scanner_name].add_request(('stop_scan',{}))
@@ -246,7 +259,7 @@ class Controller(Dispatcher):
         device_name = params['device'][0]
         parameter = params['parameter']
         setpoint = params['setpoint']
-        
+
         self.set_device(device_name,parameter,setpoint)
 
         return {}
@@ -263,7 +276,7 @@ class Controller(Dispatcher):
     def go_to_setpoint_reply(self,track,params):
         origin, track_id = track[-1]
         self.notify_connectors(([0],"Device {} received setpoint instruction correctly.".format(origin)))
-        
+
     @try_call
     def logbook_status(self,params):
         no_of_edits = params['no_of_log_edits'][0]

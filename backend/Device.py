@@ -70,7 +70,7 @@ class Device(Dispatcher):
         self.saveProcess.terminate()
         self.DAQProcess.terminate()
         super(Device,self).stop()
-        
+
     @hp.try_call
     def status(self, params):
         return {'format': self.format,
@@ -93,6 +93,11 @@ class Device(Dispatcher):
     @hp.try_call
     def set_scan_number(self, params):
         self.ns.scan_number = params['scan_number'][0]
+        return {}
+
+    @hp.try_call
+    def set_mass(self, params):
+        self.ns.mass = params['mass'][0]
         return {}
 
     @hp.try_call
@@ -119,14 +124,14 @@ class Device(Dispatcher):
             lock = "off"
 
         self.iQ.put(['Lock Etalon',lock])
-        
+
         return {}
 
     @hp.try_call
     def set_etalon(self,params):
         etalon_value = params['etalon_value']
         self.iQ.put(['set_etalon',etalon_value])
-        
+
         return {}
 
     @hp.try_call
@@ -137,21 +142,21 @@ class Device(Dispatcher):
         else:
             lock = "off"
         self.iQ.put(['Lock Reference Cavity',lock])
-        
+
         return {}
 
     @hp.try_call
     def set_cavity(self,params):
         cavity_value = params['cavity_value']
         self.iQ.put(['set_cavity',cavity_value])
-        
+
         return {}
 
     @hp.try_call
     def lock_wavelength(self,params):
         lock = params['lock']
         self.iQ.put(['lock_wavelength',lock])
-        
+
         return {}
 
     @hp.try_call
@@ -162,7 +167,7 @@ class Device(Dispatcher):
         else:
             lock = "off"
         self.iQ.put(['Lock ECD',lock])
-        
+
         return {}
 
     @hp.try_call
@@ -191,7 +196,7 @@ class Device(Dispatcher):
     def start_daq(self):
         self.stopFlag.clear()
 
-        args = (self.name,self.data_input, 
+        args = (self.name,self.data_input,
                 self.iQ, self.mQ,self.stopFlag,
                 self.IStoppedFlag, self.ns)
         self.DAQProcess = mp.Process(name = 'daq' + self.name,
@@ -205,12 +210,12 @@ class Device(Dispatcher):
     def read_data(self):
         while not self.stopFlag.is_set():
             self.handle_messages()
-            
+
             data_packet = hp.emptyPipe(self.data_output)
             if not data_packet == []:
                 self.data_deque.extend(data_packet)
                 self.save_input.send(data_packet)
-            
+
             time.sleep(0.01)
 
     def handle_messages(self):
