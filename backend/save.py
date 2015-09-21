@@ -13,7 +13,7 @@ def flatten(array):
 def update_scan_info(file_path,scan,mass,group):
     scan = int(scan)
     mass = int(mass)
-    if not mass == 0 and not scan in group.attrs['scans']:
+    if not scan in group.attrs['scans']:
         scans = group.attrs['scans']
         group.attrs['scans'] = np.append(scans,scan)
         with open(file_path+'_scans.txt','a') as scanfile:

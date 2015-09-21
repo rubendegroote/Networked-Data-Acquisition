@@ -42,8 +42,9 @@ class Controller(Dispatcher):
                 origin, progress, scanning = (self.scan_parser['progress']['origin'],
                                               self.scan_parser['progress']['progress'],
                                               self.scan_parser['progress']['scanning'])
-                self.progress[origin] = progress
+                self.progress[origin] = float(progress)
                 self.scanning[origin] = scanning
+                self.scanner_name = origin
             except:
                 print('No scanprogress found.')
         except:
@@ -361,12 +362,13 @@ class Controller(Dispatcher):
             self.masses.append(params['mass'])
         self.status_data[origin] = params['status_data']
 
-        self.scan_parser['scan_number'] = {'scan_number': self.scan_number}
-        self.scan_parser['progress'] = {'progress': params['progress'],
-                                        'origin': origin,
-                                        'scanning': params['scanning']}
-        with open(INI_PATH, 'w') as scanfile:
-            self.scan_parser.write(scanfile)
+        if origin == self.scanner_name:
+            self.scan_parser['scan_number'] = {'scan_number': self.scan_number}
+            self.scan_parser['progress'] = {'progress': params['progress'],
+                                            'origin': origin,
+                                            'scanning': params['scanning']}
+            with open(INI_PATH, 'w') as scanfile:
+                self.scan_parser.write(scanfile)
 
     def add_to_logbook(self,info_for_log):
         lb.addEntryFromCopy(self.logbook,info_for_log)
