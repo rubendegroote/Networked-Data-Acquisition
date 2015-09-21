@@ -39,8 +39,11 @@ class Controller(Dispatcher):
             self.scan_parser.read(INI_PATH)
             self.scan_number = int(self.scan_parser['scan_number']['scan_number'])
             try:
-                origin, progress = self.scan_parser['progress']['origin'], self.scan_parser['progress']['progress']
+                origin, progress, scanning = (self.scan_parser['progress']['origin'],
+                                              self.scan_parser['progress']['progress'],
+                                              self.scan_parser['progress']['scanning'])
                 self.progress[origin] = progress
+                self.scanning[origin] = scanning
             except:
                 print('No scanprogress found.')
         except:
@@ -346,7 +349,8 @@ class Controller(Dispatcher):
 
         self.scan_parser['scan_number'] = {'scan_number': self.scan_number}
         self.scan_parser['progress'] = {'progress': params['progress'],
-                                        'origin': origin}
+                                        'origin': origin,
+                                        'scanning': params['scanning']}
         with open(INI_PATH, 'w') as scanfile:
             self.scan_parser.write(scanfile)
 
