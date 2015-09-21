@@ -21,6 +21,7 @@ class Controller(Dispatcher):
         self.write_params = {}
         self.on_setpoint = {}
         self.masses = []
+        self.mass = 0
         self.status_data = {}
 
         # logbook
@@ -203,10 +204,10 @@ class Controller(Dispatcher):
         scan_parameter = params['scan_parameter']
         scan_array = params['scan_array']
         time_per_step = params['time_per_step']
-        mass = params['mass']
+        self.mass = params['mass'][0]
 
         self.scan_device(device_name,scan_parameter,
-                         scan_array,time_per_step,mass)
+                         scan_array,time_per_step,self.mass)
 
         return {}
 
@@ -216,16 +217,14 @@ class Controller(Dispatcher):
         self.scanner_name = device_name
         scanner = self.connectors[device_name]
         self.scan_number += 1
-        self.set_all_masses(mass[0])
-        self.set_scan_info(self.scan_number)
+        self.set_scan_info(mass,self.scan_number)
         scanner.add_request(('start_scan',{'scan_parameter':scan_parameter,
                                      'scan_array':scan_array,
-                                     'time_per_step':time_per_step,
-                                     'mass':mass}))
+                                     'time_per_step':time_per_step}))
         # lgobook updating
         info_for_log = {'Scan Number': self.scan_number,
                         'Author': 'Automatic Entry',
-                        'Mass': mass[0],
+                        'Mass': mass,
                         'Tags': {"Scan": True},
                         'Text': lb.START.format(device_name,
                                                 scan_array[0],
@@ -245,30 +244,20 @@ class Controller(Dispatcher):
         self.notify_connectors(([0],"Device {} received scanning instruction correctly.".format(origin)))
 
     @try_call
-    def set_scan_info(self, number):
-        op,params = 'set_scan_number',{'scan_number': [number]}
+    def set_scan_info(self, mass, number):
+        op,params = 'set_scan_info',{'scan_number': [number],
+                                       'mass':[mass]}
         for instr in self.connectors.values():
             instr.add_request((op,params))
         return {}
 
-    def set_scan_number_reply(self,track,params):
+    def set_scan_info_reply(self,track,params):
         origin, track_id = track[-1]
-        self.notify_connectors(([0],"Device {} received scan number setting instruction correctly.".format(origin)))
-
-    @try_call
-    def set_all_masses(self, mass):
-        op, params = 'set_mass', {'mass': [mass]}
-        for instr in self.connector.values():
-            instr.add_request((op, params))
-        return {}
-
-    def set_mass_reply(self, track, params):
-        origin, track_id = track[-1]
-        self.notify_connectors(([0], "Device {} received mass setting instruction correctly.".format(origin)))
+        self.notify_connectors(([0],"Device {} received scan info setting instruction correctly.".format(origin)))
 
     @try_call
     def stop_scan(self,params):
-        self.set_scan_info(-1)
+        self.set_scan_info(self.mass,-1)
         self.connectors[self.scanner_name].add_request(('stop_scan',{}))
 
         return {}
@@ -354,7 +343,7 @@ class Controller(Dispatcher):
         self.write_params[origin] = params['write_params']
         if origin == self.scanner_name:
             if self.scanning[origin] and not params['scanning']:
-                self.set_scan_info(-1)
+                self.set_scan_info(self.mass,-1)
         self.scanning[origin] = params['scanning']
         self.progress[origin] = params['progress']
         self.on_setpoint[origin] = params['on_setpoint']

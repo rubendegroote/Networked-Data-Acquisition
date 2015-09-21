@@ -91,12 +91,9 @@ class Device(Dispatcher):
                 'format': self.format}
 
     @hp.try_call
-    def set_scan_number(self, params):
+    def set_scan_info(self, params):
+        print(params)
         self.ns.scan_number = params['scan_number'][0]
-        return {}
-
-    @hp.try_call
-    def set_mass(self, params):
         self.ns.mass = params['mass'][0]
         return {}
 
@@ -158,7 +155,6 @@ class Device(Dispatcher):
         self.ns.scan_parameter = params['scan_parameter'][0]
         self.ns.scan_array = params['scan_array']
         self.ns.time_per_step = params['time_per_step'][0]
-        self.ns.mass = params['mass'][0]
 
         self.iQ.put(['scan',()])
 
