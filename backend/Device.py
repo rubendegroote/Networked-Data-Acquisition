@@ -41,7 +41,7 @@ class Device(Dispatcher):
         self.ns.start_of_setpoint = time.time()
         self.ns.scan_number = -1
         self.ns.mass = 0
-        self.ns.on_setpoint = False
+        self.ns.on_setpoint = True
         self.ns.scanning = False
         self.ns.current_position = 0
         self.ns.progress = 0
@@ -92,7 +92,6 @@ class Device(Dispatcher):
 
     @hp.try_call
     def set_scan_info(self, params):
-        print(params)
         self.ns.scan_number = params['scan_number'][0]
         self.ns.mass = params['mass'][0]
         return {}

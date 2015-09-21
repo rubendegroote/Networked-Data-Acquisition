@@ -12,18 +12,17 @@ write_params = ['AOV']
 
 class CRIS(Hardware):
     def __init__(self):
-        settings = dict(counterChannel="/Dev1/ctr1",  # corresponds to PFI3
+        super(CRIS,self).__init__(name = 'CRIS',
+                                  format=this_format,
+                                  write_params = write_params)
+        self.settings = dict(counterChannel="/Dev1/ctr1",  # corresponds to PFI3
                                aoChannel="/Dev1/ao0",
                                aiChannel="/Dev1/ai1,/Dev1/ai2",
                                noOfAi=2,
                                clockChannel="/Dev1/PFI1")
-        super(CRIS,self).__init__(name = 'CRIS',
-                                  format=this_format,
-                                  settings=settings,
-                                  write_params = write_params)
 
     def connect_to_device(self):
-        timeout = 10.0
+        self.timeout = 10.0
         maxRate = 10000.0  # Again, copied from old code
 
         # Create the task handles (just defines different task)
@@ -64,34 +63,35 @@ class CRIS(Hardware):
         self.lastCount = uInt32(0)
         self.countData = uInt32(0) # the counter
 
-        self.aiData = np.zeros((settings['noOfAi'],), dtype=np.float64)
+        self.no_of_ai = self.settings['noOfAi']
+        self.aiData = np.zeros((self.no_of_ai,), dtype=np.float64)
         
         # checking if everything is OK
         DAQmxReadCounterScalarU32(self.countTaskHandle,
-                    timeout,
+                    self.timeout,
                     byref(self.countData), None)
+
 
     def write_to_device(self):
         DAQmxWriteAnalogScalarF64(self.aoTaskHandle,
-                                      True, timeout,
+                                      True, self.timeout,
                                       self.ns.setpoint, None)
 
     def read_from_device(self):
-        DAQmxReadCounterScalarU32(countTaskHandle,
-                                  timeout,
-                                  byref(countData), None)
-        DAQmxReadAnalogF64(aiTaskHandle,
-                           -1, timeout,
+        DAQmxReadCounterScalarU32(self.countTaskHandle,
+                                  self.timeout,
+                                  byref(self.countData), None)
+        DAQmxReadAnalogF64(self.aiTaskHandle,
+                           -1, self.timeout,
                            DAQmx_Val_GroupByChannel, self.aiData,
-                           AIChannels,
+                           self.no_of_ai,
                            byref(ctypes.c_long()), None)
         # Modify the gathered data, to see how many counts since the last readout
         # have registered.
-        counts = countData.value - lastCount.value
-        lastCount.value = countData.value
+        counts = self.countData.value - self.lastCount.value
+        self.lastCount.value = self.countData.value
 
         data = [self.ns.setpoint,counts]
         data.extend(self.aiData)
 
         return data
-
