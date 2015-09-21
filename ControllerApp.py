@@ -336,8 +336,9 @@ class ControllerApp(QtGui.QMainWindow):
         if message[0][0] == 0:
             self.messageLog.appendPlainText(text)
         else:
-            if text not in self.errorTracker or time.time.now() - self.errorTracker[text] > 5:
-                self.errorTracker[text] = time.time.now()
+            textErr = str(track[-1][0]) + str(message[1])
+            if textErr not in self.errorTracker or time.time.now() - self.errorTracker[textErr] > 5:
+                self.errorTracker[textErr] = time.time.now()
                 error_dialog = QtGui.QErrorMessage(self)
                 error_dialog.showMessage(text)
                 error_dialog.exec_()
