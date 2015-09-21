@@ -47,6 +47,30 @@ def save(to_save,format,file_path,group_name):
                         maxshape=(None,data.shape[1]),chunks=True)
                 group[scan].attrs['format'] = format
 
+def createbackup(source, backupname):
+    with h5py.File(backupname, 'a') as backupstore:
+        with h5py.File(source, 'r') as store:
+            for group in store.keys():
+                if group not in backupstore:
+                    backupstore.create_group(group)
+                    backupstore[group].attrs['scans'] = []
+                for dataset in store[group].keys():
+                    if dataset not in backupstore[group]:
+                        data = store[group][dataset].value
+                        backupstore[group].create_dataset(dataset,
+                                                          data=data,
+                                                          shape=(data.shape[0], data.shape[1]),
+                                                          maxshape=(None, data.shape[1]),
+                                                          chunks=True)
+                        backupstore[group][scan].attrs['format'] = format
+                    else:
+                        data = store[group][dataset].shape
+                        backup_data = backupstore[group][dataset].shape
+
+                        if not np.array_equal(data, backup_data):
+                            backupstore[group][dataset].resize(data)
+                            backupstore[group][dataset][-(data[0]-backup_data[0]):] = store[group][dataset][-(data[0]-backup_data[0]):]
+
 def save_continuously(save_output,saveDir,name,format):
     format = [f.encode('utf-8') for f in format]
     file_path = saveDir + name
@@ -62,7 +86,7 @@ def save_continuously(save_output,saveDir,name,format):
 
 def save_continuously_dataserver(save_output,saveDir):
     file_path = saveDir + 'server'
-    
+
     while True:
         to_save=emptyPipe(save_output)
         if not to_save == []:
@@ -83,4 +107,3 @@ def save_continuously_dataserver(save_output,saveDir):
                      file_path,origin)
         else:
             time.sleep(0.001)
-            
