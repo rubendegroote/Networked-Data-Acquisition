@@ -70,7 +70,7 @@ class Device(Dispatcher):
         self.saveProcess.terminate()
         self.DAQProcess.terminate()
         super(Device,self).stop()
-        
+
     @hp.try_call
     def status(self, params):
         return {'format': self.format,
@@ -96,10 +96,14 @@ class Device(Dispatcher):
         return {}
 
     @hp.try_call
+    def set_mass(self, params):
+        self.ns.mass = params['mass'][0]
+        return {}
+
+    @hp.try_call
     def change_refresh_time(self,params):
         time = params['time'][0]
         self.ns.refresh_time = time
-
         return {}
 
     @hp.try_call
@@ -175,7 +179,7 @@ class Device(Dispatcher):
     def start_daq(self):
         self.stopFlag.clear()
 
-        args = (self.name,self.data_input, 
+        args = (self.name,self.data_input,
                 self.iQ, self.mQ,self.stopFlag,
                 self.IStoppedFlag, self.ns)
         self.DAQProcess = mp.Process(name = 'daq' + self.name,
@@ -189,12 +193,12 @@ class Device(Dispatcher):
     def read_data(self):
         while not self.stopFlag.is_set():
             self.handle_messages()
-            
+
             data_packet = hp.emptyPipe(self.data_output)
             if not data_packet == []:
                 self.data_deque.extend(data_packet)
                 self.save_input.send(data_packet)
-            
+
             time.sleep(0.01)
 
     def handle_messages(self):

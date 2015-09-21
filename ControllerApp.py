@@ -32,6 +32,8 @@ class ControllerApp(QtGui.QMainWindow):
         self.messageUpdateSignal.connect(self.updateMessages)
         self.lost_connection.connect(self.update_ui_connection_lost)
 
+        self.errorTracker = {}
+
         self.show()
 
     def connectToServers(self):
@@ -182,7 +184,7 @@ class ControllerApp(QtGui.QMainWindow):
     def closeEvent(self, event):
         self.stopIOLoop()
         event.accept()
-            
+
     def status_reply(self, track, params):
         origin, track_id = track[-1]
         if origin == 'Controller':
@@ -212,22 +214,22 @@ class ControllerApp(QtGui.QMainWindow):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
             {'track':track,'args':[[0],"Change refresh time instruction received"]})
-    
+
     def change_device_prop(self,info):
         device, prop = info
         self.Man_DS_Connector.instruct('Controller',('change_device_prop',
                                                   {'device':[device],'prop':[prop]}))
-    
+
     def change_device_prop_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
             {'track':track,'args':[[0],"Change proportionality instruction received"]})
-    
+
     def lock_device_etalon(self,info):
         device, lock = info
         self.Man_DS_Connector.instruct('Controller',('lock_device_etalon',
                                                   {'device':[device],'lock':lock}))
-          
+
     def lock_device_etalon_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
@@ -297,7 +299,7 @@ class ControllerApp(QtGui.QMainWindow):
     def start_scan(self, scanInfo):
         # ask for the isotope mass
         masses = [str(m) for m in self.masses]
-        mass, result = QtGui.QInputDialog.getItem(self, 'Mass Input Dialog', 
+        mass, result = QtGui.QInputDialog.getItem(self, 'Mass Input Dialog',
                 'Choose a mass or enter new mass:', masses)
         if result:
             scanInfo['mass'] = [int(mass)]
@@ -312,7 +314,7 @@ class ControllerApp(QtGui.QMainWindow):
 
     def stop_scan(self):
         self.Man_DS_Connector.instruct('Controller', ('stop_scan',{}))
-        
+
     def stop_scan_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
@@ -334,7 +336,7 @@ class ControllerApp(QtGui.QMainWindow):
     def remove_connector(self, address):
         op,params = 'remove_connector', {'address': address}
         self.Man_DS_Connector.instruct('Both',(op,params))
-        
+
     def remove_connector_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
@@ -344,17 +346,19 @@ class ControllerApp(QtGui.QMainWindow):
         track,message = info['track'],info['args']
         text = '{}: {} reports {}'.format(track[-1][1],track[-1][0],message[1])
         if message[0][0] == 0:
-            self.messageLog.appendPlainText(text)        
+            self.messageLog.appendPlainText(text)
         else:
-            error_dialog = QtGui.QErrorMessage(self)
-            error_dialog.showMessage(text)
-            error_dialog.exec_()
+            if text not in self.errorTracker or time.time.now() - self.errorTracker[text] > 5:
+                self.errorTracker[text] = time.time.now()
+                error_dialog = QtGui.QErrorMessage(self)
+                error_dialog.showMessage(text)
+                error_dialog.exec_()
 
 class Man_DS_Connector():
 
     def __init__(self,ManChan,DSChan,callback,
             onCloseCallback,default_cb):
-    
+
         try:
             self.DS = Connector(chan=DSChan,name='MGUI_to_DS',
                           callback=callback,
@@ -367,7 +371,7 @@ class Man_DS_Connector():
             self.DS_error = e
             print('Error connecting to dataserver \n'+ str(e))
             self.DS = None
-        try:    
+        try:
             self.man = Connector(chan=ManChan,name='MGui_to_M',
                           callback=callback,
                           default_callback=default_cb)

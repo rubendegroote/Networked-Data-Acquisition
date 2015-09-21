@@ -32,7 +32,7 @@ class Connector(asynchat.async_chat):
         self.buff = b''
 
         self.requestQ = mp.Queue()
-       
+
         if not onCloseCallback == None:
             self.onCloseCallback = onCloseCallback
 
@@ -92,7 +92,7 @@ class Connector(asynchat.async_chat):
 
 class Acceptor(asynchat.async_chat):
 
-    def __init__(self, sock, callback=None, 
+    def __init__(self, sock, callback=None,
             onCloseCallback=None, name=''):
         super(Acceptor, self).__init__(sock)
         self.set_terminator('END_MESSAGE'.encode('UTF-8'))
@@ -117,7 +117,7 @@ class Acceptor(asynchat.async_chat):
             ret['status_updates'] = [self.message_queue.popleft() for l in range(no_of_messages)]
             self.push(ret)
         except ValueError as e:
-            self.push({'reply': {'op': 'receive_fail', 
+            self.push({'reply': {'op': 'receive_fail',
                 'parameters': {'exception': str(e), 'status': [1],
                 'attempt': self.buff.decode('UTF-8')}}})
         except Exception as e:

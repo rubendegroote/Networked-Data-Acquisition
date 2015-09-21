@@ -64,6 +64,13 @@ class M2(Hardware):
             "lock_ecd":self.lock_ecd
         }
 
+        super(M2,self).__init__(name = 'M2',
+                                     format=this_format,
+                                     write_params = write_params,
+                                     mapping = mapping,
+                                     needs_stabilization = True,
+                                     refresh_time = 0.3)
+
         self.settings = {'host': '192.168.1.216',
                          'port':39933}
 
@@ -144,7 +151,7 @@ class M2(Hardware):
         status_data['wavelength_lock'] = self.wavelength_lock
         status_data['etalon_value'] = self.etalon_value
         status_data['cavity_value'] = self.cavity_value
-        
+
         self.ns.status_data = status_data
 
         self.wavenumber = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
