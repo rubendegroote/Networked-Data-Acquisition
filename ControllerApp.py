@@ -32,6 +32,8 @@ class ControllerApp(QtGui.QMainWindow):
         self.messageUpdateSignal.connect(self.updateMessages)
         self.lost_connection.connect(self.update_ui_connection_lost)
 
+        self.errorTracker = {}
+
         self.show()
 
     def connectToServers(self):
@@ -334,9 +336,11 @@ class ControllerApp(QtGui.QMainWindow):
         if message[0][0] == 0:
             self.messageLog.appendPlainText(text)
         else:
-            error_dialog = QtGui.QErrorMessage(self)
-            error_dialog.showMessage(text)
-            error_dialog.exec_()
+            if text not in self.errorTracker or time.time.now() - self.errorTracker[text] > 5:
+                self.errorTracker[text] = time.time.now()
+                error_dialog = QtGui.QErrorMessage(self)
+                error_dialog.showMessage(text)
+                error_dialog.exec_()
 
 class Man_DS_Connector():
 
