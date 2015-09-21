@@ -44,6 +44,11 @@ class DataServer(Dispatcher):
                                       args = args)
         self.saveProcess.start()
 
+    @try_call
+    def create_backup(self, *args):
+        self.backupFlag.set()
+        return {'status': [0]}
+
     def slice_new_data(self,name_info,no_of_rows,
                             DS_no_of_rows):
         # decide on the column and from what row onwards
@@ -104,9 +109,6 @@ class DataServer(Dispatcher):
     def change_mode(self,params):
         self.mode = params['mode']
         return {'status': [0]}
-
-    @try_call
-    def create_backup(self, *args):
 
 
     # @try_call
