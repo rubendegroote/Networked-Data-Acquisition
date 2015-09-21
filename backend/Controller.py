@@ -193,8 +193,8 @@ class Controller(Dispatcher):
         self.scanner_name = device_name
         scanner = self.connectors[device_name]
         self.scan_number += 1
-        self.set_all_scan_numbers(self.scan_number)
         self.set_all_masses(mass[0])
+        self.set_scan_info(self.scan_number)
         scanner.add_request(('start_scan',{'scan_parameter':scan_parameter,
                                      'scan_array':scan_array,
                                      'time_per_step':time_per_step,
@@ -222,7 +222,7 @@ class Controller(Dispatcher):
         self.notify_connectors(([0],"Device {} received scanning instruction correctly.".format(origin)))
 
     @try_call
-    def set_all_scan_numbers(self, number):
+    def set_scan_info(self, number):
         op,params = 'set_scan_number',{'scan_number': [number]}
         for instr in self.connectors.values():
             instr.add_request((op,params))
@@ -245,7 +245,7 @@ class Controller(Dispatcher):
 
     @try_call
     def stop_scan(self,params):
-        self.set_all_scan_numbers(-1)
+        self.set_scan_info(-1)
         self.connectors[self.scanner_name].add_request(('stop_scan',{}))
 
         return {}
@@ -331,7 +331,7 @@ class Controller(Dispatcher):
         self.write_params[origin] = params['write_params']
         if origin == self.scanner_name:
             if self.scanning[origin] and not params['scanning']:
-                self.set_all_scan_numbers(-1)
+                self.set_scan_info(-1)
         self.scanning[origin] = params['scanning']
         self.progress[origin] = params['progress']
         self.on_setpoint[origin] = params['on_setpoint']
