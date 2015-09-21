@@ -6,8 +6,8 @@ from scanner import ScannerWidget
 from connect import ConnectionsWidget
 from central import CentralDock
 
-from backend.Radio import Radio
-from backend.Manager import Manager
+from backend.DataViewer import DataViewer
+from backend.Controller import Controller
 
 
 class Application(QtGui.QMainWindow):
@@ -54,25 +54,25 @@ class Application(QtGui.QMainWindow):
             time.sleep(0.01)
 
     def addConnection(self, data):
-        if data[0] == 'Radio':
-            self.radio = Radio(IP=data[1], PORT=int(data[2]))
+        if data[0] == 'DataViewer':
+            self.DataViewer = DataViewer(IP=data[1], PORT=int(data[2]))
         elif data[0] == 'FileServer':
-            self.fileServer = FileServer(artists=[(data[1], data[2])],
+            self.fileServer = FileServer(devices=[(data[1], data[2])],
                                          save=False, remember=True)
-        elif data[0] == 'Manager':
-            self.manager = Manager(artists=[(data[1], data[2])])
+        elif data[0] == 'Controller':
+            self.controller = Controller(devices=[(data[1], data[2])])
 
     def plot(self):
         try:
             for g in self.centralDock.graphDocks:
-                g.graph.setXYOptions(list(self.radio.format))
-                g.graph.plot(self.radio.data)
-                self.radio.xy = [g.graph.xkey, g.graph.ykey]
+                g.graph.setXYOptions(list(self.DataViewer.format))
+                g.graph.plot(self.DataViewer.data)
+                self.DataViewer.xy = [g.graph.xkey, g.graph.ykey]
         except AttributeError as e:
             pass
 
     def startScan(self, scanInfo):
-        self.manager.scan(scanInfo)
+        self.controller.scan(scanInfo)
 
     def closeEvent(self, event):
         self.stopIOLoop()

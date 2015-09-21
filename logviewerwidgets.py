@@ -1,7 +1,6 @@
 from PyQt4 import QtCore, QtGui
 import os
 
-
 class CollapsibleArrow(QtGui.QPushButton):
 
     def __init__(self, parent=None, path=None):
@@ -34,7 +33,7 @@ class CollapsibleArrow(QtGui.QPushButton):
             self.isCollapsed = False
 
     def mousePressEvent(self, event):
-        self.emit(QtCore.SIGNAL('clicked()'))
+        self.emit(QtCore.pyqtSignal('clicked()'))
         return super(CollapsibleArrow, self).mousePressEvent(event)
 
 
@@ -94,7 +93,7 @@ class TitleFrame(QtGui.QFrame):
         self.initTitleLabel(text)
 
     def mouseDoubleClickEvent(self, event):
-        self.emit(QtCore.SIGNAL('doubleClicked()'))
+        self.emit(QtCore.pyqtSignal('doubleClicked()'))
         return super(TitleFrame, self).mouseDoubleClickEvent(event)
 
 
@@ -183,15 +182,14 @@ class FrameLayout(QtGui.QFrame):
         self.initContentFrame()
         self.arrow = self.titleFrame.arrow
         self.label = self.titleFrame.titleLabel
-        QtCore.QObject.connect(self.arrow, QtCore.SIGNAL('clicked()'), self.toggleCollapsed)
+        QtCore.QObject.connect(self.arrow, QtCore.pyqtSignal('clicked()'), self.toggleCollapsed)
 
 
 class LogEntryWidget(FrameLayout):
 
-    updated = QtCore.pyqtSignal(object)  # emitted when the new entry is updated
-    renew = QtCore.pyqtSignal(object)
-    fieldAdded = QtCore.pyqtSignal()
-    tagAdded = QtCore.pyqtSignal()
+    submitSig = QtCore.pyqtSignal()  # emitted when the new entry is updated
+    submitTagSig = QtCore.pyqtSignal()
+    addFieldSig = QtCore.pyqtSignal()
     dataRequest = QtCore.pyqtSignal(int)
 
     def __init__(self, text='Placeholder text', entry=None, number=0):
@@ -210,7 +208,7 @@ class LogEntryWidget(FrameLayout):
         self.tags = {}
 
         self.visibleProp = list(self.entry[-1].keys())
-        self.unEditableProp = ['time', 'scan number']
+        self.unEditableProp = ['Time', 'Scan Number', 'Mass']
 
         self.widget = QtGui.QWidget(self)
         self.grid = QtGui.QGridLayout()
@@ -218,7 +216,7 @@ class LogEntryWidget(FrameLayout):
         self.versionLabel.setStyleSheet('border: 0px;')
         self.versionSelect = QtGui.QComboBox(parent=None)
         self.versionSelect.setToolTip('Choose the entry version you want to load.')
-        options = [snap['Time'].strftime("%d-%m-%Y %H:%M:%S") for snap in self.entry]
+        options = [snap['Time'] for snap in self.entry]
         self.versionSelect.clear()
         self.versionSelect.addItems(options)
         self.versionSelect.setCurrentIndex(self.selected)
@@ -227,16 +225,22 @@ class LogEntryWidget(FrameLayout):
         self.grid.addWidget(self.versionSelect, 1, 1)
 
     def selectDifferentVersion(self):
-        # self.versionSelect.currentIndexChanged.disconnect(self.selectDifferentVersion)
         self.selected = int(self.versionSelect.currentIndex())
-        # self.updated.emit((self.entry[-1], self.number))
-        self.renew.emit((self.entry, self.number))
+        self.clearFrame()
+        self.createFrame()
 
     def createFrame(self):
         teller = 2
-
-        for pkey in self.entry[self.selected].keys():
-
+        
+        options = [snap['Time'] for snap in self.entry]
+        
+        self.versionSelect.currentIndexChanged.disconnect(self.selectDifferentVersion)
+        self.versionSelect.clear()
+        self.versionSelect.addItems(options)
+        self.versionSelect.setCurrentIndex(self.selected)
+        self.versionSelect.currentIndexChanged.connect(self.selectDifferentVersion)
+        
+        for pkey in sorted(self.entry[self.selected].keys()):
             propname = str(pkey)
             if pkey.lower() == 'text':
                 self.texts[pkey] = QtGui.QTextEdit()
@@ -246,10 +250,11 @@ class LogEntryWidget(FrameLayout):
                 for tag, value in self.entry[self.selected][pkey].items():
                     self.tags[tag] = QtGui.QCheckBox(tag)
                     self.tags[tag].setChecked(value)
+                    self.tags[tag].stateChanged.connect(self.confirmTags)
 
             elif pkey.lower() in self.unEditableProp:
                 if pkey.lower() == 'time':
-                    self.texts[pkey] = QtGui.QLabel(self.entry[self.selected][pkey].strftime("%d-%m-%Y %H:%M:%S"))
+                    self.texts[pkey] = QtGui.QLabel(self.entry[self.selected][pkey])
                 else:
                     self.texts[pkey] = QtGui.QLabel(str(self.entry[self.selected][pkey]))
                 self.texts[pkey].setStyleSheet("border: 0px;")
@@ -270,12 +275,12 @@ class LogEntryWidget(FrameLayout):
 
         self.addFieldButton = QtGui.QPushButton(text='Add field')
         self.addFieldButton.setToolTip('Click here to add a field to all logbook entries.')
-        self.addFieldButton.clicked.connect(lambda x: self.fieldAdded.emit())
+        self.addFieldButton.clicked.connect(self.addFieldSig.emit)
         self.grid.addWidget(self.addFieldButton, teller, 0)
 
         self.addTagButton = QtGui.QPushButton(text='Add tag')
         self.addTagButton.setToolTip('Click here to add a tag to all logbook entries.')
-        self.addTagButton.clicked.connect(lambda x: self.tagAdded.emit())
+        self.addTagButton.clicked.connect(self.submitTagSig.emit)
         self.grid.addWidget(self.addTagButton, teller + 1, 0)
 
         self.editButton = QtGui.QPushButton(text='Edit')
@@ -283,19 +288,20 @@ class LogEntryWidget(FrameLayout):
         self.editButton.clicked.connect(self.editEntry)
         self.grid.addWidget(self.editButton, teller, 1)
 
-        if 'Scan Number' in self.entry[-1].keys():
+        if 'Scan Number' in self.entry[-1].keys() and self.entry[-1]['Scan Number'] is not '':
             self.getDataButton = QtGui.QPushButton(text='Get Scan Data')
             self.getDataButton.setToolTip('Click here to get the data from this scan.')
             self.getDataButton.clicked.connect(lambda x: self.dataRequest.emit(self.entry[-1]['Scan Number']))
             self.grid.addWidget(self.getDataButton, teller + 1, 1)
 
         for (key, textItem) in self.texts.items():
-            textItem.setDisabled(True)
+            try:
+                textItem.setDisabled(True)
+            except RuntimeError:
+                pass # this sometimes points to a deleted widget if a field was added to the entry later
 
         self.confirmed = True
-
         self.widget.setLayout(self.grid)
-
         self.addWidget(self.widget)
 
     def clearFrame(self):
@@ -305,6 +311,16 @@ class LogEntryWidget(FrameLayout):
                 widget.deleteLater()
                 self.grid.removeWidget(widget)
                 widget.setParent(None)
+
+    def showNew(self):
+        self.titleFrame.newLabel.setVisible(True)
+        self.versionSelect.setCurrentIndex(-1)
+
+    def confirmTags(self):
+        for (key, box) in self.tags.items():
+            self.entry[-1]['Tags'][key] = box.isChecked()
+
+        self.submitSig.emit()
 
     def confirmEntry(self):
         for (key, textItem) in self.texts.items():
@@ -329,7 +345,7 @@ class LogEntryWidget(FrameLayout):
         self.editButton.clicked.disconnect(self.confirmEntry)
         self.editButton.clicked.connect(self.editEntry)
 
-        self.updated.emit((self.entry[-1], self.number))
+        self.submitSig.emit()
 
     def editEntry(self):
         for text in self.texts.values():
@@ -373,6 +389,3 @@ class LogEntryWidget(FrameLayout):
 
         self.arrow.arrowNameTrue = imagePath + 'minimizeGreen.png'
         self.arrow.arrowNameFalse = imagePath + 'maximizeGreen.png'
-
-    def showNew(self):
-        self.titleFrame.newLabel.setVisible(True)

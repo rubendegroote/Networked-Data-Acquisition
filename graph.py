@@ -3,7 +3,7 @@ from PyQt4 import QtCore,QtGui
 import pyqtgraph.dockarea as da
 import datetime
 import numpy as np
-
+import pandas as pd
 from picbutton import PicButton
 
 
@@ -19,16 +19,24 @@ class MyGraph(QtGui.QWidget):
 
     dataRequested = QtCore.pyqtSignal(str)
     scanRequested = QtCore.pyqtSignal(str)
-    memoryChanged = QtCore.pyqtSignal(int)
-    memoryClear = QtCore.pyqtSignal()
-
     def __init__(self, name):
         super(QtGui.QWidget, self).__init__()
 
+        self.reset = False
         self.options = []
         self.name = name
-        self.xkey = ''
-        self.ykey = ''
+        self.formats = {}
+        self.data = pd.DataFrame()
+        self.x_key = []
+        self.y_key = []
+
+        self.init_UI()
+        
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.plot)
+        self.timer.start(50)
+
+    def init_UI(self):
 
         self.layout = QtGui.QGridLayout(self)
 
@@ -40,6 +48,8 @@ class MyGraph(QtGui.QWidget):
         self.graph.showGrid(x=True, y=True, alpha=0.7)
 
         self.curve = pg.PlotCurveItem()
+        self.graph.addItem(self.curve)
+
 
         layout = QtGui.QGridLayout(gView)
         layout.addWidget(self.graph, 0, 0, 1, 1)
@@ -48,9 +58,9 @@ class MyGraph(QtGui.QWidget):
         layout.addLayout(self.sublayout, 1, 0)
 
         self.comboY = QtGui.QComboBox(parent=None)
+        self.comboY.setMinimumWidth(250)
         self.comboY.setToolTip('Choose the variable you want to put\
  on the Y-axis.')
-        self.comboY.currentIndexChanged.connect(self.newXY)
         self.sublayout.addWidget(self.comboY, 0, 1)
 
         label = QtGui.QLabel('vs')
@@ -58,43 +68,10 @@ class MyGraph(QtGui.QWidget):
         self.sublayout.addWidget(label, 0, 2)
 
         self.comboX = QtGui.QComboBox(parent=None)
+        self.comboX.setMinimumWidth(250)
         self.comboX.setToolTip('Choose the variable you want to put\
  on the X-axis.')
-        self.comboX.currentIndexChanged.connect(self.newXY)
         self.sublayout.addWidget(self.comboX, 0, 3)
-
- #        self.mathCheckBox = QtGui.QCheckBox('Mathy math math')
- #        self.mathCheckBox.setToolTip('Check this box if you want to do some\
- # math on the data before it is plotted.')
- #        self.mathCheckBox.stateChanged.connect(self.enableMathPanel)
- #        self.sublayout.addWidget(self.mathCheckBox, 1, 0)
-
-        self.freqUnitSelector = QtGui.QComboBox(parent=None)
-        self.freqUnitSelector.setToolTip('Choose the units you want to\
- display the frequency in.')
-        self.freqUnitSelector.addItems(['Frequency', 'Wavelength', 'Wavenumber'])
-        # self.freqUnitSelector.currentIndexChanged.connect(self.updatePlot)
-        self.sublayout.addWidget(self.freqUnitSelector, 0, 5)
-
-        self.meanStyles = ['Give Stream', 'Give Scan']
-        self.meanBox = QtGui.QComboBox(self)
-        self.meanBox.setToolTip('Choose how you want to combine data\
- from all of the scans in the captures this graph plots.')
-        self.meanBox.addItems(self.meanStyles)
-        self.meanBox.setCurrentIndex(0)
-        self.meanBox.setMaximumWidth(110)
-        self.meanBox.currentIndexChanged.connect(lambda: self.dataRequested.emit(str(self.meanBox.currentText())))
-        self.dataRequested.emit(str(self.meanBox.currentText()))
-        self.sublayout.addWidget(self.meanBox, 2, 1)
-
-        self.scanStyles = ['Current Scan', 'Previous Scan']
-        self.scanBox = QtGui.QComboBox(self)
-        self.scanBox.addItems(self.scanStyles)
-        self.scanBox.setCurrentIndex(0)
-        self.scanBox.setMaximumWidth(110)
-        self.scanBox.currentIndexChanged.connect(lambda: self.scanRequested.emit(str(self.scanBox.currentText())))
-        self.dataRequested.emit(str(self.scanBox.currentText()))
-        self.sublayout.addWidget(self.scanBox, 2, 2)
 
         self.graphStyles = ['Step (histogram)', 'Line']#, 'Point']
 
@@ -105,7 +82,7 @@ class MyGraph(QtGui.QWidget):
         self.graphBox.setCurrentIndex(0)
         self.graphBox.setMaximumWidth(110)
         # self.graphBox.currentIndexChanged.connect(self.updatePlot)
-        self.sublayout.addWidget(self.graphBox, 2, 3)
+        self.sublayout.addWidget(self.graphBox, 0, 5)
 
         self.binLabel = QtGui.QLabel(self, text="Bin size: ")
         self.binSpinBox = pg.SpinBox(value=1000,
@@ -119,43 +96,16 @@ class MyGraph(QtGui.QWidget):
         self.sublayout.addWidget(self.binLabel, 2, 4)
         self.sublayout.addWidget(self.binSpinBox, 2, 5)
 
-        self.memoryLabel = QtGui.QLabel(self, text="Memory size: ")
-        self.memorySpinBox = pg.SpinBox(value=5000,
-                                        bounds=(0, 60000),
-                                        int=True)
-        self.memorySpinBox.setToolTip('Choose the memory size on the dataserver.')
-        self.memorySpinBox.setMaximumWidth(110)
-        self.memorySpinBox.sigValueChanged.connect(lambda : self.memoryChanged.emit(self.memorySpinBox.value()))
+        self.sublayout.addWidget(QtGui.QLabel("y offset"),2,0)
+        self.y_offset = QtGui.QLineEdit("0")
+        self.sublayout.addWidget(self.y_offset, 2, 1)
 
-        self.sublayout.addWidget(self.memoryLabel, 2, 6)
-        self.sublayout.addWidget(self.memorySpinBox, 2, 7)
-
-        self.clearMemory = QtGui.QPushButton('Clear memory')
-        self.clearMemory.clicked.connect(lambda : self.memoryClear.emit())
-
-        self.sublayout.addWidget(self.clearMemory, 2, 8)
-
-        self.saveButton = PicButton('save', checkable=False, size=25)
-        self.saveButton.setToolTip('Save the current graph to file.')
-        # self.saveButton.clicked.connect(self.saveSpectrum)
-        self.sublayout.addWidget(self.saveButton, 0, 7, 1, 1)
-
-        self.settingsButton = PicButton('settings', checkable=True, size=25)
-        self.settingsButton.setToolTip('Display the advanced plotting options.')
-        # self.settingsButton.clicked.connect(self.showSettings)
-        self.sublayout.addWidget(self.settingsButton, 0, 8, 1, 1)
-
+        self.sublayout.addWidget(QtGui.QLabel("x offset"),2,2)
+        self.x_offset = QtGui.QLineEdit("0")
+        self.sublayout.addWidget(self.x_offset, 2, 3)
 
         self.sublayout.setColumnStretch(6, 1)
-
-        # self.settingsWidget = GraphSettingsWidget()
-        # self.settingsWidget.updatePlot.connect(self.updatePlot)
-        # self.meanBox.currentIndexChanged.connect(self.settingsWidget.onStyleChanged)
-            #line above is MEGAHACK to have updating results table in analysiswidget
-        # self.settingsWidget.setVisible(False)
-
         self.layout.addWidget(gView, 0, 0)
-        # self.layout.addWidget(self.settingsWidget,0,1)
 
     def calcHist(self, x, y, binsize):
 
@@ -179,69 +129,59 @@ class MyGraph(QtGui.QWidget):
 
         return edges, bin_means, errors
 
-    def plot(self, data):
-
-        try:
-            self.graph.clear()
-            columns = data.columns.values
-            histmode = str(self.graphBox.currentText()) == 'Step (histogram)'
-            if len(columns) == 2:
-                data.sort_index(inplace=True)
-                data[columns[0]].fillna(method='bfill', inplace=True)
-                data.dropna(inplace=True)
-                x = data[columns[0]].values
-                y = data[columns[1]].values
-                if histmode:
-                    binsize = self.binSpinBox.value()
-                    x, y, errors = self.calcHist(x, y, binsize)
-
-                self.curve.setData(x, y,
-                                   pen='r',
-                                   # fillLevel=0,
-                                   stepMode=histmode,
-                                   brush='g')
-            elif len(columns) == 1:
-                data.dropna(inplace=True)
-                time = np.array([t.item() / 10**9 for t in (data.index.values - np.datetime64('1970-01-01T00:00Z'))])
-                data = data[columns[0]].values
-                if histmode:
-                    binsize = self.binSpinBox.value()
-                    time, data, errors = self.calcHist(time, data, binsize)
-                time = time - np.min(time)
-
-
-                self.curve = pg.PlotCurveItem(time, data,
-                                              pen='r',
-                                              # fillLevel=0,
-                                              stepMode=histmode,
-                                              brush='g')
-            self.graph.addItem(self.curve)
-        except Exception as e:
-            print(e)
-
     def setXYOptions(self, options):
-        options.append('time')
-        if not options == self.options:
-            self.options = options
-            curX = int(self.comboX.currentIndex())
-            curY = int(self.comboY.currentIndex())
-            self.comboX.clear()
-            self.comboX.addItems(options)
+        self.options = ['device: parameter']
+        self.options.extend([key+': '+v for key,val in options.items() for v in val])
 
-            self.comboY.clear()
-            self.comboY.addItems(options)
+        self.comboX.addItems(self.options)
+        self.comboY.addItems(self.options)
 
-            self.comboX.setCurrentIndex(curX)
-            self.comboY.setCurrentIndex(curY)
-
-        else:
-            pass
+        self.comboX.currentIndexChanged.connect(self.newXY)
+        self.comboY.currentIndexChanged.connect(self.newXY)
 
     def newXY(self):
-        self.xkey = str(self.comboX.currentText())
-        self.ykey = str(self.comboY.currentText())
+        new_xkey = str(self.comboX.currentText()).split(': ')
+        new_ykey = str(self.comboY.currentText()).split(': ')
 
-    def updatePlot(self):
-        self.clearPlot()
-        self.setXY()
-        self.plot()
+        if not 'device' in new_xkey and not 'device' in new_ykey:
+            self.reset = True
+            self.x_key = new_xkey
+            self.y_key = new_ykey
+        else:
+            self.x_key = []
+            self.y_key = []
+
+    def reset_data(self):
+        self.no_of_rows = {k:0 for k in self.formats.keys()}
+        
+        self.data = pd.DataFrame({'time':[],
+                                  'x':[],
+                                  'y':[]})
+        self.data.set_index(['time'],inplace=True)
+                                
+        self.reset = False
+
+    def plot(self):
+        histmode = str(self.graphBox.currentText()) == 'Step (histogram)'
+
+        if len(self.data)>0:
+            data = self.data.sort_index()
+            data['x'].fillna(method='ffill', inplace=True)
+            data.dropna(inplace=True)
+            if 'timestamp' in self.x_key:
+                data['x'] = data['x'] - data['x'].values[0]
+            elif 'timestamp' in self.y_key:
+                data['y'] = data['y'] - data['y'].values[0]
+            
+            x = data['x'].values - float(self.x_offset.text())
+            y = data['y'].values - float(self.y_offset.text())
+
+            if histmode:
+                binsize = self.binSpinBox.value()
+                x, y, errors = self.calcHist(x, y, binsize)
+
+            self.curve.setData(x, y,
+                               pen='r',
+                               # fillLevel=0,
+                               stepMode=histmode,
+                               brush='g')

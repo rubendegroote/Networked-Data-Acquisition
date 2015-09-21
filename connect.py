@@ -2,8 +2,8 @@ from PyQt4 import QtCore, QtGui
 
 
 class ConnectionsWidget(QtGui.QWidget):
-    newConn = QtCore.Signal(tuple)
-    newArtist = QtCore.Signal(tuple)
+    newConn = QtCore.pyqtSignal(tuple)
+    newDevice = QtCore.pyqtSignal(tuple)
 
     def __init__(self):
         super(ConnectionsWidget, self).__init__()
@@ -13,31 +13,21 @@ class ConnectionsWidget(QtGui.QWidget):
         self.addConButton.clicked.connect(self.addConn)
         self.layout.addWidget(self.addConButton)
 
-        self.artistsLabel = QtGui.QLabel()
-        self.artistText = ""
-        self.layout.addWidget(self.artistsLabel)
+        self.devicesLabel = QtGui.QLabel()
+        self.deviceText = ""
+        self.layout.addWidget(self.devicesLabel)
 
     def addConn(self):
         respons = ConnectionDialog.getInfo(self)
         if respons[1]:
             self.newConn.emit(respons[0])
 
-        # self.addConButton.setText('Add Artist')
-        # self.addConButton.clicked.disconnect(self.addConn)
-        # self.addConButton.clicked.connect(self.addArtist)
-
-    def addArtist(self):
-        respons = ConnectionDialog.getInfo(self)
-        if respons[1]:
-            self.newArtist.emit(respons[0])
-
-
 class ConnectionDialog(QtGui.QDialog):
 
     def __init__(self, parent=None):
         super(ConnectionDialog, self).__init__(parent)
-        self.channel = 'KSF402'
-        self.port = 5004
+        self.channel = '127.0.0.1'
+        self.port = 5005
 
         layout = QtGui.QGridLayout(self)
 
