@@ -12,15 +12,13 @@ this_format = format +  ('AIChannel1','AIChannel2','AIChannel3')
 
 class diodes(Hardware):
     def __init__(self):
+        super(diodes,self).__init__(name = 'diodes',
+                                  format=this_format)
         settings = dict(aiChannel="/Dev1/ai1,/Dev1/ai2,/Dev1/ai3",
                                noOfAi=3)
 
-        super(diodes,self).__init__(name = 'diodes',
-                                  format=this_format,
-                                  settings=settings)
-
     def connect_to_device(self):
-        timeout = 10.0
+        self.timeout = 10.0
         maxRate = 10000.0  # Again, copied from old code
 
         # Create the task handle (just defines different task)
@@ -37,20 +35,17 @@ class diodes(Hardware):
         # Start the tasks
         DAQmxStartTask(self.aiTaskHandle)
 
-        aiData = np.zeros((settings['noOfAi'],), dtype=np.float64)
+        self.no_of_ai = self.settings['noOfAi']
+        self.aiData = np.zeros((self.no_of_ai,), dtype=np.float64)
 
-        # checking if everything is OK
-        DAQmxReadCounterScalarU32(self.countTaskHandle,
-                    timeout,
-                    byref(self.countData), None)
 
     def read_from_device(self):
-        DAQmxReadAnalogF64(aiTaskHandle,
-                           -1, timeout,
-                           DAQmx_Val_GroupByChannel, aiData,
-                           AIChannels,
+        DAQmxReadAnalogF64(self.aiTaskHandle,
+                           -1, self.timeout,
+                           DAQmx_Val_GroupByChannel, self.aiData,
+                           self.no_of_ai,
                            byref(ctypes.c_long()), None)
-        data = aiData
+        data = self.aiData
         
         return data
 
