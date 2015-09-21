@@ -1,7 +1,7 @@
 from PyQt4 import QtCore, QtGui
 
 class ControlWidgets(QtCore.QObject):
-    device_missing = QtCore.Signal(str)
+    device_missing = QtCore.pyqtSignal(str)
     def __init__(self):
         super(ControlWidgets,self).__init__()
         self.controls = {}
@@ -14,15 +14,16 @@ class ControlWidgets(QtCore.QObject):
                 self.device_missing.emit(key)
 
 class ControlWidget(QtGui.QWidget):
-    prop_changed_sig = QtCore.Signal(tuple)
-    refresh_changed_sig = QtCore.Signal(tuple)
-    lock_etalon_sig = QtCore.Signal(tuple)
-    etalon_value_sig = QtCore.Signal(tuple)
-    lock_cavity_sig = QtCore.Signal(tuple)
-    cavity_value_sig = QtCore.Signal(tuple)
-    lock_wavelength_sig = QtCore.Signal(tuple)
-    lock_ecd_sig = QtCore.Signal(tuple)
-    wavenumber_sig = QtCore.Signal(dict)
+    prop_changed_sig = QtCore.pyqtSignal(tuple)
+    refresh_changed_sig = QtCore.pyqtSignal(tuple)
+    lock_etalon_sig = QtCore.pyqtSignal(tuple)
+    etalon_value_sig = QtCore.pyqtSignal(tuple)
+    lock_cavity_sig = QtCore.pyqtSignal(tuple)
+    cavity_value_sig = QtCore.pyqtSignal(tuple)
+    lock_wavelength_sig = QtCore.pyqtSignal(tuple)
+    lock_ecd_sig = QtCore.pyqtSignal(tuple)
+    wavenumber_sig = QtCore.pyqtSignal(dict)
+    calibrate_sig = QtCore.pyqtSignal()
     def __init__(self, name):
         super(ControlWidget, self).__init__()
         self.name = name
@@ -119,6 +120,10 @@ class ControlWidget(QtGui.QWidget):
             layout.addWidget(QtGui.QLabel('HeNe wavenumber'),2,0)
             self.wave_2 = QtGui.QLabel()
             layout.addWidget(self.wave_2,2,1)
+
+            self.cal_button = QtGui.QPushButton('calibrate')
+            self.cal_button.clicked.connect(self.calibrate_sig.emit)
+            layout.addWidget(self.cal_button,3,0)
 
     def update(self,info):
         if self.name == 'M2':

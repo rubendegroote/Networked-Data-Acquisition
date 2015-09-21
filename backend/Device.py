@@ -49,7 +49,7 @@ class Device(Dispatcher):
         self.ns.scan_parameter = ''
         self.ns.setpoint = 11997.442
         self.ns.refresh_time = 1
-        self.ns.status_data = []
+        self.ns.status_data = {}
 
         self.format = format_map[name]
         self.ns.format = self.format
@@ -105,64 +105,48 @@ class Device(Dispatcher):
     @hp.try_call
     def change_prop(self,params):
         prop = params['prop'][0]
-
         self.iQ.put(['change_prop',prop])
-
         return {}
 
     @hp.try_call
     def lock_etalon(self,params):
         lock = params['lock']
-        if lock:
-            lock = "on"
-        else:
-            lock = "off"
-
-        self.iQ.put(['Lock Etalon',lock])
-        
+        self.iQ.put(['lock_etalon',lock])
         return {}
 
     @hp.try_call
     def set_etalon(self,params):
         etalon_value = params['etalon_value']
         self.iQ.put(['set_etalon',etalon_value])
-        
         return {}
 
     @hp.try_call
     def lock_cavity(self,params):
         lock = params['lock']
-        if lock:
-            lock = "on"
-        else:
-            lock = "off"
-        self.iQ.put(['Lock Reference Cavity',lock])
-        
+        self.iQ.put(['lock_cavity',lock])
         return {}
 
     @hp.try_call
     def set_cavity(self,params):
         cavity_value = params['cavity_value']
         self.iQ.put(['set_cavity',cavity_value])
-        
         return {}
 
     @hp.try_call
     def lock_wavelength(self,params):
         lock = params['lock']
         self.iQ.put(['lock_wavelength',lock])
-        
         return {}
 
     @hp.try_call
     def lock_ecd(self,params):
         lock = params['lock']
-        if lock:
-            lock = "on"
-        else:
-            lock = "off"
-        self.iQ.put(['Lock ECD',lock])
-        
+        self.iQ.put(['lock_ecd',lock])
+        return {}
+
+    @hp.try_call
+    def calibrate(self,params):
+        self.iQ.put(['calibrate',[]])
         return {}
 
     @hp.try_call

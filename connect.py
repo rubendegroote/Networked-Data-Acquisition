@@ -2,8 +2,8 @@ from PyQt4 import QtCore, QtGui
 
 
 class ConnectionsWidget(QtGui.QWidget):
-    newConn = QtCore.Signal(tuple)
-    newDevice = QtCore.Signal(tuple)
+    newConn = QtCore.pyqtSignal(tuple)
+    newDevice = QtCore.pyqtSignal(tuple)
 
     def __init__(self):
         super(ConnectionsWidget, self).__init__()

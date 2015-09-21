@@ -69,31 +69,12 @@ class Hardware():
             else:
                 return ([1],'{} cannot be set.'.format(self.ns.parameter))
 
-        elif name == 'lock_wavelength':
-            self.wavelength_lock = args
-
-        elif name == 'set_etalon':
-            self.etalon_value = args
-            message = self.mapping['Tune Etalon'](args)
-            self.socket.sendall(message)
-            response = json.loads(self.socket.recv(1024).decode('utf-8'))
-            return ([0],'Executed {} instruction.'.format(name))
-
-        elif name == 'set_cavity':
-            self.cavity_value = args
-            message = self.mapping['Tune Cavity'](args)
-            self.socket.sendall(message)
-            response = json.loads(self.socket.recv(1024).decode('utf-8'))
-            return ([0],'Executed {} instruction.'.format(name))
-
         elif name == 'change_prop':
             self.prop = args
             return ([0],'Executed {} instruction.'.format(name))
 
         elif name in self.mapping.keys():
-            message = self.mapping[name](args)
-            self.socket.sendall(message)
-            response = json.loads(self.socket.recv(1024).decode('utf-8'))
+            response = self.mapping[name](args)
             return ([0],'Executed {} instruction.'.format(name))
         
         else:

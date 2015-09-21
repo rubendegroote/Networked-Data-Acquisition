@@ -4,18 +4,22 @@ import traceback
 from .hardware import format,Hardware
 
 this_format = format + ('wavenumber_wsu_1','wavenumber_wsu_2',
-	                    'expos_12','expos_21','expos_21','expos_22')
+                        'expos_12','expos_21','expos_21','expos_22')
 
 write_params = []
 
 class Wavemeter(Hardware):
     def __init__(self):
-    	super(Wavemeter,self).__init__(name = 'Wavemeter',
+
+        super(Wavemeter,self).__init__(name = 'Wavemeter',
                              format=this_format,
                              write_params = write_params,
                              needs_stabilization = False)
 
-
+        self.mapping = {
+                        "calibrate": self.calibrate
+                       }
+                       
     def connect_to_device(self):
         try:
             # Load the .dll file
@@ -27,8 +31,15 @@ class Wavemeter(Hardware):
 
             self.wlmdata.GetExposureNum.argtypes = [ctypes.c_long, ctypes.c_long, ctypes.c_long]
             self.wlmdata.GetExposureNum.restype  = ctypes.c_long
+            self.wlmdata.Calibration.argtypes = [ctypes.c_long, ctypes.c_long,
+                                    ctypes.c_double, ctypes.c_long]
+            self.wlmdata.Calibration.restype  = ctypes.c_long
+            
+            self.wlmdata.Operation.argtypes = [ctypes.c_int]
+            self.wlmdata.Operation.restype  = ctypes.c_long
+
         except:
-        	raise Exception('Failed to connect to wavemeter\n',traceback.format_exc())
+            raise Exception('Failed to connect to wavemeter\n',traceback.format_exc())
 
     def read_from_device(self):
         wavenumber_wsu_1 = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
@@ -45,4 +56,10 @@ class Wavemeter(Hardware):
                                'wavenumber_wsu_2':wavenumber_wsu_2}
 
         return data
+
+    def calibrate(self,args):
+        self.wlmdata.Operation(0) # stop
+        self.wlmdata.Calibration(0,3,15798.0117779,2) #calibrate
+        self.wlmdata.Operation(2) #start
+
 

@@ -4,9 +4,9 @@ from connectiondialogs import ConnectionDialog
 
 
 class DeviceConnections(QtGui.QWidget):
-    connectSig = QtCore.Signal(tuple)
-    removeSig = QtCore.Signal(tuple)
-    removeAllSig = QtCore.Signal(bool)
+    connectSig = QtCore.pyqtSignal(tuple)
+    removeSig = QtCore.pyqtSignal(tuple)
+    removeAllSig = QtCore.pyqtSignal(bool)
 
     def __init__(self, parent=None):
         super(DeviceConnections, self).__init__(parent)
@@ -108,8 +108,8 @@ class DeviceConnections(QtGui.QWidget):
                 pass
 
 class DeviceWidget(QtGui.QWidget):
-    removeSig = QtCore.Signal(object)
-    reconnectSig = QtCore.Signal(object)
+    removeSig = QtCore.pyqtSignal(object)
+    reconnectSig = QtCore.pyqtSignal(object)
 
     def __init__(self, parent=None, name='', IP='KSF402', PORT='5004'):
         super(DeviceWidget, self).__init__(parent)

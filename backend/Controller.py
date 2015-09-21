@@ -175,6 +175,20 @@ class Controller(Dispatcher):
         self.notify_connectors(([0],"Device {} received lock doubler instruction correctly.".format(origin)))
 
     @try_call
+    def calibrate_wavemeter(self, params):
+        device_name = params['device'][0]
+        self.calibrate(device_name)
+        return {}
+
+    def calibrate(self,device_name):
+        device = self.connectors[device_name]
+        device.add_request(('calibrate',{}))
+
+    def calibrate_reply(self,track,params):
+        origin, track_id = track[-1]
+        self.notify_connectors(([0],"Device {} received calibrate instruction correctly.".format(origin)))
+
+    @try_call
     def start_scan(self, params):
         device_name = params['device'][0]
         scan_parameter = params['scan_parameter']

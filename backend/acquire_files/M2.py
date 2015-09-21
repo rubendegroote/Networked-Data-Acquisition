@@ -16,7 +16,12 @@ write_params = ['wavenumber']
 
 class M2(Hardware):
     def __init__(self):
-        mapping = {
+        super(M2,self).__init__(name = 'M2',
+                                     format=this_format,
+                                     write_params = write_params,
+                                     needs_stabilization = True,
+                                     refresh_time = 0.3)
+        self.mapping = {
             "Set Wavelength": comm.set_wave_m,
             "Poll Wavelength": comm.poll_wave_m,
             "Lock Wavelength": comm.lock_wave_m,
@@ -50,16 +55,15 @@ class M2(Hardware):
             "Start Fast Scan": comm.fast_scan_start,
             "Poll Fast Scan": comm.fast_scan_poll,
             "Stop Fast Scan": comm.fast_scan_stop,
-            "Stop Fast Scan Without Return": comm.fast_scan_stop_nr
+            "Stop Fast Scan Without Return": comm.fast_scan_stop_nr,
+            "set_etalon": self.set_etalon,
+            "lock_wavelength": self.lock_wavelength,
+            "set_cavity": self.set_cavity,
+            "lock_etalon":self.lock_etalon,
+            "lock_cavity":self.lock_cavity,
+            "lock_ecd":self.lock_ecd
         }
 
-        super(M2,self).__init__(name = 'M2',
-                                     format=this_format,
-                                     write_params = write_params,
-                                     mapping = mapping,
-                                     needs_stabilization = True,
-                                     refresh_time = 0.3)
-        
         self.settings = {'host': '192.168.1.216',
                          'port':39933}
 
@@ -148,6 +152,56 @@ class M2(Hardware):
         data = [convert_data(self.ns.status_data[m]) for m in M2_format]
 
         return data
+
+    def lock_wavelength(self,lock):
+        self.wavelength_lock = lock
+
+    def lock_etalon(self,lock):
+        if lock:
+            lock = "on"
+        else:
+            lock = "off"
+        
+        message = self.mapping['Lock Etalon'](lock)
+        self.send_message(message)
+        return ([0],'Executed lock etalon instruction.')
+
+    def lock_cavity(self,lock):
+        if lock:
+            lock = "on"
+        else:
+            lock = "off"
+        
+        message = self.mapping['Lock Reference Cavity'](lock)
+        self.send_message(message)
+        return ([0],'Executed lock cavity instruction.')
+
+    def lock_ecd(self,lock):
+        if lock:
+            lock = "on"
+        else:
+            lock = "off"
+        
+        message = self.mapping['Lock ECD'](lock)
+        self.send_message(message)
+        return ([0],'Executed lock ecd instruction.')
+
+    def set_etalon(self,value):
+        self.etalon_value = value
+        message = self.mapping['Tune Etalon'](value)
+        self.send_message(message)
+        return ([0],'Executed set etalon instruction.')
+
+    def set_cavity(self,value):
+        self.cavity_value = value
+        message = self.mapping['Tune Cavity'](value)
+        self.send_message(message)
+        return ([0],'Executed set cavity instruction.')
+
+    def send_message(self,message):
+        self.socket.sendall(message)
+        return json.loads(self.socket.recv(1024).decode('utf-8'))
+
 
 def convert_data(d):
     # messy as fuck.

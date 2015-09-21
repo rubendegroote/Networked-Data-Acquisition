@@ -174,6 +174,8 @@ class ControllerApp(QtGui.QMainWindow):
             control_widget.lock_wavelength_sig.connect(self.lock_device_wavelength)
             control_widget.lock_ecd_sig.connect(self.lock_device_ecd)
             control_widget.wavenumber_sig.connect(self.go_to_setpoint)
+        elif name == 'wavemeter':
+        	control_widget.calibrate_sig.connect(self.calibrate_wavemeter)
 
         self.controltab.addTab(control_widget,name)
 
@@ -281,6 +283,16 @@ class ControllerApp(QtGui.QMainWindow):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
             {'track':track,'args':[[0],"lock device doubler instruction received"]})
+
+    def calibrate_wavemeter(self):
+        print('here')
+        self.Man_DS_Connector.instruct('Controller',('calibrate_wavemeter',
+                                                    {'device':['wavemeter']}))    	
+
+    def calibrate_wavemeter_reply(self,track,params):
+        origin,track_id = track[-1]
+        self.messageUpdateSignal.emit(
+            {'track':track,'args':[[0],"calibrate wavemeter instruction received"]})
 
     def start_scan(self, scanInfo):
         # ask for the isotope mass

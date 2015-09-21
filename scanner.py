@@ -5,10 +5,10 @@ import numpy as np
 
 class ScannerWidget(QtGui.QWidget):
 
-    scanInfoSig = QtCore.Signal(dict)
-    setPointSig = QtCore.Signal(dict)
-    stopScanSig = QtCore.Signal(bool)
-    toggleConnectionsSig = QtCore.Signal(bool)
+    scanInfoSig = QtCore.pyqtSignal(dict)
+    setPointSig = QtCore.pyqtSignal(dict)
+    stopScanSig = QtCore.pyqtSignal(bool)
+    toggleConnectionsSig = QtCore.pyqtSignal(bool)
 
     def __init__(self):
         super(ScannerWidget, self).__init__()
