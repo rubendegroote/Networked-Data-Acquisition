@@ -23,7 +23,8 @@ ports['device'] = {'ABU':6006,
                    'Matisse':6004,
                    'diodes':6003,
                    'M2':6002,
-                   'wavemeter':6001}
+                   'wavemeter_pdl':6001,
+                   'wavemeter':6000}
 
 class Launcher(QtGui.QWidget):
     def __init__(self,name="",device_name = None,port=5000):

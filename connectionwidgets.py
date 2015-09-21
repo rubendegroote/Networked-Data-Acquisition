@@ -14,12 +14,13 @@ class DeviceConnections(QtGui.QWidget):
         self.l = 0
         self.layout = QtGui.QGridLayout(self)
 
-        self.address = {'ABU': ('127.0.0.1', 6006),
-                        'CRIS': ('127.0.0.1', 6005),
+        self.address = {'ABU': ('PCCRIS1', 6006),
+                        'CRIS': ('PCCRIS1', 6005),
                         'Matisse': ('PCCRIS15', 6004),
-                        'Diodes': ('127.0.0.1', 6003),
+                        'Diodes': ('PCCRIS15', 6003),
                         'M2': ('128.141.98.136', 6002),
-                        'wavemeter': ('128.141.98.136', 6001)}
+                        'wavemeter_pdl': ('ktf-pc', 6001),
+                        'wavemeter': ('128.141.98.136', 6000)}
         self.deviceSelection = QtGui.QComboBox()
         self.deviceSelection.addItems(sorted(list(self.address.keys())))
         self.deviceSelection.setCurrentIndex(0)
