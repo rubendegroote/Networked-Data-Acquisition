@@ -18,11 +18,14 @@ class DataServer(Dispatcher):
         self.current_scan = -1
 
         self.formats = {}
-        
+
         self.no_of_rows = {}
         self.no_of_rows_scan = {}
 
         self.buffer_size = 50000
+
+        self.backupFlag = mp.Event()
+        self.backupFlag.clear()
 
         self.save_output,self.save_input = mp.Pipe(duplex=False)
 
@@ -36,7 +39,7 @@ class DataServer(Dispatcher):
         return 'data', {}
 
     def start_saving(self):
-        args = (self.save_output,SAVE_DIR)
+        args = (self.save_output,SAVE_DIR, self.backupFlag)
         self.saveProcess = mp.Process(target = save_continuously_dataserver,
                                       args = args)
         self.saveProcess.start()
@@ -57,7 +60,7 @@ class DataServer(Dispatcher):
         except KeyError:
             # no scans yet
             return [[],[]]
-            
+
             row = min(row,self.buffer_size)
 
         return_list = []
@@ -71,7 +74,7 @@ class DataServer(Dispatcher):
 
         return return_list
 
-    @try_call    
+    @try_call
     def get_data(self,params):
         x,y = params['x'],params['y']
 
@@ -101,6 +104,10 @@ class DataServer(Dispatcher):
     def change_mode(self,params):
         self.mode = params['mode']
         return {'status': [0]}
+
+    @try_call
+    def create_backup(self, *args):
+
 
     # @try_call
     # def clear_memory(self, *args):
