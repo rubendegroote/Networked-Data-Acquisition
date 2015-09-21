@@ -24,6 +24,8 @@ class ControlWidget(QtGui.QWidget):
     lock_ecd_sig = QtCore.pyqtSignal(tuple)
     wavenumber_sig = QtCore.pyqtSignal(dict)
     calibrate_sig = QtCore.pyqtSignal()
+    setpoint_reached_sig = QtCore.pyqtSignal(bool)
+    setpoint_value_sig = QtCore.pyqtSignal(str)
     def __init__(self, name):
         super(ControlWidget, self).__init__()
         self.name = name
@@ -169,13 +171,17 @@ class ControlWidget(QtGui.QWidget):
                 pass
 
             if M2_info['on_setpoint']:
-                self.setpoint_reached.setText('Yes')
+                self.setpoint_reached.setText('Setpoint reached')
+                self.setpoint_reached_sig.emit(True) 
             else:
-                self.setpoint_reached.setText('No')
+                self.setpoint_reached.setText('Going to setpoint...')
+                self.setpoint_reached_sig.emit(False) 
 
         elif self.name == 'wavemeter':
             wavemeter_info = info['wavemeter']
-            self.wave_1.setText(str("{0:.5f}".format(wavemeter_info['wavenumber_wsu_1'])))
+            val = str("{0:.5f}".format(wavemeter_info['wavenumber_wsu_1']))
+            self.wave_1.setText(val)
+            self.setpoint_value_sig.emit(val)
             self.wave_2.setText(str("{0:.5f}".format(wavemeter_info['wavenumber_wsu_2'])))
 
     def emit_refresh_change(self):

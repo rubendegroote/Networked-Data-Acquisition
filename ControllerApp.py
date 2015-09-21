@@ -176,8 +176,10 @@ class ControllerApp(QtGui.QMainWindow):
             control_widget.lock_wavelength_sig.connect(self.lock_device_wavelength)
             control_widget.lock_ecd_sig.connect(self.lock_device_ecd)
             control_widget.wavenumber_sig.connect(self.go_to_setpoint)
+            control_widget.setpoint_reached_sig.connect(self.scanner.set_on_setpoint) ## bit of a hack
         elif name == 'wavemeter':
         	control_widget.calibrate_sig.connect(self.calibrate_wavemeter)
+        	control_widget.setpoint_value_sig.connect(self.scanner.set_setpoint_value) ## bit of a hack
 
         self.controltab.addTab(control_widget,name)
 

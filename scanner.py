@@ -19,10 +19,14 @@ class ScannerWidget(QtGui.QWidget):
         self.layout.addWidget(QtGui.QLabel('Tuning parameter'), 0, 0, 1, 1)
         self.layout.addWidget(self.tuning_parameter_combo, 0, 1, 1, 1)
 
+        self.layout.addWidget(QtGui.QLabel("Parameter value"), 0, 2, 1, 1)
+        self.setpoint_value = QtGui.QLabel()
+        self.layout.addWidget(self.setpoint_value, 0, 3, 1, 1)
+
         self.scanLabel = QtGui.QLabel('Scan number')
-        self.layout.addWidget(self.scanLabel, 0, 2, 1, 1)
+        self.layout.addWidget(self.scanLabel, 1, 0, 1, 1)
         self.scanNumberLabel = QtGui.QLabel(str(-1))
-        self.layout.addWidget(self.scanNumberLabel, 0, 3, 1, 1)
+        self.layout.addWidget(self.scanNumberLabel, 1, 1, 1, 1)
 
         self.scanningLabel = QtGui.QLabel('<font size="4"><b>Scanning<\b><\font>')
         self.layout.addWidget(self.scanningLabel, 2, 0, 1, 4)
@@ -64,13 +68,16 @@ class ScannerWidget(QtGui.QWidget):
         self.setpointCombo = QtGui.QComboBox()
         # self.layout.addWidget(self.setpointCombo, 6, 0, 1, 1)
         self.setpointEdit = QtGui.QLineEdit('15407.31')
-        self.layout.addWidget(self.setpointEdit, 8, 0, 1, 4)
+        self.layout.addWidget(self.setpointEdit, 8, 0, 1, 3)
 
         self.setpointButton = PicButton('manual',
                                         checkable=False,
                                         size=40)
-        self.layout.addWidget(self.setpointButton, 8, 4, 1, 1)
+        self.layout.addWidget(self.setpointButton, 8, 3, 1, 1)
         self.setpointButton.clicked.connect(self.makeSetpoint)
+
+        self.setpoint_reached = QtGui.QLabel()
+        self.layout.addWidget(self.setpoint_reached, 8, 4)
 
         self.reverse_button = QtGui.QPushButton('Reverse')
         self.layout.addWidget(self.reverse_button, 5, 1, 1, 1)
@@ -96,7 +103,7 @@ class ScannerWidget(QtGui.QWidget):
 
     def makeScan(self):
         parameter = self.tuning_parameter_combo.currentText()
-        device,parameter = parameter.split(': ')
+        self.scan_device,parameter = parameter.split(': ')
 
         start = float(self.startEdit.text())
         stop = float(self.stopEdit.text())
@@ -118,7 +125,7 @@ class ScannerWidget(QtGui.QWidget):
 
         dt = [float(self.timeEdit.text())]
 
-        self.scanInfoSig.emit({'device':[device],
+        self.scanInfoSig.emit({'device':[self.scan_device],
                                'scan_parameter':[parameter],
                                'scan_array':rng,
                                'time_per_step':dt})
@@ -147,10 +154,10 @@ class ScannerWidget(QtGui.QWidget):
         scanning,on_setpoint = info['scanning'],info['on_setpoint']
         scan_number, progress = info['scan_number'][0],info['progress']
         write_params = info['write_params']
+ 
         if len(progress) > 0:
             scanning = any(scanning.values())
             progress = max(progress.values())
-            on_setpoint = any(on_setpoint.values())
 
             self.updateScanNumber(scan_number)
             self.updateProgress(progress)
@@ -170,16 +177,25 @@ class ScannerWidget(QtGui.QWidget):
                 self.toggleConnectionsSig.emit(False)
 
         if not write_params == self.tuning_parameters:
-        	self.tuning_parameters = write_params
-        	self.set_tuning_parameters()
+            self.tuning_parameters = write_params
+            self.set_tuning_parameters()
 
     def set_tuning_parameters(self):
         self.tuning_parameter_combo.clear()
         items = []
         for key,val in self.tuning_parameters.items():
-        	for item in val:
-        		items.append(str(key) + ': ' + str(item) )
+            for item in val:
+                items.append(str(key) + ': ' + str(item) )
         self.tuning_parameter_combo.addItems(items)
+
+    def set_on_setpoint(self,on_setpoint):
+        if on_setpoint:
+            self.setpoint_reached.setText('Setpoint reached.')
+        else:
+            self.setpoint_reached.setText('Going to setpoint...')
+
+    def set_setpoint_value(self,val):
+        self.setpoint_value.setText(val)
 
     def updateProgress(self, val):
         self.progressBar.setValue(1000*val)
