@@ -38,6 +38,11 @@ class Controller(Dispatcher):
         try:
             self.scan_parser.read(INI_PATH)
             self.scan_number = int(self.scan_parser['scan_number']['scan_number'])
+            try:
+                origin, progress = self.scan_parser['progress']['origin'], self.scan_parser['progress']['progress']
+                self.progress[origin] = progress
+            except:
+                print('No scanprogress found.')
         except:
             print('No scan ini file found')
 
@@ -338,6 +343,12 @@ class Controller(Dispatcher):
         if not params['mass'] in self.masses:
             self.masses.append(params['mass'])
         self.status_data[origin] = params['status_data']
+
+        self.scan_parser['scan_number'] = {'scan_number': self.scan_number}
+        self.scan_parser['progress'] = {'progress': params['progress'],
+                                        'origin': origin}
+        with open(INI_PATH, 'w') as scanfile:
+            self.scan_parser.write(scanfile)
 
     def add_to_logbook(self,info_for_log):
         lb.addEntryFromCopy(self.logbook,info_for_log)
