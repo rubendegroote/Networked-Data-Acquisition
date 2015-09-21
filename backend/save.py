@@ -86,8 +86,12 @@ def save_continuously(save_output,saveDir,name,format):
 
 def save_continuously_dataserver(save_output,saveDir):
     file_path = saveDir + 'server'
-
+    backuptime = 900
+    start = time.time()
     while True:
+        if time.time() - start > backuptime:
+            createbackup(file_path + '_data.h5', file_path + '_backup.h5')
+            start = time.time()
         to_save=emptyPipe(save_output)
         if not to_save == []:
             to_save_dict = {}
