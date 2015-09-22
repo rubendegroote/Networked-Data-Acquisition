@@ -3,15 +3,14 @@ import traceback
 
 from .hardware import format,Hardware
 
-this_format = format + ('wavenumber_1','wavenumber_2',
-                        'expos_12','expos_21','expos_21','expos_22')
+this_format = format + ('wavenumber_1','expos_12','expos_21')
 
 write_params = []
 
-class Wavemeter(Hardware):
+class Wavemeter_pdl(Hardware):
     def __init__(self):
 
-        super(Wavemeter,self).__init__(name = 'Wavemeter',
+        super(Wavemeter_pdl,self).__init__(name = 'Wavemeter_pdl',
                              format=this_format,
                              write_params = write_params,
                              needs_stabilization = False,
@@ -40,27 +39,25 @@ class Wavemeter(Hardware):
             self.wlmdata.Operation.restype  = ctypes.c_long
 
         except:
-            raise Exception('Failed to connect to wavemeter\n',traceback.format_exc())
+            raise Exception('Failed to connect to wavemeter_pdl\n',traceback.format_exc())
 
     def read_from_device(self):
         wavenumber_1 = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
-        wavenumber_2 = self.wlmdata.GetFrequencyNum(2,0) / 0.0299792458
+        while not wavenumber_1 > 10**4:
+            wavenumber_1 = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
         expos_11 = self.wlmdata.GetExposureNum(1,1,0)
         expos_12 = self.wlmdata.GetExposureNum(1,2,0)
-        expos_21 = self.wlmdata.GetExposureNum(2,1,0)
-        expos_22 = self.wlmdata.GetExposureNum(2,2,0)
 
-        data = [wavenumber_1,wavenumber_2,expos_11,
-                expos_12,expos_21,expos_22]
+        data = [wavenumber_1,expos_11,expos_12]
 
-        self.ns.status_data = {'wavenumber_1':wavenumber_1,
-                               'wavenumber_2':wavenumber_2}
+        self.ns.status_data = {'wavenumber_1':wavenumber_1}
 
         return data
 
     def calibrate(self,args):
-        self.wlmdata.Operation(0) # stop
-        self.wlmdata.Calibration(0,3,15798.0117779,2) #calibrate
-        self.wlmdata.Operation(2) #start
+        pass
+        #self.wlmdata.Operation(0) # stop
+        #self.wlmdata.Calibration(0,3,15798.0117779,2) #calibrate
+        #self.wlmdata.Operation(2) #start
 
 

@@ -32,6 +32,14 @@ except ImportError:
     print('Could not import wavemeter')
 
 try:
+    from . import wavemeter_pdl
+    format_map['wavemeter_pdl'] = wavemeter_pdl.this_format
+    write_params_map['wavemeter_pdl'] = wavemeter_pdl.write_params
+    hardware_map['wavemeter_pdl'] = wavemeter_pdl.Wavemeter_pdl
+except ImportError:
+    print('Could not import wavemeter_pdl')
+
+try:
     from . import CRIS
     format_map['CRIS'] = CRIS.this_format
     write_params_map['CRIS'] = CRIS.write_params
@@ -39,10 +47,19 @@ try:
 except ImportError:
     print('Could not import CRIS')
 
+try:
+    from . import diodes
+    format_map['diodes'] = diodes.this_format
+    write_params_map['diodes'] = diodes.write_params
+    hardware_map['diodes'] = diodes.diodes
+except ImportError:
+    print('Could not import diodes')
+
 ### Main acquire loop
 def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
     ### what hardware?
     hardware = hardware_map[name]()
+
     hardware.ns = ns
     hardware.ns.refresh_time = hardware.refresh_time
     

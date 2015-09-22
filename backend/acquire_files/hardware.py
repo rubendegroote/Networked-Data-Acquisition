@@ -52,8 +52,8 @@ class Hardware():
 
     @hp.try_deco
     def interpret(self,instr):
-        name,args = instr
-        if name == 'scan':
+        instr_name,args = instr
+        if instr_name == 'scan':
             if self.ns.scan_parameter in self.write_params:
                 self.ns.current_position = 0
                 self.ns.scanning = True
@@ -61,7 +61,7 @@ class Hardware():
             else:
                 return ([1],'{} cannot be scanned.'.format(self.ns.scan_parameter))
 
-        elif name == 'go_to_setpoint':
+        elif instr_name == 'go_to_setpoint':
             if self.ns.parameter in self.write_params:
                 self.ns.on_setpoint = False
                 return ([0],'{} setpoint acknowledged.'.format(self.write_params))
@@ -69,16 +69,16 @@ class Hardware():
             else:
                 return ([1],'{} cannot be set.'.format(self.ns.parameter))
 
-        elif name == 'change_prop':
+        elif instr_name == 'change_prop':
             self.prop = args
-            return ([0],'Executed {} instruction.'.format(name))
+            return ([0],'Executed {} instruction.'.format(instr_name))
 
-        elif name in self.mapping.keys():
-            response = self.mapping[name](args)
-            return ([0],'Executed {} instruction.'.format(name))
+        elif instr_name in self.mapping.keys():
+            response = self.mapping[instr_name](args)
+            return ([0],'Executed {} instruction.'.format(instr_name))
         
         else:
-            return ([1],'Unknown instruction {}.'.format(name))
+            return ([1],'Unknown instruction {}.'.format(instr_name))
 
     @hp.try_deco
     def scan(self):

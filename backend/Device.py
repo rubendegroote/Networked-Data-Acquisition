@@ -50,12 +50,10 @@ class Device(Dispatcher):
         self.ns.setpoint = 11997.442
         self.ns.refresh_time = 1
         self.ns.status_data = {}
-
         self.format = format_map[name]
-        self.ns.format = self.format
-
         self.write_params = write_params_map[name]
 
+        self.ns.format = self.format
         self.data_deque = deque()
 
         self.start_daq()

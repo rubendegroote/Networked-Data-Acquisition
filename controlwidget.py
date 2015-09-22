@@ -131,6 +131,11 @@ class ControlWidget(QtGui.QWidget):
             self.cal_button.clicked.connect(self.calibrate_sig.emit)
             layout.addWidget(self.cal_button,3,0)
 
+        elif name == 'wavemeter_pdl':
+            layout.addWidget(QtGui.QLabel('Laser wavenumber'),1,0)
+            self.wave_1 = QtGui.QLabel()
+            layout.addWidget(self.wave_1,1,1)
+
     def update(self,info):
         if self.name == 'M2':
             M2_info = info['M2']
@@ -166,7 +171,7 @@ class ControlWidget(QtGui.QWidget):
 
             try:
                 wavemeter_info = info['wavemeter']
-                self.wave_1.setText(str("{0:.5f}".format(wavemeter_info['wavenumber_wsu_1'])))
+                self.wave_1.setText(str("{0:.5f}".format(wavemeter_info['wavenumber_1'])))
             except KeyError:
                 pass
 
@@ -179,10 +184,15 @@ class ControlWidget(QtGui.QWidget):
 
         elif self.name == 'wavemeter':
             wavemeter_info = info['wavemeter']
-            val = str("{0:.5f}".format(wavemeter_info['wavenumber_wsu_1']))
+            val = str("{0:.5f}".format(wavemeter_info['wavenumber_1']))
             self.wave_1.setText(val)
             self.setpoint_value_sig.emit(val)
-            self.wave_2.setText(str("{0:.5f}".format(wavemeter_info['wavenumber_wsu_2'])))
+            self.wave_2.setText(str("{0:.5f}".format(wavemeter_info['wavenumber_2'])))
+
+        elif self.name == 'wavemeter_pdl':
+            wavemeter_info = info['wavemeter_pdl']
+            val = str("{0:.5f}".format(wavemeter_info['wavenumber_1']))
+            self.wave_1.setText(val)
 
     def emit_refresh_change(self):
         self.refresh_changed_sig.emit((self.name,int(self.refresh_field.value())))

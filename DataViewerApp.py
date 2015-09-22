@@ -14,8 +14,8 @@ from graph import MyGraph
 
 from backend.connectors import Connector
 
-dataserver_channel = ('127.0.0.1',5005)
-fileServer_channel = ('127.0.0.1', 5006)
+dataserver_channel = ('PCCRIS1',5005)
+fileServer_channel = ('PCCRIS1', 5006)
 
 class DataViewerApp(QtGui.QMainWindow):
     update_scan_list_signal = QtCore.pyqtSignal()

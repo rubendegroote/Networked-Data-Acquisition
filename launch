@@ -76,6 +76,7 @@ def main():
         print("In case of device, Possible values of <device_name>:")
         print("\t M2")
         print("\t wavemeter")
+        print("\t wavemeter_pdl")
         print("\t CRIS")
         print("\t diodes")
         print("\t ABU")

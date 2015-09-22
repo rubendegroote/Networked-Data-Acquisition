@@ -9,7 +9,7 @@ class Man_DS_ConnectionDialog(QtGui.QDialog):
         super(Man_DS_ConnectionDialog, self).__init__(parent)
         ManChannelBoxtext = 'PCCRIS16'
         ManPortBoxtext = str(5004)
-        DSChannelBoxtext = 'PCCRIS17'
+        DSChannelBoxtext = 'PCCRIS1'
         DSPortBoxtext = str(5005)
 
         self.layout = QtGui.QGridLayout(self)

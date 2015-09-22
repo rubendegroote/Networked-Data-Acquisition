@@ -23,7 +23,7 @@ class CRIS(Hardware):
 
     def connect_to_device(self):
         self.timeout = 10.0
-        maxRate = 10000.0  # Again, copied from old code
+        maxRate = 10000.0  # Copied from old code
 
         # Create the task handles (just defines different task)
         self.countTaskHandle = TaskHandle(0)
