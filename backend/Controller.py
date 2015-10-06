@@ -65,138 +65,18 @@ class Controller(Dispatcher):
         return params
 
     @try_call
-    def change_device_refresh(self, params):
-        device_name = params['device'][0]
-        time = params['time']
-        self.change_refresh(device_name,time)
+    def forward_instruction(self,params):
+        device = self.connectors[params['device'][0]]
+        instruction,arguments = params['instruction'],params['arguments']
+        device.add_request(('execute_instruction',{'instruction':instruction,
+                                                   'arguments':arguments}))
+
         return {}
 
-    def change_refresh(self,device_name,time):
-        device = self.connectors[device_name]
-        device.add_request(('change_refresh_time',{'time':time}))
-
-    def change_refresh_time_reply(self,track,params):
+    def execute_instruction_reply(self,track,params):
         origin, track_id = track[-1]
-        self.notify_connectors(([0],"Device {} received change refresh time instruction correctly.".format(origin)))
-
-    @try_call
-    def change_device_prop(self, params):
-        device_name = params['device'][0]
-        prop = params['prop']
-        self.change_prop(device_name,prop)
-        return {}
-
-    def change_prop(self,device_name,prop):
-        device = self.connectors[device_name]
-        device.add_request(('change_prop',{'prop':prop}))
-
-    def change_prop_reply(self,track,params):
-        origin, track_id = track[-1]
-        self.notify_connectors(([0],"Device {} received change proportionality instruction correctly.".format(origin)))
-
-    @try_call
-    def lock_device_etalon(self, params):
-        device_name = params['device'][0]
-        lock = params['lock']
-        self.lock_etalon(device_name,lock)
-        return {}
-
-    def lock_etalon(self,device_name,lock):
-        device = self.connectors[device_name]
-        device.add_request(('lock_etalon',{'lock':lock}))
-
-    def lock_etalon_reply(self,track,params):
-        origin, track_id = track[-1]
-        self.notify_connectors(([0],"Device {} received lock etalon instruction correctly.".format(origin)))
-
-    @try_call
-    def set_device_etalon(self, params):
-        device_name = params['device'][0]
-        etalon_value = params['etalon_value']
-        self.set_etalon(device_name,etalon_value)
-        return {}
-
-    def set_etalon(self,device_name,etalon_value):
-        device = self.connectors[device_name]
-        device.add_request(('set_etalon',{'etalon_value':etalon_value}))
-
-    def set_etalon_reply(self,track,params):
-        origin, track_id = track[-1]
-        self.notify_connectors(([0],"Device {} received set etalon instruction correctly.".format(origin)))
-
-    @try_call
-    def lock_device_cavity(self, params):
-        device_name = params['device'][0]
-        lock = params['lock']
-        self.lock_cavity(device_name,lock)
-        return {}
-
-    def lock_cavity(self,device_name,lock):
-        device = self.connectors[device_name]
-        device.add_request(('lock_cavity',{'lock':lock}))
-
-    def lock_cavity_reply(self,track,params):
-        origin, track_id = track[-1]
-        self.notify_connectors(([0],"Device {} received lock cavity instruction correctly.".format(origin)))
-
-    @try_call
-    def set_device_cavity(self, params):
-        device_name = params['device'][0]
-        cavity_value = params['cavity_value']
-        self.set_cavity(device_name,cavity_value)
-        return {}
-
-    def set_cavity(self,device_name,cavity_value):
-        device = self.connectors[device_name]
-        device.add_request(('set_cavity',{'cavity_value':cavity_value}))
-
-    def set_cavity_reply(self,track,params):
-        origin, track_id = track[-1]
-        self.notify_connectors(([0],"Device {} received set cavity instruction correctly.".format(origin)))
-
-    @try_call
-    def lock_device_wavelength(self, params):
-        device_name = params['device'][0]
-        lock = params['lock']
-        self.lock_wavelength(device_name,lock)
-        return {}
-
-    def lock_wavelength(self,device_name,lock):
-        device = self.connectors[device_name]
-        device.add_request(('lock_wavelength',{'lock':lock}))
-
-    def lock_wavelength_reply(self,track,params):
-        origin, track_id = track[-1]
-        self.notify_connectors(([0],"Device {} received lock wavelength instruction correctly.".format(origin)))
-
-    @try_call
-    def lock_device_ecd(self, params):
-        device_name = params['device'][0]
-        lock = params['lock']
-        self.lock_ecd(device_name,lock)
-        return {}
-
-    def lock_ecd(self,device_name,lock):
-        device = self.connectors[device_name]
-        device.add_request(('lock_ecd',{'lock':lock}))
-
-    def lock_ecd_reply(self,track,params):
-        origin, track_id = track[-1]
-        self.notify_connectors(([0],"Device {} received lock doubler instruction correctly.".format(origin)))
-
-    @try_call
-    def calibrate_wavemeter(self, params):
-        device_name = params['device'][0]
-        self.calibrate(device_name)
-        return {}
-
-    def calibrate(self,device_name):
-        device = self.connectors[device_name]
-        device.add_request(('calibrate',{}))
-
-    def calibrate_reply(self,track,params):
-        origin, track_id = track[-1]
-        self.notify_connectors(([0],"Device {} received calibrate instruction correctly.".format(origin)))
+        instruction = params['instruction']
+        self.notify_connectors(([0],"Device {} received {} instruction correctly.".format(origin,instruction)))
 
     @try_call
     def start_scan(self, params):
@@ -366,4 +246,3 @@ class Controller(Dispatcher):
 
 def makeController(PORT=5007):
     return Controller(PORT=PORT)
-
