@@ -178,8 +178,8 @@ class ControllerApp(QtGui.QMainWindow):
             control_widget.wavenumber_sig.connect(self.go_to_setpoint)
             control_widget.setpoint_reached_sig.connect(self.scanner.set_on_setpoint) ## bit of a hack
         elif name == 'wavemeter':
-        	control_widget.calibrate_sig.connect(self.calibrate_wavemeter)
-        	control_widget.setpoint_value_sig.connect(self.scanner.set_setpoint_value) ## bit of a hack
+            control_widget.calibrate_sig.connect(self.calibrate_wavemeter)
+            control_widget.setpoint_value_sig.connect(self.scanner.set_setpoint_value) ## bit of a hack
 
         self.controltab.addTab(control_widget,name)
 
@@ -209,8 +209,10 @@ class ControllerApp(QtGui.QMainWindow):
 
     def change_refresh_time(self,info):
         device, time = info
-        self.Man_DS_Connector.instruct('Controller',('change_device_refresh',
-                                                  {'device':[device],'time':[time]}))
+        self.Man_DS_Connector.instruct('Controller',('foward_instruction',
+                                                    {'instruction':'change_device_refresh',
+                                                     'device':[device],
+                                                     'arguments':{'time':time}}))
 
     def change_device_refresh_reply(self,track,params):
         origin,track_id = track[-1]
@@ -219,8 +221,10 @@ class ControllerApp(QtGui.QMainWindow):
 
     def change_device_prop(self,info):
         device, prop = info
-        self.Man_DS_Connector.instruct('Controller',('change_device_prop',
-                                                  {'device':[device],'prop':[prop]}))
+        self.Man_DS_Connector.instruct('Controller',('foward_instruction',
+                                                    {'instruction':'change_device_prop',
+                                                     'device':[device],
+                                                     'arguments':{'prop':prop}}))
 
     def change_device_prop_reply(self,track,params):
         origin,track_id = track[-1]
@@ -229,8 +233,10 @@ class ControllerApp(QtGui.QMainWindow):
 
     def lock_device_etalon(self,info):
         device, lock = info
-        self.Man_DS_Connector.instruct('Controller',('lock_device_etalon',
-                                                  {'device':[device],'lock':lock}))
+        self.Man_DS_Connector.instruct('Controller',('foward_instruction',
+                                                    {'instruction':'lock_device_etalon',
+                                                     'device':[device],
+                                                     'arguments':{'lock':lock}}))
 
     def lock_device_etalon_reply(self,track,params):
         origin,track_id = track[-1]
@@ -240,8 +246,10 @@ class ControllerApp(QtGui.QMainWindow):
 
     def set_device_etalon(self,info):
         device, etalon_value = info
-        self.Man_DS_Connector.instruct('Controller',('set_device_etalon',
-                                                  {'device':[device],'etalon_value':etalon_value}))
+        self.Man_DS_Connector.instruct('Controller',('foward_instruction',
+                                                    {'instruction':'set_device_etalon',
+                                                     'device':[device],
+                                                     'arguments':{'etalon_value':etalon_value}}))
 
     def set_device_etalon_reply(self,track,params):
         origin,track_id = track[-1]
@@ -250,8 +258,10 @@ class ControllerApp(QtGui.QMainWindow):
 
     def lock_device_cavity(self,info):
         device, lock = info
-        self.Man_DS_Connector.instruct('Controller',('lock_device_cavity',
-                                                  {'device':[device],'lock':lock}))
+        self.Man_DS_Connector.instruct('Controller',('foward_instruction',
+                                                    {'instruction':'lock_device_cavity',
+                                                     'device':[device],
+                                                     'arguments':{'lock':lock}}))
 
     def lock_device_cavity_reply(self,track,params):
         origin,track_id = track[-1]
@@ -260,8 +270,10 @@ class ControllerApp(QtGui.QMainWindow):
 
     def set_device_cavity(self,info):
         device, cavity_value = info
-        self.Man_DS_Connector.instruct('Controller',('set_device_cavity',
-                                                  {'device':[device],'cavity_value':cavity_value}))
+        self.Man_DS_Connector.instruct('Controller',('foward_instruction',
+                                                    {'instruction':'set_device_cavity',
+                                                     'device':[device],
+                                                     'arguments':{'cavity_value':cavity_value}}))
 
     def set_device_cavity_reply(self,track,params):
         origin,track_id = track[-1]
@@ -270,8 +282,10 @@ class ControllerApp(QtGui.QMainWindow):
 
     def lock_device_wavelength(self,info):
         device, lock = info
-        self.Man_DS_Connector.instruct('Controller',('lock_device_wavelength',
-                                                  {'device':[device],'lock':lock}))
+        self.Man_DS_Connector.instruct('Controller',('foward_instruction',
+                                                    {'instruction':'lock_device_wavelength',
+                                                     'device':[device],
+                                                     'arguments':{'lock':lock}}))
 
     def lock_device_wavelength_reply(self,track,params):
         origin,track_id = track[-1]
@@ -280,8 +294,10 @@ class ControllerApp(QtGui.QMainWindow):
 
     def lock_device_ecd(self,info):
         device, lock = info
-        self.Man_DS_Connector.instruct('Controller',('lock_device_ecd',
-                                                  {'device':[device],'lock':lock}))
+        self.Man_DS_Connector.instruct('Controller',('foward_instruction',
+                                                    {'instruction':'lock_device_ecd',
+                                                     'device':[device],
+                                                     'arguments':{'lock':lock}}))
 
     def lock_device_ecd_reply(self,track,params):
         origin,track_id = track[-1]
@@ -289,9 +305,10 @@ class ControllerApp(QtGui.QMainWindow):
             {'track':track,'args':[[0],"lock device doubler instruction received"]})
 
     def calibrate_wavemeter(self):
-        print('here')
-        self.Man_DS_Connector.instruct('Controller',('calibrate_wavemeter',
-                                                    {'device':['wavemeter']}))    	
+        self.Man_DS_Connector.instruct('Controller',('foward_instruction',
+                                                     'instruction':'calibrate_wavemeter',      
+                                                     'device':[device],
+                                                     'arguments'        
 
     def calibrate_wavemeter_reply(self,track,params):
         origin,track_id = track[-1]

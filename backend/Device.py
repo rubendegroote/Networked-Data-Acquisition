@@ -50,10 +50,12 @@ class Device(Dispatcher):
         self.ns.setpoint = 11997.442
         self.ns.refresh_time = 1
         self.ns.status_data = {}
+
         self.format = format_map[name]
+        self.ns.format = self.format
+
         self.write_params = write_params_map[name]
 
-        self.ns.format = self.format
         self.data_deque = deque()
 
         self.start_daq()
@@ -95,56 +97,10 @@ class Device(Dispatcher):
         return {}
 
     @hp.try_call
-    def change_refresh_time(self,params):
-        time = params['time'][0]
-        self.ns.refresh_time = time
-        return {}
-
-    @hp.try_call
-    def change_prop(self,params):
-        prop = params['prop'][0]
-        self.iQ.put(['change_prop',prop])
-        return {}
-
-    @hp.try_call
-    def lock_etalon(self,params):
-        lock = params['lock']
-        self.iQ.put(['lock_etalon',lock])
-        return {}
-
-    @hp.try_call
-    def set_etalon(self,params):
-        etalon_value = params['etalon_value']
-        self.iQ.put(['set_etalon',etalon_value])
-        return {}
-
-    @hp.try_call
-    def lock_cavity(self,params):
-        lock = params['lock']
-        self.iQ.put(['lock_cavity',lock])
-        return {}
-
-    @hp.try_call
-    def set_cavity(self,params):
-        cavity_value = params['cavity_value']
-        self.iQ.put(['set_cavity',cavity_value])
-        return {}
-
-    @hp.try_call
-    def lock_wavelength(self,params):
-        lock = params['lock']
-        self.iQ.put(['lock_wavelength',lock])
-        return {}
-
-    @hp.try_call
-    def lock_ecd(self,params):
-        lock = params['lock']
-        self.iQ.put(['lock_ecd',lock])
-        return {}
-
-    @hp.try_call
-    def calibrate(self,params):
-        self.iQ.put(['calibrate',[]])
+    def execute_instruction(self,params):
+        instruction = params['instruction']
+        arguments = params['arguments']
+        self.iQ.put([instruction,arguments])
         return {}
 
     @hp.try_call
@@ -213,4 +169,3 @@ class Device(Dispatcher):
         if len(self.acceptors) == 2:
             print('Data Server and Controller already present! Aborting.')
         super(Device,self).handle_accept()
-

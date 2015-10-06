@@ -72,7 +72,6 @@ class M2(Hardware):
         self.etalon_value = 50.20
 
     def connect_to_device(self):
-
         ### Wavemeter stuff
         try:
             # Load the .dll file
@@ -152,6 +151,9 @@ class M2(Hardware):
         data = [convert_data(self.ns.status_data[m]) for m in M2_format]
 
         return data
+
+    def change_prop(self,prop):
+        self.prop = prop
 
     def lock_wavelength(self,lock):
         self.wavelength_lock = lock
