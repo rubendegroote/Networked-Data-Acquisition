@@ -30,6 +30,8 @@ class MyGraph(QtGui.QWidget):
         self.x_key = []
         self.y_key = []
 
+        self.buffer_size = 10**6
+
         self.init_UI()
         
         self.timer = QtCore.QTimer()
@@ -165,6 +167,8 @@ class MyGraph(QtGui.QWidget):
         histmode = str(self.graphBox.currentText()) == 'Step (histogram)'
 
         if len(self.data)>0:
+            if len(self.data) > self.buffer_size:
+                self.data = self.data.iloc[-self.buffer_size:]
             data = self.data.sort_index()
             data['x'].fillna(method='ffill', inplace=True)
             data.dropna(inplace=True)

@@ -10,7 +10,7 @@ class ControlWidgets(QtCore.QObject):
         for key in info.keys():
             try:
                 self.controls[key].update(info)
-            except KeyError:
+            except KeyError as e:
                 self.device_missing.emit(key)
 
 class ControlWidget(QtGui.QWidget):
@@ -33,7 +33,7 @@ class ControlWidget(QtGui.QWidget):
 
         layout.addWidget(QtGui.QLabel('Refresh rate (ms)'),0,0)
         self.refresh_field = QtGui.QSpinBox()
-        self.refresh_field.setRange(1,10**4)
+        self.refresh_field.setRange(0,10**4)
         self.refresh_field.valueChanged.connect(self.emit_refresh_change)
         layout.addWidget(self.refresh_field,0,1)
 

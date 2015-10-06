@@ -3,7 +3,7 @@ import time
 import backend.Helpers as hp
 import json
 
-format = ('timestamp','scan_number','mass')
+format = ('timestamp','offset','scan_number','mass')
 TIME_OFFSET = 1420070400 # 01/01/2015
 
 class Hardware():
@@ -99,7 +99,8 @@ class Hardware():
     @hp.try_deco
     def input(self):
         data_from_device = self.read_from_device()
-        data = [time.time() - TIME_OFFSET,
+        data = [time.time() - TIME_OFFSET - self.ns.clock_offset,
+                self.ns.clock_offset,
                 self.ns.scan_number,
                 self.ns.mass]
         data.extend(data_from_device)

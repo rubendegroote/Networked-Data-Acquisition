@@ -7,7 +7,7 @@ class Man_DS_ConnectionDialog(QtGui.QDialog):
 
     def __init__(self, parent=None, message=''):
         super(Man_DS_ConnectionDialog, self).__init__(parent)
-        ManChannelBoxtext = 'PCCRIS16'
+        ManChannelBoxtext = 'PCCRIS15'
         ManPortBoxtext = str(5004)
         DSChannelBoxtext = 'PCCRIS1'
         DSPortBoxtext = str(5005)

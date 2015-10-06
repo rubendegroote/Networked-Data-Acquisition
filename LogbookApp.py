@@ -12,7 +12,7 @@ from logviewerwidgets import LogEntryWidget
 SAVE_DIR = 'C:/Data/'
 LOG_PER_PAGE = 50
 
-controller_channel = ('127.0.0.1', 5004)
+controller_channel = ('PCCRIS15', 5004)
 
 class LogbookApp(QtGui.QMainWindow):
     editSignal = QtCore.pyqtSignal(int,object)
@@ -61,26 +61,30 @@ class LogbookApp(QtGui.QMainWindow):
 
         self.searchStringLabel = QtGui.QPushButton('String search')
         self.searchStringLabel.clicked.connect(self.filterLogbookOnString)
-        self.searchStringLabel.setDisabled(True)
         self.searchStringEdit = QtGui.QLineEdit('')
         layout.addWidget(self.searchStringLabel, 1, 1)
         layout.addWidget(self.searchStringEdit, 1, 0)
 
         self.searchTagLabel = QtGui.QPushButton('Tag search')
         self.searchTagLabel.clicked.connect(self.filterLogbookOnTag)
-        self.searchTagLabel.setDisabled(True)
         self.searchTagEdit = QtGui.QLineEdit('')
         layout.addWidget(self.searchTagEdit, 2, 0)
         layout.addWidget(self.searchTagLabel, 2, 1)
 
+        self.searchTagLabel = QtGui.QPushButton('Mass search')
+        self.searchTagLabel.clicked.connect(self.filterLogbookOnTag)
+        self.searchTagEdit = QtGui.QLineEdit('')
+        layout.addWidget(self.searchTagEdit, 3, 0)
+        layout.addWidget(self.searchTagLabel, 3, 1)
+
         self.page_widget = QtGui.QTabWidget()
-        layout.addWidget(self.page_widget,3,0,1,2)
+        layout.addWidget(self.page_widget,4,0,1,2)
         self.pages = []
         self.new_log_page()
 
         self.addEntryButton = QtGui.QPushButton('Add entry')
         self.addEntryButton.clicked.connect(self.add_entry_to_log)
-        layout.addWidget(self.addEntryButton, 4, 0, 1, 2)
+        layout.addWidget(self.addEntryButton, 5, 0, 1, 2)
 
         #self.messageLog = QtGui.QPlainTextEdit()
         #self.central.addWidget(self.messageLog)
@@ -137,6 +141,23 @@ class LogbookApp(QtGui.QMainWindow):
                        snapshot['Tags'][filterTag]:
                         filter_dict[number] = True
             self.filter_logbook(filter_dict=filter_dict)
+
+    def filterLogbookOnMass(self):
+        filterMass = str(self.searchMassEdit.text())
+        if filterTag == '':
+            filter_dict = dict.fromkeys(self.logEntryWidgets, True)
+            self.filter_logbook(filter_dict=filter_dict)
+        else:
+            filter_dict = dict.fromkeys(self.logEntryWidgets, False)
+            for number, widget in self.logEntryWidgets.items():
+                entry = widget.entry
+                for snapshot in entry:
+                    if 'Mass' in snapshot and \
+                       filterTag in snapshot['Mass'] and \
+                       snapshot['Mass'][filterTag]:
+                        filter_dict[number] = True
+            self.filter_logbook(filter_dict=filter_dict)
+
 
     def filter_logbook(self,filter_dict):
         for key,val in filter_dict.items():
@@ -219,10 +240,8 @@ class LogbookApp(QtGui.QMainWindow):
                                         callback=self.reply_cb,
                                         onCloseCallback=self.onCloseCallback,
                                         default_callback=self.default_cb)
-            self.controllerLabel.setStyleSheet("QLabel { background-color: green }")
-            self.searchStringLabel.setEnabled(True)
-            self.searchTagLabel.setEnabled(True)
-            self.addController.setHidden(True)
+            # self.controllerLabel.setStyleSheet("QLabel { background-color: green }")
+            # self.addController.setHidden(True)
         except Exception as e:
             print(e)
 

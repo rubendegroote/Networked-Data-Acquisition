@@ -8,6 +8,7 @@ import sys
 import multiprocessing as mp
 
 SAVE_DIR = "C:\\Data\\Gallium Run\\"
+TIME_OFFSET = 1420070400 # 01/01/2015
 
 class DataServer(Dispatcher):
     def __init__(self, PORT=5006, name='DataServer'):
@@ -27,7 +28,7 @@ class DataServer(Dispatcher):
         self.backupFlag = mp.Event()
         self.backupFlag.clear()
 
-        self.save_output,self.save_input = mp.Pipe(duplex=False)
+        self.save_output, self.save_input = mp.Pipe(duplex=False)
 
         self.start_saving()
 
@@ -36,12 +37,13 @@ class DataServer(Dispatcher):
         super(DataServer,self).stop()
 
     def default_cb(self):
-        return 'data', {}
+        rep = time.time()-TIME_OFFSET
+        return 'data', {'t0': rep}
 
     def start_saving(self):
         args = (self.save_output,SAVE_DIR, self.backupFlag)
-        self.saveProcess = mp.Process(target = save_continuously_dataserver,
-                                      args = args)
+        self.saveProcess = mp.Process(target=save_continuously_dataserver,
+                                      args=args)
         self.saveProcess.start()
 
     @try_call

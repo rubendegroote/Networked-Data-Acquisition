@@ -8,7 +8,7 @@ from PyDAQmx.DAQmxFunctions import *
 from .hardware import format,Hardware
 
 this_format = format + ('AOV','Counts','AIChannel1','AIChannel2')
-write_params = ['AOV']
+write_params = []
 
 class CRIS(Hardware):
     def __init__(self):

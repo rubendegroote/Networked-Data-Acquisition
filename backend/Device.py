@@ -12,6 +12,7 @@ import threading as th
 from backend.acquire_files.acquisition import format_map,write_params_map,acquire
 
 SAVE_DIR = "C:\\Data\\Gallium Run\\"
+TIME_OFFSET = 1420070400 # 01/01/2015
 
 # Some exploratory code to understand a bit better how to make the Devices
 class Device(Dispatcher):
@@ -50,10 +51,12 @@ class Device(Dispatcher):
         self.ns.setpoint = 11997.442
         self.ns.refresh_time = 1
         self.ns.status_data = {}
-        self.format = format_map[name]
-        self.write_params = write_params_map[name]
+        self.ns.clock_offset = 0
 
+        self.format = format_map[name]
         self.ns.format = self.format
+        
+        self.write_params = write_params_map[name]
         self.data_deque = deque()
 
         self.start_daq()
@@ -82,6 +85,8 @@ class Device(Dispatcher):
 
     @hp.try_call
     def data(self, params):
+        t0 = params['t0']
+        self.ns.clock_offset = (time.time()-TIME_OFFSET) - t0
         # Recall there is only one data server, so this works
         l = len(self.data_deque)
         data = [self.data_deque.popleft() for _i in range(l)]

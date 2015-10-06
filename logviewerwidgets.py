@@ -33,7 +33,7 @@ class CollapsibleArrow(QtGui.QPushButton):
             self.isCollapsed = False
 
     def mousePressEvent(self, event):
-        self.emit(QtCore.pyqtSignal('clicked()'))
+        self.emit(QtCore.SIGNAL('clicked()'))
         return super(CollapsibleArrow, self).mousePressEvent(event)
 
 
@@ -93,7 +93,7 @@ class TitleFrame(QtGui.QFrame):
         self.initTitleLabel(text)
 
     def mouseDoubleClickEvent(self, event):
-        self.emit(QtCore.pyqtSignal('doubleClicked()'))
+        self.emit(QtCore.SIGNAL('doubleClicked()'))
         return super(TitleFrame, self).mouseDoubleClickEvent(event)
 
 
@@ -182,7 +182,7 @@ class FrameLayout(QtGui.QFrame):
         self.initContentFrame()
         self.arrow = self.titleFrame.arrow
         self.label = self.titleFrame.titleLabel
-        QtCore.QObject.connect(self.arrow, QtCore.pyqtSignal('clicked()'), self.toggleCollapsed)
+        QtCore.QObject.connect(self.arrow, QtCore.SIGNAL('clicked()'), self.toggleCollapsed)
 
 
 class LogEntryWidget(FrameLayout):
