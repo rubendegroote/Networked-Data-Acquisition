@@ -65,7 +65,7 @@ class ControllerApp(QtGui.QMainWindow):
         layout.addWidget(self.connLabel, 2, 0, 1, 1)
 
         self.connWidget = DeviceConnections()
-        self.connWidget.connectSig.connect(self.add_device)
+        self.connWidget.connectSig.connect(self.add_connector)
         self.connWidget.removeSig.connect(self.remove_connector)
         layout.addWidget(self.connWidget, 3, 0, 1, 1)
 
@@ -91,19 +91,27 @@ class ControllerApp(QtGui.QMainWindow):
                                  default_cb=self.default_cb,
                                  onCloseCallback = self.lostConn)
 
-        if self.Man_DS_Connector.man and self.Man_DS_Connector.DS:
+        if self.Man_DS_Connector.man or self.Man_DS_Connector.DS:
             self.enable()
-            self.statusBar().showMessage(
-                'Connected to Controller and Data Server')
             config = configparser.ConfigParser()
-            config['controller'] = {'address': data[0], 'port': int(data[1])}
-            config['data server'] = {'address': data[2], 'port': int(data[3])}
+            if self.Man_DS_Connector.man and self.Man_DS_Connector.DS:
+                self.statusBar().showMessage(
+                    'Connected to Controller and Data Server')
+                config['controller'] = {'address': data[0], 'port': int(data[1])}
+                config['data server'] = {'address': data[2], 'port': int(data[3])}
+            elif self.Man_DS_Connector.man:
+                self.statusBar().showMessage('No Data Server Connection')
+                config['controller'] = {'address': data[0], 'port': int(data[1])}
+            elif self.Man_DS_Connector.DS:
+                self.statusBar().showMessage('No Controller Connection')
+                config['data server'] = {'address': data[2], 'port': int(data[3])}
+                
             with open('ControllerDSConnections.ini', 'w') as configfile:
                 config.write(configfile)
-
-            self.serverConnectButton.setDisabled(True)
+        
         else:
             self.statusBar().showMessage('Connection failure')
+
 
     def reply_cb(self, message):
         track = message['track']
@@ -156,13 +164,6 @@ class ControllerApp(QtGui.QMainWindow):
     def stopIOLoop(self):
         self.looping = False
 
-    def add_device(self, info):
-        receiver, name, address = info
-        op,params = 'add_connector',{'address': address}
-        self.Man_DS_Connector.instruct(receiver, (op,params))
-        if not name in self.control_widgets.controls.keys():
-            self.add_control_tab(name)
-
     def add_control_tab(self,name):
         control_widget = ControlWidget(name)
         self.control_widgets.controls[name] = control_widget
@@ -207,114 +208,65 @@ class ControllerApp(QtGui.QMainWindow):
                                        {'track':track,
                                        'args':params['connector_info']}))
 
+    def forward_instruction_reply(self,track,params):
+        origin,track_id = track[-1]
+        self.messageUpdateSignal.emit(
+            {'track':track,'args':[[0],"Instruction forwarded"]})
+
     def change_refresh_time(self,info):
         device, time = info
-        self.Man_DS_Connector.instruct('Controller',('foward_instruction',
+        self.Man_DS_Connector.instruct('Controller',('forward_instruction',
                                                     {'instruction':'change_device_refresh',
-                                                     'device':[device],
+                                                     'device':device,
                                                      'arguments':{'time':time}}))
-
-    def change_device_refresh_reply(self,track,params):
-        origin,track_id = track[-1]
-        self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"Change refresh time instruction received"]})
-
     def change_device_prop(self,info):
         device, prop = info
-        self.Man_DS_Connector.instruct('Controller',('foward_instruction',
+        self.Man_DS_Connector.instruct('Controller',('forward_instruction',
                                                     {'instruction':'change_device_prop',
-                                                     'device':[device],
+                                                     'device':device,
                                                      'arguments':{'prop':prop}}))
-
-    def change_device_prop_reply(self,track,params):
-        origin,track_id = track[-1]
-        self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"Change proportionality instruction received"]})
-
     def lock_device_etalon(self,info):
         device, lock = info
-        self.Man_DS_Connector.instruct('Controller',('foward_instruction',
+        self.Man_DS_Connector.instruct('Controller',('forward_instruction',
                                                     {'instruction':'lock_device_etalon',
-                                                     'device':[device],
+                                                     'device':device,
                                                      'arguments':{'lock':lock}}))
-
-    def lock_device_etalon_reply(self,track,params):
-        origin,track_id = track[-1]
-        self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"lock device etalon instruction received"]})
-
 
     def set_device_etalon(self,info):
         device, etalon_value = info
-        self.Man_DS_Connector.instruct('Controller',('foward_instruction',
+        self.Man_DS_Connector.instruct('Controller',('forward_instruction',
                                                     {'instruction':'set_device_etalon',
-                                                     'device':[device],
+                                                     'device':device,
                                                      'arguments':{'etalon_value':etalon_value}}))
-
-    def set_device_etalon_reply(self,track,params):
-        origin,track_id = track[-1]
-        self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"set device etalon instruction received"]})
-
     def lock_device_cavity(self,info):
         device, lock = info
-        self.Man_DS_Connector.instruct('Controller',('foward_instruction',
+        self.Man_DS_Connector.instruct('Controller',('forward_instruction',
                                                     {'instruction':'lock_device_cavity',
-                                                     'device':[device],
+                                                     'device':device,
                                                      'arguments':{'lock':lock}}))
-
-    def lock_device_cavity_reply(self,track,params):
-        origin,track_id = track[-1]
-        self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"lock device cavity instruction received"]})
-
     def set_device_cavity(self,info):
         device, cavity_value = info
-        self.Man_DS_Connector.instruct('Controller',('foward_instruction',
+        self.Man_DS_Connector.instruct('Controller',('forward_instruction',
                                                     {'instruction':'set_device_cavity',
-                                                     'device':[device],
+                                                     'device':device,
                                                      'arguments':{'cavity_value':cavity_value}}))
-
-    def set_device_cavity_reply(self,track,params):
-        origin,track_id = track[-1]
-        self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"set device cavity instruction received"]})
-
     def lock_device_wavelength(self,info):
         device, lock = info
-        self.Man_DS_Connector.instruct('Controller',('foward_instruction',
+        self.Man_DS_Connector.instruct('Controller',('forward_instruction',
                                                     {'instruction':'lock_device_wavelength',
-                                                     'device':[device],
+                                                     'device':device,
                                                      'arguments':{'lock':lock}}))
-
-    def lock_device_wavelength_reply(self,track,params):
-        origin,track_id = track[-1]
-        self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"lock device wavelength instruction received"]})
-
     def lock_device_ecd(self,info):
         device, lock = info
-        self.Man_DS_Connector.instruct('Controller',('foward_instruction',
+        self.Man_DS_Connector.instruct('Controller',('forward_instruction',
                                                     {'instruction':'lock_device_ecd',
-                                                     'device':[device],
+                                                     'device':device,
                                                      'arguments':{'lock':lock}}))
-
-    def lock_device_ecd_reply(self,track,params):
-        origin,track_id = track[-1]
-        self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"lock device doubler instruction received"]})
-
-    def calibrate_wavemeter(self):
-        self.Man_DS_Connector.instruct('Controller',('foward_instruction',
-                                                     'instruction':'calibrate_wavemeter',      
-                                                     'device':[device],
-                                                     'arguments'        
-
-    def calibrate_wavemeter_reply(self,track,params):
-        origin,track_id = track[-1]
-        self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"calibrate wavemeter instruction received"]})
-
+    def calibrate_wavemeter(self,info):
+        self.Man_DS_Connector.instruct('Controller',('forward_instruction',
+                                                     {'instruction':'calibrate_wavemeter',      
+                                                     'device':device,
+                                                     'arguments':{}}))
     def start_scan(self, scanInfo):
         # ask for the isotope mass
         masses = [str(m) for m in self.masses]
@@ -346,6 +298,12 @@ class ControllerApp(QtGui.QMainWindow):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
             {'track':track,'args':[[0],"Go to setpoint instruction received"]})
+
+    def add_connector(self, info):
+        receiver, name, address = info
+        self.Man_DS_Connector.instruct(receiver, ('add_connector',{'address': address}))
+        if not name in self.control_widgets.controls.keys():
+            self.add_control_tab(name)
 
     def add_connector_reply(self,track,params):
         origin,track_id = track[-1]

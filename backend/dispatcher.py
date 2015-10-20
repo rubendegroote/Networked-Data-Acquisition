@@ -47,11 +47,26 @@ class Dispatcher(asyncore.dispatcher):
         return True
 
     @try_call
+    def forward_instruction(self,params):
+        device = self.connectors[params['device']]
+        instruction,arguments = params['instruction'],params['arguments']
+        device.add_request(('execute_instruction',{'instruction':instruction,
+                                                   'arguments':arguments}))
+
+        return {}
+
+    def execute_instruction_reply(self,track,params):
+        origin, track_id = track[-1]
+        instruction = params['instruction']
+        self.notify_connectors(([0],"Device {} received {} instruction correctly.".format(origin,instruction)))
+
+    @try_call
     def add_connector(self, params):
         address = params['address']
         if address is None:
             return
         for name, add in self.connectors.items():
+            print(name,add,address)
             if address == (add.chan[0], str(add.chan[1])):
                 if self.connInfo[name][0]:
                     return

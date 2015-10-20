@@ -65,20 +65,6 @@ class Controller(Dispatcher):
         return params
 
     @try_call
-    def forward_instruction(self,params):
-        device = self.connectors[params['device'][0]]
-        instruction,arguments = params['instruction'],params['arguments']
-        device.add_request(('execute_instruction',{'instruction':instruction,
-                                                   'arguments':arguments}))
-
-        return {}
-
-    def execute_instruction_reply(self,track,params):
-        origin, track_id = track[-1]
-        instruction = params['instruction']
-        self.notify_connectors(([0],"Device {} received {} instruction correctly.".format(origin,instruction)))
-
-    @try_call
     def start_scan(self, params):
         device_name = params['device'][0]
         scan_parameter = params['scan_parameter']
@@ -98,9 +84,11 @@ class Controller(Dispatcher):
         scanner = self.connectors[device_name]
         self.scan_number += 1
         self.set_scan_info(mass,self.scan_number)
-        scanner.add_request(('start_scan',{'scan_parameter':scan_parameter,
-                                     'scan_array':scan_array,
-                                     'time_per_step':time_per_step}))
+        scanner.add_request(('execute_instruction',
+                {'instruction':'start_scan',
+                 'arguments':{'scan_parameter':scan_parameter,
+                              'scan_array':scan_array,
+                              'time_per_step':time_per_step}))
         # lgobook updating
         info_for_log = {'Scan Number': self.scan_number,
                         'Author': 'Automatic Entry',
@@ -119,10 +107,6 @@ class Controller(Dispatcher):
         with open(INI_PATH, 'w') as scanfile:
             self.scan_parser.write(scanfile)
 
-    def start_scan_reply(self,track,params):
-        origin, track_id = track[-1]
-        self.notify_connectors(([0],"Device {} received scanning instruction correctly.".format(origin)))
-
     @try_call
     def set_scan_info(self, mass, number):
         op,params = 'set_scan_info',{'scan_number': [number],
@@ -138,13 +122,12 @@ class Controller(Dispatcher):
     @try_call
     def stop_scan(self,params):
         self.set_scan_info(self.mass,-1)
-        self.connectors[self.scanner_name].add_request(('stop_scan',{}))
+        scanner = self.connectors[self.scanner_name]
+        scanner.add_request(('execute_instruction',
+               {'instruction':'stop_scan',
+                'arguments':{}))
 
         return {}
-
-    def stop_scan_reply(self,track,params):
-        origin, track_id = track[-1]
-        self.notify_connectors(([0],"Device {} received stopping instruction correctly.".format(origin)))
 
     @try_call
     def go_to_setpoint(self, params):
@@ -158,16 +141,15 @@ class Controller(Dispatcher):
 
     def set_device(self,device_name,parameter,setpoint):
         device_to_set = self.connectors[device_name]
-        device_to_set.add_request(('go_to_setpoint',{'parameter':parameter,
-                                                     'setpoint':setpoint}))
+        device_to_set.add_request(('execute_instruction',
+               {'instruction':'go_to_setpoint',
+                'arguments':{'parameter':parameter,
+                             'setpoint':setpoint}))
+
         info_for_log =  {'Author': 'Automatic Entry',
                  'Tags': {"Setpoint":True},
                  'Text': lb.SET.format(device_name, parameter[0], setpoint[0])}
         self.add_to_logbook(info_for_log)
-
-    def go_to_setpoint_reply(self,track,params):
-        origin, track_id = track[-1]
-        self.notify_connectors(([0],"Device {} received setpoint instruction correctly.".format(origin)))
 
     @try_call
     def logbook_status(self,params):

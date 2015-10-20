@@ -18,7 +18,7 @@ class Wavemeter(Hardware):
                              refresh_time = 0.01)
 
         self.mapping = {
-                        "calibrate": self.calibrate
+                        "calibrate_wavemeter": self.calibrate
                        }
 
     def connect_to_device(self):

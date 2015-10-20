@@ -104,6 +104,7 @@ def try_deco(func):
         try:
             reply = func(*args, **kwargs)
         except:
+            print(traceback.format_exc())
             reply = ([1],traceback.format_exc())
         return reply
     return func_wrapper

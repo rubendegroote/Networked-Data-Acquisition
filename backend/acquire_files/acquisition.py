@@ -55,13 +55,19 @@ try:
 except ImportError:
     print('Could not import diodes')
 
+try:
+    from . import Beamline
+    format_map['beamline'] = Beamline.this_format
+    write_params_map['beamline'] = Beamline.write_params
+    hardware_map['beamline'] = Beamline.Beamline
+except ImportError:
+    print('Could not import beamline')
 ### Main acquire loop
 def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
     ### what hardware?
     hardware = hardware_map[name]()
 
     hardware.ns = ns
-    hardware.ns.refresh_time = hardware.refresh_time
     
     ### define format
     ns.format = hardware.format
@@ -109,7 +115,7 @@ def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
             data_pipe.send(data)
         else: #error to report
             mQ.put(return_message)
-        time.sleep(0.001*ns.refresh_time)
+        time.sleep(0.001*hardware.refresh_time)
 
     IStoppedFlag.set()
 

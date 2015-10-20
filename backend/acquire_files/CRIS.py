@@ -14,7 +14,8 @@ class CRIS(Hardware):
     def __init__(self):
         super(CRIS,self).__init__(name = 'CRIS',
                                   format=this_format,
-                                  write_params = write_params)
+                                  write_params = write_params,
+                                  refresh_time = 0)
         self.settings = dict(counterChannel="/Dev1/ctr1",  # corresponds to PFI3
                                aoChannel="/Dev1/ao0",
                                aiChannel="/Dev1/ai1,/Dev1/ai2",

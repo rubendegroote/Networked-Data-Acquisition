@@ -23,7 +23,7 @@ class ControlWidget(QtGui.QWidget):
     lock_wavelength_sig = QtCore.pyqtSignal(tuple)
     lock_ecd_sig = QtCore.pyqtSignal(tuple)
     wavenumber_sig = QtCore.pyqtSignal(dict)
-    calibrate_sig = QtCore.pyqtSignal()
+    calibrate_sig = QtCore.pyqtSignal(dict)
     setpoint_reached_sig = QtCore.pyqtSignal(bool)
     setpoint_value_sig = QtCore.pyqtSignal(str)
     def __init__(self, name):
@@ -128,7 +128,7 @@ class ControlWidget(QtGui.QWidget):
             layout.addWidget(self.wave_2,2,1)
 
             self.cal_button = QtGui.QPushButton('calibrate')
-            self.cal_button.clicked.connect(self.calibrate_sig.emit)
+            self.cal_button.clicked.connect(self.emit_calibrate_sig)
             layout.addWidget(self.cal_button,3,0)
 
         elif name == 'wavemeter_pdl':
@@ -222,6 +222,9 @@ class ControlWidget(QtGui.QWidget):
 
     def emit_set_wavenumber(self):
         wavenumber = float(self.wavenumber_value.text())
-        self.wavenumber_sig.emit({'device':['M2'],
+        self.wavenumber_sig.emit({'device':'M2',
                                   'parameter':["wavenumber"],
                                   'setpoint': [wavenumber]})
+
+    def emit_calibrate_sig(self):
+        self.calibrate_sig.emit({'device':'wavemeter'})

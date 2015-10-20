@@ -18,9 +18,9 @@ class DeviceConnections(QtGui.QWidget):
                         'CRIS': ('PCCRIS17', 6005),
                         'Matisse': ('PCCRIS15', 6004),
                         'Diodes': ('PCCRIS15', 6003),
-                        'M2': ('128.141.98.136', 6002),
+                        'M2': ('SATELLITEPRO', 6002),
                         'wavemeter_pdl': ('PCCRIS6', 6001),
-                        'wavemeter': ('128.141.98.136', 6000)}
+                        'wavemeter': ('SATELLITEPRO', 6000)}
         self.deviceSelection = QtGui.QComboBox()
         self.deviceSelection.addItems(sorted(list(self.address.keys())))
         self.deviceSelection.setCurrentIndex(0)

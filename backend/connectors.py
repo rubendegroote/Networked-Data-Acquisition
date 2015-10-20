@@ -64,7 +64,7 @@ class Connector(asynchat.async_chat):
             self.callback(message=message)
         except:
             print('Connector error in found terminator:\n', \
-          			traceback.format_exc())
+                    traceback.format_exc())
         finally:
             self.send_request()
 

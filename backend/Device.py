@@ -11,7 +11,7 @@ import threading as th
 
 from backend.acquire_files.acquisition import format_map,write_params_map,acquire
 
-SAVE_DIR = "C:\\Data\\Gallium Run\\"
+SAVE_DIR = "C:\\Data\\"
 TIME_OFFSET = 1420070400 # 01/01/2015
 
 # Some exploratory code to understand a bit better how to make the Devices
@@ -39,17 +39,11 @@ class Device(Dispatcher):
         self.mgr = mp.Manager()
         # Shared scan number
         self.ns = self.mgr.Namespace()
-        self.ns.start_of_setpoint = time.time()
         self.ns.scan_number = -1
         self.ns.mass = 0
         self.ns.on_setpoint = True
         self.ns.scanning = False
-        self.ns.current_position = 0
         self.ns.progress = 0
-        self.ns.parameter = ''
-        self.ns.scan_parameter = ''
-        self.ns.setpoint = 11997.442
-        self.ns.refresh_time = 1
         self.ns.status_data = {}
 
         self.ns.clock_offset = 0
@@ -73,6 +67,44 @@ class Device(Dispatcher):
         self.saveProcess.terminate()
         self.DAQProcess.terminate()
         super(Device,self).stop()
+
+    def start_daq(self):
+        self.stopFlag.clear()
+
+        args = (self.name,self.data_input,
+                self.iQ, self.mQ,self.stopFlag,
+                self.IStoppedFlag, self.ns)
+        self.DAQProcess = mp.Process(name = 'daq' + self.name,
+                  target=self.acquire,
+                  args=args)
+        self.DAQProcess.start()
+
+        self.readThread = th.Timer(0, self.read_data)
+        self.readThread.start()
+
+    def read_data(self):
+        while not self.stopFlag.is_set():
+            self.handle_messages()
+
+            data_packet = hp.emptyPipe(self.data_output)
+            if not data_packet == []:
+                self.data_deque.extend(data_packet)
+                self.save_input.send(data_packet)
+
+            time.sleep(0.01)
+
+    def handle_messages(self):
+        message = hp.GetFromQueue(self.mQ)
+        if not message == None:
+            self.notify_connectors(message)
+            
+    def start_saving(self):
+        args = (self.save_output,SAVE_DIR,
+                  self.name,self.format)
+        self.saveProcess = mp.Process(name = 'save_' + self.name,
+                                      target = save_continuously,
+                                      args = args)
+        self.saveProcess.start()
 
     @hp.try_call
     def status(self, params):
@@ -104,69 +136,8 @@ class Device(Dispatcher):
     @hp.try_call
     def execute_instruction(self,params):
         instruction = params['instruction']
-        arguments = params['arguments']
-        self.iQ.put([instruction,arguments])
+        self.iQ.put([instruction,params['arguments']])
         return {}
-
-    @hp.try_call
-    def start_scan(self,params):
-        self.ns.scan_parameter = params['scan_parameter'][0]
-        self.ns.scan_array = params['scan_array']
-        self.ns.time_per_step = params['time_per_step'][0]
-
-        self.iQ.put(['scan',()])
-
-        return {}
-
-    @hp.try_call
-    def go_to_setpoint(self,params):
-        self.ns.parameter = params['parameter'][0]
-        self.ns.setpoint = params['setpoint'][0]
-        self.iQ.put(['go_to_setpoint',None])
-        return {}
-
-    @hp.try_call
-    def stop_scan(self,params):
-        self.ns.scanning = False
-        return {}
-
-    def start_daq(self):
-        self.stopFlag.clear()
-
-        args = (self.name,self.data_input,
-                self.iQ, self.mQ,self.stopFlag,
-                self.IStoppedFlag, self.ns)
-        self.DAQProcess = mp.Process(name = 'daq' + self.name,
-                  target=self.acquire,
-                  args=args)
-        self.DAQProcess.start()
-
-        self.readThread = th.Timer(0, self.read_data)
-        self.readThread.start()
-
-    def read_data(self):
-        while not self.stopFlag.is_set():
-            self.handle_messages()
-
-            data_packet = hp.emptyPipe(self.data_output)
-            if not data_packet == []:
-                self.data_deque.extend(data_packet)
-                self.save_input.send(data_packet)
-
-            time.sleep(0.01)
-
-    def handle_messages(self):
-        message = hp.GetFromQueue(self.mQ)
-        if not message == None:
-            self.notify_connectors(message)
-
-    def start_saving(self):
-        args = (self.save_output,SAVE_DIR,
-                  self.name,self.format)
-        self.saveProcess = mp.Process(name = 'save_' + self.name,
-                                      target = save_continuously,
-                                      args = args)
-        self.saveProcess.start()
 
     def handle_accept(self):
         # we want only one data server or controller
