@@ -88,7 +88,7 @@ class Controller(Dispatcher):
                 {'instruction':'start_scan',
                  'arguments':{'scan_parameter':scan_parameter,
                               'scan_array':scan_array,
-                              'time_per_step':time_per_step}))
+                              'time_per_step':time_per_step}}))
         # lgobook updating
         info_for_log = {'Scan Number': self.scan_number,
                         'Author': 'Automatic Entry',
@@ -125,7 +125,7 @@ class Controller(Dispatcher):
         scanner = self.connectors[self.scanner_name]
         scanner.add_request(('execute_instruction',
                {'instruction':'stop_scan',
-                'arguments':{}))
+                'arguments':{}}))
 
         return {}
 
@@ -144,7 +144,7 @@ class Controller(Dispatcher):
         device_to_set.add_request(('execute_instruction',
                {'instruction':'go_to_setpoint',
                 'arguments':{'parameter':parameter,
-                             'setpoint':setpoint}))
+                             'setpoint':setpoint}}))
 
         info_for_log =  {'Author': 'Automatic Entry',
                  'Tags': {"Setpoint":True},

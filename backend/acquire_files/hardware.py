@@ -24,6 +24,7 @@ class Hardware():
         self.mapping = mapping
         self.refresh_time = refresh_time
         self.start_of_setpoint = time.time()
+        self.clock_offset = 0
 
         self.needs_stabilization = needs_stabilization
         if needs_stabilization:
