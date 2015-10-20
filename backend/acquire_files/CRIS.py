@@ -76,7 +76,7 @@ class CRIS(Hardware):
     def write_to_device(self):
         DAQmxWriteAnalogScalarF64(self.aoTaskHandle,
                                       True, self.timeout,
-                                      self.ns.setpoint, None)
+                                      self.setpoint, None)
 
     def read_from_device(self):
         DAQmxReadCounterScalarU32(self.countTaskHandle,
@@ -92,7 +92,7 @@ class CRIS(Hardware):
         counts = self.countData.value - self.lastCount.value
         self.lastCount.value = self.countData.value
 
-        data = [self.ns.setpoint,counts]
+        data = [self.setpoint,counts]
         data.extend(self.aiData)
 
         return data

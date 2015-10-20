@@ -74,8 +74,8 @@ class Hardware():
             self.parameter = args['parameter'][0]
             self.setpoint = args['setpoint'][0]
             if self.parameter in self.write_params:
-                self.on_setpoint = False
-                return ([0],'{} setpoint acknowledged.'.format(self.write_params))
+                self.ns.on_setpoint = False
+                return ([0],'{} setpoint acknowledged.'.format(self.parameter))
 
             else:
                 return ([1],'{} cannot be set.'.format(self.parameter))
@@ -125,7 +125,7 @@ class Hardware():
         self.ns.on_setpoint = True
         if self.ns.scanning:
             self.setpoint_reached()
-        return ([0],'{} setpoint reached'.format(self.scan_parameter))
+        return ([0],'{} setpoint reached'.format(self.parameter))
 
     def setpoint_reached(self):
         self.ns.on_setpoint = True

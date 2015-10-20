@@ -57,8 +57,7 @@ class Dispatcher(asyncore.dispatcher):
 
     def execute_instruction_reply(self,track,params):
         origin, track_id = track[-1]
-        instruction = params['instruction']
-        self.notify_connectors(([0],"Device {} received {} instruction correctly.".format(origin,instruction)))
+        self.notify_connectors(([0],"Device {} received instruction correctly.".format(origin)))
 
     @try_call
     def add_connector(self, params):
@@ -67,7 +66,7 @@ class Dispatcher(asyncore.dispatcher):
             return
         for name, add in self.connectors.items():
             print(name,add,address)
-            if address == (add.chan[0], str(add.chan[1])):
+            if (str(address[0]),str(address[1])) == (str(add.chan[0]), str(add.chan[1])):
                 if self.connInfo[name][0]:
                     return
         conn = Connector(chan=(address[0], int(address[1])),
@@ -145,6 +144,7 @@ class Dispatcher(asyncore.dispatcher):
             self.acceptors.append(Acceptor(sock=sock,name=self.name,
                                callback=self.acceptor_cb,
                                onCloseCallback=self.acceptor_closed_cb))
+            print(self.acceptors)
 
     def get_sender_ID(self, sock):
         now = time.time()

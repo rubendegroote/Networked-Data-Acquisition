@@ -115,7 +115,7 @@ class M2(Hardware):
         pass
 
     def stabilize_device(self):
-        error = self.wavenumber - self.ns.setpoint
+        error = self.wavenumber - self.setpoint
         if not (self.ns.status_data["etalon_lock"] \
                 and self.ns.status_data["cavity_lock"]):
             # etalon and cavity are not locked
@@ -131,7 +131,7 @@ class M2(Hardware):
 
         if not self.ns.on_setpoint and abs(error) < 5*10**-5:
             self.setpoint_reached()
-            return ([0],'{} setpoint reached'.format(self.ns.scan_parameter))
+            return ([0],'{} setpoint reached'.format(self.scan_parameter))
 
     def read_from_device(self):
         self.socket.sendall(comm.get_status())

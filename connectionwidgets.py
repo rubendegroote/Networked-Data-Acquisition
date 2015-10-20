@@ -20,7 +20,8 @@ class DeviceConnections(QtGui.QWidget):
                         'Diodes': ('PCCRIS15', 6003),
                         'M2': ('SATELLITEPRO', 6002),
                         'wavemeter_pdl': ('PCCRIS6', 6001),
-                        'wavemeter': ('SATELLITEPRO', 6000)}
+                        'wavemeter': ('SATELLITEPRO', 6000),
+                        'beamline':('PCCRIS3',6007)}
         self.deviceSelection = QtGui.QComboBox()
         self.deviceSelection.addItems(sorted(list(self.address.keys())))
         self.deviceSelection.setCurrentIndex(0)

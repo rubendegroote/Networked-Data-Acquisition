@@ -34,7 +34,7 @@ class Matisse(Hardware):
         self.wlmdata.GetExposureNum.restype  = ctypes.c_long
 
     def write_to_device(self):
-        self.opc.write(('Wavemeter.Setpoint',self.ns.setpoint*0.0299792458))
+        self.opc.write(('Wavemeter.Setpoint',self.setpoint*0.0299792458))
 
     def read_from_device(self):
         self.wavenumber = self.wlmdata.GetFrequencyNum(1,0)/0.0299792458

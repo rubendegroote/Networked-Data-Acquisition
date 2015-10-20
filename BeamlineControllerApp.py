@@ -11,7 +11,7 @@ from backend.connectors import Connector
 
 
 class ControlContainer(QtGui.QWidget):
-    new_volts = QtCore.pyqtSignal(list)
+    new_setpoint = QtCore.pyqtSignal(dict)
     def __init__(self):
         super(ControlContainer,self).__init__()
         self.max_offset = 50
@@ -30,6 +30,7 @@ class ControlContainer(QtGui.QWidget):
                 setbox = pg.SpinBox(value=0,
                               min = 0, max = 10**4,
                               step = 1)
+                setbox.name = key
                 setbox.sigValueChanging.connect(self.change_volts)
                 self.layout.addWidget(setbox,len(self.controls),1)
                 readback = QtGui.QLineEdit(str(0))
@@ -37,7 +38,9 @@ class ControlContainer(QtGui.QWidget):
                 self.controls[key] = (label,setbox,readback)
 
     def change_volts(self):
-        self.new_volts.emit(self.get_setpoints())
+        sender = self.sender()
+        name,value = sender.name,sender.value()
+        self.new_setpoint.emit({'parameter':[name],'setpoint':[value]})
 
     def get_setpoints(self):
         return [s[1].value() for s in self.controls.values()]
@@ -73,7 +76,7 @@ class BeamlineControllerApp(QtGui.QMainWindow):
 
         self.container = ControlContainer()
         self.central.addWidget(self.container)
-        self.container.new_volts.connect(self.change_volts)
+        self.container.new_setpoint.connect(self.change_volts)
 
         self.messageLog = QtGui.QPlainTextEdit()
         self.errorTracker = {}
@@ -125,11 +128,11 @@ class BeamlineControllerApp(QtGui.QMainWindow):
             {'track':track,'args':[[0],"Instruction forwarded"]})
 
 
-    def change_volts(self,values):
+    def change_volts(self,arguments):
         self.connector.add_request(('forward_instruction',
-                                   {'instruction':'change_voltages',
+                                   {'instruction':'go_to_setpoint',
                                     'device':'beamline',
-                                    'arguments':{'voltages':values}}))
+                                    'arguments':arguments}))
 
     def default_cb(self):
         return 'status',{}
