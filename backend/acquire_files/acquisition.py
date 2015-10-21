@@ -60,8 +60,10 @@ try:
     format_map['beamline'] = Beamline.this_format
     write_params_map['beamline'] = Beamline.write_params
     hardware_map['beamline'] = Beamline.Beamline
-except ImportError:
+except ImportError as e:
+    print(e)
     print('Could not import beamline')
+
 ### Main acquire loop
 def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
     ### what hardware?

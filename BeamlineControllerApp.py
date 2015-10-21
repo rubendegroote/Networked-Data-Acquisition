@@ -3,12 +3,63 @@ import threading as th
 import time
 import configparser
 from multiprocessing import freeze_support
-import sys
+import os,sys
 from PyQt4 import QtCore, QtGui
 import pyqtgraph as pg
 
 from backend.connectors import Connector
 
+
+class Spin(QtGui.QLineEdit):
+    sigValueChanging = QtCore.pyqtSignal()
+    def __init__(self,*args,**kwargs):
+        super(Spin,self).__init__(*args,**kwargs)
+
+        self._value = int(self.text())
+
+        self.min = 0
+        self.max = 10**4
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self,val):
+        val = int(val)
+        val = max(self.min,val)
+        val = min(self.max,val)
+        self._value = val
+
+        l = len(self.text())
+        pos = self.cursorPosition()
+        self.setText(str(self.value))
+        if l < len(self.text()):
+            pos = pos + 1
+        elif l < len(self.text()): 
+            pos = pos - 1
+        self.setCursorPosition(pos)
+
+    def setText(self,text):
+        self._value = int(text)
+        super(Spin,self).setText(str(self._value))
+
+    def keyPressEvent(self,e):
+        text = self.text()
+        if e.key() == QtCore.Qt.Key_Up or e.key() == QtCore.Qt.Key_Down:
+            pos = self.cursorPosition()
+            change = 10**(len(self.text())-pos)
+            if e.key() == QtCore.Qt.Key_Down:
+                change = - change
+
+            self.value = self.value + change
+        
+        else:
+            super(Spin,self).keyPressEvent(e)
+
+        if not text == self.text():
+            self.value = self.text()
+            self.sigValueChanging.emit()
 
 class ControlContainer(QtGui.QWidget):
     new_setpoint = QtCore.pyqtSignal(dict)
@@ -27,9 +78,7 @@ class ControlContainer(QtGui.QWidget):
             else:
                 label = QtGui.QLabel(str(key))
                 self.layout.addWidget(label,len(self.controls),0)
-                setbox = pg.SpinBox(value=0,
-                              min = 0, max = 10**4,
-                              step = 1)
+                setbox = Spin(text = "0")
                 setbox.name = key
                 setbox.sigValueChanging.connect(self.change_volts)
                 self.layout.addWidget(setbox,len(self.controls),1)
@@ -39,14 +88,17 @@ class ControlContainer(QtGui.QWidget):
 
     def change_volts(self):
         sender = self.sender()
-        name,value = sender.name,sender.value()
+        name,value = sender.name,sender.value
         self.new_setpoint.emit({'parameter':[name],'setpoint':[value]})
 
+    def setControl(self,name,value):
+        self.controls[name][1].setText(value)
+
     def get_setpoints(self):
-        return [s[1].value() for s in self.controls.values()]
+        return {n:s[1].value for n,s in self.controls.items()}
 
     def update_control(self,key,readback=0,setpoint=0):
-         # self.set.sigValueChanging.disconnect(self.valueChanged)
+        self.controls[key][1].sigValueChanging.disconnect(self.change_volts)
         # self.controls[key][1].setValue(setpoint)
 
         self.controls[key][2].setText(str(readback))
@@ -58,18 +110,32 @@ class ControlContainer(QtGui.QWidget):
         # else:
         #     self.setStyleSheet("QLineEdit { background-color: green; }")
 
-        # self.set.sigValueChanging.connect(self.valueChanged)
+        self.controls[key][1].sigValueChanging.connect(self.change_volts)
 
 class BeamlineControllerApp(QtGui.QMainWindow):
     updateSignal = QtCore.pyqtSignal(tuple)
     messageUpdateSignal = QtCore.pyqtSignal(dict)
     def __init__(self):
-        super(BeamlineControllerApp, self).__init__()
+        super(BeamlineControllerApp, self).__init__()   
         self.updateSignal.connect(self.updateUI)
         self.messageUpdateSignal.connect(self.updateMessages)
-
         self.looping = True
         t = th.Thread(target=self.startIOLoop).start()
+
+        channel = ('127.0.0.1',5004)
+        self.connector = Connector(name = 'BGui_to_C',
+                                 chan=channel,
+                                 callback=self.reply_cb,
+                                 default_callback=self.default_cb,
+                                 onCloseCallback = self.lostConn)
+
+        self.connector.add_request(('add_connector',{'address': ('127.0.0.1',6007)}))
+
+        self.init_UI()
+
+
+    def init_UI(self):
+        self.makeMenuBar()
 
         self.central = QtGui.QSplitter()
         self.setCentralWidget(self.central)
@@ -78,20 +144,39 @@ class BeamlineControllerApp(QtGui.QMainWindow):
         self.central.addWidget(self.container)
         self.container.new_setpoint.connect(self.change_volts)
 
+        self.graph = pg.PlotWidget()
+        self.central.addWidget(self.graph)
+
         self.messageLog = QtGui.QPlainTextEdit()
         self.errorTracker = {}
-        self.central.addWidget(self.messageLog)
+        # self.central.addWidget(self.messageLog)
 
         self.show()
 
-        channel = ('PCCRIS15',5004)
-        self.connector = Connector(name = 'BGui_to_C',
-                                 chan=channel,
-                                 callback=self.reply_cb,
-                                 default_callback=self.default_cb,
-                                 onCloseCallback = self.lostConn)
+    def makeMenuBar(self):
+        menubar = self.menuBar()
 
-        self.connector.add_request(('add_connector',{'address': ('PCCRIS3',6007)}))
+        self.saveAction = QtGui.QAction('&Save',self)
+        self.saveAction.setShortcut('Ctrl+S')
+        self.saveAction.setStatusTip('Save beam tuning parameters')
+        self.saveAction.triggered.connect(self.save)
+
+        self.loadAction = QtGui.QAction('&Load',self)
+        self.loadAction.setShortcut('Ctrl+O')
+        self.loadAction.setStatusTip('Load beam tuning parameters')
+        self.loadAction.triggered.connect(self.load)
+
+        fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(self.saveAction)
+        fileMenu.addAction(self.loadAction)
+
+        self.optimizeAction = QtGui.QAction('&Optimize',self)
+        self.optimizeAction.setShortcut('Ctrl+T')
+        self.optimizeAction.setStatusTip('Optimize beam tuning parameters')
+        self.optimizeAction.triggered.connect(self.optimize)
+
+        beamMenu = menubar.addMenu('&Beamline')
+        beamMenu.addAction(self.optimizeAction)
 
     def updateUI(self,*args):
         target,info_dict = args[0]
@@ -133,6 +218,33 @@ class BeamlineControllerApp(QtGui.QMainWindow):
                                    {'instruction':'go_to_setpoint',
                                     'device':'beamline',
                                     'arguments':arguments}))
+
+    def save(self):
+        fileName = QtGui.QFileDialog.getSaveFileName(self, 
+            'Select file', os.getcwd(),"CSV (*.csv)")
+        if fileName == '':
+            return
+        # Saves the settings to a .txt so they can easily be loaded next time.
+        with open(fileName,'w') as f:
+            for n,s in self.container.get_setpoints().items():
+                f.write(n + ';' + str(s))
+                f.write('\n')
+        
+
+    def load(self):
+        fileName = QtGui.QFileDialog.getOpenFileName(self, 
+            'Select file', os.getcwd(),"CSV (*.csv)")
+        if fileName == '':
+            return
+
+        with open(fileName,'r') as f:
+            for line in f.readlines():
+                name,value = line.split(';')
+                value = float(value.strip('\n'))
+                self.container.setControl(name,value)
+
+    def optimize(self):
+        pass
 
     def default_cb(self):
         return 'status',{}
