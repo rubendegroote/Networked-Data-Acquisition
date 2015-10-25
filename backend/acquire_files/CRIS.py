@@ -77,6 +77,7 @@ class CRIS(Hardware):
         DAQmxWriteAnalogScalarF64(self.aoTaskHandle,
                                       True, self.timeout,
                                       self.setpoint, None)
+        return True
 
     def read_from_device(self):
         DAQmxReadCounterScalarU32(self.countTaskHandle,

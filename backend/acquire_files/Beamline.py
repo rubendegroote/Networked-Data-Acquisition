@@ -18,7 +18,7 @@ ai_channels = ["/PXI1" + n for n in input_names]
 ao_channels = ["/PXI1" + n for n in output_names]
 
 this_format = format + tuple(ai_channels)
-write_params = names
+write_params = ['voltages']
 
 class Beamline(Hardware):
     def __init__(self):
@@ -39,9 +39,7 @@ class Beamline(Hardware):
                             ai_channels=ais,
                             no_of_ai=no_of_ai)
 
-        self.voltages = []
-        self.last_voltages_written = []
-
+        self.last_setpoints = {}
 
     def connect_to_device(self):
         self.timeout = 10.0
@@ -77,11 +75,23 @@ class Beamline(Hardware):
         self.aoData = np.zeros((self.no_of_ao,), dtype=np.float64)
         
     def write_to_device(self):
-        index = self.settings['names'].index(str(self.parameter))
-        print(index,self.setpoint)
-        # DAQmxWriteAnalogScalarF64(self.aoTaskHandle,
-        #                               True, self.timeout,
-        #                               self.voltages, None)
+        print(self.setpoint)
+        done = True
+        for key,val in self.setpoint:
+            prev = self.last_setpoints[key]
+            if abs(val - prev) > 100:
+                next_val = prev + val*np.sign(val-prev)
+                done = False
+            else:
+                next_val = val
+            self.last_setpoints[key] = next_val
+
+        voltages = [self.last_setpoints[n] for n in self.settings['names']]
+        DAQmxWriteAnalogScalarF64(self.aoTaskHandle,
+                                  True, self.timeout,
+                                  voltages, None)
+        
+        return done
 
     def read_from_device(self):
         DAQmxReadAnalogF64(self.aiTaskHandle,

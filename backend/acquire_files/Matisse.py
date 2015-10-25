@@ -35,6 +35,7 @@ class Matisse(Hardware):
 
     def write_to_device(self):
         self.opc.write(('Wavemeter.Setpoint',self.setpoint*0.0299792458))
+        return True
 
     def read_from_device(self):
         self.wavenumber = self.wlmdata.GetFrequencyNum(1,0)/0.0299792458

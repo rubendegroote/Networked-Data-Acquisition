@@ -37,7 +37,7 @@ class Hardware():
 
     def write_to_device(self):
         # to be overridden
-        pass
+        return True
 
     def read_from_device(self):
         # to be overridden
@@ -97,7 +97,6 @@ class Hardware():
     @hp.try_deco
     def scan(self):
         if self.ns.on_setpoint and time.time() - self.start_of_setpoint > self.time_per_step:
-            print('scanning')
             self.ns.on_setpoint = False
             if self.ns.current_position == len(self.scan_array):
                 self.ns.scanning = False
@@ -121,11 +120,10 @@ class Hardware():
     
     @hp.try_deco
     def output(self):
-        self.write_to_device()
-        self.ns.on_setpoint = True
-        if self.ns.scanning:
+        done = self.write_to_device()
+        if done:
             self.setpoint_reached()
-        return ([0],'{} setpoint reached'.format(self.parameter))
+            return ([0],'{} setpoint reached'.format(self.parameter))
 
     def setpoint_reached(self):
         self.ns.on_setpoint = True

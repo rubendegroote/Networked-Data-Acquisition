@@ -6,60 +6,10 @@ from multiprocessing import freeze_support
 import os,sys
 from PyQt4 import QtCore, QtGui
 import pyqtgraph as pg
+from spin import Spin
+from beamlinegraph import BeamlineGraph
 
 from backend.connectors import Connector
-
-
-class Spin(QtGui.QLineEdit):
-    sigValueChanging = QtCore.pyqtSignal()
-    def __init__(self,*args,**kwargs):
-        super(Spin,self).__init__(*args,**kwargs)
-
-        self._value = int(self.text())
-
-        self.min = 0
-        self.max = 10**4
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self,val):
-        val = int(val)
-        val = max(self.min,val)
-        val = min(self.max,val)
-        self._value = val
-
-        l = len(self.text())
-        pos = self.cursorPosition()
-        self.setText(str(self.value))
-        if l < len(self.text()):
-            pos = pos + 1
-        elif l < len(self.text()): 
-            pos = pos - 1
-        self.setCursorPosition(pos)
-
-    def setText(self,text):
-        self._value = int(text)
-        super(Spin,self).setText(str(self._value))
-
-    def keyPressEvent(self,e):
-        text = self.text()
-        if e.key() == QtCore.Qt.Key_Up or e.key() == QtCore.Qt.Key_Down:
-            pos = self.cursorPosition()
-            change = 10**(len(self.text())-pos)
-            if e.key() == QtCore.Qt.Key_Down:
-                change = - change
-
-            self.value = self.value + change
-        
-        else:
-            super(Spin,self).keyPressEvent(e)
-
-        if not text == self.text():
-            self.value = self.text()
-            self.sigValueChanging.emit()
 
 class ControlContainer(QtGui.QWidget):
     new_setpoint = QtCore.pyqtSignal(dict)
@@ -87,9 +37,9 @@ class ControlContainer(QtGui.QWidget):
                 self.controls[key] = (label,setbox,readback)
 
     def change_volts(self):
-        sender = self.sender()
-        name,value = sender.name,sender.value
-        self.new_setpoint.emit({'parameter':[name],'setpoint':[value]})
+        setpoints = self.get_setpoints()
+        self.new_setpoint.emit({'parameter':['voltages'],
+                                'setpoint':[setpoints]})
 
     def setControl(self,name,value):
         self.controls[name][1].setText(value)
@@ -122,14 +72,14 @@ class BeamlineControllerApp(QtGui.QMainWindow):
         self.looping = True
         t = th.Thread(target=self.startIOLoop).start()
 
-        channel = ('127.0.0.1',5004)
-        self.connector = Connector(name = 'BGui_to_C',
-                                 chan=channel,
-                                 callback=self.reply_cb,
-                                 default_callback=self.default_cb,
-                                 onCloseCallback = self.lostConn)
+        # channel = ('127.0.0.1',5004)
+        # self.connector = Connector(name = 'BGui_to_C',
+        #                          chan=channel,
+        #                          callback=self.reply_cb,
+        #                          default_callback=self.default_cb,
+        #                          onCloseCallback = self.lostConn)
 
-        self.connector.add_request(('add_connector',{'address': ('127.0.0.1',6007)}))
+        # self.connector.add_request(('add_connector',{'address': ('127.0.0.1',6007)}))
 
         self.init_UI()
 
@@ -144,7 +94,7 @@ class BeamlineControllerApp(QtGui.QMainWindow):
         self.central.addWidget(self.container)
         self.container.new_setpoint.connect(self.change_volts)
 
-        self.graph = pg.PlotWidget()
+        self.graph = BeamlineGraph()
         self.central.addWidget(self.graph)
 
         self.messageLog = QtGui.QPlainTextEdit()
@@ -211,7 +161,6 @@ class BeamlineControllerApp(QtGui.QMainWindow):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit(
             {'track':track,'args':[[0],"Instruction forwarded"]})
-
 
     def change_volts(self,arguments):
         self.connector.add_request(('forward_instruction',
