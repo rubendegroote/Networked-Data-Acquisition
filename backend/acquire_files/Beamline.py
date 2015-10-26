@@ -34,12 +34,14 @@ class Beamline(Hardware):
         aos = ",".join(ao_channels)
 
         self.settings = dict(names=names,
+                            supply_names = supply_names,
                             ao_channels=aos,
                             no_of_ao=no_of_ao,
                             ai_channels=ais,
                             no_of_ai=no_of_ai)
 
         self.last_setpoints = {}
+        self.ramp = 100
 
     def connect_to_device(self):
         self.timeout = 10.0
@@ -75,21 +77,30 @@ class Beamline(Hardware):
         self.aoData = np.zeros((self.no_of_ao,), dtype=np.float64)
         
     def write_to_device(self):
-        print(self.setpoint)
         done = True
-        for key,val in self.setpoint:
-            prev = self.last_setpoints[key]
-            if abs(val - prev) > 100:
-                next_val = prev + val*np.sign(val-prev)
+        if not type(self.setpoint) == dict:
+            # fix this properly later
+            return
+
+        for key,val in self.setpoint.items():
+            try:
+                prev = self.last_setpoints[key]
+            except KeyError:
+                prev = 0
+            if abs(val - prev) > self.ramp:
+                next_val = prev + self.ramp*np.sign(val-prev)
                 done = False
             else:
                 next_val = val
             self.last_setpoints[key] = next_val
 
         voltages = [self.last_setpoints[n] for n in self.settings['names']]
-        DAQmxWriteAnalogScalarF64(self.aoTaskHandle,
-                                  True, self.timeout,
-                                  voltages, None)
+        voltages = [v/500 if '5KV' in t else v/1000 for v,t in \
+                zip(voltages,self.settings['supply_names'])]
+        print(voltages)
+        # DAQmxWriteAnalogScalarF64(self.aoTaskHandle,
+        #                           True, self.timeout,
+        #                           voltages, None)
         
         return done
 
@@ -99,7 +110,8 @@ class Beamline(Hardware):
                            DAQmx_Val_GroupByChannel, self.aiData,
                            self.no_of_ai,
                            byref(ctypes.c_long()), None)
-
-        self.ns.status_data = {n:d for n,d in zip(self.settings['names'],self.aiData)}
+        voltages = [v*500 if '5KV' in t else v*1000 for v,t in \
+                zip(self.aiData,self.settings['supply_names'])]
+        self.ns.status_data = [(n,d) for n,d in zip(self.settings['names'],voltages)]
 
         return self.aiData

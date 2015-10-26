@@ -1,6 +1,5 @@
 from PyQt4 import QtCore, QtGui
 
-
 class Spin(QtGui.QLineEdit):
     sigValueChanging = QtCore.pyqtSignal()
     def __init__(self,*args,**kwargs):

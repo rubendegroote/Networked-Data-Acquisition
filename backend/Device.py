@@ -16,7 +16,7 @@ TIME_OFFSET = 1420070400 # 01/01/2015
 
 # Some exploratory code to understand a bit better how to make the Devices
 class Device(Dispatcher):
-    def __init__(self, name='', PORT=5005):
+    def __init__(self, name='', PORT=5005, save_data = True):
         super(Device, self).__init__(PORT, name)
         self.acquire = acquire
 

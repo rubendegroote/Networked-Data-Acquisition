@@ -73,14 +73,14 @@ class Hardware():
         elif instr_name == 'go_to_setpoint':
             parameter = args['parameter'][0]
             setpoint = args['setpoint'][0]
-            if self.parameter in self.write_params:
+            if parameter in self.write_params:
                 self.parameter = parameter
                 self.setpoint = setpoint
                 self.ns.on_setpoint = False
                 return ([0],'{} setpoint acknowledged.'.format(self.parameter))
 
             else:
-                return ([1],'{} cannot be set.'.format(self.parameter))
+                return ([1],'{} cannot be set.'.format(parameter))
 
         elif instr_name == 'change_prop':
             self.prop = args

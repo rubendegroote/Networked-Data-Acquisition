@@ -18,28 +18,49 @@ class ControlContainer(QtGui.QWidget):
         self.max_offset = 50
         self.layout = QtGui.QGridLayout(self)
 
+        self.status_label = QtGui.QLabel("On Setpoint")
+        self.on_setpoint = False
+        self.status_label.setStyleSheet("QLabel { background-color: red; }")
+        self.layout.addWidget(self.status_label,0,0,1,3)
+
         self.controls = {}
 
     def update(self,track,params):
         status_data = params['status_data']['beamline']
-        for key,val in status_data.items():
+        for key,val in status_data:
             if key in self.controls.keys():
                 self.update_control(key=key,readback=val)
             else:
                 label = QtGui.QLabel(str(key))
-                self.layout.addWidget(label,len(self.controls),0)
+                self.layout.addWidget(label,len(self.controls)+10,0)
                 setbox = Spin(text = "0")
                 setbox.name = key
                 setbox.sigValueChanging.connect(self.change_volts)
-                self.layout.addWidget(setbox,len(self.controls),1)
+                self.layout.addWidget(setbox,len(self.controls)+10,1)
                 readback = QtGui.QLineEdit(str(0))
-                self.layout.addWidget(readback,len(self.controls),2)
+                self.layout.addWidget(readback,len(self.controls)+10,2)
                 self.controls[key] = (label,setbox,readback)
+
+        on_setpoint = params['on_setpoint']['beamline']
+        if not on_setpoint == self.on_setpoint:
+            self.on_setpoint = on_setpoint
+            if on_setpoint:
+                self.status_label.setStyleSheet("QLabel { background-color: green; }")
+            else:
+                self.status_label.setStyleSheet("QLabel { background-color: red; }")
 
     def change_volts(self):
         setpoints = self.get_setpoints()
         self.new_setpoint.emit({'parameter':['voltages'],
                                 'setpoint':[setpoints]})
+
+    def ramp_down(self):
+        for key,val in self.controls.items():
+            self.controls[key][1].sigValueChanging.disconnect(self.change_volts)
+            self.controls[key][1].value = 0
+            self.controls[key][1].sigValueChanging.connect(self.change_volts)
+
+        self.change_volts()
 
     def setControl(self,name,value):
         self.controls[name][1].setText(value)
@@ -72,14 +93,14 @@ class BeamlineControllerApp(QtGui.QMainWindow):
         self.looping = True
         t = th.Thread(target=self.startIOLoop).start()
 
-        # channel = ('127.0.0.1',5004)
-        # self.connector = Connector(name = 'BGui_to_C',
-        #                          chan=channel,
-        #                          callback=self.reply_cb,
-        #                          default_callback=self.default_cb,
-        #                          onCloseCallback = self.lostConn)
+        channel = ('127.0.0.1',5004)
+        self.connector = Connector(name = 'BGui_to_C',
+                                 chan=channel,
+                                 callback=self.reply_cb,
+                                 default_callback=self.default_cb,
+                                 onCloseCallback = self.lostConn)
 
-        # self.connector.add_request(('add_connector',{'address': ('127.0.0.1',6007)}))
+        self.connector.add_request(('add_connector',{'address': ('127.0.0.1',6007)}))
 
         self.init_UI()
 
@@ -125,8 +146,14 @@ class BeamlineControllerApp(QtGui.QMainWindow):
         self.optimizeAction.setStatusTip('Optimize beam tuning parameters')
         self.optimizeAction.triggered.connect(self.optimize)
 
+        self.rampDownAction = QtGui.QAction('&Ramp down all',self)
+        self.rampDownAction.setShortcut('Ctrl+R')
+        self.rampDownAction.setStatusTip('Ramp all voltages to zero')
+        self.rampDownAction.triggered.connect(self.ramp_down)
+
         beamMenu = menubar.addMenu('&Beamline')
         beamMenu.addAction(self.optimizeAction)
+        beamMenu.addAction(self.rampDownAction)
 
     def updateUI(self,*args):
         target,info_dict = args[0]
@@ -150,6 +177,9 @@ class BeamlineControllerApp(QtGui.QMainWindow):
 
     def status_reply(self,track,params):
         self.updateSignal.emit((self.container.update,{'track':track,
+                                    'args':params}))
+
+        self.updateSignal.emit((self.graph.update,{'track':track,
                                     'args':params}))
 
     def add_connector_reply(self,track,params):
@@ -178,7 +208,6 @@ class BeamlineControllerApp(QtGui.QMainWindow):
             for n,s in self.container.get_setpoints().items():
                 f.write(n + ';' + str(s))
                 f.write('\n')
-        
 
     def load(self):
         fileName = QtGui.QFileDialog.getOpenFileName(self, 
@@ -191,9 +220,28 @@ class BeamlineControllerApp(QtGui.QMainWindow):
                 name,value = line.split(';')
                 value = float(value.strip('\n'))
                 self.container.setControl(name,value)
+        self.container.change_volts()
 
     def optimize(self):
         pass
+
+    def ramp_down(self):
+        msgBox = QtGui.QMessageBox()
+        msgBox.setText("Voltage ramp requested.")
+        msgBox.setInformativeText("Do you want to save or discard the current voltages, or cancel the ramp?")
+        msgBox.setStandardButtons(QtGui.QMessageBox.Save | QtGui.QMessageBox.Discard | QtGui.QMessageBox.Cancel)
+        msgBox.setDefaultButton(QtGui.QMessageBox.Save)
+        ret = msgBox.exec_()
+
+        if ret == QtGui.QMessageBox.Save:
+            self.save()
+            self.container.ramp_down()
+
+        elif ret == QtGui.QMessageBox.Discard:
+            self.container.ramp_down()
+
+        elif ret == QtGui.QMessageBox.Cancel:
+            return
 
     def default_cb(self):
         return 'status',{}
@@ -223,8 +271,26 @@ class BeamlineControllerApp(QtGui.QMainWindow):
         self.looping = False
 
     def closeEvent(self, event):
-        self.stopIOLoop()
-        event.accept()
+        msgBox = QtGui.QMessageBox()
+        msgBox.setText("Closing program.")
+        msgBox.setInformativeText("Do you want to save or discard the current voltages, or cancel?")
+        msgBox.setStandardButtons(QtGui.QMessageBox.Save | QtGui.QMessageBox.Discard | QtGui.QMessageBox.Cancel)
+        msgBox.setDefaultButton(QtGui.QMessageBox.Save)
+        ret = msgBox.exec_()
+
+        if ret == QtGui.QMessageBox.Save:
+            self.save()
+            self.stopIOLoop()
+            event.accept()
+
+        elif ret == QtGui.QMessageBox.Discard:
+            self.stopIOLoop()
+            event.accept()
+
+        elif ret == QtGui.QMessageBox.Cancel:
+            return
+
+
 
 def main():
     # add freeze support
