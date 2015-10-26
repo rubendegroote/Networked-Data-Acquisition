@@ -4,9 +4,11 @@ from PyQt4 import QtCore, QtGui
 class Spin(QtGui.QLineEdit):
     sigValueChanging = QtCore.pyqtSignal()
     def __init__(self,*args,**kwargs):
-        super(Spin,self).__init__(*args,**kwargs)
-
-        self._value = int(self.text())
+        try:
+            super(Spin,self).__init__(*args,**kwargs)
+            self._value = int(self.text())
+        except:
+            pass
 
         self.min = 0
         self.max = 10**4

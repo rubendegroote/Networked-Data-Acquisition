@@ -71,9 +71,11 @@ class Hardware():
             return ([0],'Stopped {} scan.'.format(self.scan_parameter))
 
         elif instr_name == 'go_to_setpoint':
-            self.parameter = args['parameter'][0]
-            self.setpoint = args['setpoint'][0]
+            parameter = args['parameter'][0]
+            setpoint = args['setpoint'][0]
             if self.parameter in self.write_params:
+                self.parameter = parameter
+                self.setpoint = setpoint
                 self.ns.on_setpoint = False
                 return ([0],'{} setpoint acknowledged.'.format(self.parameter))
 
