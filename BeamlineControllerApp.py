@@ -8,6 +8,7 @@ from PyQt4 import QtCore, QtGui
 import pyqtgraph as pg
 from spin import Spin
 from beamlinegraph import BeamlineGraph
+import pandas as pd
 
 from backend.connectors import Connector
 
@@ -25,22 +26,13 @@ class ControlContainer(QtGui.QWidget):
 
         self.controls = {}
 
-    def update(self,track,params):
-        status_data = params['status_data']['beamline']
-        for key,val in status_data:
-            if key in self.controls.keys():
-                self.update_control(key=key,readback=val)
-            else:
-                label = QtGui.QLabel(str(key))
-                self.layout.addWidget(label,len(self.controls)+10,0)
-                setbox = Spin(text = "0")
-                setbox.name = key
-                setbox.sigValueChanging.connect(self.change_volts)
-                self.layout.addWidget(setbox,len(self.controls)+10,1)
-                readback = QtGui.QLineEdit(str(0))
-                self.layout.addWidget(readback,len(self.controls)+10,2)
-                self.controls[key] = (label,setbox,readback)
+    def update_controls(self,track,params):
+        data = params['latest_data']['beamline']
+        for key in self.controls.keys():
+            val = data[self.formats['beamline'].index(key)]
+            self.update_control(key=key,readback=val)
 
+    def update(self,track,params):
         on_setpoint = params['on_setpoint']['beamline']
         if not on_setpoint == self.on_setpoint:
             self.on_setpoint = on_setpoint
@@ -48,6 +40,20 @@ class ControlContainer(QtGui.QWidget):
                 self.status_label.setStyleSheet("QLabel { background-color: green; }")
             else:
                 self.status_label.setStyleSheet("QLabel { background-color: red; }")
+
+    def define_controls(self,track,params):
+        controls = params['data_format']['beamline']
+        for c in controls:
+            if not c in ('timestamp','offset','scan_number','mass','current'):
+                label = QtGui.QLabel(str(c))
+                self.layout.addWidget(label,len(self.controls)+10,0)
+                setbox = Spin(text = "0")
+                setbox.name = c
+                setbox.sigValueChanging.connect(self.change_volts)
+                self.layout.addWidget(setbox,len(self.controls)+10,1)
+                readback = QtGui.QLineEdit(str(0))
+                self.layout.addWidget(readback,len(self.controls)+10,2)
+                self.controls[c] = (label,setbox,readback)
 
     def change_volts(self):
         setpoints = self.get_setpoints()
@@ -72,7 +78,7 @@ class ControlContainer(QtGui.QWidget):
         self.controls[key][1].sigValueChanging.disconnect(self.change_volts)
         # self.controls[key][1].setValue(setpoint)
 
-        self.controls[key][2].setText(str(readback))
+        self.controls[key][2].setText(str(round(readback,1)))
 
         # if abs(setpoint - readback) > self.max_offset:
         #     self.setStyleSheet("QLineEdit { background-color: red; }")
@@ -90,19 +96,32 @@ class BeamlineControllerApp(QtGui.QMainWindow):
         super(BeamlineControllerApp, self).__init__()   
         self.updateSignal.connect(self.updateUI)
         self.messageUpdateSignal.connect(self.updateMessages)
+        self.initialized = False
+        self.ask_data = True
         self.looping = True
         t = th.Thread(target=self.startIOLoop).start()
+        self.init_UI()
 
-        channel = ('127.0.0.1',5004)
-        self.connector = Connector(name = 'BGui_to_C',
+        channel = ('PCCRIS15',5004)
+        self.control_connector = Connector(name = 'BGui_to_C',
                                  chan=channel,
                                  callback=self.reply_cb,
-                                 default_callback=self.default_cb,
+                                 default_callback = self.default_c_cb,
                                  onCloseCallback = self.lostConn)
 
-        self.connector.add_request(('add_connector',{'address': ('127.0.0.1',6007)}))
 
-        self.init_UI()
+        channel = ('PCCRIS1',5005)
+        self.server_connector = Connector(name = 'BGui_to_DS',
+                                 chan=channel,
+                                 callback=self.reply_cb,
+                                 default_callback=self.default_DS_cb,
+                                 onCloseCallback = self.lostConn)
+
+        time.sleep(1)
+
+        self.control_connector.add_request(('add_connector',{'address': ('PCCRIS3',6007)}))
+        self.server_connector.add_request(('add_connector',{'address': ('PCCRIS3',6007)}))
+
 
 
     def init_UI(self):
@@ -175,12 +194,50 @@ class BeamlineControllerApp(QtGui.QMainWindow):
             self.messageUpdateSignal.emit(
                 {'track':track,'args':[[1],"Received status fail in reply\n:{}".format(exception)]})
 
+    def default_c_cb(self):
+        return 'status',{}
+
+    def default_DS_cb(self):
+        # data server time!
+        if not self.initialized:
+            return 'data_format',{}
+        else:
+            if self.ask_data:
+                self.ask_data = False
+                return 'get_data',{'no_of_rows':self.graph.no_of_rows,
+                           'x':['beamline','timestamp'],
+                           'y':['beamline','current']}
+            else:
+                self.ask_data = True
+                return 'get_latest',{}
+
     def status_reply(self,track,params):
         self.updateSignal.emit((self.container.update,{'track':track,
                                     'args':params}))
 
-        self.updateSignal.emit((self.graph.update,{'track':track,
+    def get_data_reply(self,track,params):
+        data = params['data']
+        self.graph.no_of_rows = params['no_of_rows']
+        frame = pd.DataFrame({'x':data[0],'y':data[3]})
+        self.graph.data = self.graph.data.append(frame)
+
+        self.updateSignal.emit((self.graph.plot,{'track':track,
                                     'args':params}))
+
+    def get_latest_reply(self,track,params):
+        self.updateSignal.emit((self.container.update_controls,{'track':track,
+                                    'args':params}))
+
+    def data_format_reply(self,track,params):
+        origin, track_id = track
+        self.container.formats = params['data_format']
+
+        if not self.container.formats == {}:
+            self.updateSignal.emit((self.container.define_controls,{'track':track,
+                            'args':params}))
+            self.graph.no_of_rows = {k:0 for k in self.container.formats.keys()}
+
+            self.initialized = True
 
     def add_connector_reply(self,track,params):
         origin,track_id = track[-1]
@@ -193,7 +250,7 @@ class BeamlineControllerApp(QtGui.QMainWindow):
             {'track':track,'args':[[0],"Instruction forwarded"]})
 
     def change_volts(self,arguments):
-        self.connector.add_request(('forward_instruction',
+        self.control_connector.add_request(('forward_instruction',
                                    {'instruction':'go_to_setpoint',
                                     'device':'beamline',
                                     'arguments':arguments}))
@@ -223,7 +280,8 @@ class BeamlineControllerApp(QtGui.QMainWindow):
         self.container.change_volts()
 
     def optimize(self):
-        pass
+        print('optimization requested')
+        
 
     def ramp_down(self):
         msgBox = QtGui.QMessageBox()
@@ -242,9 +300,6 @@ class BeamlineControllerApp(QtGui.QMainWindow):
 
         elif ret == QtGui.QMessageBox.Cancel:
             return
-
-    def default_cb(self):
-        return 'status',{}
 
     def lostConn(self,connector):
         pass
@@ -288,7 +343,8 @@ class BeamlineControllerApp(QtGui.QMainWindow):
             event.accept()
 
         elif ret == QtGui.QMessageBox.Cancel:
-            return
+            event.ignore()
+
 
 
 

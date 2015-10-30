@@ -7,7 +7,7 @@ from backend.dispatcher import Dispatcher
 import sys
 import multiprocessing as mp
 
-SAVE_DIR = "C:\\Data\\Gallium Run\\"
+SAVE_DIR = "C:\\Data\\Beamline tests\\"
 TIME_OFFSET = 1420070400 # 01/01/2015
 
 class DataServer(Dispatcher):
@@ -64,7 +64,8 @@ class DataServer(Dispatcher):
                 data_set = self.scan_data[origin].T
             col = self.formats[origin].index(par_name)
             row = DS_no_of_rows[origin]-no_of_rows[origin]
-        except KeyError:
+        except KeyError as e:
+            print(e,self.formats.keys(),DS_no_of_rows.keys(),no_of_rows.keys(),self.data.keys())
             # no scans yet
             return [[],[]]
 
@@ -129,9 +130,13 @@ class DataServer(Dispatcher):
         return {'connector_info': self.connInfo,'no_of_rows':self.no_of_rows}
 
     @try_call
-    def data_format(self, *args):
+    def get_latest(self,*args):
         return {'data_format': self.formats,
-                'current_scan':self.current_scan}
+                'latest_data':{n:list(d[-1]) for n,d in self.data.items()}}
+
+    @try_call
+    def data_format(self, *args):
+        return {'current_scan':self.current_scan}
 
     def data_reply(self,track,params):
         data = params['data']
@@ -168,6 +173,7 @@ class DataServer(Dispatcher):
         grouped_data = group_per_scan(data,
                     axis=format.index('scan_number'))
         scan_no = max(grouped_data.keys())
+
         if scan_no == -1:
             # no scan data this time
             return
