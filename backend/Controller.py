@@ -6,8 +6,8 @@ from backend.connectors import Connector, Acceptor
 import backend.logbook as lb
 from backend.dispatcher import Dispatcher
 
-LOG_PATH = 'C:\\Logbook\\Gallium Run\\logbook'
-INI_PATH = 'C:\\Logbook\\Gallium Run\\scan_init.ini'
+LOG_PATH = 'C:\\Logbook\\Francium Run\\logbook'
+INI_PATH = 'C:\\Logbook\\Francium Run\\scan_init.ini'
 
 class Controller(Dispatcher):
     def __init__(self, PORT=5007, name='Controller'):
@@ -15,8 +15,10 @@ class Controller(Dispatcher):
 
         self.scanner_name = ""
         self.scan_number = -1
+        self.current_scan = -1
         self.progress = {}
         self.scanning = {}
+        self.calibrated = {}
         self.format = {}
         self.write_params = {}
         self.on_setpoint = {}
@@ -56,6 +58,7 @@ class Controller(Dispatcher):
         params = {'connector_info': self.connInfo,
                   'scan_number': [self.scan_number],
                   'scanning': self.scanning,
+                  'calibrated': self.calibrated,
                   'on_setpoint': self.on_setpoint,
                   'progress': self.progress,
                   'format': self.format,
@@ -66,14 +69,13 @@ class Controller(Dispatcher):
 
     @try_call
     def start_scan(self, params):
-        device_name = params['device'][0]
+        device_name = params['device']
         scan_parameter = params['scan_parameter']
         scan_array = params['scan_array']
         time_per_step = params['time_per_step']
-        self.mass = params['mass'][0]
-
+        mass = params['mass'][0]
         self.scan_device(device_name,scan_parameter,
-                         scan_array,time_per_step,self.mass)
+                         scan_array,time_per_step,mass)
 
         return {}
 
@@ -83,7 +85,8 @@ class Controller(Dispatcher):
         self.scanner_name = device_name
         scanner = self.connectors[device_name]
         self.scan_number += 1
-        self.set_scan_info(mass,self.scan_number)
+        self.current_scan = self.scan_number
+        self.mass = mass
         scanner.add_request(('execute_instruction',
                 {'instruction':'start_scan',
                  'arguments':{'scan_parameter':scan_parameter,
@@ -108,30 +111,16 @@ class Controller(Dispatcher):
             self.scan_parser.write(scanfile)
 
     @try_call
-    def set_scan_info(self, mass, number):
-        op,params = 'set_scan_info',{'scan_number': [number],
-                                       'mass':[mass]}
-        for instr in self.connectors.values():
-            instr.add_request((op,params))
-        return {}
-
-    def set_scan_info_reply(self,track,params):
-        origin, track_id = track[-1]
-        self.notify_connectors(([0],"Device {} received scan info setting instruction correctly.".format(origin)))
-
-    @try_call
     def stop_scan(self,params):
-        self.set_scan_info(self.mass,-1)
         scanner = self.connectors[self.scanner_name]
         scanner.add_request(('execute_instruction',
                {'instruction':'stop_scan',
                 'arguments':{}}))
-
         return {}
 
     @try_call
     def go_to_setpoint(self, params):
-        device_name = params['device'][0]
+        device_name = params['device']
         parameter = params['parameter']
         setpoint = params['setpoint']
 
@@ -148,7 +137,7 @@ class Controller(Dispatcher):
 
         info_for_log =  {'Author': 'Automatic Entry',
                  'Tags': {"Setpoint":True},
-                 'Text': lb.SET.format(device_name, parameter[0], setpoint[0])}
+                 'Text': lb.SET.format(device_name, parameter, setpoint[0])}
         self.add_to_logbook(info_for_log)
 
     @try_call
@@ -199,14 +188,20 @@ class Controller(Dispatcher):
         self.log_edits.append(number) # number of the entry that was edited
         return {'tag_name':tag_name}
 
+
+    def default_cb(self):
+        return 'status',{'scan_number': [self.current_scan],
+                         'mass': [self.mass]}
+
     def status_reply(self, track, params):
         origin, track_id = track[-1]
         self.format[origin] = params['format']
         self.write_params[origin] = params['write_params']
         if origin == self.scanner_name:
             if self.scanning[origin] and not params['scanning']:
-                self.set_scan_info(self.mass,-1)
+                self.current_scan = -1
         self.scanning[origin] = params['scanning']
+        self.calibrated[origin] = params['calibrated']
         self.progress[origin] = params['progress']
         self.on_setpoint[origin] = params['on_setpoint']
         if not params['mass'] in self.masses:

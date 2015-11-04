@@ -11,7 +11,7 @@ from backend.dispatcher import Dispatcher
 
 FILE_SERVER_PORT = 5009
 HTTP_SERVER_PORT = 5010
-DATA_PATH = 'C:\\Data\\Gallium Run\\'
+DATA_PATH = 'C:\\Data\\Francium Run\\'
 
 class FileServer(Dispatcher):
     def __init__(self, PORT=5007, name='FileServer'):
@@ -26,7 +26,7 @@ class FileServer(Dispatcher):
             return {'data':[[],[],[],[]]}
 
         return_list = []
-        with h5py.File('C:\\Data\\Gallium Run\\server_data.h5','r') as store:
+        with h5py.File(DATA_PATH+'server_data.h5','r') as store:
             for name_info in [x,y]:
                 origin,par_name = name_info
                 data_set = store[origin][str(scan_number)]
@@ -46,7 +46,7 @@ class FileServer(Dispatcher):
     def data_format(self,params):
         scan_number = params['scan_number'][0]
         formats = {}
-        with h5py.File('C:\\Data\\Gallium Run\\server_data.h5','r') as store:
+        with h5py.File(DATA_PATH+'server_data.h5','r') as store:
             for g in store.keys():
                 data_set = store[g][str(scan_number)]
                 formats[g] = list(data_set.attrs['format'])

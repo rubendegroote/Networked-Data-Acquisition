@@ -11,7 +11,7 @@ import threading as th
 
 from backend.acquire_files.acquisition import format_map,write_params_map,acquire
 
-SAVE_DIR = "C:\\Data\\"
+SAVE_DIR = "C:\\Data\\Francium Run\\"
 TIME_OFFSET = 1420070400 # 01/01/2015
 
 # Some exploratory code to understand a bit better how to make the Devices
@@ -43,6 +43,7 @@ class Device(Dispatcher):
         self.ns.mass = 0
         self.ns.on_setpoint = True
         self.ns.scanning = False
+        self.ns.calibrated = False
         self.ns.progress = 0
         self.ns.status_data = {}
 
@@ -108,12 +109,18 @@ class Device(Dispatcher):
 
     @hp.try_call
     def status(self, params):
+        self.ns.mass = params['mass'][0]
+        if not params['scan_number'][0] == self.ns.scan_number and \
+                 self.ns.scan_number == -1:
+            self.ns.calibrated = False
+        self.ns.scan_number = params['scan_number'][0]
+
         return {'format': self.format,
                 'write_params':self.write_params,
                 'scanning': self.ns.scanning,
+                'calibrated': self.ns.calibrated,
                 'on_setpoint': self.ns.on_setpoint,
                 'progress': self.ns.progress,
-                'scan_number': self.ns.scan_number,
                 'mass':self.ns.mass,
                 'status_data':self.ns.status_data}
 
@@ -126,12 +133,6 @@ class Device(Dispatcher):
         data = [self.data_deque.popleft() for _i in range(l)]
         return {'data': data,
                 'format': self.format}
-
-    @hp.try_call
-    def set_scan_info(self, params):
-        self.ns.scan_number = params['scan_number'][0]
-        self.ns.mass = params['mass'][0]
-        return {}
 
     @hp.try_call
     def execute_instruction(self,params):

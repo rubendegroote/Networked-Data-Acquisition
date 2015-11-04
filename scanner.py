@@ -1,7 +1,7 @@
 from PyQt4 import QtCore, QtGui
 from picbutton import PicButton, PicSpinBox
 import numpy as np
-
+from spin import Spin
 
 class ScannerWidget(QtGui.QWidget):
 
@@ -9,7 +9,7 @@ class ScannerWidget(QtGui.QWidget):
     setPointSig = QtCore.pyqtSignal(dict)
     stopScanSig = QtCore.pyqtSignal(bool)
     toggleConnectionsSig = QtCore.pyqtSignal(bool)
-
+    calibration_sig = QtCore.pyqtSignal(dict)
     def __init__(self):
         super(ScannerWidget, self).__init__()
         self.layout = QtGui.QGridLayout(self)
@@ -36,15 +36,16 @@ class ScannerWidget(QtGui.QWidget):
         self.progressBar.setMaximum(1000)
         self.layout.addWidget(self.progressBar, 3, 0, 1, 4)
 
-        self.startEdit = QtGui.QLineEdit("15407.3")
-        self.layout.addWidget(self.startEdit, 4, 0, 1, 1)
+        self.startSpin = Spin(11836.0000,0,10**5)
+        self.layout.addWidget(self.startSpin, 4, 0, 1, 1)
         self.stepsBox = PicSpinBox(iconName='step.png',
                                    step=1,
                                    value=10,
                                    integer=True)
         self.layout.addWidget(self.stepsBox, 4, 1, 1, 1)
-        self.stopEdit = QtGui.QLineEdit("15407.35")
-        self.layout.addWidget(self.stopEdit, 4, 2, 1, 1)
+
+        self.stopSpin = Spin(11836.0000,0,10**5)
+        self.layout.addWidget(self.stopSpin, 4, 2, 1, 1)
 
         self.controlButton = PicButton('start',
                                        checkable=False,
@@ -67,8 +68,8 @@ class ScannerWidget(QtGui.QWidget):
 
         self.setpointCombo = QtGui.QComboBox()
         # self.layout.addWidget(self.setpointCombo, 6, 0, 1, 1)
-        self.setpointEdit = QtGui.QLineEdit('15407.31')
-        self.layout.addWidget(self.setpointEdit, 8, 0, 1, 3)
+        self.setPointSpin = Spin(11836.0000,0,10**5)
+        self.layout.addWidget(self.setPointSpin, 8, 0, 1, 3)
 
         self.setpointButton = PicButton('manual',
                                         checkable=False,
@@ -99,14 +100,18 @@ class ScannerWidget(QtGui.QWidget):
 
         elif self.state == "STOP":
             self.stopScan()
+            self.state = "CALIBRATE"
+
+        elif self.state == "CALIBRATE":
+            self.send_calibrate()
             self.state = "START"
 
     def makeScan(self):
         parameter = self.tuning_parameter_combo.currentText()
         self.scan_device,parameter = parameter.split(': ')
 
-        start = float(self.startEdit.text())
-        stop = float(self.stopEdit.text())
+        start = float(self.startSpin.value)
+        stop = float(self.stopSpin.value)
         steps = float(self.stepsBox.text())
         times = int(self.repeatBox.text())
 
@@ -123,56 +128,65 @@ class ScannerWidget(QtGui.QWidget):
                     newRng = np.concatenate((newRng,rng))
         rng = list(newRng)
 
-        dt = [float(self.timeEdit.text())]
+        dt = float(self.timeEdit.text())
 
-        self.scanInfoSig.emit({'device':[self.scan_device],
-                               'scan_parameter':[parameter],
+        self.scanInfoSig.emit({'device':self.scan_device,
+                               'scan_parameter':parameter,
                                'scan_array':rng,
-                               'time_per_step':dt})
+                               'time_per_step':[dt]})
 
     def reverse_scan(self):
-        start = self.startEdit.text()
-        stop = self.stopEdit.text()
+        start = self.startSpin.text()
+        stop = self.stopSpin.text()
 
-        self.startEdit.setText(stop)
-        self.stopEdit.setText(start)
+        self.startSpin.setText(stop)
+        self.stopSpin.setText(start)
 
     def makeSetpoint(self):
         parameter = str(self.tuning_parameter_combo.currentText())
         device,parameter = parameter.split(': ')
-        value = [float(self.setpointEdit.text())]
+        value = self.setPointSpin.value
 
-        self.setPointSig.emit({'device':[device],
-                               'parameter':[parameter],
-                               'setpoint': value})
+        self.setPointSig.emit({'device':device,
+                               'parameter':parameter,
+                               'setpoint': [value]})
 
     def stopScan(self):
         self.stopScanSig.emit(True)
 
+    def send_calibrate(self):
+        self.calibration_sig.emit({'device':'wavemeter'})
+
     def update(self, track, info):
         origin, track_id = track[-1]
-        scanning,on_setpoint = info['scanning'],info['on_setpoint']
+        scanning,calibrated,on_setpoint = info['scanning'],info['calibrated'],info['on_setpoint']
         scan_number, progress = info['scan_number'][0],info['progress']
         write_params = info['write_params']
- 
+        print(calibrated)
         if len(progress) > 0:
             scanning = any(scanning.values())
+            calibrated = any(calibrated.values())
             progress = max(progress.values())
 
             self.updateScanNumber(scan_number)
             self.updateProgress(progress)
             if not scanning:
-                self.state = "START"
-                self.controlButton.setIcon('start.png')
-                self.controlButton.setToolTip('Click here to start a new capture.')
-                self.setpointButton.setCheckable(True)
-                self.toggleConnectionsSig.emit(True)
+                if calibrated:
+                    self.state = "START"
+                    self.controlButton.setIcon('start.png')
+                    self.controlButton.setToolTip('Click here to start a new scan.')
+                    self.toggleConnectionsSig.emit(True)
+                else:
+                    self.state = "CALIBRATE"
+                    self.controlButton.setIcon('calibrate.png')
+                    self.controlButton.setToolTip('Click here to calibrate the wavemeter.')
+                    self.toggleConnectionsSig.emit(True)
 
             else:
                 self.state = "STOP"
                 self.controlButton.setIcon('stop.png')
                 self.controlButton.setToolTip(
-                    'Click here to stop the current capture.')
+                    'Click here to stop the current scan.')
                 self.setpointButton.setCheckable(False)
                 self.toggleConnectionsSig.emit(False)
 

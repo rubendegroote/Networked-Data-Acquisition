@@ -53,6 +53,8 @@ class Wavemeter(Hardware):
         data = [wavenumber_1,wavenumber_2,expos_11,
                 expos_12,expos_21,expos_22]
 
+        self.refresh_time = expos1 + expos3 + expos2 + expos4
+
         self.ns.status_data = {'wavenumber_1':wavenumber_1,
                                'wavenumber_2':wavenumber_2}
 
@@ -62,5 +64,5 @@ class Wavemeter(Hardware):
         self.wlmdata.Operation(0) # stop
         self.wlmdata.Calibration(0,3,15798.0117779,2) #calibrate
         self.wlmdata.Operation(2) #start
-
+        self.ns.calibrated = True
 

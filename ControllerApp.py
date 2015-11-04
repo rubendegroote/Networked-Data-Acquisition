@@ -58,6 +58,7 @@ class ControllerApp(QtGui.QMainWindow):
         self.scanner.scanInfoSig.connect(self.start_scan)
         self.scanner.stopScanSig.connect(self.stop_scan)
         self.scanner.setPointSig.connect(self.go_to_setpoint)
+        self.scanner.calibration_sig.connect(self.calibrate_wavemeter)
         #self.scanner.toggleConnectionsSig.connect(self.toggleConnectionsUI)
         self.controltab.addTab(self.scanner, 'Wavelength tuning')
 
@@ -263,6 +264,7 @@ class ControllerApp(QtGui.QMainWindow):
                                                      'device':device,
                                                      'arguments':{'lock':lock}}))
     def calibrate_wavemeter(self,info):
+        device = info['device']
         self.Man_DS_Connector.instruct('Controller',('forward_instruction',
                                                      {'instruction':'calibrate_wavemeter',      
                                                      'device':device,

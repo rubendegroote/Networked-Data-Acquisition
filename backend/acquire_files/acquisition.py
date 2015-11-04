@@ -64,6 +64,17 @@ except ImportError as e:
     print(e)
     print('Could not import beamline')
 
+
+try:
+    from . import iscool
+    format_map['iscool'] = iscool.this_format
+    write_params_map['iscool'] = iscool.write_params
+    hardware_map['iscool'] = iscool.ISCOOL
+except ImportError as e:
+    print(e)
+    print('Could not import ISCOOL')
+
+
 ### Main acquire loop
 def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
     ### what hardware?

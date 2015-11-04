@@ -55,23 +55,24 @@ class Hardware():
     def interpret(self,instr):
         instr_name,args = instr
         if instr_name == 'start_scan':
-            self.scan_parameter = params['scan_parameter'][0]
-            self.scan_array = params['scan_array']
-            self.time_per_step = params['time_per_step'][0]
+            self.parameter = args['scan_parameter']
+            self.scan_array = args['scan_array']
+            self.time_per_step = args['time_per_step'][0]
 
-            if self.scan_parameter in self.write_params:
+            if self.parameter in self.write_params:
                 self.current_position = 0
                 self.ns.scanning = True
-                return ([0],'Starting {} scan.'.format(self.scan_parameter))
+                return ([0],'Starting {} scan.'.format(self.parameter))
             else:
-                return ([1],'{} cannot be scanned.'.format(self.scan_parameter))
+                return ([1],'{} cannot be scanned.'.format(self.parameter))
 
         elif instr_name == 'stop_scan':
             self.ns.scanning = False
-            return ([0],'Stopped {} scan.'.format(self.scan_parameter))
+            self.ns.calibrated = False
+            return ([0],'Stopped {} scan.'.format(self.parameter))
 
         elif instr_name == 'go_to_setpoint':
-            parameter = args['parameter'][0]
+            parameter = args['parameter']
             setpoint = args['setpoint'][0]
             if parameter in self.write_params:
                 self.parameter = parameter
@@ -81,10 +82,6 @@ class Hardware():
 
             else:
                 return ([1],'{} cannot be set.'.format(parameter))
-
-        elif instr_name == 'change_prop':
-            self.prop = args
-            return ([0],'Executed {} instruction.'.format(instr_name))
 
         elif instr_name == 'change_device_refresh':
             self.refresh_time = args['time']
@@ -100,15 +97,17 @@ class Hardware():
     def scan(self):
         if self.ns.on_setpoint and time.time() - self.start_of_setpoint > self.time_per_step:
             self.ns.on_setpoint = False
-            if self.ns.current_position == len(self.scan_array):
-                self.ns.scanning = False
-                self.ns.progress = 1.0
-                self.current_position = 0
-                self.ns.scan_number = -1 #back to the stream
-                return ([0],'Stopped {} scan.'.format(self.scan_parameter))
+            if self.current_position == len(self.scan_array):
+                self.stop_scan()
+                return ([0],'Stopped {} scan.'.format(self.parameter))
             else:
-                self.setpoint = self.scan_array[self.ns.current_position]
-                return ([0],'{} scan: setpoint acknowledged'.format(self.scan_parameter))
+                self.setpoint = self.scan_array[self.current_position]
+                return ([0],'{} scan: setpoint acknowledged'.format(self.parameter))
+
+    def stop_scan(self):
+        self.ns.scanning = False
+        self.ns.progress = 1.0
+        self.current_position = 0
 
     @hp.try_deco
     def input(self):

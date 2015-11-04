@@ -7,7 +7,7 @@ from backend.dispatcher import Dispatcher
 import sys
 import multiprocessing as mp
 
-SAVE_DIR = "C:\\Data\\Beamline tests\\"
+SAVE_DIR = "C:\\Data\\Francium Run\\"
 TIME_OFFSET = 1420070400 # 01/01/2015
 
 class DataServer(Dispatcher):

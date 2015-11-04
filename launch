@@ -25,7 +25,8 @@ ports['device'] = {'ABU':6006,
                    'M2':6002,
                    'wavemeter_pdl':6001,
                    'wavemeter':6000,
-                   'beamline':6007}
+                   'beamline':6007,
+                   'iscool':6008}
 
 class Launcher(QtGui.QWidget):
     def __init__(self,name="",device_name = None,port=5000):
@@ -82,6 +83,8 @@ def main():
         print("\t diodes")
         print("\t ABU")
         print("\t Matisse")
+        print("\t Beamline")
+        print("\t iscool")
 
         return
 

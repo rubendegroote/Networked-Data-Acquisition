@@ -8,7 +8,7 @@ from backend.connectors import Connector, Acceptor
 
 
 class Dispatcher(asyncore.dispatcher):
-    def __init__(self, PORT, name, defaultRequest = ('status',{})):
+    def __init__(self, PORT, name):
         super(Dispatcher,self).__init__()
         self.port = PORT
         self.name = name
@@ -22,7 +22,6 @@ class Dispatcher(asyncore.dispatcher):
         self.connectors = {}
         self.connInfo = {}
 
-        self.defaultRequest = defaultRequest
 
         self.looping = True
         self.thread =  th.Thread(target=self.start)

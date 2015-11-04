@@ -1,4 +1,5 @@
 from PyQt4 import QtCore, QtGui
+from spin import Spin
 
 class ControlWidgets(QtCore.QObject):
     device_missing = QtCore.pyqtSignal(str)
@@ -46,14 +47,9 @@ class ControlWidget(QtGui.QWidget):
             layout.addWidget(self.prop_field,0,3)
 
             layout.addWidget(QtGui.QLabel("Etalon Tune"),1,2)
-            self.etalon_value = QtGui.QDoubleSpinBox()
-            self.etalon_value.setDecimals(4)
-            self.etalon_value.setSingleStep(0.01)
-            self.etalon_value.setRange(0,100)
+            self.etalon_value = Spin(50.0000,0,100,sig_figs=2)
             layout.addWidget(self.etalon_value,1,4)
-            self.setEtalonButton = QtGui.QPushButton("Set")
-            self.setEtalonButton.clicked.connect(self.emit_set_etalon)
-            layout.addWidget(self.setEtalonButton,1,5)
+            self.etalon_value.sigValueChanging.connect(self.emit_set_etalon)
 
             self.etalon_label = QtGui.QLabel()
             layout.addWidget(self.etalon_label,1,3)
@@ -64,14 +60,9 @@ class ControlWidget(QtGui.QWidget):
             layout.addWidget(self.lock_etalon_button,1,6)
 
             layout.addWidget(QtGui.QLabel("Cavity Tune"),2,2)
-            self.ref_cavity_value = QtGui.QDoubleSpinBox()
-            self.ref_cavity_value.setDecimals(4)
-            self.ref_cavity_value.setSingleStep(0.01)
-            self.ref_cavity_value.setRange(0,100)
+            self.ref_cavity_value = Spin(50.0000,0,100)
             layout.addWidget(self.ref_cavity_value,2,4)
-            self.setCavityButton = QtGui.QPushButton("Set")
-            self.setCavityButton.clicked.connect(self.emit_set_cavity)
-            layout.addWidget(self.setCavityButton,2,5)
+            self.ref_cavity_value.sigValueChanging.connect(self.emit_set_cavity)
 
             self.cavity_label = QtGui.QLabel()
             layout.addWidget(self.cavity_label,2,3)
@@ -82,11 +73,9 @@ class ControlWidget(QtGui.QWidget):
             layout.addWidget(self.lock_cavity_button,2,6)
 
             layout.addWidget(QtGui.QLabel("Wavenumber"),4,2)
-            self.wavenumber_value = QtGui.QLineEdit()
+            self.wavenumber_value = Spin(11836.0000,0,10**5)
             layout.addWidget(self.wavenumber_value,4,4)
-            self.setWaveButton = QtGui.QPushButton("Set")
-            self.setWaveButton.clicked.connect(self.emit_set_wavenumber)
-            layout.addWidget(self.setWaveButton,4,5)
+            self.wavenumber_value.sigValueChanging.connect(self.emit_set_wavenumber)
 
             self.wavelength_locked = False
             self.lock_wavelength_button = QtGui.QPushButton("Lock to wavemeter")
@@ -135,6 +124,11 @@ class ControlWidget(QtGui.QWidget):
             layout.addWidget(QtGui.QLabel('Laser wavenumber'),1,0)
             self.wave_1 = QtGui.QLabel()
             layout.addWidget(self.wave_1,1,1)
+
+        elif name == 'iscool':
+            layout.addWidget(QtGui.QLabel('ISCOOL voltage'),1,0)
+            self.iscool = QtGui.QLabel()
+            layout.addWidget(self.iscool,1,1)
 
     def update(self,info):
         if self.name == 'M2':
@@ -193,6 +187,9 @@ class ControlWidget(QtGui.QWidget):
             wavemeter_info = info['wavemeter_pdl']
             val = str("{0:.5f}".format(wavemeter_info['wavenumber_1']))
             self.wave_1.setText(val)
+        
+        elif self.name == 'iscool':
+            self.iscool.setText(str(info['iscool']['voltage']))
 
     def emit_refresh_change(self):
         self.refresh_changed_sig.emit((self.name,int(self.refresh_field.value())))
@@ -204,14 +201,14 @@ class ControlWidget(QtGui.QWidget):
         self.lock_etalon_sig.emit((self.name,not self.etalon_locked))
 
     def emit_set_etalon(self):
-        etalon_value = float(self.etalon_value.value())
+        etalon_value = self.etalon_value.value
         self.etalon_value_sig.emit((self.name,etalon_value))
 
     def emit_lock_cavity(self):
         self.lock_cavity_sig.emit((self.name,not self.cavity_locked))
 
     def emit_set_cavity(self):
-        cavity_value = float(self.ref_cavity_value.value())
+        cavity_value = self.ref_cavity_value.value
         self.cavity_value_sig.emit((self.name,cavity_value))
 
     def emit_lock_wavelength(self):
@@ -221,9 +218,9 @@ class ControlWidget(QtGui.QWidget):
         self.lock_ecd_sig.emit((self.name,not self.ecd_locked))
 
     def emit_set_wavenumber(self):
-        wavenumber = float(self.wavenumber_value.text())
+        wavenumber = self.wavenumber_value.value
         self.wavenumber_sig.emit({'device':'M2',
-                                  'parameter':["wavenumber"],
+                                  'parameter':"wavenumber",
                                   'setpoint': [wavenumber]})
 
     def emit_calibrate_sig(self):

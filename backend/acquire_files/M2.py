@@ -56,12 +56,13 @@ class M2(Hardware):
             "Poll Fast Scan": comm.fast_scan_poll,
             "Stop Fast Scan": comm.fast_scan_stop,
             "Stop Fast Scan Without Return": comm.fast_scan_stop_nr,
-            "set_etalon": self.set_etalon,
-            "lock_wavelength": self.lock_wavelength,
-            "set_cavity": self.set_cavity,
-            "lock_etalon":self.lock_etalon,
-            "lock_cavity":self.lock_cavity,
-            "lock_ecd":self.lock_ecd
+            "set_device_etalon": self.set_etalon,
+            "lock_device_wavelength": self.lock_wavelength,
+            "set_device_cavity": self.set_cavity,
+            "lock_device_etalon":self.lock_etalon,
+            "lock_device_cavity":self.lock_cavity,
+            "lock_device_ecd":self.lock_ecd,
+            "change_device_prop":self.change_prop
         }
 
         self.settings = {'host': '192.168.1.216',
@@ -70,6 +71,7 @@ class M2(Hardware):
         self.wavenumber = 0
         self.cavity_value = 50.20
         self.etalon_value = 50.20
+        self.setpoint = 0
 
     def connect_to_device(self):
         ### Wavemeter stuff
@@ -131,14 +133,14 @@ class M2(Hardware):
 
         if not self.ns.on_setpoint and abs(error) < 5*10**-5:
             self.setpoint_reached()
-            return ([0],'{} setpoint reached'.format(self.scan_parameter))
+            return ([0],'{} setpoint reached'.format(self.parameter))
 
     def read_from_device(self):
         self.socket.sendall(comm.get_status())
         response = json.loads(self.socket.recv(1024).decode('utf-8'))
         status_data = response['message']['parameters']
 
-        status_data['setpoint'] = self.ns.setpoint
+        status_data['setpoint'] = self.setpoint
         status_data['on_setpoint'] = self.ns.on_setpoint
         status_data['wavelength_lock'] = self.wavelength_lock
         status_data['etalon_value'] = self.etalon_value
@@ -152,51 +154,52 @@ class M2(Hardware):
 
         return data
 
-    def change_prop(self,prop):
-        self.prop = prop
+    def change_prop(self,args):
+        self.prop = args['prop']
 
-    def lock_wavelength(self,lock):
+    def lock_wavelength(self,args):
+        lock = args['lock']
         self.wavelength_lock = lock
 
-    def lock_etalon(self,lock):
+    def lock_etalon(self,args):
+        lock = args['lock']
         if lock:
             lock = "on"
         else:
             lock = "off"
-        
         message = self.mapping['Lock Etalon'](lock)
         self.send_message(message)
         return ([0],'Executed lock etalon instruction.')
 
-    def lock_cavity(self,lock):
+    def lock_cavity(self,args):
+        lock = args['lock']
         if lock:
             lock = "on"
         else:
             lock = "off"
-        
         message = self.mapping['Lock Reference Cavity'](lock)
         self.send_message(message)
         return ([0],'Executed lock cavity instruction.')
 
-    def lock_ecd(self,lock):
+    def lock_ecd(self,args):
+        lock = args['lock']
         if lock:
             lock = "on"
         else:
             lock = "off"
-        
         message = self.mapping['Lock ECD'](lock)
         self.send_message(message)
         return ([0],'Executed lock ecd instruction.')
 
-    def set_etalon(self,value):
-        self.etalon_value = value
-        message = self.mapping['Tune Etalon'](value)
+    def set_etalon(self,args):
+        self.etalon_value = args['etalon_value']
+        message = self.mapping['Tune Etalon'](self.etalon_value)
         self.send_message(message)
         return ([0],'Executed set etalon instruction.')
 
-    def set_cavity(self,value):
-        self.cavity_value = value
-        message = self.mapping['Tune Cavity'](value)
+    def set_cavity(self,args):
+        self.cavity_value = args['cavity_value']
+        message = self.mapping['Tune Cavity'](self.cavity_value)
         self.send_message(message)
         return ([0],'Executed set cavity instruction.')
 
