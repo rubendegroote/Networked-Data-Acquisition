@@ -130,6 +130,11 @@ class ControlWidget(QtGui.QWidget):
             self.iscool = QtGui.QLabel()
             layout.addWidget(self.iscool,1,1)
 
+        elif name == 'RILIS':
+            layout.addWidget(QtGui.QLabel('RILIS wavenumber'),1,0)
+            self.RILIS = QtGui.QLabel()
+            layout.addWidget(self.RILIS,1,1)
+
     def update(self,info):
         if self.name == 'M2':
             M2_info = info['M2']
@@ -190,6 +195,12 @@ class ControlWidget(QtGui.QWidget):
         
         elif self.name == 'iscool':
             self.iscool.setText(str(info['iscool']['voltage']))
+
+        elif self.name == 'RILIS':
+            wavemeter_info = info['RILIS']
+            val = str("{0:.5f}".format(wavemeter_info['wavenumber']))
+            self.RILIS.setText(val)
+            self.setpoint_value_sig.emit(val)
 
     def emit_refresh_change(self):
         self.refresh_changed_sig.emit((self.name,int(self.refresh_field.value())))

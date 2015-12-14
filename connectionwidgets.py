@@ -22,7 +22,8 @@ class DeviceConnections(QtGui.QWidget):
                         'wavemeter_pdl': ('PCCRIS6', 6001),
                         'wavemeter': ('SATELLITEPRO', 6000),
                         'beamline':('PCCRIS3',6007),
-                        'iscool':('PCCRIS15',6008)}
+                        'iscool':('PCCRIS15',6008),
+                        'RILIS':('PCCRIS15',6009)}
 
         self.deviceSelection = QtGui.QComboBox()
         self.deviceSelection.addItems(sorted(list(self.address.keys())))
@@ -111,6 +112,13 @@ class DeviceConnections(QtGui.QWidget):
             except KeyError:
                 pass
 
+    def updateScan(self,track,params):
+        for key,val in self.deviceWidgets.items():
+            try:
+                val.scanLabel.setText('scan: ' + str(params['scan_numbers'][key]))
+            except KeyError:
+                pass
+
 class DeviceWidget(QtGui.QWidget):
     removeSig = QtCore.pyqtSignal(object)
     reconnectSig = QtCore.pyqtSignal(object)
@@ -164,9 +172,12 @@ class DeviceWidget(QtGui.QWidget):
         self.rowLabel = QtGui.QLabel()
         self.layout.addWidget(self.rowLabel, 0, 6, 1, 1)
 
-        #self.removeButton = QtGui.QPushButton('Remove')
-        #self.removeButton.clicked.connect(self.removeDevice)
-        #self.layout.addWidget(self.removeButton, 0, 7, 1, 1)
+        self.scanLabel = QtGui.QLabel()
+        self.layout.addWidget(self.scanLabel, 0, 7, 1, 1)
+
+        self.removeButton = QtGui.QPushButton('Remove')
+        self.removeButton.clicked.connect(self.removeDevice)
+        self.layout.addWidget(self.removeButton, 0, 8, 1, 1)
 
     def removeDevice(self):
         self.removeSig.emit(self)

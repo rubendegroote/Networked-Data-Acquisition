@@ -7,6 +7,8 @@ def main():
         from ControllerApp import main as ui_main
     elif  sys.argv[1] == 'data_viewer':
         from DataViewerApp import main as ui_main
+    elif  sys.argv[1] == 'data_viewer_cut':
+        from DataViewerApp_cut import main as ui_main
     elif  sys.argv[1] == 'log_viewer':
         from LogbookApp import main as ui_main
     else:

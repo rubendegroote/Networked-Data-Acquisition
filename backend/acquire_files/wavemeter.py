@@ -3,8 +3,7 @@ import traceback
 
 from .hardware import format,Hardware
 
-this_format = format + ('wavenumber_1','wavenumber_2',
-                        'expos_12','expos_21','expos_21','expos_22')
+this_format = format + ('wavenumber_1','wavenumber_2')
 
 write_params = []
 
@@ -50,10 +49,9 @@ class Wavemeter(Hardware):
         expos_21 = self.wlmdata.GetExposureNum(2,1,0)
         expos_22 = self.wlmdata.GetExposureNum(2,2,0)
 
-        data = [wavenumber_1,wavenumber_2,expos_11,
-                expos_12,expos_21,expos_22]
+        data = [wavenumber_1,wavenumber_2]
 
-        self.refresh_time = expos1 + expos3 + expos2 + expos4
+        # self.refresh_time = expos_11 + expos_12 + expos_21 + expos_22
 
         self.ns.status_data = {'wavenumber_1':wavenumber_1,
                                'wavenumber_2':wavenumber_2}

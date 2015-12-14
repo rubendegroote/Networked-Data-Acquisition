@@ -12,7 +12,6 @@ class Spin(QtGui.QLineEdit):
         except:
             pass
 
-        self.editingFinished.connect(self.sigValueChanging.emit)
         self.returnPressed.connect(self.sigValueChanging.emit)
 
 

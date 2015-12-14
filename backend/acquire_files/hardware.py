@@ -24,7 +24,7 @@ class Hardware():
         self.mapping = mapping
         self.refresh_time = refresh_time
         self.start_of_setpoint = time.time()
-        self.clock_offset = 0
+        self.setpoint = 0
 
         self.needs_stabilization = needs_stabilization
         if needs_stabilization:
@@ -112,8 +112,8 @@ class Hardware():
     @hp.try_deco
     def input(self):
         data_from_device = self.read_from_device()
-        data = [time.time() - TIME_OFFSET - self.clock_offset,
-                self.clock_offset,
+        data = [time.time() - TIME_OFFSET - self.ns.clock_offset,
+                self.ns.clock_offset,
                 self.ns.scan_number,
                 self.ns.mass]
         data.extend(data_from_device)

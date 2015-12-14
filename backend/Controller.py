@@ -17,6 +17,7 @@ class Controller(Dispatcher):
         self.scan_number = -1
         self.current_scan = -1
         self.progress = {}
+        self.scan_numbers = {}
         self.scanning = {}
         self.calibrated = {}
         self.format = {}
@@ -56,7 +57,7 @@ class Controller(Dispatcher):
     @try_call
     def status(self, *args):
         params = {'connector_info': self.connInfo,
-                  'scan_number': [self.scan_number],
+                  'scan_numbers': self.scan_numbers,
                   'scanning': self.scanning,
                   'calibrated': self.calibrated,
                   'on_setpoint': self.on_setpoint,
@@ -196,6 +197,7 @@ class Controller(Dispatcher):
     def status_reply(self, track, params):
         origin, track_id = track[-1]
         self.format[origin] = params['format']
+        self.scan_numbers[origin] = params['scan_number']
         self.write_params[origin] = params['write_params']
         if origin == self.scanner_name:
             if self.scanning[origin] and not params['scanning']:

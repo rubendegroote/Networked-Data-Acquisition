@@ -74,6 +74,14 @@ except ImportError as e:
     print(e)
     print('Could not import ISCOOL')
 
+try:
+    from . import RILIS
+    format_map['RILIS'] = RILIS.this_format
+    write_params_map['RILIS'] = RILIS.write_params
+    hardware_map['RILIS'] = RILIS.RILIS
+except ImportError as e:
+    print(e)
+    print('Could not import RILIS')
 
 ### Main acquire loop
 def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):

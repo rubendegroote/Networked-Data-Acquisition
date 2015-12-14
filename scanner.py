@@ -23,11 +23,6 @@ class ScannerWidget(QtGui.QWidget):
         self.setpoint_value = QtGui.QLabel()
         self.layout.addWidget(self.setpoint_value, 0, 3, 1, 1)
 
-        self.scanLabel = QtGui.QLabel('Scan number')
-        self.layout.addWidget(self.scanLabel, 1, 0, 1, 1)
-        self.scanNumberLabel = QtGui.QLabel(str(-1))
-        self.layout.addWidget(self.scanNumberLabel, 1, 1, 1, 1)
-
         self.scanningLabel = QtGui.QLabel('<font size="4"><b>Scanning<\b><\font>')
         self.layout.addWidget(self.scanningLabel, 2, 0, 1, 4)
 
@@ -88,10 +83,6 @@ class ScannerWidget(QtGui.QWidget):
         self.layout.addWidget(self.repeatLabel, 6, 0, 1, 1)
         self.repeatBox = QtGui.QLineEdit("1")
         self.layout.addWidget(self.repeatBox, 6, 1, 1, 1)
-
-
-    def updateScanNumber(self, scan_number):
-        self.scanNumberLabel.setText(str(scan_number))
 
     def control(self):
         if self.state == "START":
@@ -159,16 +150,16 @@ class ScannerWidget(QtGui.QWidget):
 
     def update(self, track, info):
         origin, track_id = track[-1]
-        scanning,calibrated,on_setpoint = info['scanning'],info['calibrated'],info['on_setpoint']
-        scan_number, progress = info['scan_number'][0],info['progress']
-        write_params = info['write_params']
-        print(calibrated)
+        scanning,calibrated,on_setpoint,progress,write_params = (info['scanning'],
+                                                   info['calibrated'],
+                                                   info['on_setpoint'],
+                                                   info['progress'],
+                                                   info['write_params'])
         if len(progress) > 0:
             scanning = any(scanning.values())
             calibrated = any(calibrated.values())
             progress = max(progress.values())
 
-            self.updateScanNumber(scan_number)
             self.updateProgress(progress)
             if not scanning:
                 if calibrated:

@@ -126,10 +126,12 @@ class M2(Hardware):
         if abs(error) < 0.25 and abs(error) > 10**-6:
             correction = self.prop * error
             self.cavity_value += correction
-            print(self.cavity_value)
-            self.socket.sendall(comm.tune_cavity(self.cavity_value))
-            response = json.loads(self.socket.recv(1024).decode('utf-8'))
-            self.last_stabilization = time.time()
+            if self.cavity_value > 15 and self.cavity_value < 85:
+                self.socket.sendall(comm.tune_cavity(self.cavity_value))
+                response = json.loads(self.socket.recv(1024).decode('utf-8'))
+                self.last_stabilization = time.time()
+            else:
+                pass
 
         if not self.ns.on_setpoint and abs(error) < 5*10**-5:
             self.setpoint_reached()

@@ -28,8 +28,8 @@ class BeamlineGraph(QtGui.QWidget):
 
         self.plotWidget = pg.PlotWidget()
         self.time_zoom = QtGui.QCheckBox("Time zoom")
-        self.time_select = Spin(text = "60")
-        self.window_select = Spin(text = '10')
+        self.time_select = Spin()
+        self.window_select = Spin()
 
         self.layout.addWidget(self.plotWidget,0,0,100,100)
         self.layout.addWidget(self.time_zoom,100,0,1,1)

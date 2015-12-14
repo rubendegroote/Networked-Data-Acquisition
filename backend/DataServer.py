@@ -136,7 +136,8 @@ class DataServer(Dispatcher):
 
     @try_call
     def data_format(self, *args):
-        return {'current_scan':self.current_scan}
+        return {'data_format': self.formats,
+                'current_scan':self.current_scan}
 
     def data_reply(self,track,params):
         data = params['data']

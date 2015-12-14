@@ -117,6 +117,7 @@ class Device(Dispatcher):
 
         return {'format': self.format,
                 'write_params':self.write_params,
+                'scan_number': self.ns.scan_number,
                 'scanning': self.ns.scanning,
                 'calibrated': self.ns.calibrated,
                 'on_setpoint': self.ns.on_setpoint,

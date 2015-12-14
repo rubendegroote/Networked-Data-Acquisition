@@ -26,19 +26,21 @@ ports['device'] = {'ABU':6006,
                    'wavemeter_pdl':6001,
                    'wavemeter':6000,
                    'beamline':6007,
-                   'iscool':6008}
+                   'iscool':6008,
+                   'RILIS':6009}
 
 class Launcher(QtGui.QWidget):
     def __init__(self,name="",device_name = None,port=5000):
         super(Launcher,self).__init__()
 
-        self.setWindowTitle(name)
 
         try:
             if device_name is None:
                 self.program = translation[name](port)
+                self.setWindowTitle(name)
             else:
                 self.program = translation[name](device_name,port)
+                self.setWindowTitle(name + ' ' + str(device_name))
             style = "QLabel { background-color: green }"
             e=''
         except:

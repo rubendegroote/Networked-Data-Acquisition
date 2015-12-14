@@ -162,7 +162,9 @@ class DataViewerApp(QtGui.QMainWindow):
         self.graph.no_of_rows = params['no_of_rows']
 
         data_x = pd.DataFrame({'time':data[0],'x':data[1]})
-        data_y = pd.DataFrame({'time':np.array(data[2])+np.random.rand(len(data[2]))*10**(-6),'y':data[3]})
+        t,y = np.array(data[2]),np.array(data[3])
+        t,y = t[y<3],y[y<3]
+        data_y = pd.DataFrame({'time':t+np.random.rand(len(t))*10**(-6),'y':y})
 
         data = pd.concat([data_x,data_y])
         data.set_index(['time'],inplace=True)
@@ -193,8 +195,9 @@ class DataViewerApp(QtGui.QMainWindow):
         data = params['data']
 
         data_x = pd.DataFrame({'time':data[0],'x':data[1]})
-        t,y = data[2],data[3]
-        data_y = pd.DataFrame({'time':np.array(data[2])+10**(-6),'y':data[3]})
+        t,y = np.array(data[2]),np.array(data[3])
+        t,y = t[y<3],y[y<3]
+        data_y = pd.DataFrame({'time':t+10**(-6),'y':y})
 
         data = pd.concat([data_x,data_y])
         data.set_index(['time'],inplace=True)

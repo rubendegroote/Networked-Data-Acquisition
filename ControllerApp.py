@@ -182,6 +182,9 @@ class ControllerApp(QtGui.QMainWindow):
         elif name == 'wavemeter':
             control_widget.calibrate_sig.connect(self.calibrate_wavemeter)
             control_widget.setpoint_value_sig.connect(self.scanner.set_setpoint_value) ## bit of a hack
+        elif name == 'RILIS':
+            control_widget.setpoint_value_sig.connect(self.scanner.set_setpoint_value) ## bit of a hack
+            
 
         self.controltab.addTab(control_widget,name)
 
@@ -199,6 +202,10 @@ class ControllerApp(QtGui.QMainWindow):
             self.updateSignal.emit((self.control_widgets.update,
                                     {'track':track,
                                     'args':params['status_data']}))
+            self.updateSignal.emit((self.connWidget.updateScan,
+                                    {'track':track,
+                                    'args':params}))
+
 
         elif origin == 'DataServer':
             self.updateSignal.emit((self.connWidget.updateData,
@@ -313,8 +320,7 @@ class ControllerApp(QtGui.QMainWindow):
             {'track':track,'args':[[0],"Add connector instruction received"]})
 
     def remove_connector(self, address):
-        op,params = 'remove_connector', {'address': address}
-        self.Man_DS_Connector.instruct('Both',(op,params))
+        self.Man_DS_Connector.instruct('Both',('remove_connector', {'address': address}))
 
     def remove_connector_reply(self,track,params):
         origin,track_id = track[-1]
