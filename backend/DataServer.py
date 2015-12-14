@@ -17,7 +17,7 @@ class DataServer(Dispatcher):
     config_parser.read(CONFIG_PATH)
     save_path = config_parser['paths']['data_path']
     time_offset = config_parser['other']['time_offset']
-    PORT = int(config_parser['ports']['server_port'])
+    PORT = int(config_parser['ports']['server'])
     def __init__(self, PORT=PORT, name='DataServer'):
         super(DataServer, self).__init__(PORT, name)
         self.data = {}

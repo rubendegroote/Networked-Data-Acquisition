@@ -14,7 +14,7 @@ class Controller(Dispatcher):
     config_parser = configparser.ConfigParser()
     config_parser.read(CONFIG_PATH)
     log_path = config_parser['paths']['log_path'] + 'logbook'
-    PORT = int(config_parser['ports']['controller_port'])
+    PORT = int(config_parser['ports']['controller'])
     def __init__(self, PORT=PORT, name='Controller'):
         super(Controller, self).__init__(PORT, name)
         self.scanner_name = ""

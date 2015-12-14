@@ -14,7 +14,6 @@ from backend.acquire_files.acquisition import format_map,write_params_map,acquir
 
 CONFIG_PATH = os.getcwd() + "\\config.ini"
 
-
 class Device(Dispatcher):
     ### get configuration details
     config_parser = configparser.ConfigParser()

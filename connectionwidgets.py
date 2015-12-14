@@ -1,29 +1,28 @@
 from PyQt4 import QtCore, QtGui
 import configparser
 from connectiondialogs import ConnectionDialog
+import os
 
+CONFIG_PATH = os.getcwd() + "\\config.ini"
 
 class DeviceConnections(QtGui.QWidget):
     connectSig = QtCore.pyqtSignal(tuple)
     removeSig = QtCore.pyqtSignal(tuple)
     removeAllSig = QtCore.pyqtSignal(bool)
-
+    
+    ### get configuration details
+    config_parser = configparser.ConfigParser()
+    config_parser.read(CONFIG_PATH)
     def __init__(self, parent=None):
         super(DeviceConnections, self).__init__(parent)
+        ports = self.config_parser['ports']
+        IPs = self.config_parser['ports']
+        self.address = {k:(ports[k],IPs[k]) \
+                   for k in ports.keys() if not k in ('server','controller')}
+
         self.deviceWidgets = {}
         self.l = 0
         self.layout = QtGui.QGridLayout(self)
-
-        self.address = {'ABU': ('PCCRIS1', 6006),
-                        'CRIS': ('PCCRIS17', 6005),
-                        'Matisse': ('PCCRIS15', 6004),
-                        'Diodes': ('PCCRIS15', 6003),
-                        'M2': ('SATELLITEPRO', 6002),
-                        'wavemeter_pdl': ('PCCRIS6', 6001),
-                        'wavemeter': ('SATELLITEPRO', 6000),
-                        'beamline':('PCCRIS3',6007),
-                        'iscool':('PCCRIS15',6008),
-                        'RILIS':('PCCRIS15',6009)}
 
         self.deviceSelection = QtGui.QComboBox()
         self.deviceSelection.addItems(sorted(list(self.address.keys())))
@@ -42,18 +41,12 @@ class DeviceConnections(QtGui.QWidget):
         respons = self.address[selection]
         self.connectSig.emit(('Both', selection, respons))
 
-    def addDeviceWidget(self, name='', IP='KSF402', PORT='5004'):
+    def addDeviceWidget(self, name='',IP,PORT):
         self.deviceWidgets[name] = DeviceWidget(self, name, IP, PORT)
         self.deviceWidgets[name].removeSig.connect(self.remove)
         self.deviceWidgets[name].reconnectSig.connect(self.reconnect)
         self.layout.addWidget(self.deviceWidgets[name], self.l, 0, 1, 2)
-        config = configparser.ConfigParser()
-        for key in self.deviceWidgets.keys():
-            config[key] = {'IP': self.deviceWidgets[name].IP,
-                           'Port': self.deviceWidgets[name].PORT}
-        with open('ControllerDeviceConnections.ini', 'w') as configfile:
-            config.write(configfile)
-
+        
         self.l += 1
 
     def remove(self, connWidget):
@@ -123,7 +116,7 @@ class DeviceWidget(QtGui.QWidget):
     removeSig = QtCore.pyqtSignal(object)
     reconnectSig = QtCore.pyqtSignal(object)
 
-    def __init__(self, parent=None, name='', IP='KSF402', PORT='5004'):
+    def __init__(self, parent=None, name='',IP,PORT):
         super(DeviceWidget, self).__init__(parent)
         self.IP = IP
         self.PORT = PORT

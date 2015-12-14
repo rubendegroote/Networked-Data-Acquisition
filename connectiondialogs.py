@@ -2,15 +2,19 @@ from PyQt4 import QtCore, QtGui
 import os
 import configparser
 
+CONFIG_PATH = os.getcwd() + "\\config.ini"
+
 
 class Man_DS_ConnectionDialog(QtGui.QDialog):
-
+    ### get configuration details
+    config_parser = configparser.ConfigParser()
+    config_parser.read(CONFIG_PATH)
     def __init__(self, parent=None, message=''):
         super(Man_DS_ConnectionDialog, self).__init__(parent)
-        ManChannelBoxtext = 'PCCRIS15'
-        ManPortBoxtext = str(5004)
-        DSChannelBoxtext = 'PCCRIS1'
-        DSPortBoxtext = str(5005)
+        ContChannelBoxtext = str(self.config_parser['IPs']['controller'])
+        ContPortBoxtext = str(self.config_parser['ports']['controller'])
+        serverChannelBoxtext = str(self.config_parser['IPs']['server'])
+        serverPortBoxtext = str(self.config_parser['ports']['server'])
 
         self.layout = QtGui.QGridLayout(self)
         buttons = QtGui.QDialogButtonBox(
@@ -23,22 +27,22 @@ class Man_DS_ConnectionDialog(QtGui.QDialog):
         self.layout.addWidget(QtGui.QLabel(message), 0, 0, 1, 1)
 
         self.layout.addWidget(QtGui.QLabel('Channel'), 1, 1, 1, 1)
-        self.ManChannelBox = QtGui.QLineEdit(self, text=ManChannelBoxtext)
-        self.layout.addWidget(self.ManChannelBox, 2, 1, 1, 1)
+        self.ContChannelBox = QtGui.QLineEdit(self, text=ContChannelBoxtext)
+        self.layout.addWidget(self.ContChannelBox, 2, 1, 1, 1)
         self.layout.addWidget(QtGui.QLabel('Port'), 1, 2, 1, 1)
-        self.ManPortBox = QtGui.QLineEdit(self, text=ManPortBoxtext)
-        self.layout.addWidget(self.ManPortBox, 2, 2, 1, 1)
+        self.ContPortBox = QtGui.QLineEdit(self, text=ContPortBoxtext)
+        self.layout.addWidget(self.ContPortBox, 2, 2, 1, 1)
 
         self.layout.addWidget(QtGui.QLabel('Channel'), 3, 1, 1, 1)
-        self.DSChannelBox = QtGui.QLineEdit(self, text=DSChannelBoxtext)
-        self.layout.addWidget(self.DSChannelBox, 4, 1, 1, 1)
+        self.serverChannelBox = QtGui.QLineEdit(self, text=serverChannelBoxtext)
+        self.layout.addWidget(self.serverChannelBox, 4, 1, 1, 1)
         self.layout.addWidget(QtGui.QLabel('Port'), 3, 2, 1, 1)
-        self.DSPortBox = QtGui.QLineEdit(self, text=DSPortBoxtext)
-        self.layout.addWidget(self.DSPortBox, 4, 2, 1, 1)
+        self.ServerPortBox = QtGui.QLineEdit(self, text=ServerPortBoxtext)
+        self.layout.addWidget(self.ServerPortBox, 4, 2, 1, 1)
 
     def getData(self):
-        return (self.ManChannelBox.text(), self.ManPortBox.text(),
-                self.DSChannelBox.text(), self.DSPortBox.text())
+        return (self.ContChannelBox.text(), self.ContPortBox.text(),
+                self.serverChannelBox.text(), self.ServerPortBox.text())
 
     @staticmethod
     def getInfo(parent=None, message=''):
