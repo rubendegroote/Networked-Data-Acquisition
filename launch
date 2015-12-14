@@ -30,16 +30,15 @@ ports['device'] = {'ABU':6006,
                    'RILIS':6009}
 
 class Launcher(QtGui.QWidget):
-    def __init__(self,name="",device_name = None,port=5000):
+    def __init__(self,name="",device_name = None):
         super(Launcher,self).__init__()
-
 
         try:
             if device_name is None:
-                self.program = translation[name](port)
+                self.program = translation[name]()
                 self.setWindowTitle(name)
             else:
-                self.program = translation[name](device_name,port)
+                self.program = translation[name](device_name)
                 self.setWindowTitle(name + ' ' + str(device_name))
             style = "QLabel { background-color: green }"
             e=''
@@ -62,10 +61,8 @@ def main():
     freeze_support()
     try:
         name = sys.argv[1]
-        port = ports[name]
         if name == 'device':
             device_name = sys.argv[2]
-            port = ports[name][device_name]
         else:
             device_name = None
 
@@ -91,7 +88,7 @@ def main():
         return
 
     app = QtGui.QApplication(sys.argv)
-    launcher = Launcher(name,device_name,port)
+    launcher = Launcher(name,device_name)
     sys.exit(app.exec_())
 
 if __name__ == '__main__':

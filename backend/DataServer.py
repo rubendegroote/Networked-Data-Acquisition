@@ -4,14 +4,21 @@ from backend.connectors import Connector, Acceptor
 import backend.logbook as lb
 from backend.dispatcher import Dispatcher
 
-import sys
+import os,sys
 import multiprocessing as mp
+import configparser
 
-SAVE_DIR = "C:\\Data\\Francium Run\\"
-TIME_OFFSET = 1420070400 # 01/01/2015
+CONFIG_PATH = os.getcwd() + "\\config.ini"
+
 
 class DataServer(Dispatcher):
-    def __init__(self, PORT=5006, name='DataServer'):
+    ### get configuration details
+    config_parser = configparser.ConfigParser()
+    config_parser.read(CONFIG_PATH)
+    save_path = config_parser['paths']['data_path']
+    time_offset = config_parser['other']['time_offset']
+    PORT = int(config_parser['ports']['server_port'])
+    def __init__(self, PORT=PORT, name='DataServer'):
         super(DataServer, self).__init__(PORT, name)
         self.data = {}
         self.scan_data = {}
@@ -37,11 +44,11 @@ class DataServer(Dispatcher):
         super(DataServer,self).stop()
 
     def default_cb(self):
-        rep = time.time()-TIME_OFFSET
+        rep = time.time()-self.time_offset
         return 'data', {'t0': rep}
 
     def start_saving(self):
-        args = (self.save_output,SAVE_DIR, self.backupFlag)
+        args = (self.save_output,self.save_path, self.backupFlag)
         self.saveProcess = mp.Process(target=save_continuously_dataserver,
                                       args=args)
         self.saveProcess.start()

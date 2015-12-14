@@ -4,19 +4,25 @@ from backend.connectors import Connector, Acceptor
 import backend.logbook as lb
 from backend.dispatcher import Dispatcher
 
-import sys
+import os,sys
 import multiprocessing as mp
 from collections import deque
 import threading as th
+import configparser
 
 from backend.acquire_files.acquisition import format_map,write_params_map,acquire
 
-SAVE_DIR = "C:\\Data\\Francium Run\\"
-TIME_OFFSET = 1420070400 # 01/01/2015
+CONFIG_PATH = os.getcwd() + "\\config.ini"
 
-# Some exploratory code to understand a bit better how to make the Devices
+
 class Device(Dispatcher):
-    def __init__(self, name='', PORT=5005, save_data = True):
+    ### get configuration details
+    config_parser = configparser.ConfigParser()
+    config_parser.read(CONFIG_PATH)
+    save_path = config_parser['paths']['data_path']
+    time_offset = config_parser['other']['time_offset']
+    def __init__(self, name='', save_data = True):
+        PORT = int(self.config_parser['ports'][name])
         super(Device, self).__init__(PORT, name)
         self.acquire = acquire
 
@@ -100,7 +106,7 @@ class Device(Dispatcher):
             self.notify_connectors(message)
             
     def start_saving(self):
-        args = (self.save_output,SAVE_DIR,
+        args = (self.save_output,self.save_path,
                   self.name,self.format)
         self.saveProcess = mp.Process(name = 'save_' + self.name,
                                       target = save_continuously,
@@ -128,7 +134,7 @@ class Device(Dispatcher):
     @hp.try_call
     def data(self, params):
         t0 = params['t0']
-        self.ns.clock_offset = (time.time()-TIME_OFFSET) - t0
+        self.ns.clock_offset = (time.time()-self.time_offset) - t0
         # Recall there is only one data server, so this works
         l = len(self.data_deque)
         data = [self.data_deque.popleft() for _i in range(l)]

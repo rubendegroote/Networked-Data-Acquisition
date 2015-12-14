@@ -1,4 +1,4 @@
-import sys
+import os,sys
 import configparser
 
 from backend.Helpers import *
@@ -6,13 +6,17 @@ from backend.connectors import Connector, Acceptor
 import backend.logbook as lb
 from backend.dispatcher import Dispatcher
 
-LOG_PATH = 'C:\\Logbook\\Francium Run\\logbook'
 INI_PATH = 'C:\\Logbook\\Francium Run\\scan_init.ini'
+CONFIG_PATH = os.getcwd() + "\\config.ini"
 
 class Controller(Dispatcher):
-    def __init__(self, PORT=5007, name='Controller'):
+    ### get configuration details
+    config_parser = configparser.ConfigParser()
+    config_parser.read(CONFIG_PATH)
+    log_path = config_parser['paths']['log_path'] + 'logbook'
+    PORT = int(config_parser['ports']['controller_port'])
+    def __init__(self, PORT=PORT, name='Controller'):
         super(Controller, self).__init__(PORT, name)
-
         self.scanner_name = ""
         self.scan_number = -1
         self.current_scan = -1
@@ -29,12 +33,12 @@ class Controller(Dispatcher):
 
         # logbook
         try:
-            self.logbook = lb.loadLogbook(LOG_PATH)
+            self.logbook = lb.loadLogbook(self.log_path)
             self.log_edits = list(range(len(self.logbook)))
         except Exception as e:
             print(e)
             self.logbook = []
-            lb.saveLogbook(LOG_PATH, self.logbook)
+            lb.saveLogbook(self.log_path, self.logbook)
             self.log_edits = []
 
         # get last scan number from config file
@@ -165,7 +169,7 @@ class Controller(Dispatcher):
         number = params['number'][0]
         entry = params['entry']
         lb.editEntry(self.logbook,number,entry)
-        lb.saveEntry(LOG_PATH, self.logbook, number)
+        lb.saveEntry(self.log_path, self.logbook, number)
         self.log_edits.append(number) # number of the entry that was edited
         return {}
 
@@ -175,7 +179,7 @@ class Controller(Dispatcher):
         for number,entry in enumerate(self.logbook):
             new_info = {field_name:""}
             lb.editEntry(self.logbook,number,new_info)
-            lb.saveEntry(LOG_PATH, self.logbook, number)
+            lb.saveEntry(self.log_path, self.logbook, number)
             self.log_edits.append(number) # number of the entry that was edited
         return {}
 
@@ -185,7 +189,7 @@ class Controller(Dispatcher):
         number = params['number']
         new_info = {'Tags':{tag_name:True}}
         lb.editEntry(self.logbook,number,new_info)
-        lb.saveEntry(LOG_PATH, self.logbook, number)
+        lb.saveEntry(self.log_path, self.logbook, number)
         self.log_edits.append(number) # number of the entry that was edited
         return {'tag_name':tag_name}
 
@@ -220,8 +224,8 @@ class Controller(Dispatcher):
 
     def add_to_logbook(self,info_for_log):
         lb.addEntryFromCopy(self.logbook,info_for_log)
-        lb.saveEntry(LOG_PATH, self.logbook, -1)
+        lb.saveEntry(self.log_path, self.logbook, -1)
         self.log_edits.append(len(self.logbook)-1) # number of the entry that was added
 
-def makeController(PORT=5007):
-    return Controller(PORT=PORT)
+def makeController():
+    return Controller()
