@@ -14,21 +14,6 @@ translation['data_server'] = DataServer
 translation['controller'] = Controller
 translation['device'] = Device
 
-ports = {}
-ports['file_server'] = 5006
-ports['data_server'] = 5005
-ports['controller'] = 5004
-ports['device'] = {'abu':6006,
-                   'cris':6005,
-                   'matisse':6004,
-                   'diodes':6003,
-                   'm2':6002,
-                   'wavemeter_pdl':6001,
-                   'wavemeter':6000,
-                   'beamline':6007,
-                   'iscool':6008,
-                   'rilis':6009}
-
 class Launcher(QtGui.QWidget):
     def __init__(self,name="",device_name = None):
         super(Launcher,self).__init__()

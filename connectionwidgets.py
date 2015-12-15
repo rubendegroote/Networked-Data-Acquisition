@@ -18,7 +18,7 @@ class DeviceConnections(QtGui.QWidget):
         ports = self.config_parser['ports']
         IPs = self.config_parser['ports']
         self.address = {k:(ports[k],IPs[k]) \
-                   for k in ports.keys() if not k in ('server','controller')}
+                   for k in ports.keys() if not k in ('server','controller','file_server')}
 
         self.deviceWidgets = {}
         self.l = 0

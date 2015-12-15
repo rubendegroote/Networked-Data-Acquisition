@@ -3,22 +3,26 @@ import threading as th
 import asyncore
 import time
 from multiprocessing import freeze_support
-import sys
+import os,sys
+import configparser
 
 from backend.connectors import Connector
 from connectiondialogs import ConnectionDialog, FieldAdditionDialog
 from logviewerwidgets import LogEntryWidget
 
-SAVE_DIR = 'C:/Data/'
-LOG_PER_PAGE = 50
-
-controller_channel = ('PCCRIS15', 5004)
+CONFIG_PATH = os.getcwd() + "\\config.ini"
 
 class LogbookApp(QtGui.QMainWindow):
     editSignal = QtCore.pyqtSignal(int,object)
     addSignal = QtCore.pyqtSignal(int,object)
     messageUpdateSignal = QtCore.pyqtSignal(dict)
-
+    
+    ### get configuration details
+    config_parser = configparser.ConfigParser()
+    config_parser.read(CONFIG_PATH)
+    log_per_page = config_parser['other']['log_per_page']
+    controller_channel = (config_parser['IPs']['controller'],
+                          int(config_parser['ports']['controller']))
     def __init__(self):
         super(LogbookApp, self).__init__()
 
@@ -100,8 +104,8 @@ class LogbookApp(QtGui.QMainWindow):
         layout.addWidget(scrollArea)
 
         new_page = QtGui.QGridLayout(scrollAreaWidgetContents)
-        fr = len(self.pages)*LOG_PER_PAGE
-        to = fr+LOG_PER_PAGE
+        fr = len(self.pages)*self.log_per_page
+        to = fr+self.log_per_page
         self.page_widget.addTab(new_page_widget,str(fr)+' - '+str(to))
         new_page.setAlignment(QtCore.Qt.AlignTop)
         self.pages.append(new_page)
@@ -181,7 +185,7 @@ class LogbookApp(QtGui.QMainWindow):
         
             self.pages[-1].addWidget(self.logEntryWidgets[number], number, 0)
 
-            if self.pages[-1].count() >= LOG_PER_PAGE:
+            if self.pages[-1].count() >= self.log_per_page:
                 self.new_log_page()
         else:
             self.edit_entry_ui(number,entry,suppress_new = True)
@@ -236,12 +240,10 @@ class LogbookApp(QtGui.QMainWindow):
     def add_controller(self):
         try:
             self.man = Connector(name='LGUI_to_M',
-                                        chan=controller_channel,
+                                        chan=self.controller_channel,
                                         callback=self.reply_cb,
                                         onCloseCallback=self.onCloseCallback,
                                         default_callback=self.default_cb)
-            # self.controllerLabel.setStyleSheet("QLabel { background-color: green }")
-            # self.addController.setHidden(True)
         except Exception as e:
             print(e)
 
