@@ -69,6 +69,7 @@ def main():
         print("\t Matisse")
         print("\t Beamline")
         print("\t iscool")
+        print("\t FPI")
 
         return
 

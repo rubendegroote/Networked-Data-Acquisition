@@ -1,7 +1,5 @@
-import socket
 import time
 import backend.Helpers as hp
-import json
 
 format = ('timestamp','offset','scan_number','mass')
 TIME_OFFSET = 1420070400 # 01/01/2015

@@ -28,9 +28,9 @@ class Device(Dispatcher):
         # instructions queue:
         # Controller -> InstructionReceiver -> acquire
         self.iQ = mp.Queue()
-        # message queue: acquire -> ARTIST
+        # message queue
         self.mQ = mp.Queue()
-        # data pipe: acquire -> ARTIST
+        # data pipe
         self.data_output,self.data_input = mp.Pipe(duplex=False)
 
         # stop flag for the acquisition
