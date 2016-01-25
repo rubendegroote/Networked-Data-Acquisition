@@ -73,6 +73,7 @@ def createbackup(source, backupname):
 
 def save_continuously(save_output,saveDir,name,format):
     format = [f.encode('utf-8') for f in format]
+    print(saveDir,name)
     file_path = saveDir + name
     group_name = name
 

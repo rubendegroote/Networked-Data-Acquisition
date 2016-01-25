@@ -93,6 +93,7 @@ class Device(Dispatcher):
             self.handle_messages()
 
             data_packet = hp.emptyPipe(self.data_output)
+            print(data_packet)
             if not data_packet == []:
                 self.data_deque.extend(data_packet)
                 self.save_input.send(data_packet)

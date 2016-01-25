@@ -2,8 +2,7 @@ import socket
 import time
 import numpy as np
 from PyDAQmx import *
-from PyDAQmx.DAQmxConstants import *
-from PyDAQmx.DAQmxFunctions import *
+from scipy.optimize import curve_fit
 
 from .hardware import format,Hardware
 
@@ -18,13 +17,40 @@ class FPI(Hardware):
                                   refresh_time = 0)
         self.settings = dict(aiChannel="/Dev1/ai1,/Dev1/ai2",
                              noOfAi=2,
-                             triggerChannel="/Dev1/PFI1",
-                             sample_rate = 10**6,
+                             trig_channel='/Dev1/PFI1',
+                             sample_rate = 10**5,
                              samples = 600)
 
     def connect_to_device(self):
         self.timeout = 10.0
         maxRate = 10000.0  # Copied from old code
+
+        ##### generating a trigger
+        ## only for self-triggering now
+        pulse_channel = 'Dev1/ctr0'
+        trigger_freq = 500
+        countTaskHandle = TaskHandle(0)
+        DAQmxCreateTask("", byref(countTaskHandle))
+
+        DAQmxCreateTask('', countTaskHandle)
+        DAQmxCreateCOPulseChanFreq(countTaskHandle,pulse_channel,
+                                   '',DAQmx_Val_Hz,DAQmx_Val_Low,
+                                   0,trigger_freq,0.1)
+        DAQmxCfgImplicitTiming(countTaskHandle,DAQmx_Val_ContSamps,1)
+        DAQmxStartTask(countTaskHandle)
+
+        pulse_channel = 'Dev1/ctr1'
+        trigger_freq = 499.95
+        countTaskHandle = TaskHandle(0)
+        DAQmxCreateTask("", byref(countTaskHandle))
+
+        DAQmxCreateTask('', countTaskHandle)
+        DAQmxCreateCOPulseChanFreq(countTaskHandle,pulse_channel,
+                                   '',DAQmx_Val_Hz,DAQmx_Val_Low,
+                                   0.1/trigger_freq,trigger_freq,0.1)
+        DAQmxCfgImplicitTiming(countTaskHandle,DAQmx_Val_ContSamps,1)
+        DAQmxStartTask(countTaskHandle)
+
 
         # Create the task handles (just defines different task)
         self.aiTaskHandle = TaskHandle(0)
@@ -39,21 +65,21 @@ class FPI(Hardware):
         DAQmxCfgSampClkTiming(self.aiTaskHandle,'',self.settings['sample_rate'],
                               DAQmx_Val_Rising,DAQmx_Val_FiniteSamps,
                               self.settings['samples'])
-        DAQmxCfgDigEdgeRefTrig(self.aiTaskHandle,self.settings['triggerChannel'],
+        DAQmxCfgDigEdgeRefTrig(self.aiTaskHandle,self.settings['trig_channel'],
                                DAQmx_Val_Rising,2)
 
         self.no_of_ai = self.settings['noOfAi']
         self.aiData = np.zeros((self.no_of_ai*self.settings['samples'],), dtype=np.float64)
-        
+
     def read_from_device(self):
-        # read = int32()
-        # DAQmxStartTask(self.aiTaskHandle)
-        # DAQmxReadAnalogF64(self.aiTaskHandle,
-        #                    self.settings['samples'], self.timeout,
-        #                    DAQmx_Val_GroupByChannel, self.aiData,
-        #                    self.no_of_ai*self.settings['samples'],
-        #                    byref(read), None)
-        # DAQmxStopTask(self.aiTaskHandle)
+        read = int32()
+        DAQmxStartTask(self.aiTaskHandle)
+        DAQmxReadAnalogF64(self.aiTaskHandle,
+                           self.settings['samples'], self.timeout,
+                           DAQmx_Val_GroupByChannel, self.aiData,
+                           self.no_of_ai*self.settings['samples'],
+                           byref(read), None)
+        DAQmxStopTask(self.aiTaskHandle)
     
         d1 = self.aiData[:self.settings['samples']]
         d2 = self.aiData[self.settings['samples']:]
@@ -64,9 +90,23 @@ class FPI(Hardware):
         peakind1 = detect_peaks(d1,mph=0.2,mpd=20)
         peakind2 = detect_peaks(d2,mph=0.2,mpd=20)
 
-        return [peakind1,peakind2]
+        return [np.mean(peakind1 - peakind2)]
+        # return [self.aiData]
 
+import scipy.fftpack
+def smooth(y):
+    w = scipy.fftpack.rfft(y)
+    x = np.arange(0,len(y))
+    f = scipy.fftpack.rfftfreq(len(y), x[1]-x[0])
+    spectrum = w**2
 
+    cutoff_idx = spectrum < (spectrum.max()/20)
+    w2 = w.copy()
+    w2[cutoff_idx] = 0
+
+    y2 = scipy.fftpack.irfft(w2)
+
+    return y2
 
 def detect_peaks(x, mph=None, mpd=1, threshold=0, edge='rising',
                  kpsh=False, valley=False):
