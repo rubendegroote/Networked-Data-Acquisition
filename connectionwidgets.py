@@ -16,8 +16,8 @@ class DeviceConnections(QtGui.QWidget):
     def __init__(self, parent=None):
         super(DeviceConnections, self).__init__(parent)
         ports = self.config_parser['ports']
-        IPs = self.config_parser['ports']
-        self.address = {k:(ports[k],IPs[k]) \
+        IPs = self.config_parser['IPs CERN']
+        self.address = {k:(IPs[k],ports[k]) \
                    for k in ports.keys() if not k in ('server','controller','file_server')}
 
         self.deviceWidgets = {}
@@ -41,7 +41,7 @@ class DeviceConnections(QtGui.QWidget):
         respons = self.address[selection]
         self.connectSig.emit(('Both', selection, respons))
 
-    def addDeviceWidget(self, name='',IP,PORT):
+    def addDeviceWidget(self, name='',IP='',PORT=5000):
         self.deviceWidgets[name] = DeviceWidget(self, name, IP, PORT)
         self.deviceWidgets[name].removeSig.connect(self.remove)
         self.deviceWidgets[name].reconnectSig.connect(self.reconnect)
@@ -116,7 +116,7 @@ class DeviceWidget(QtGui.QWidget):
     removeSig = QtCore.pyqtSignal(object)
     reconnectSig = QtCore.pyqtSignal(object)
 
-    def __init__(self, parent=None, name='',IP,PORT):
+    def __init__(self, parent=None, name='',IP='',PORT=5000):
         super(DeviceWidget, self).__init__(parent)
         self.IP = IP
         self.PORT = PORT

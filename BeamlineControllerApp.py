@@ -46,13 +46,13 @@ class ControlContainer(QtGui.QWidget):
         for c in controls:
             if not c in ('timestamp','offset','scan_number','mass','current'):
                 label = QtGui.QLabel(str(c))
-                self.layout.addWidget(label,len(self.controls)+10,0)
-                setbox = Spin(text = "0")
+                self.layout.addWidget(label,len(self.controls)%20+10,3*(len(self.controls)//20))
+                setbox = Spin(value = 0)
                 setbox.name = c
                 setbox.sigValueChanging.connect(self.change_volts)
-                self.layout.addWidget(setbox,len(self.controls)+10,1)
-                readback = QtGui.QLineEdit(str(0))
-                self.layout.addWidget(readback,len(self.controls)+10,2)
+                self.layout.addWidget(setbox,len(self.controls)%20+10,3*(len(self.controls)//20)+1)
+                readback = QtGui.QLabel(str(0))
+                self.layout.addWidget(readback,len(self.controls)%20+10,3*(len(self.controls)//20)+2)
                 self.controls[c] = (label,setbox,readback)
 
     def change_volts(self):
@@ -78,7 +78,7 @@ class ControlContainer(QtGui.QWidget):
         self.controls[key][1].sigValueChanging.disconnect(self.change_volts)
         # self.controls[key][1].setValue(setpoint)
 
-        self.controls[key][2].setText(str(round(readback,1)))
+        self.controls[key][2].setText(str(round(readback,2)))
 
         # if abs(setpoint - readback) > self.max_offset:
         #     self.setStyleSheet("QLineEdit { background-color: red; }")
@@ -116,13 +116,6 @@ class BeamlineControllerApp(QtGui.QMainWindow):
                                  callback=self.reply_cb,
                                  default_callback=self.default_DS_cb,
                                  onCloseCallback = self.lostConn)
-
-        time.sleep(1)
-
-        self.control_connector.add_request(('add_connector',{'address': ('PCCRIS3',6007)}))
-        self.server_connector.add_request(('add_connector',{'address': ('PCCRIS3',6007)}))
-
-
 
     def init_UI(self):
         self.makeMenuBar()
@@ -205,8 +198,8 @@ class BeamlineControllerApp(QtGui.QMainWindow):
             if self.ask_data:
                 self.ask_data = False
                 return 'get_data',{'no_of_rows':self.graph.no_of_rows,
-                           'x':['beamline','timestamp'],
-                           'y':['beamline','current']}
+                           'x':['current','timestamp'],
+                           'y':['current','current']}
             else:
                 self.ask_data = True
                 return 'get_latest',{}
@@ -281,8 +274,17 @@ class BeamlineControllerApp(QtGui.QMainWindow):
 
     def optimize(self):
         print('optimization requested')
-        
 
+        # choose supplies
+
+        # choose a range
+
+        # choose time per step
+
+        # loop over scanning region, send commands
+
+        # update a plot
+        
     def ramp_down(self):
         msgBox = QtGui.QMessageBox()
         msgBox.setText("Voltage ramp requested.")

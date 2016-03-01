@@ -373,7 +373,7 @@ def fast_scan_start(scan, width, time):
     Resonator and ECD tuning controls. The currently tuned value is
     taken to be the centre of the scan and the command is called with a
     scan width and time. The start point of the scan is
-    (centre – (0.5 * scan width)). The end of the scan is
+    (centre - (0.5 * scan width)). The end of the scan is
     (centre + (0.5 * scan width)). The tuning output is ramped from the
     start point to the end point in the time given.
 

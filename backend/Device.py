@@ -19,7 +19,7 @@ class Device(Dispatcher):
     config_parser = configparser.ConfigParser()
     config_parser.read(CONFIG_PATH)
     save_path = config_parser['paths']['data_path']
-    time_offset = config_parser['other']['time_offset']
+    time_offset = int(config_parser['other']['time_offset'])
     def __init__(self, name='', save_data = True):
         PORT = int(self.config_parser['ports'][name])
         super(Device, self).__init__(PORT, name)
@@ -65,12 +65,12 @@ class Device(Dispatcher):
 
         # save pipe: send data to be saved
         self.save_output,self.save_input = mp.Pipe(duplex=False)
-        self.start_saving()
+        # self.start_saving()
 
     def stop(self):
         self.stopFlag.set()
         self.readThread.join()
-        self.saveProcess.terminate()
+        # self.saveProcess.terminate()
         self.DAQProcess.terminate()
         super(Device,self).stop()
 
@@ -93,10 +93,9 @@ class Device(Dispatcher):
             self.handle_messages()
 
             data_packet = hp.emptyPipe(self.data_output)
-            print(data_packet)
             if not data_packet == []:
                 self.data_deque.extend(data_packet)
-                self.save_input.send(data_packet)
+                # self.save_input.send(data_packet)
 
             time.sleep(0.01)
 

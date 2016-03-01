@@ -72,14 +72,14 @@ class Hardware():
         elif instr_name == 'go_to_setpoint':
             parameter = args['parameter']
             setpoint = args['setpoint'][0]
-            if parameter in self.write_params:
-                self.parameter = parameter
-                self.setpoint = setpoint
-                self.ns.on_setpoint = False
-                return ([0],'{} setpoint acknowledged.'.format(self.parameter))
+            # if parameter in self.write_params:
+            self.parameter = parameter
+            self.setpoint = setpoint
+            self.ns.on_setpoint = False
+            return ([0],'{} setpoint acknowledged.'.format(self.parameter))
 
-            else:
-                return ([1],'{} cannot be set.'.format(parameter))
+            # else:
+            #     return ([1],'{} cannot be set.'.format(parameter))
 
         elif instr_name == 'change_device_refresh':
             self.refresh_time = args['time']

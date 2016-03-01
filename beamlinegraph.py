@@ -38,15 +38,16 @@ class BeamlineGraph(QtGui.QWidget):
         self.layout.addWidget(self.window_select,100,3,1,1)
 
     def plot(self,track,params):
+        #calculate rolling average!
+        x = self.data['x'][-int(self.time_select.value+self.window_select.value):].values
+        y = self.data['y'][-int(self.time_select.value+self.window_select.value):].values
+        y_av = pd.rolling_mean(y, self.window_select.value)
+        self.avCurve.setData(x[-int(self.time_select.value):],y_av[-int(self.time_select.value):],pen = pg.mkPen('r', width=3))
+
         if self.time_zoom.isChecked():
-            x,y = self.data['x'][-self.time_select.value:].values,\
-                  self.data['y'][-self.time_select.value:].values
+            x,y = self.data['x'][-int(self.time_select.value):].values,\
+                  self.data['y'][-int(self.time_select.value):].values
         else:
             x,y = self.data['x'].values,self.data['y'].values
         self.curve.setData(x,y,pen = 'b')
-
-        #calculate rolling average!
-        y = pd.rolling_mean(y, self.window_select.value)
-        self.avCurve.setData(x,y,pen = 'r')
-
 

@@ -84,6 +84,16 @@ except ImportError as e:
     print(e)
     print('Could not import FPI')
 
+
+try:
+    from . import current
+    format_map['current'] = current.this_format
+    write_params_map['current'] = current.write_params
+    hardware_map['current'] = current.Current
+except ImportError as e:
+    print(e)
+    print('Could not import current')
+
 ### Main acquire loop
 def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
     ### what hardware?

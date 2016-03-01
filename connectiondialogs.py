@@ -11,9 +11,9 @@ class Man_DS_ConnectionDialog(QtGui.QDialog):
     config_parser.read(CONFIG_PATH)
     def __init__(self, parent=None, message=''):
         super(Man_DS_ConnectionDialog, self).__init__(parent)
-        ContChannelBoxtext = str(self.config_parser['IPs']['controller'])
+        ContChannelBoxtext = str(self.config_parser['IPs CERN']['controller'])
         ContPortBoxtext = str(self.config_parser['ports']['controller'])
-        serverChannelBoxtext = str(self.config_parser['IPs']['server'])
+        serverChannelBoxtext = str(self.config_parser['IPs CERN']['server'])
         serverPortBoxtext = str(self.config_parser['ports']['server'])
 
         self.layout = QtGui.QGridLayout(self)
@@ -37,7 +37,7 @@ class Man_DS_ConnectionDialog(QtGui.QDialog):
         self.serverChannelBox = QtGui.QLineEdit(self, text=serverChannelBoxtext)
         self.layout.addWidget(self.serverChannelBox, 4, 1, 1, 1)
         self.layout.addWidget(QtGui.QLabel('Port'), 3, 2, 1, 1)
-        self.ServerPortBox = QtGui.QLineEdit(self, text=ServerPortBoxtext)
+        self.ServerPortBox = QtGui.QLineEdit(self, text=serverPortBoxtext)
         self.layout.addWidget(self.ServerPortBox, 4, 2, 1, 1)
 
     def getData(self):
