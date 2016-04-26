@@ -12,18 +12,27 @@ import pandas as pd
 
 from backend.connectors import Connector
 
+from ui_cupswitcher import CupSwitcher
+
 class ControlContainer(QtGui.QWidget):
     new_setpoint = QtCore.pyqtSignal(dict)
     def __init__(self):
         super(ControlContainer,self).__init__()
         self.max_offset = 50
         self.layout = QtGui.QGridLayout(self)
+        #self.cupswitcher=CupSwitcher()#adam
 
         self.status_label = QtGui.QLabel("On Setpoint")
+        self.status_label.setMaximumHeight(15)
         self.on_setpoint = False
         self.status_label.setStyleSheet("QLabel { background-color: red; }")
-        self.layout.addWidget(self.status_label,0,0,1,3)
+        self.layout.addWidget(self.status_label,1,0,1,1)
+        #self.layout.addWidget(self.cupswitcher,0,0,1,3)#adam
 
+        self.layout.addWidget(QtGui.QWidget(),1000,0,1,1)
+
+        self.ControlsLayout = QtGui.QGridLayout()
+        self.layout.addLayout(self.ControlsLayout,10,0,1,1)
         self.controls = {}
 
     def update_controls(self,track,params):
@@ -46,13 +55,17 @@ class ControlContainer(QtGui.QWidget):
         for c in controls:
             if not c in ('timestamp','offset','scan_number','mass','current'):
                 label = QtGui.QLabel(str(c))
-                self.layout.addWidget(label,len(self.controls)%20+10,3*(len(self.controls)//20))
+                self.ControlsLayout.addWidget(label,len(self.controls)%20,3*(len(self.controls)//20))
                 setbox = Spin(value = 0)
                 setbox.name = c
+                setbox.setMaximumWidth(45)
+                setbox.setMinimumWidth(45)
                 setbox.sigValueChanging.connect(self.change_volts)
-                self.layout.addWidget(setbox,len(self.controls)%20+10,3*(len(self.controls)//20)+1)
+                self.ControlsLayout.addWidget(setbox,len(self.controls)%20,3*(len(self.controls)//20)+1)
                 readback = QtGui.QLabel(str(0))
-                self.layout.addWidget(readback,len(self.controls)%20+10,3*(len(self.controls)//20)+2)
+                readback.setMaximumWidth(45)
+                readback.setMinimumWidth(45)
+                self.ControlsLayout.addWidget(readback,len(self.controls)%20,3*(len(self.controls)//20)+2)
                 self.controls[c] = (label,setbox,readback)
 
     def change_volts(self):
@@ -124,7 +137,10 @@ class BeamlineControllerApp(QtGui.QMainWindow):
         self.setCentralWidget(self.central)
 
         self.container = ControlContainer()
+        #self.cupswitcher=CupSwitcher()#adam
         self.central.addWidget(self.container)
+        #self.central.addWidget(self.cupswitcher)#adam
+
         self.container.new_setpoint.connect(self.change_volts)
 
         self.graph = BeamlineGraph()

@@ -26,17 +26,17 @@ class Man_DS_ConnectionDialog(QtGui.QDialog):
 
         self.layout.addWidget(QtGui.QLabel(message), 0, 0, 1, 1)
 
-        self.layout.addWidget(QtGui.QLabel('Channel'), 1, 1, 1, 1)
+        self.layout.addWidget(QtGui.QLabel('Controller IP'), 1, 1, 1, 1)
         self.ContChannelBox = QtGui.QLineEdit(self, text=ContChannelBoxtext)
         self.layout.addWidget(self.ContChannelBox, 2, 1, 1, 1)
-        self.layout.addWidget(QtGui.QLabel('Port'), 1, 2, 1, 1)
+        self.layout.addWidget(QtGui.QLabel('Controller port'), 1, 2, 1, 1)
         self.ContPortBox = QtGui.QLineEdit(self, text=ContPortBoxtext)
         self.layout.addWidget(self.ContPortBox, 2, 2, 1, 1)
 
-        self.layout.addWidget(QtGui.QLabel('Channel'), 3, 1, 1, 1)
+        self.layout.addWidget(QtGui.QLabel('Data server IP'), 3, 1, 1, 1)
         self.serverChannelBox = QtGui.QLineEdit(self, text=serverChannelBoxtext)
         self.layout.addWidget(self.serverChannelBox, 4, 1, 1, 1)
-        self.layout.addWidget(QtGui.QLabel('Port'), 3, 2, 1, 1)
+        self.layout.addWidget(QtGui.QLabel('Controller port'), 3, 2, 1, 1)
         self.ServerPortBox = QtGui.QLineEdit(self, text=serverPortBoxtext)
         self.layout.addWidget(self.ServerPortBox, 4, 2, 1, 1)
 

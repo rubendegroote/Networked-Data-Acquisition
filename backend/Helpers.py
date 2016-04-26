@@ -4,8 +4,37 @@ import logging
 import h5py
 import traceback
 import numpy as np
+from scipy import stats
+import pandas as pd
 
-SAVE_PATH = 'C:/Data/'
+
+def calcHist(data,bins,errormode,data_mode = 'mean'):
+    noe,mean_x,err_x,mean_y,err = np.zeros(len(bins)),\
+                                  np.zeros(len(bins)),\
+                                  np.zeros(len(bins)),\
+                                  np.zeros(len(bins)),\
+                                  np.zeros(len(bins))
+    bin_selection = np.digitize(data['x'], bins)
+    for n in np.unique(bin_selection):
+        x_data = data['x'][bin_selection == n]
+        noe[n] = len(x_data)
+        mean_x[n] = np.mean(x_data)
+        err_x[n] = np.sqrt(np.mean((x_data - mean_x[n])**2))
+
+        y_data = data['y'][bin_selection == n]    
+        mean_y[n] = np.sum(y_data)
+        if data_mode == 'mean':
+            mean_y[n] = mean_y[n]/noe[n]
+            
+        if errormode == 'sqrt':
+            err[n] = np.sqrt(np.sum(y_data)+1)
+            if data_mode == 'mean':
+                err[n] = err[n] / noe[n]
+                
+        elif errormode == 'std dev':
+            err[n] = np.sqrt(np.mean((y_data - mean_y[n])**2))
+
+    return noe,mean_x,err_x,mean_y,err
 
 
 def GetFromQueue(q):

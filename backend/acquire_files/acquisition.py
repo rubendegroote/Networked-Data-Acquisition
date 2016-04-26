@@ -44,7 +44,7 @@ try:
     format_map['CRIS'] = CRIS.this_format
     write_params_map['CRIS'] = CRIS.write_params
     hardware_map['CRIS'] = CRIS.CRIS
-except ImportError:
+except:
     print('Could not import CRIS')
 
 try:
@@ -52,7 +52,7 @@ try:
     format_map['diodes'] = diodes.this_format
     write_params_map['diodes'] = diodes.write_params
     hardware_map['diodes'] = diodes.diodes
-except ImportError:
+except:
     print('Could not import diodes')
 
 try:
@@ -60,8 +60,7 @@ try:
     format_map['beamline'] = Beamline.this_format
     write_params_map['beamline'] = Beamline.write_params
     hardware_map['beamline'] = Beamline.Beamline
-except ImportError as e:
-    print(e)
+except:
     print('Could not import beamline')
 
 
@@ -80,8 +79,7 @@ try:
     format_map['FPI'] = FPI.this_format
     write_params_map['FPI'] = FPI.write_params
     hardware_map['FPI'] = FPI.FPI
-except ImportError as e:
-    print(e)
+except:
     print('Could not import FPI')
 
 

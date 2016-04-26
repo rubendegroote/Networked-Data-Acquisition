@@ -23,7 +23,6 @@ class PicButton(QtGui.QPushButton):
 
 
 class PicSpinBox(pg.SpinBox):
-
     def __init__(self, iconName, step=0.01, value=0, integer=False, parent=None):
         value = float(value)
         super(PicSpinBox, self).__init__(

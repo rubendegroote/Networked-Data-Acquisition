@@ -186,12 +186,9 @@ class FrameLayout(QtGui.QFrame):
 
 
 class LogEntryWidget(FrameLayout):
-
     submitSig = QtCore.pyqtSignal()  # emitted when the new entry is updated
     submitTagSig = QtCore.pyqtSignal()
     addFieldSig = QtCore.pyqtSignal()
-    dataRequest = QtCore.pyqtSignal(int)
-
     def __init__(self, text='Placeholder text', entry=None, number=0):
         super(LogEntryWidget, self).__init__(text=text, path='')
 
@@ -269,6 +266,11 @@ class LogEntryWidget(FrameLayout):
                 self.grid.addWidget(self.texts[pkey], teller, 1)
                 teller = teller + 1
 
+        self.addTagButton = QtGui.QPushButton(text='Add tag')
+        self.addTagButton.setToolTip('Click here to add a tag to all logbook entries.')
+        self.addTagButton.clicked.connect(self.submitTagSig.emit)
+        self.grid.addWidget(self.addTagButton, teller, 0)
+
         for box in self.tags.values():
             self.grid.addWidget(box, teller, 1)
             teller = teller + 1
@@ -278,21 +280,10 @@ class LogEntryWidget(FrameLayout):
         self.addFieldButton.clicked.connect(self.addFieldSig.emit)
         self.grid.addWidget(self.addFieldButton, teller, 0)
 
-        self.addTagButton = QtGui.QPushButton(text='Add tag')
-        self.addTagButton.setToolTip('Click here to add a tag to all logbook entries.')
-        self.addTagButton.clicked.connect(self.submitTagSig.emit)
-        self.grid.addWidget(self.addTagButton, teller + 1, 0)
-
         self.editButton = QtGui.QPushButton(text='Edit')
         self.editButton.setToolTip('Click this to edit this entry/confirm your changes.')
         self.editButton.clicked.connect(self.editEntry)
         self.grid.addWidget(self.editButton, teller, 1)
-
-        if 'Scan Number' in self.entry[-1].keys() and self.entry[-1]['Scan Number'] is not '':
-            self.getDataButton = QtGui.QPushButton(text='Get Scan Data')
-            self.getDataButton.setToolTip('Click here to get the data from this scan.')
-            self.getDataButton.clicked.connect(lambda x: self.dataRequest.emit(self.entry[-1]['Scan Number']))
-            self.grid.addWidget(self.getDataButton, teller + 1, 1)
 
         for (key, textItem) in self.texts.items():
             try:

@@ -20,7 +20,7 @@ class LogbookApp(QtGui.QMainWindow):
     ### get configuration details
     config_parser = configparser.ConfigParser()
     config_parser.read(CONFIG_PATH)
-    log_per_page = config_parser['other']['log_per_page']
+    log_per_page = int(config_parser['other']['log_per_page'])
     controller_channel = (config_parser['IPs']['controller'],
                           int(config_parser['ports']['controller']))
     def __init__(self):
@@ -66,8 +66,8 @@ class LogbookApp(QtGui.QMainWindow):
         self.searchStringLabel = QtGui.QPushButton('String search')
         self.searchStringLabel.clicked.connect(self.filterLogbookOnString)
         self.searchStringEdit = QtGui.QLineEdit('')
-        layout.addWidget(self.searchStringLabel, 1, 1)
         layout.addWidget(self.searchStringEdit, 1, 0)
+        layout.addWidget(self.searchStringLabel, 1, 1)
 
         self.searchTagLabel = QtGui.QPushButton('Tag search')
         self.searchTagLabel.clicked.connect(self.filterLogbookOnTag)
@@ -76,9 +76,9 @@ class LogbookApp(QtGui.QMainWindow):
         layout.addWidget(self.searchTagLabel, 2, 1)
 
         self.searchTagLabel = QtGui.QPushButton('Mass search')
-        self.searchTagLabel.clicked.connect(self.filterLogbookOnTag)
-        self.searchTagEdit = QtGui.QLineEdit('')
-        layout.addWidget(self.searchTagEdit, 3, 0)
+        self.searchTagLabel.clicked.connect(self.filterLogbookOnMass)
+        self.searchMassEdit = QtGui.QLineEdit('')
+        layout.addWidget(self.searchMassEdit, 3, 0)
         layout.addWidget(self.searchTagLabel, 3, 1)
 
         self.page_widget = QtGui.QTabWidget()
@@ -139,27 +139,26 @@ class LogbookApp(QtGui.QMainWindow):
             filter_dict = dict.fromkeys(self.logEntryWidgets, False)
             for number, widget in self.logEntryWidgets.items():
                 entry = widget.entry
-                for snapshot in entry:
-                    if 'Tags' in snapshot and \
-                       filterTag in snapshot['Tags'] and \
-                       snapshot['Tags'][filterTag]:
-                        filter_dict[number] = True
+                snapshot = entry[-1]
+                if 'Tags' in snapshot and \
+                        filterTag in snapshot['Tags'] and \
+                        snapshot['Tags'][filterTag]:
+                    filter_dict[number] = True
             self.filter_logbook(filter_dict=filter_dict)
 
     def filterLogbookOnMass(self):
         filterMass = str(self.searchMassEdit.text())
-        if filterTag == '':
+        if filterMass == '':
             filter_dict = dict.fromkeys(self.logEntryWidgets, True)
             self.filter_logbook(filter_dict=filter_dict)
         else:
             filter_dict = dict.fromkeys(self.logEntryWidgets, False)
             for number, widget in self.logEntryWidgets.items():
                 entry = widget.entry
-                for snapshot in entry:
-                    if 'Mass' in snapshot and \
-                       filterTag in snapshot['Mass'] and \
-                       snapshot['Mass'][filterTag]:
-                        filter_dict[number] = True
+                snapshot = entry[-1]
+                if 'Mass' in snapshot and \
+                   filterMass == snapshot['Mass']:
+                    filter_dict[number] = True
             self.filter_logbook(filter_dict=filter_dict)
 
 

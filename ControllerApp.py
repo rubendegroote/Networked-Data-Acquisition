@@ -36,6 +36,8 @@ class ControllerApp(QtGui.QMainWindow):
 
         self.show()
 
+        self.connectToServers()
+
     def connectToServers(self):
         respons = Man_DS_ConnectionDialog.getInfo(parent=self)
         if respons[1]:
@@ -48,11 +50,11 @@ class ControllerApp(QtGui.QMainWindow):
         layout = QtGui.QGridLayout(widget)
         self.setCentralWidget(self.central)
 
-        self.connLabel = QtGui.QLabel('<font size="5"><b>Tuning <\b><\font>')
-        layout.addWidget(self.connLabel, 0, 0, 1, 1)
+        self.mainTabs = QtGui.QTabWidget()
+        layout.addWidget(self.mainTabs)
 
-        self.controltab = QtGui.QTabWidget()
-        layout.addWidget(self.controltab,1,0,1,1)
+        # self.connLabel = QtGui.QLabel('<font size="5"><b>Tuning <\b><\font>')
+        # layout.addWidget(self.connLabel, 0, 0, 1, 1)
 
         self.scanner = ScannerWidget()
         self.scanner.scanInfoSig.connect(self.start_scan)
@@ -60,19 +62,24 @@ class ControllerApp(QtGui.QMainWindow):
         self.scanner.setPointSig.connect(self.go_to_setpoint)
         self.scanner.calibration_sig.connect(self.calibrate_wavemeter)
         #self.scanner.toggleConnectionsSig.connect(self.toggleConnectionsUI)
-        self.controltab.addTab(self.scanner, 'Wavelength tuning')
+        self.mainTabs.addTab(self.scanner, 'Tuning')
+        # layout.addWidget(self.scanner, 1, 0, 1, 1)
 
-        self.connLabel = QtGui.QLabel('<font size="5"><b>Connections <\b><\font>')
-        layout.addWidget(self.connLabel, 2, 0, 1, 1)
+        # self.connLabel = QtGui.QLabel('<font size="5"><b>Connections <\b><\font>')
+        # layout.addWidget(self.connLabel, 2, 0, 1, 1)
+
+        self.controltab = QtGui.QTabWidget()
+        # layout.addWidget(self.controltab,3,0,1,1)
+        self.mainTabs.addTab(self.controltab, 'Connections')
 
         self.connWidget = DeviceConnections()
         self.connWidget.connectSig.connect(self.add_connector)
         self.connWidget.removeSig.connect(self.remove_connector)
-        layout.addWidget(self.connWidget, 3, 0, 1, 1)
+        self.controltab.addTab(self.connWidget, 'Device Overview')
 
         self.serverConnectButton = QtGui.QPushButton('Connect to Servers')
         self.serverConnectButton.clicked.connect(self.connectToServers)
-        layout.addWidget(self.serverConnectButton, 4, 0, 1, 1)
+        # layout.addWidget(self.serverConnectButton, 4, 0, 1, 1)
 
         self.messageLog = QtGui.QPlainTextEdit()
         self.central.addWidget(self.messageLog)

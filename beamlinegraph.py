@@ -37,10 +37,16 @@ class BeamlineGraph(QtGui.QWidget):
         self.layout.addWidget(QtGui.QLabel("Mean window size"),100,2,1,1)
         self.layout.addWidget(self.window_select,100,3,1,1)
 
+        self.layout.addWidget(QtGui.QLabel('Current'),101,0,1,1)
+        self.current_value = pg.SpinBox(suffix='A', siPrefix=True)
+        self.layout.addWidget(self.current_value,101,1,1,2)
+
+
     def plot(self,track,params):
         #calculate rolling average!
         x = self.data['x'][-int(self.time_select.value+self.window_select.value):].values
         y = self.data['y'][-int(self.time_select.value+self.window_select.value):].values
+        self.current_value.setValue(y[-1])
         y_av = pd.rolling_mean(y, self.window_select.value)
         self.avCurve.setData(x[-int(self.time_select.value):],y_av[-int(self.time_select.value):],pen = pg.mkPen('r', width=3))
 

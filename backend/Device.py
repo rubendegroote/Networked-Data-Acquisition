@@ -65,12 +65,12 @@ class Device(Dispatcher):
 
         # save pipe: send data to be saved
         self.save_output,self.save_input = mp.Pipe(duplex=False)
-        # self.start_saving()
+        self.start_saving()
 
     def stop(self):
         self.stopFlag.set()
         self.readThread.join()
-        # self.saveProcess.terminate()
+        self.saveProcess.terminate()
         self.DAQProcess.terminate()
         super(Device,self).stop()
 
@@ -95,7 +95,7 @@ class Device(Dispatcher):
             data_packet = hp.emptyPipe(self.data_output)
             if not data_packet == []:
                 self.data_deque.extend(data_packet)
-                # self.save_input.send(data_packet)
+                self.save_input.send(data_packet)
 
             time.sleep(0.01)
 

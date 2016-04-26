@@ -6,8 +6,15 @@ from collections import OrderedDict
 # import time
 # import os
 
-START = 'Started scanning Device {} from {:.8f} to {:.8f} cm-1, in {:.0f} steps with {:.8f} seconds per step.'
+START = 'Scanning {} from {:.8f} to {:.8f} cm-1, in {:.0f} steps with {:.8f} seconds per step.'
 SET   = 'Set Device {} parameter {} to {:.8f} cm-1.'
+
+def stringify_scan_summary(device,summary):
+    txt = ''
+    for point in summary:
+        txt += START.format(device,point[0],point[1],point[2],point[3]) + '\n'
+
+    return txt
 
 def prettyPrint(snap):
     return "\n".join([str(key) + ': ' + str(val) for key, val in snap.items()]) + "\n"

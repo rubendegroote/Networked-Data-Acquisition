@@ -10,7 +10,7 @@ import sys
 
 from scanner import ScannerWidget
 from connect import ConnectionsWidget
-from graph import MyGraph
+from graph import XYGraph
 
 from backend.connectors import Connector
 
@@ -59,7 +59,7 @@ class DataViewerApp(QtGui.QMainWindow):
         self.dataTree.insertTopLevelItems(0,[self.live_item,self.scans_item])
         self.central.addWidget(self.dataTree)
 
-        self.graph = MyGraph('data_viewer')
+        self.graph = XYGraph('data_viewer')
         self.central.addWidget(self.graph)
 
         self.setGeometry(200,100,1200,800)

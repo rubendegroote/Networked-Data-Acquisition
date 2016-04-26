@@ -7,7 +7,7 @@ from PyDAQmx.DAQmxFunctions import *
 
 from .hardware import format,Hardware
 
-this_format = format + ('AOV','Counts','AIChannel1','AIChannel2')
+this_format = format + ('Counts',)
 write_params = []
 
 class CRIS(Hardware):
@@ -28,13 +28,13 @@ class CRIS(Hardware):
 
         # Create the task handles (just defines different task)
         self.countTaskHandle = TaskHandle(0)
-        self.aoTaskHandle = TaskHandle(0)
-        self.aiTaskHandle = TaskHandle(0)
+##        self.aoTaskHandle = TaskHandle(0)
+##        self.aiTaskHandle = TaskHandle(0)
 
         # Creates the tasks
         DAQmxCreateTask("", byref(self.countTaskHandle))
-        DAQmxCreateTask("", byref(self.aoTaskHandle))
-        DAQmxCreateTask("", byref(self.aiTaskHandle))
+##        DAQmxCreateTask("", byref(self.aoTaskHandle))
+##        DAQmxCreateTask("", byref(self.aiTaskHandle))
 
         # Connect the tasks to PyDAQmx stuff...
         DAQmxCreateCICountEdgesChan(self.countTaskHandle,
@@ -46,26 +46,26 @@ class CRIS(Hardware):
                     maxRate, DAQmx_Val_Falling,
                     DAQmx_Val_ContSamps, 1)
 
-        DAQmxCreateAOVoltageChan(self.aoTaskHandle,
-                    self.settings['aoChannel'],
-                    "", -10,10,DAQmx_Val_Volts, None)
-
-        DAQmxCreateAIVoltageChan(self.aiTaskHandle,
-                    self.settings['aiChannel'], "",
-                    DAQmx_Val_RSE, -10.0, 10.0,
-                    DAQmx_Val_Volts, None)
+##        DAQmxCreateAOVoltageChan(self.aoTaskHandle,
+##                    self.settings['aoChannel'],
+##                    "", -10,10,DAQmx_Val_Volts, None)
+##
+##        DAQmxCreateAIVoltageChan(self.aiTaskHandle,
+##                    self.settings['aiChannel'], "",
+##                    DAQmx_Val_RSE, -10.0, 10.0,
+##                    DAQmx_Val_Volts, None)
 
         # Start the tasks
         DAQmxStartTask(self.countTaskHandle)
-        DAQmxStartTask(self.aoTaskHandle)
-        DAQmxStartTask(self.aiTaskHandle)
+##        DAQmxStartTask(self.aoTaskHandle)
+##        DAQmxStartTask(self.aiTaskHandle)
 
         # Initialize the counters
         self.lastCount = uInt32(0)
         self.countData = uInt32(0) # the counter
 
-        self.no_of_ai = self.settings['noOfAi']
-        self.aiData = np.zeros((self.no_of_ai,), dtype=np.float64)
+##        self.no_of_ai = self.settings['noOfAi']
+##        self.aiData = np.zeros((self.no_of_ai,), dtype=np.float64)
         
         # checking if everything is OK
         DAQmxReadCounterScalarU32(self.countTaskHandle,
@@ -74,26 +74,28 @@ class CRIS(Hardware):
 
 
     def write_to_device(self):
-        DAQmxWriteAnalogScalarF64(self.aoTaskHandle,
-                                      True, self.timeout,
-                                      self.setpoint, None)
+##        DAQmxWriteAnalogScalarF64(self.aoTaskHandle,
+##                                      True, self.timeout,
+##                                      self.setpoint, None)
+        pass
         return True
 
     def read_from_device(self):
         DAQmxReadCounterScalarU32(self.countTaskHandle,
                                   self.timeout,
                                   byref(self.countData), None)
-        DAQmxReadAnalogF64(self.aiTaskHandle,
-                           -1, self.timeout,
-                           DAQmx_Val_GroupByChannel, self.aiData,
-                           self.no_of_ai,
-                           byref(ctypes.c_long()), None)
+##        DAQmxReadAnalogF64(self.aiTaskHandle,
+##                           -1, self.timeout,
+##                           DAQmx_Val_GroupByChannel, self.aiData,
+##                           self.no_of_ai,
+##                           byref(ctypes.c_long()), None)
         # Modify the gathered data, to see how many counts since the last readout
         # have registered.
         counts = self.countData.value - self.lastCount.value
         self.lastCount.value = self.countData.value
 
-        data = [self.setpoint,counts]
-        data.extend(self.aiData)
+##        data = [self.setpoint,counts]
+##        data.extend(self.aiData)
+        data = [counts]
 
         return data

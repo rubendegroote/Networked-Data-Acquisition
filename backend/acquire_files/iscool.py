@@ -25,6 +25,6 @@ class ISCOOL(Hardware):
 
 
     def read_from_device(self):
-        voltage = float(self.opc.read('ISCOOL.Voltage')[0])*10000
+        voltage = float(self.opc.read('ISCOOL.Voltage')[0])*1000
         self.ns.status_data = {'voltage':voltage}
         return [voltage]

@@ -6,16 +6,9 @@ import numpy as np
 import pandas as pd
 from picbutton import PicButton
 
+from backend.Helpers import calcHist
 
-class GraphDock(pg.dockarea.Dock):
-
-    def __init__(self, name):
-        super(GraphDock, self).__init__(name)
-        self.graph = MyGraph(name)
-        self.layout.addWidget(self.graph)
-
-
-class MyGraph(QtGui.QWidget):
+class XYGraph(QtGui.QWidget):
 
     dataRequested = QtCore.pyqtSignal(str)
     scanRequested = QtCore.pyqtSignal(str)
@@ -49,9 +42,12 @@ class MyGraph(QtGui.QWidget):
         self.graph = pg.PlotWidget()
         self.graph.showGrid(x=True, y=True, alpha=0.7)
 
-        self.curve = pg.PlotCurveItem()
-        self.graph.addItem(self.curve)
+        self.error_curve = pg.ErrorBarItem(x=np.array([]),y=np.array([]),
+                    top=np.array([]),bottom=np.array([]),beam=0.)
+        self.graph.addItem(self.error_curve)
 
+        self.points_curve = pg.ScatterPlotItem()
+        self.graph.addItem(self.points_curve)
 
         layout = QtGui.QGridLayout(gView)
         layout.addWidget(self.graph, 0, 0, 1, 1)
@@ -75,16 +71,32 @@ class MyGraph(QtGui.QWidget):
  on the X-axis.')
         self.sublayout.addWidget(self.comboX, 0, 3)
 
-        self.graphStyles = ['Step (histogram)', 'Line']#, 'Point']
+        self.graphStyles = ['sqrt','std dev','None']#, 'Point']
 
-        self.graphBox = QtGui.QComboBox(self)
-        self.graphBox.setToolTip('Choose how you want to plot the data:\
- as a binned histogram, or the raw data. The latter strains the pc a lot though!')
-        self.graphBox.addItems(self.graphStyles)
-        self.graphBox.setCurrentIndex(0)
-        self.graphBox.setMaximumWidth(110)
-        # self.graphBox.currentIndexChanged.connect(self.updatePlot)
-        self.sublayout.addWidget(self.graphBox, 0, 5)
+        label = QtGui.QLabel('Errors: ')
+        label.setStyleSheet("border: 0px;")
+        self.sublayout.addWidget(label, 0, 4)
+
+        self.error_box = QtGui.QComboBox(self)
+        self.error_box.setToolTip('Choose how you want to calculate the errors:\
+ as the standard deviation within the bin or assuming poisson statistics.')
+        self.error_box.addItems(self.graphStyles)
+        self.error_box.setCurrentIndex(0)
+        self.error_box.setMaximumWidth(110)
+        # self.error_box.currentIndexChanged.connect(self.updatePlot)
+        self.sublayout.addWidget(self.error_box, 0, 5)
+
+        label = QtGui.QLabel('data mode: ')
+        label.setStyleSheet("border: 0px;")
+        self.sublayout.addWidget(label, 0, 6)
+
+        self.data_box = QtGui.QComboBox(self)
+        self.data_box.setToolTip('Choose if you want the sum or mean of the data per bin')
+        self.data_box.addItems(['sum','mean'])
+        self.data_box.setCurrentIndex(0)
+        self.data_box.setMaximumWidth(110)
+        # self.error_box.currentIndexChanged.connect(self.updatePlot)
+        self.sublayout.addWidget(self.data_box, 0, 7)
 
         self.binLabel = QtGui.QLabel(self, text="Bin size: ")
         self.binSpinBox = pg.SpinBox(value=1000,
@@ -93,8 +105,6 @@ class MyGraph(QtGui.QWidget):
         self.binSpinBox.setToolTip('Choose the bin size\
  used to bin the data.')
         self.binSpinBox.setMaximumWidth(110)
-        # self.binSpinBox.sigValueChanged.connect(self.updatePlot)
-
         self.sublayout.addWidget(self.binLabel, 2, 4)
         self.sublayout.addWidget(self.binSpinBox, 2, 5)
 
@@ -106,37 +116,40 @@ class MyGraph(QtGui.QWidget):
         self.x_offset = QtGui.QLineEdit("0")
         self.sublayout.addWidget(self.x_offset, 2, 3)
 
-        self.sublayout.setColumnStretch(6, 1)
+        self.sublayout.addWidget(QtGui.QLabel("x cut left"),3,0)
+        self.x_cut_left = QtGui.QLineEdit("0")
+        self.sublayout.addWidget(self.x_cut_left, 3, 1)
+
+        self.sublayout.addWidget(QtGui.QLabel("x cut right"),3,2)
+        self.x_cut_right = QtGui.QLineEdit("9000000")
+        self.sublayout.addWidget(self.x_cut_right, 3, 3)
+
+        self.clean_stream = QtGui.QPushButton('Reset data')
+        self.sublayout.addWidget(self.clean_stream, 4, 5, 1, 1)
+        self.clean_stream.clicked.connect(self.clean)
+
+        self.sublayout.setColumnStretch(8, 1)
         self.layout.addWidget(gView, 0, 0)
 
-    def calcHist(self, x, y, binsize):
-
-        binsize = binsize * 1.
-        x, y = np.array(x, dtype=float), np.array(y, dtype=float)
-
-        if x[0] < x[-1]:
-            bins = np.arange(min(x)-binsize/2, max(x) + binsize/2, binsize)
-        else:
-            start = round(min(x)/binsize) * binsize
-            bins = np.arange(start-binsize/2, max(x) + binsize/2, binsize)
-
-        bin_means, edges = np.histogram(x, bins, weights=y)
-
-        errors = np.sqrt(bin_means + 1)
-
-        scale = np.histogram(x, bins)[0]
-
-        bin_means = bin_means / scale
-        errors = errors / scale
-
-        return edges, bin_means, errors
+    def clean(self):
+        self.data = self.data.iloc[-10:]
 
     def setXYOptions(self, options):
         self.options = ['device: parameter']
         self.options.extend([key+': '+v for key,val in options.items() for v in val])
 
         self.comboX.addItems(self.options)
+        try:
+            self.comboX.setCurrentIndex(options.index('wavemeter: wavenumber_1'))
+        except:
+            self.comboX.setCurrentIndex(0)
+
         self.comboY.addItems(self.options)
+        try:
+            self.comboY.setCurrentIndex(options.index('CRIS: Counts'))
+        except:
+            self.comboY.setCurrentIndex(0)
+
 
         self.comboX.currentIndexChanged.connect(self.newXY)
         self.comboY.currentIndexChanged.connect(self.newXY)
@@ -164,7 +177,8 @@ class MyGraph(QtGui.QWidget):
         self.reset = False
 
     def plot(self):
-        histmode = str(self.graphBox.currentText()) == 'Step (histogram)'
+        errormode = str(self.error_box.currentText())
+        data_mode = str(self.data_box.currentText())
 
         if len(self.data)>0:
             if len(self.data) > self.buffer_size:
@@ -177,15 +191,51 @@ class MyGraph(QtGui.QWidget):
             elif 'timestamp' in self.y_key:
                 data['y'] = data['y'] - data['y'].values[0]
             
-            x = data['x'].values - float(self.x_offset.text())
-            y = data['y'].values - float(self.y_offset.text())
+            max_x = float(self.x_cut_right.text())
+            min_x = float(self.x_cut_left.text())
+            slicer = np.logical_and(data['x']<max_x,data['x']>min_x)
+            data = data[slicer]
+            
+            binsize = self.binSpinBox.value()
+            bins = np.arange(np.min(data['x']), np.max(data['x'])+binsize, binsize)
+            noe, x, x_err, y, y_err = calcHist(data, bins, errormode, data_mode)
+            noe, x, x_err, y, y_err = noe[noe>0], \
+                                      x[noe>0], \
+                                      x_err[noe>0], \
+                                      y[noe>0], \
+                                      y_err[noe>0]
+            
+            x = x - float(self.x_offset.text())
+            y = y - float(self.y_offset.text())
 
-            if histmode:
-                binsize = self.binSpinBox.value()
-                x, y, errors = self.calcHist(x, y, binsize)
+            if not errormode == 'None':
+                try:
+                    self.error_curve.setData(x=x, y=y,top=y_err,bottom=y_err,
+                                            left = x_err,right = x_err,
+                                            pen='r',beam=0.,lw=3)
+                except:
+                    self.error_curve = pg.ErrorBarItem(x=x, y=y,top=y_err,bottom=y_err,
+                                            left = x_err,right = x_err,
+                                            pen='r',beam=0.,lw=3)
+                    self.graph.addItem(self.error_curve)
 
-            self.curve.setData(x, y,
-                               pen='r',
-                               # fillLevel=0,
-                               stepMode=histmode,
-                               brush='g')
+                    self.graph.removeItem(self.curve)
+                    del self.curve
+                    
+                try:
+                    self.points_curve.setData(x=x, y=y)
+                except:
+                    self.points_curve = pg.ScatterPlotItem()
+                    self.graph.addItem(self.points_curve)
+                    self.points_curve.setData(x=x, y=y)
+    
+            else:
+                try:
+                    self.curve.setData(x=x, y=y,pen='r')
+                except:
+                    self.curve = pg.PlotCurveItem(x=x, y=y,pen='r',lw=3)
+                    self.graph.addItem(self.curve)
+                    self.graph.removeItem(self.error_curve)
+                    self.graph.removeItem(self.points_curve)
+                    del self.error_curve
+                    del self.points_curve

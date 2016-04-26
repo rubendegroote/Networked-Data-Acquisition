@@ -3,7 +3,7 @@ import traceback
 
 from .hardware import format,Hardware
 
-this_format = format + ('wavenumber_1','expos_12','expos_21')
+this_format = format + ('wavenumber_1',)
 
 write_params = []
 
@@ -17,7 +17,7 @@ class Wavemeter_pdl(Hardware):
                              refresh_time = 0.01)
 
         self.mapping = {
-                        "calibrate": self.calibrate
+                        "calibrate_wavemeter": self.calibrate
                        }
 
     def connect_to_device(self):
@@ -43,12 +43,10 @@ class Wavemeter_pdl(Hardware):
 
     def read_from_device(self):
         wavenumber_1 = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
-        while not wavenumber_1 > 10**4:
-            wavenumber_1 = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
-        expos_11 = self.wlmdata.GetExposureNum(1,1,0)
-        expos_12 = self.wlmdata.GetExposureNum(1,2,0)
+##        while not wavenumber_1 > 10**4:
+##            wavenumber_1 = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
 
-        data = [wavenumber_1,expos_11,expos_12]
+        data = [wavenumber_1]
 
         self.ns.status_data = {'wavenumber_1':wavenumber_1}
 

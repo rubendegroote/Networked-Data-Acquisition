@@ -65,7 +65,7 @@ class M2(Hardware):
             "change_device_prop":self.change_prop
         }
 
-        self.settings = {'host': '192.168.1.216',
+        self.settings = {'host': '192.168.1.222',
                          'port':39933}
 
         self.wavenumber = 0
@@ -125,6 +125,7 @@ class M2(Hardware):
 
         if abs(error) < 0.25 and abs(error) > 10**-6:
             correction = self.prop * error
+            print(correction)
             self.cavity_value += correction
             if self.cavity_value > 15 and self.cavity_value < 85:
                 self.socket.sendall(comm.tune_cavity(self.cavity_value))

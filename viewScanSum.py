@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import h5py
 
 def calcHist(x, y, binsize):
 
@@ -26,11 +27,14 @@ def calcHist(x, y, binsize):
 
 x = ('CRIS', 'counts')
 y = ('wavemeter', 'wavenumber_1')
-scans = [73, 74, 75]
+
+## Change these
+scans = [96,97]
+folder = 'C:\\Data\\Tests'
 
 x_data = [[], []]
 y_data = [[], []]
-with h5py.File('C:\\Data\\Gallium Run\\server_data.h5','r') as store:
+with h5py.File(folder + '\\server_data.h5','r') as store:
     origin,par_name = x
     for scan_number in scans:
         data_set = store[origin][str(scan_number)]
@@ -40,6 +44,8 @@ with h5py.File('C:\\Data\\Gallium Run\\server_data.h5','r') as store:
             col = format.index(par_name)
             x_data[0].extend(list(data_set[:,0]))
             x_data[1].extend(list(data_set[:,col]))
+        except:
+            pass
 
     origin,par_name = y
     for scan_number in scans:
@@ -50,6 +56,8 @@ with h5py.File('C:\\Data\\Gallium Run\\server_data.h5','r') as store:
             col = format.index(par_name)
             y_data[0].extend(list(data_set[:,0]))
             y_data[1].extend(list(data_set[:,col]))
+        except:
+            pass
 
 data = x_data.extend(y_data)
 

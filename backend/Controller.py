@@ -6,7 +6,6 @@ from backend.connectors import Connector, Acceptor
 import backend.logbook as lb
 from backend.dispatcher import Dispatcher
 
-INI_PATH = 'C:\\Logbook\\Francium Run\\scan_init.ini'
 CONFIG_PATH = os.getcwd() + "\\config.ini"
 
 class Controller(Dispatcher):
@@ -15,6 +14,9 @@ class Controller(Dispatcher):
     config_parser.read(CONFIG_PATH)
     log_path = config_parser['paths']['log_path'] + 'logbook'
     PORT = int(config_parser['ports']['controller'])
+
+    scan_parser = configparser.ConfigParser()
+    scan_path = config_parser['paths']['scan_path'] + 'scan_init.ini'
     def __init__(self, PORT=PORT, name='Controller'):
         super(Controller, self).__init__(PORT, name)
         self.scanner_name = ""
@@ -42,9 +44,8 @@ class Controller(Dispatcher):
             self.log_edits = []
 
         # get last scan number from config file
-        self.scan_parser = configparser.ConfigParser()
         try:
-            self.scan_parser.read(INI_PATH)
+            self.scan_parser.read(self.scan_path)
             self.scan_number = int(self.scan_parser['scan_number']['scan_number'])
             try:
                 origin, progress, scanning = (self.scan_parser['progress']['origin'],
@@ -57,6 +58,7 @@ class Controller(Dispatcher):
                 print('No scanprogress found.')
         except:
             print('No scan ini file found')
+        print(self.scan_number)
 
     @try_call
     def status(self, *args):
@@ -77,15 +79,16 @@ class Controller(Dispatcher):
         device_name = params['device']
         scan_parameter = params['scan_parameter']
         scan_array = params['scan_array']
+        scan_summary = params['scan_summary']
         time_per_step = params['time_per_step']
         mass = params['mass'][0]
         self.scan_device(device_name,scan_parameter,
-                         scan_array,time_per_step,mass)
+                         scan_array,scan_summary,time_per_step,mass)
 
         return {}
 
     def scan_device(self,device_name,scan_parameter,
-                         scan_array,time_per_step,
+                         scan_array,scan_summary,time_per_step,
                          mass):
         self.scanner_name = device_name
         scanner = self.connectors[device_name]
@@ -97,22 +100,21 @@ class Controller(Dispatcher):
                  'arguments':{'scan_parameter':scan_parameter,
                               'scan_array':scan_array,
                               'time_per_step':time_per_step}}))
-        # lgobook updating
+        # logbook updating
         info_for_log = {'Scan Number': self.scan_number,
                         'Author': 'Automatic Entry',
                         'Mass': mass,
                         'Tags': {"Scan": True},
-                        'Text': lb.START.format(device_name,
-                                                scan_array[0],
-                                                scan_array[-1],
-                                                len(scan_array),
-                                                time_per_step[0])}
+                        'Text': lb.stringify_scan_summary(\
+                                   device_name,scan_summary)}
         self.add_to_logbook(info_for_log)
         self.current_scan_log_number = len(self.logbook)-1
 
         # update scan progress in ini file
         self.scan_parser['scan_number'] = {'scan_number': self.scan_number}
-        with open(INI_PATH, 'w') as scanfile:
+        with open(self.scan_path, 'w') as scanfile:
+            print('here')
+            print(self.scan_path)
             self.scan_parser.write(scanfile)
 
     @try_call
@@ -193,6 +195,10 @@ class Controller(Dispatcher):
         self.log_edits.append(number) # number of the entry that was edited
         return {'tag_name':tag_name}
 
+    def add_to_logbook(self,info_for_log):
+        lb.addEntryFromCopy(self.logbook,info_for_log)
+        lb.saveEntry(self.log_path, self.logbook, -1)
+        self.log_edits.append(len(self.logbook)-1) # number of the entry that was added
 
     def default_cb(self):
         return 'status',{'scan_number': [self.current_scan],
@@ -219,13 +225,8 @@ class Controller(Dispatcher):
             self.scan_parser['progress'] = {'progress': params['progress'],
                                             'origin': origin,
                                             'scanning': params['scanning']}
-            with open(INI_PATH, 'w') as scanfile:
+            with open(self.scan_path, 'w') as scanfile:
                 self.scan_parser.write(scanfile)
-
-    def add_to_logbook(self,info_for_log):
-        lb.addEntryFromCopy(self.logbook,info_for_log)
-        lb.saveEntry(self.log_path, self.logbook, -1)
-        self.log_edits.append(len(self.logbook)-1) # number of the entry that was added
 
 def makeController():
     return Controller()

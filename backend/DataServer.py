@@ -72,7 +72,7 @@ class DataServer(Dispatcher):
             col = self.formats[origin].index(par_name)
             row = DS_no_of_rows[origin]-no_of_rows[origin]
         except KeyError as e:
-            print(e,self.formats.keys(),DS_no_of_rows.keys(),no_of_rows.keys(),self.data.keys())
+            # print(e,self.formats.keys(),DS_no_of_rows.keys(),no_of_rows.keys(),self.data.keys())
             # no scans yet
             return [[],[]]
 

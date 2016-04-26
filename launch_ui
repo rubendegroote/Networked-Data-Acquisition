@@ -5,19 +5,23 @@ def main():
     freeze_support()
     if sys.argv[1] == 'controller':
         from ControllerApp import main as ui_main
-    elif  sys.argv[1] == 'data_viewer':
+    elif sys.argv[1] == 'live_viewer':
         from DataViewerApp import main as ui_main
-    elif  sys.argv[1] == 'data_viewer_cut':
-        from DataViewerApp_cut import main as ui_main
-    elif  sys.argv[1] == 'log_viewer':
+    elif sys.argv[1] == 'data_inspector':
+        from ScanRecaller import main as ui_main
+    elif sys.argv[1] == 'log_viewer':
         from LogbookApp import main as ui_main
+    elif sys.argv[1] == 'beam_tuning':
+        from BeamlineControllerApp import main as ui_main
     else:
         print("Invalid option supplied to launch_ui")
         print("Usage: python launch_ui <name>")
         print("Possible values of <name>:")
         print("\t controller")
-        print("\t data_viewer")
+        print("\t live_viewer")
         print("\t log_viewer")
+        print("\t beam_tuning")
+        print("\t data_inspector")
 
         return
 
