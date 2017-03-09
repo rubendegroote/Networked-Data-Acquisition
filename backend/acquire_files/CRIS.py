@@ -8,7 +8,7 @@ from PyDAQmx.DAQmxFunctions import *
 from .hardware import format,Hardware
 
 this_format = format + ('Counts',)
-write_params = []
+write_params = ['None']
 
 class CRIS(Hardware):
     def __init__(self):

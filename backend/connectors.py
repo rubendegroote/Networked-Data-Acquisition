@@ -6,7 +6,7 @@ import time
 from collections import deque
 import traceback
 
-from backend.Helpers import track, make_message, log_message
+from backend.Helpers import track, make_message
 
 class Connector(asynchat.async_chat):
     def __init__(self,name,chan,callback,
@@ -20,7 +20,6 @@ class Connector(asynchat.async_chat):
         self.counter = 0
 
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        # self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self.connect(chan)
         time.sleep(0.05)
 
@@ -80,7 +79,6 @@ class Connector(asynchat.async_chat):
         self.push(message)
 
     @track
-    @log_message
     def push(self,message):
         dump = (json.dumps(message) + "END_MESSAGE").encode('UTF-8')
         super(Connector, self).push(dump)
@@ -127,7 +125,6 @@ class Acceptor(asynchat.async_chat):
             self.buff = b""
 
     @track
-    @log_message
     def push(self,message):
         dump = (json.dumps(message) + "STOP_DATA").encode('UTF-8')
         super(Acceptor, self).push(dump)

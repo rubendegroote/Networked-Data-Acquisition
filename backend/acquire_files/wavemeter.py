@@ -1,5 +1,6 @@
 import ctypes
 import traceback
+import time
 
 from .hardware import format,Hardware
 
@@ -14,7 +15,7 @@ class Wavemeter(Hardware):
                              format=this_format,
                              write_params = write_params,
                              needs_stabilization = False,
-                             refresh_time = 0.01)
+                             refresh_time = 10)
 
         self.mapping = {
                         "calibrate_wavemeter": self.calibrate
@@ -29,6 +30,9 @@ class Wavemeter(Hardware):
             self.wlmdata.GetFrequencyNum.argtypes = [ctypes.c_long, ctypes.c_double]
             self.wlmdata.GetFrequencyNum.restype  = ctypes.c_double
 
+            # self.wlmdata.GetLinewidth.argtypes = [ctypes.c_long, ctypes.c_double]
+            # self.wlmdata.GetLinewidth.restype  = ctypes.c_double
+
             self.wlmdata.GetExposureNum.argtypes = [ctypes.c_long, ctypes.c_long, ctypes.c_long]
             self.wlmdata.GetExposureNum.restype  = ctypes.c_long
             self.wlmdata.Calibration.argtypes = [ctypes.c_long, ctypes.c_long,
@@ -40,18 +44,33 @@ class Wavemeter(Hardware):
 
         except:
             raise Exception('Failed to connect to wavemeter\n',traceback.format_exc())
+        
+        wavenumber_1 = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
+        wavenumber_2 = self.wlmdata.GetFrequencyNum(2,0) / 0.0299792458
+
+        self.ns.status_data = {'wavenumber_1':wavenumber_1,
+                               'wavenumber_2':wavenumber_2}
+
 
     def read_from_device(self):
         wavenumber_1 = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
         wavenumber_2 = self.wlmdata.GetFrequencyNum(2,0) / 0.0299792458
-        expos_11 = self.wlmdata.GetExposureNum(1,1,0)
-        expos_12 = self.wlmdata.GetExposureNum(1,2,0)
-        expos_21 = self.wlmdata.GetExposureNum(2,1,0)
-        expos_22 = self.wlmdata.GetExposureNum(2,2,0)
+
+        while wavenumber_1 == self.ns.status_data['wavenumber_1'] \
+              and wavenumber_2 == self.ns.status_data['wavenumber_2']:
+
+            wavenumber_1 = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
+            wavenumber_2 = self.wlmdata.GetFrequencyNum(2,0) / 0.0299792458
+            
+            time.sleep(0.001*self.ns.refresh_time)
+
+        # expos_11 = self.wlmdata.GetExposureNum(1,1,0)
+        # expos_12 = self.wlmdata.GetExposureNum(1,2,0)
+        # expos_21 = self.wlmdata.GetExposureNum(2,1,0)
+        # expos_22 = self.wlmdata.GetExposureNum(2,2,0)
+        # print(self.wlmdata.GetLinewidth(2,0))
 
         data = [wavenumber_1,wavenumber_2]
-
-        # self.refresh_time = expos_11 + expos_12 + expos_21 + expos_22
 
         self.ns.status_data = {'wavenumber_1':wavenumber_1,
                                'wavenumber_2':wavenumber_2}
@@ -62,5 +81,4 @@ class Wavemeter(Hardware):
         self.wlmdata.Operation(0) # stop
         self.wlmdata.Calibration(0,3,15798.0117779,2) #calibrate
         self.wlmdata.Operation(2) #start
-        self.ns.calibrated = True
 

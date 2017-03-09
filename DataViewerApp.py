@@ -6,7 +6,7 @@ import time
 import pandas as pd
 import numpy as np
 from multiprocessing import freeze_support
-import sys
+import sys,os
 
 from scanner import ScannerWidget
 from connect import ConnectionsWidget
@@ -14,10 +14,22 @@ from graph import XYGraph
 
 from backend.connectors import Connector
 
-dataserver_channel = ('PCCRIS1',5005)
-fileServer_channel = ('PCCRIS1', 5006)
+import configparser
+CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
+
 
 class DataViewerApp(QtGui.QMainWindow):
+    config_parser = configparser.ConfigParser()
+    config_parser.read(CONFIG_PATH)
+
+    fserver_ch = str(config_parser['IPs']['file_server'])
+    fserver_port = int(config_parser['ports']['file_server'])
+    fileServer_channel = (fserver_ch,fserver_port)
+    
+    server_ch = str(config_parser['IPs']['server'])
+    server_port = int(config_parser['ports']['server'])
+    dataserver_channel = (server_ch,server_port)
+
     def __init__(self):
         super(DataViewerApp, self).__init__()
         self.initialized = False
@@ -63,7 +75,7 @@ class DataViewerApp(QtGui.QMainWindow):
     def add_dataserver(self):
         try:
             self.data_server = Connector(name='R_to_DS',
-                                         chan=dataserver_channel,
+                                         chan=self.dataserver_channel,
                                          callback=self.reply_cb,
                                          onCloseCallback=self.onCloseCallback,
                                          default_callback=self.default_cb)
@@ -112,11 +124,11 @@ class DataViewerApp(QtGui.QMainWindow):
 
         self.graph.no_of_rows = params['no_of_rows']
 
-        data_x = pd.DataFrame({'time':data[0],'x':data[1]})
-        data_y = pd.DataFrame({'time':np.array(data[2])+np.random.rand(len(data[2]))*10**(-6),'y':data[3]})
+        data_x = pd.DataFrame({'time':np.array(data[0])-6.899886e+07,'x':data[1]})
+        # number added to fix graphical jitter
+        data_y = pd.DataFrame({'time':np.array(data[2])+1./10*10**-6-6.899886e+07,'y':data[3]})
 
         data = pd.concat([data_x,data_y])
-        data.set_index(['time'],inplace=True)
 
         if self.mode == 'stream':
             self.graph.data = self.graph.data.append(data)

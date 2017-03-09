@@ -17,10 +17,10 @@ write_params = ['wavenumber']
 class M2(Hardware):
     def __init__(self):
         super(M2,self).__init__(name = 'M2',
-                                     format=this_format,
-                                     write_params = write_params,
-                                     needs_stabilization = True,
-                                     refresh_time = 0.3)
+                                 format=this_format,
+                                 write_params = write_params,
+                                 needs_stabilization = True,
+                                 refresh_time = 20)
         self.mapping = {
             "Set Wavelength": comm.set_wave_m,
             "Poll Wavelength": comm.poll_wave_m,
@@ -72,6 +72,8 @@ class M2(Hardware):
         self.cavity_value = 50.20
         self.etalon_value = 50.20
         self.setpoint = 0
+
+        self.tolerance = 5*10**-5
 
     def connect_to_device(self):
         ### Wavemeter stuff
@@ -125,8 +127,9 @@ class M2(Hardware):
 
         if abs(error) < 0.25 and abs(error) > 10**-6:
             correction = self.prop * error
-            print(correction)
             self.cavity_value += correction
+            self.cavity_value = min(self.cavity_value,100)
+            self.cavity_value = max(self.cavity_value,0)
             if self.cavity_value > 15 and self.cavity_value < 85:
                 self.socket.sendall(comm.tune_cavity(self.cavity_value))
                 response = json.loads(self.socket.recv(1024).decode('utf-8'))
@@ -134,7 +137,7 @@ class M2(Hardware):
             else:
                 pass
 
-        if not self.ns.on_setpoint and abs(error) < 5*10**-5:
+        if not self.ns.on_setpoint and abs(error) < self.tolerance:
             self.setpoint_reached()
             return ([0],'{} setpoint reached'.format(self.parameter))
 

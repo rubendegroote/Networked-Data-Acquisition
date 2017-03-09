@@ -186,8 +186,8 @@ class ScanRecaller(QtGui.QMainWindow):
         origin, track_id = track
         done = params['done'][0]
         if done:
-            self.centers = np.array(params['centers'])*3 #Tripling!
-            self.center_err = np.array(params['center_err'])*3 #Tripling!
+            self.centers = np.array(params['centers'])
+            self.center_err = np.array(params['center_err'])
             self.bin_means = np.array(params['bin_means'])
             self.err = np.array(params['err'])
             print(params.keys())
@@ -255,7 +255,8 @@ class ScanRecaller(QtGui.QMainWindow):
             x = self.centers - offset
         else:
             x = self.centers
-        self.fit_curve.setData(x,self.fitWidget.fit,pen='r')
+        self.fit_x = np.linspace(np.min(x),np.max(x),10**6)
+        self.fit_curve.setData(self.fit_x,self.fitWidget.spectrum(self.fit_x+offset),pen='r')
 
     def retrieve(self):
         self.scan_numbers = [int(name) for name,check in self.scan_checks.items() \
@@ -505,7 +506,6 @@ class FitWidget(QtGui.QWidget):
 
     def update_guess(self):
         self.make_spectrum()
-        self.fit = self.spectrum(self.x)
         self.fit_ready.emit()
 
     def make_fit(self):
@@ -525,11 +525,12 @@ class FitWidget(QtGui.QWidget):
             QtGui.QMessageBox.warning(self, 'Problem with errors',
 'One or more of the error bars is zero. This will cause the chi square routine to fail spectacularly. Removing them.')
             sat.chisquare_fit(self.spectrum,self.x[self.yerr>0],self.y[self.yerr>0],self.yerr[self.yerr>0])
+            print('not fitting')
         
         else:
+            print('fitting')
             sat.chisquare_fit(self.spectrum,self.x,self.y,self.yerr)
 
-        self.fit = self.spectrum(self.x)
         self.fit_ready.emit()
         self.show_results_table()
 

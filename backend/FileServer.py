@@ -11,7 +11,7 @@ import backend.logbook as lb
 from backend.dispatcher import Dispatcher
 import threading as th
 
-CONFIG_PATH = os.getcwd() + "\\config.ini"
+CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
 CHUNK_SIZE = 10**4
 class FileServer(Dispatcher):
     config_parser = configparser.ConfigParser()
@@ -23,6 +23,7 @@ class FileServer(Dispatcher):
         self.started_calulations = False
         self.progress = 0
         self.done = False
+        self.formats = {}
 
     @try_call
     def request_processed_data(self,params):
@@ -57,11 +58,11 @@ class FileServer(Dispatcher):
 
     @try_call
     def get_status(self,params):
-        formats = {}
         with h5py.File(self.save_path+'server_data.h5','r') as store:
             for g in store.keys():
-                formats[g] = list(store[g]["-1"].attrs['format'])
-                formats[g] = [f.decode('utf-8') for f in formats[g]]
+                if not g in self.formats.keys():
+                    self.formats[g] = list(store[g]["-1"].attrs['format'])
+                    self.formats[g] = [f.decode('utf-8') for f in self.formats[g]]
         
         available_scans = []
         info = np.loadtxt(self.save_path+'server_scans.txt',delimiter = ';')
@@ -69,7 +70,7 @@ class FileServer(Dispatcher):
         masses = list(info.T[1])
         available_scans,masses = zip(*set(zip(available_scans,masses)))
         
-        return {'data_format':formats,'available_scans':available_scans,
+        return {'data_format':self.formats,'available_scans':available_scans,
                 'masses':masses}
 
 
@@ -99,7 +100,7 @@ class FileServer(Dispatcher):
                 for stop in stops[1:]:
                     x = x_data_set[start:stop,x_col]
                     if 'wavenumber' in x_par_name:
-                        x = x[np.logical_and(x>13370, x<13390)]
+                        x = x[np.logical_and(x>12000, x<14000)]
                     if len(x) > 0:
                         minimum = min(minimum,np.min(x))
                         maximum = max(maximum,np.max(x))
@@ -176,10 +177,10 @@ class FileServer(Dispatcher):
                     data_frame.dropna(inplace=True)
 
                     if 'wavenumber' in x_par_name:
-                        data_frame = data_frame[np.logical_and(data_frame['x']>13370, data_frame['x']<13390)]
+                        data_frame = data_frame[np.logical_and(data_frame['x']>12000, data_frame['x']<14000)]
 
                     if 'wavenumber' in y_par_name:
-                        data_frame = data_frame[np.logical_and(data_frame['y']>13370, data_frame['y']<13390)]
+                        data_frame = data_frame[np.logical_and(data_frame['y']>12000, data_frame['y']<14000)]
 
 
                     if len(data_frame['x'])>0:

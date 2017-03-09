@@ -1,5 +1,6 @@
 import ctypes
 import traceback
+import time
 
 from .hardware import format,Hardware
 
@@ -14,7 +15,7 @@ class Wavemeter_pdl(Hardware):
                              format=this_format,
                              write_params = write_params,
                              needs_stabilization = False,
-                             refresh_time = 0.01)
+                             refresh_time = 100)
 
         self.mapping = {
                         "calibrate_wavemeter": self.calibrate
@@ -41,10 +42,15 @@ class Wavemeter_pdl(Hardware):
         except:
             raise Exception('Failed to connect to wavemeter_pdl\n',traceback.format_exc())
 
+        wavenumber_1 = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
+        self.ns.status_data = {'wavenumber_1':wavenumber_1}
+
     def read_from_device(self):
         wavenumber_1 = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
-##        while not wavenumber_1 > 10**4:
-##            wavenumber_1 = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
+
+        while wavenumber_1 == self.ns.status_data['wavenumber_1']:
+            wavenumber_1 = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
+            time.sleep(0.001*self.ns.refresh_time)
 
         data = [wavenumber_1]
 
@@ -53,9 +59,8 @@ class Wavemeter_pdl(Hardware):
         return data
 
     def calibrate(self,args):
-        pass
-        #self.wlmdata.Operation(0) # stop
-        #self.wlmdata.Calibration(0,3,15798.0117779,2) #calibrate
-        #self.wlmdata.Operation(2) #start
+        self.wlmdata.Operation(0) # stop
+        self.wlmdata.Calibration(0,3,15798.0117779,2) #calibrate
+        self.wlmdata.Operation(2) #start
 
 

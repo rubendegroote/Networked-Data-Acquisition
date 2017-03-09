@@ -3,7 +3,7 @@ import asyncore
 import socket
 import time
 
-from backend.Helpers import *
+import backend.Helpers as hp
 from backend.connectors import Connector, Acceptor
 
 
@@ -22,7 +22,6 @@ class Dispatcher(asyncore.dispatcher):
         self.connectors = {}
         self.connInfo = {}
 
-
         self.looping = True
         self.thread =  th.Thread(target=self.start)
         self.thread.start()    
@@ -30,6 +29,7 @@ class Dispatcher(asyncore.dispatcher):
     def start(self):
         while self.looping:
             asyncore.loop(count=1,timeout=1)
+            time.sleep(0.005)
 
     def stop(self):
         for acc in self.acceptors:
@@ -45,7 +45,7 @@ class Dispatcher(asyncore.dispatcher):
     def readable(self):
         return True
 
-    @try_call
+    @hp.try_call
     def forward_instruction(self,params):
         device = self.connectors[params['device']]
         instruction,arguments = params['instruction'],params['arguments']
@@ -58,7 +58,7 @@ class Dispatcher(asyncore.dispatcher):
         origin, track_id = track[-1]
         self.notify_connectors(([0],"Device {} received instruction correctly.".format(origin)))
 
-    @try_call
+    @hp.try_call
     def add_connector(self, params):
         address = params['address']
         if address is None:
@@ -76,9 +76,19 @@ class Dispatcher(asyncore.dispatcher):
         self.connectors[conn.acceptor_name] = conn
         self.connInfo[conn.acceptor_name] = (
             True, conn.chan[0], conn.chan[1])
+        self.connectors[conn.acceptor_name].add_request((
+                    'initial_information',{}))
+        time.sleep(0.05)
         return {}
 
-    @try_call
+    @hp.try_call
+    def initial_information(self,params):
+        return {}
+
+    def initial_information_reply(self,track,params):
+        pass
+
+    @hp.try_call
     def remove_connector(self,params):
         address = params['address']
         toRemove = []
@@ -99,7 +109,7 @@ class Dispatcher(asyncore.dispatcher):
 
         params = getattr(self, function)(args)
 
-        return add_reply(message, params)
+        return hp.add_reply(message, params)
 
     def acceptor_closed_cb(self, acceptor):
         self.acceptors.remove(acceptor)
@@ -136,14 +146,12 @@ class Dispatcher(asyncore.dispatcher):
             sock, addr = pair
             try:
                 sender = self.get_sender_ID(sock)
-                logging.info(sender)
             except Exception as e:
                 self.notify_connectors(([1],"Received status fail in handle_accept\n:{}".format(str(e))))
                 return
             self.acceptors.append(Acceptor(sock=sock,name=self.name,
                                callback=self.acceptor_cb,
                                onCloseCallback=self.acceptor_closed_cb))
-            print(self.acceptors)
 
     def get_sender_ID(self, sock):
         now = time.time()

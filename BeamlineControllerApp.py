@@ -9,10 +9,13 @@ import pyqtgraph as pg
 from spin import Spin
 from beamlinegraph import BeamlineGraph
 import pandas as pd
+from connectiondialogs import Contr_DS_ConnectionDialog
 
 from backend.connectors import Connector
 
-from ui_cupswitcher import CupSwitcher
+# from cupswitcher import CupSwitcher
+
+from ui_7001switcher import CupSwitcher
 
 class ControlContainer(QtGui.QWidget):
     new_setpoint = QtCore.pyqtSignal(dict)
@@ -20,14 +23,12 @@ class ControlContainer(QtGui.QWidget):
         super(ControlContainer,self).__init__()
         self.max_offset = 50
         self.layout = QtGui.QGridLayout(self)
-        #self.cupswitcher=CupSwitcher()#adam
 
         self.status_label = QtGui.QLabel("On Setpoint")
         self.status_label.setMaximumHeight(15)
         self.on_setpoint = False
         self.status_label.setStyleSheet("QLabel { background-color: red; }")
         self.layout.addWidget(self.status_label,1,0,1,1)
-        #self.layout.addWidget(self.cupswitcher,0,0,1,3)#adam
 
         self.layout.addWidget(QtGui.QWidget(),1000,0,1,1)
 
@@ -115,20 +116,49 @@ class BeamlineControllerApp(QtGui.QMainWindow):
         t = th.Thread(target=self.startIOLoop).start()
         self.init_UI()
 
-        channel = ('PCCRIS15',5004)
-        self.control_connector = Connector(name = 'BGui_to_C',
-                                 chan=channel,
+        self.connectToServers()
+
+    def connectToServers(self):
+        respons = Contr_DS_ConnectionDialog.getInfo(parent=self)
+        if respons[1]:
+            self.addConnection(respons[0])
+
+    def addConnection(self, data):
+        ManChan = data[0], int(data[1])
+        DSChan = data[2], int(data[3])
+        
+        try:
+            self.control_connector = Connector(name = 'BGui_to_C',
+                                 chan=ManChan,
                                  callback=self.reply_cb,
                                  default_callback = self.default_c_cb,
                                  onCloseCallback = self.lostConn)
 
+        except Exception as e:
+            self.control_connector = None
 
-        channel = ('PCCRIS1',5005)
-        self.server_connector = Connector(name = 'BGui_to_DS',
-                                 chan=channel,
+        try:
+            self.DS_connector = Connector(name = 'BGui_to_DS',
+                                 chan=DSChan,
                                  callback=self.reply_cb,
                                  default_callback=self.default_DS_cb,
                                  onCloseCallback = self.lostConn)
+        except Exception as e:
+            self.DS_connector = None
+
+
+        if self.control_connector or self.DS_connector:
+            if self.control_connector and self.DS_connector:
+                self.statusBar().showMessage(
+                    'Connected to Controller and Data Server')
+            elif self.control_connector:
+                self.statusBar().showMessage('No Data Server Connection')
+            elif self.DS_connector:
+                self.statusBar().showMessage('No Controller Connection')
+                
+        else:
+            self.statusBar().showMessage('Connection failure')
+
 
     def init_UI(self):
         self.makeMenuBar()
@@ -136,10 +166,16 @@ class BeamlineControllerApp(QtGui.QMainWindow):
         self.central = QtGui.QSplitter()
         self.setCentralWidget(self.central)
 
+        wid = QtGui.QWidget()
+        lay = QtGui.QGridLayout(wid)
+        self.central.addWidget(wid)
+        
         self.container = ControlContainer()
-        #self.cupswitcher=CupSwitcher()#adam
-        self.central.addWidget(self.container)
-        #self.central.addWidget(self.cupswitcher)#adam
+        lay.addWidget(self.container,0,0)
+
+        self.cupswitcher = CupSwitcher()
+        self.cupswitcher.switch_sig.connect(self.switch_cup)
+        lay.addWidget(self.cupswitcher,1,0)
 
         self.container.new_setpoint.connect(self.change_volts)
 
@@ -221,6 +257,8 @@ class BeamlineControllerApp(QtGui.QMainWindow):
                 return 'get_latest',{}
 
     def status_reply(self,track,params):
+        self.cupswitcher.setOptions(params['status_data']['current']['cup_names'])
+        self.cupswitcher.set_cup_in(params['status_data']['current']['cup_in'])
         self.updateSignal.emit((self.container.update,{'track':track,
                                     'args':params}))
 
@@ -264,6 +302,12 @@ class BeamlineControllerApp(QtGui.QMainWindow):
                                     'device':'beamline',
                                     'arguments':arguments}))
 
+    def switch_cup(self,cup):
+        arguments = {'cup':cup}
+        self.control_connector.add_request(('forward_instruction',
+                                   {'instruction':'switch_cup',
+                                    'device':'current',
+                                    'arguments':arguments}))
     def save(self):
         fileName = QtGui.QFileDialog.getSaveFileName(self, 
             'Select file', os.getcwd(),"CSV (*.csv)")
@@ -320,7 +364,7 @@ class BeamlineControllerApp(QtGui.QMainWindow):
             return
 
     def lostConn(self,connector):
-        pass
+        self.connectToServers()
 
     def updateMessages(self,info):
         track,message = info['track'],info['args']

@@ -6,32 +6,41 @@ from backend.connectors import Connector, Acceptor
 import backend.logbook as lb
 from backend.dispatcher import Dispatcher
 
-CONFIG_PATH = os.getcwd() + "\\config.ini"
+CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
+SCAN_PATH = os.getcwd() + "\\Config files\\scan_init.ini"
 
 class Controller(Dispatcher):
     ### get configuration details
     config_parser = configparser.ConfigParser()
     config_parser.read(CONFIG_PATH)
-    log_path = config_parser['paths']['log_path'] + 'logbook'
-    PORT = int(config_parser['ports']['controller'])
 
     scan_parser = configparser.ConfigParser()
-    scan_path = config_parser['paths']['scan_path'] + 'scan_init.ini'
+    scan_parser.read(SCAN_PATH)
+    
+    log_path = config_parser['paths']['log_path'] 
+    if not os.path.exists(log_path):
+        os.makedirs(log_path)
+    log_path += 'logbook'
+
+    PORT = int(config_parser['ports']['controller'])
     def __init__(self, PORT=PORT, name='Controller'):
         super(Controller, self).__init__(PORT, name)
-        self.scanner_name = ""
-        self.scan_number = -1
-        self.current_scan = -1
         self.progress = {}
-        self.scan_numbers = {}
         self.scanning = {}
-        self.calibrated = {}
         self.format = {}
         self.write_params = {}
         self.on_setpoint = {}
-        self.masses = []
-        self.mass = 0
         self.status_data = {}
+        self.refresh_times = {}
+        
+        self.proton_info = {}
+
+        self.scanner_name = ""
+        self.last_scan = -1
+        self.current_scan = -1
+        self.scan_mass = {}
+        self.scan_ranges = {}
+        self.mass = 0
 
         # logbook
         try:
@@ -43,65 +52,77 @@ class Controller(Dispatcher):
             lb.saveLogbook(self.log_path, self.logbook)
             self.log_edits = []
 
+
         # get last scan number from config file
         try:
-            self.scan_parser.read(self.scan_path)
-            self.scan_number = int(self.scan_parser['scan_number']['scan_number'])
-            try:
-                origin, progress, scanning = (self.scan_parser['progress']['origin'],
-                                              self.scan_parser['progress']['progress'],
-                                              self.scan_parser['progress']['scanning'])
-                self.progress[origin] = float(progress)
-                self.scanning[origin] = scanning
-                self.scanner_name = origin
-            except:
-                print('No scanprogress found.')
-        except:
+            self.last_scan = int(self.scan_parser['last_scan']['last_scan'])
+
+            self.scan_mass = dict(self.scan_parser['scan_mass'])
+            for key,val in self.scan_mass.items():
+                self.scan_mass[key] = eval(val)
+            self.scan_ranges = dict(self.scan_parser['scan_ranges'])
+            for key,val in self.scan_ranges.items():
+                self.scan_ranges[key] = eval(val)
+        except Exception as e:
+            print(e)
             print('No scan ini file found')
-        print(self.scan_number)
 
     @try_call
     def status(self, *args):
+        to_remove = []
+        for key in self.status_data.keys():
+            if not key in self.connInfo.keys():
+                to_remove.append(key)
+        for key in to_remove:
+            del self.scanning[key]
+            del self.on_setpoint[key]
+            del self.progress[key]
+            del self.format[key]
+            del self.write_params[key]
+            del self.status_data[key]
+
         params = {'connector_info': self.connInfo,
-                  'scan_numbers': self.scan_numbers,
+                  'last_scan':self.last_scan,
                   'scanning': self.scanning,
-                  'calibrated': self.calibrated,
                   'on_setpoint': self.on_setpoint,
                   'progress': self.progress,
                   'format': self.format,
                   'write_params': self.write_params,
-                  'masses':self.masses,
-                  'status_data':self.status_data}
+                  'scan_mass':self.scan_mass,
+                  'status_data':self.status_data,
+                  'refresh_time':self.refresh_times}
         return params
+
+    @try_call
+    def change_save_mode(self,params):
+        device = self.connectors[params['device']]
+        device.add_request(('change_save_mode',
+                {'save':params['save'], 'save_stream':params['stream']}))
+
+        return {}
+
+    def change_save_mode_reply(self,track,params):
+        pass
 
     @try_call
     def start_scan(self, params):
         device_name = params['device']
         scan_parameter = params['scan_parameter']
+        mode = params['mode']
         scan_array = params['scan_array']
         scan_summary = params['scan_summary']
-        time_per_step = params['time_per_step']
+        units_per_step = params['units_per_step']
         mass = params['mass'][0]
-        self.scan_device(device_name,scan_parameter,
-                         scan_array,scan_summary,time_per_step,mass)
 
-        return {}
-
-    def scan_device(self,device_name,scan_parameter,
-                         scan_array,scan_summary,time_per_step,
-                         mass):
-        self.scanner_name = device_name
-        scanner = self.connectors[device_name]
-        self.scan_number += 1
-        self.current_scan = self.scan_number
+        self.last_scan += 1
+        self.current_scan = self.last_scan
         self.mass = mass
-        scanner.add_request(('execute_instruction',
-                {'instruction':'start_scan',
-                 'arguments':{'scan_parameter':scan_parameter,
-                              'scan_array':scan_array,
-                              'time_per_step':time_per_step}}))
+
+        self.scan_device(device_name,scan_parameter,mode,
+                         scan_array,units_per_step)
+
         # logbook updating
-        info_for_log = {'Scan Number': self.scan_number,
+        info_for_log = {'Scan Number': self.last_scan,
                         'Author': 'Automatic Entry',
                         'Mass': mass,
                         'Tags': {"Scan": True},
@@ -109,13 +130,33 @@ class Controller(Dispatcher):
                                    device_name,scan_summary)}
         self.add_to_logbook(info_for_log)
         self.current_scan_log_number = len(self.logbook)-1
+        
 
         # update scan progress in ini file
-        self.scan_parser['scan_number'] = {'scan_number': self.scan_number}
-        with open(self.scan_path, 'w') as scanfile:
-            print('here')
-            print(self.scan_path)
+        self.scan_parser['last_scan'] = {'last_scan': self.last_scan}
+        try:
+            self.scan_mass[str(mass)].append(self.last_scan)
+        except:
+            self.scan_mass[str(mass)] = [self.last_scan]
+        self.scan_parser['scan_mass'] = self.scan_mass
+        self.scan_ranges[str(self.last_scan)] = scan_summary
+        self.scan_parser['scan_ranges'] = self.scan_ranges
+
+        with open(SCAN_PATH, 'w') as scanfile:
             self.scan_parser.write(scanfile)
+
+        return {}
+
+    def scan_device(self,device_name,scan_parameter,mode,
+                         scan_array,units_per_step):
+        self.scanner_name = device_name
+        scanner = self.connectors[device_name]
+        scanner.add_request(('execute_instruction',
+                {'instruction':'start_scan',
+                 'arguments':{'scan_parameter':scan_parameter,
+                              'scan_array':scan_array,
+                              'mode':mode,
+                              'units_per_step':units_per_step}}))
 
     @try_call
     def stop_scan(self,params):
@@ -134,6 +175,12 @@ class Controller(Dispatcher):
         self.set_device(device_name,parameter,setpoint)
 
         return {}
+
+    @try_call
+    def get_scan_ranges(self,params):
+        scans = params['scans']
+        ranges = {k:v for k,v in self.scan_ranges.items() if int(k) in scans}
+        return {'ranges':ranges}
 
     def set_device(self,device_name,parameter,setpoint):
         device_to_set = self.connectors[device_name]
@@ -202,31 +249,26 @@ class Controller(Dispatcher):
 
     def default_cb(self):
         return 'status',{'scan_number': [self.current_scan],
-                         'mass': [self.mass]}
+                         'mass': [self.mass],
+                         'proton_info':self.proton_info}
 
     def status_reply(self, track, params):
         origin, track_id = track[-1]
-        self.format[origin] = params['format']
-        self.scan_numbers[origin] = params['scan_number']
-        self.write_params[origin] = params['write_params']
         if origin == self.scanner_name:
             if self.scanning[origin] and not params['scanning']:
                 self.current_scan = -1
         self.scanning[origin] = params['scanning']
-        self.calibrated[origin] = params['calibrated']
         self.progress[origin] = params['progress']
         self.on_setpoint[origin] = params['on_setpoint']
-        if not params['mass'] in self.masses:
-            self.masses.append(params['mass'])
         self.status_data[origin] = params['status_data']
+        self.refresh_times[origin] = params['refresh_time']
+        if 'proton' in self.status_data.keys():
+            self.proton_info = self.status_data['proton']
 
-        if origin == self.scanner_name:
-            self.scan_parser['scan_number'] = {'scan_number': self.scan_number}
-            self.scan_parser['progress'] = {'progress': params['progress'],
-                                            'origin': origin,
-                                            'scanning': params['scanning']}
-            with open(self.scan_path, 'w') as scanfile:
-                self.scan_parser.write(scanfile)
+    def initial_information_reply(self, track, params):
+        origin, track_id = track[-1]
+        self.format[origin] = params['format']
+        self.write_params[origin] = params['write_params']
 
 def makeController():
     return Controller()

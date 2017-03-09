@@ -1,6 +1,6 @@
 import h5py
 import numpy as np
-import time
+import os,sys,time
 
 try:
     from Helpers import emptyPipe,group_per_scan
@@ -10,97 +10,104 @@ except:
 def flatten(array):
     return [l for sub in array for l in sub]
 
-def update_scan_info(file_path,scan,mass,group):
+def update_scan_info(file_path,scan,mass):
     scan = int(scan)
     mass = int(mass)
-    if not scan in group.attrs['scans']:
-        scans = group.attrs['scans']
-        group.attrs['scans'] = np.append(scans,scan)
+    scans = []
+    try:
+        read_scans = np.loadtxt(file_path+'_scans.txt',delimiter = ';').T[0]
+        try:
+            scans.extend(read_scans)
+        except TypeError:
+            scans.extend([read_scans])
+    except FileNotFoundError:
+        pass
+
+    if not scan in scans:
         with open(file_path+'_scans.txt','a') as scanfile:
             scanfile.write(str(scan)+';'+str(mass)+'\n')
 
-def save(to_save,format,file_path,group_name):
+def save(to_save,format,file_path,group_name,save_stream=True):
     # saves data, per group (for each Device) and per scan
     to_save_grouped = group_per_scan(to_save,
                     axis=format.index(b'scan_number'))
     mass_index = format.index(b'mass')
+
     with h5py.File(file_path+'_data.h5','a') as store:
         try:
             group = store[group_name]
         except KeyError:
             group = store.create_group(group_name)
-            group.attrs['scans'] = []
 
         for scan, data in to_save_grouped.items():
             scan = str(int(scan))
             mass = data[:,mass_index][0]
-            update_scan_info(file_path,scan,mass,group)
-            try:
-                newshape = (group[scan].shape[0] + data.shape[0],
-                                    data.shape[1])
-                group[scan].resize(newshape)
-                group[scan][-data.shape[0]:] = data
-            except KeyError:
-                group.create_dataset(scan,
-                        data=data,
-                        shape=(data.shape[0],data.shape[1]),
-                        maxshape=(None,data.shape[1]),chunks=True)
-                group[scan].attrs['format'] = format
+            update_scan_info(file_path,scan,mass)
 
-def createbackup(source, backupname):
-    with h5py.File(backupname, 'a') as backupstore:
-        with h5py.File(source, 'r') as store:
-            for group in store.keys():
-                if group not in backupstore:
-                    backupstore.create_group(group)
-                    backupstore[group].attrs['scans'] = []
-                for dataset in store[group].keys():
-                    if dataset not in backupstore[group]:
-                        data = store[group][dataset].value
-                        backupstore[group].create_dataset(dataset,
-                                                          data=data,
-                                                          shape=(data.shape[0], data.shape[1]),
-                                                          maxshape=(None, data.shape[1]),
-                                                          chunks=True)
-                        backupstore[group][scan].attrs['format'] = store[group][scan].attrs['format']
-                    else:
-                        data = store[group][dataset].shape
-                        backup_data = backupstore[group][dataset].shape
+            if scan == '-1' and not save_stream:
+                pass
+            else:
+                scans = list(group.keys())
+                if scan+'_0' in scans:
+                    highest_index = max([int(s.split('_')[-1]) for s in scans if scan+'_' in s])
+                    subgroup = group[scan+'_{}'.format(highest_index)]
+                else:
+                    highest_index = 0
+                    subgroup = group.create_group(scan+'_0')
 
-                        if not np.array_equal(data, backup_data):
-                            backupstore[group][dataset].resize(data)
-                            backupstore[group][dataset][-(data[0]-backup_data[0]):] = store[group][dataset][-(data[0]-backup_data[0]):]
+                for i,column in enumerate(data.T):
+                    col_name = format[i]
 
-def save_continuously(save_output,saveDir,name,format):
+                    try:
+                        dataset = subgroup[col_name]
+                    except:
+                        dataset = subgroup.create_dataset(col_name,
+                                data=column,
+                                shape=(len(column),1),
+                                maxshape=(None,1),chunks=True)
+                        
+                    newlen = len(dataset) + len(column)
+                    dataset.resize((newlen,1))
+                    dataset[-len(column):,0] = column
+
+                if newlen > 5*10**4:
+                    subgroup = group.create_group(scan+'_{}'.format(highest_index+1))
+
+        store.flush()
+        
+def save_continuously(save_output,saveDir,name,format,saveFlag,saveStreamFlag):
     format = [f.encode('utf-8') for f in format]
+    try:
+        os.stat(saveDir)
+    except:
+        os.mkdir(saveDir)
     file_path = saveDir + name
-    group_name = name
 
+    group_name = name
+    while True:
+        if saveFlag.is_set():
+            save_stream = saveStreamFlag.is_set()
+            to_save = emptyPipe(save_output)
+            if not to_save == []:
+                to_save = np.row_stack(flatten(to_save))
+                save(to_save,format,file_path,group_name,save_stream)
+            else:
+                time.sleep(0.001)
+
+def save_continuously_dataserver(save_output,saveDir):
+    try:
+        os.stat(saveDir)
+    except:
+        os.mkdir(saveDir)
+
+    file_path = saveDir + 'server'
     while True:
         to_save = emptyPipe(save_output)
-        if not to_save == []:
-            to_save = np.row_stack(flatten(to_save))
-            save(to_save,format,file_path,group_name)
-        else:
-            time.sleep(0.001)
-
-def save_continuously_dataserver(save_output,saveDir, backupFlag):
-    file_path = saveDir + 'server'
-    backuptime = 900
-    start = time.time()
-    while True:
-        #if time.time() - start > backuptime:
-        #    backupFlag.set()
-        #    start = time.time()
-        #if backupFlag.is_set():
-        #    createbackup(file_path + '_data.h5', file_path + '_backup.h5')
-        #    backupFlag.clear()
-        to_save=emptyPipe(save_output)
         if not to_save == []:
             to_save_dict = {}
             formats = {}
             for info in to_save:
-                origin,format,data = info
+                origin,format,data,save_stream = info
                 format = [f.encode('utf-8') for f in format]
                 try:
                     to_save_dict[origin].extend(data)
@@ -111,6 +118,7 @@ def save_continuously_dataserver(save_output,saveDir, backupFlag):
             for origin,to_save in to_save_dict.items():
                 save(np.row_stack(to_save),
                      formats[origin],
-                     file_path,origin)
+                     file_path,origin,
+                     save_stream)
         else:
             time.sleep(0.001)

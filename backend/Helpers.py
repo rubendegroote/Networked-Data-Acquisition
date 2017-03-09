@@ -1,12 +1,12 @@
 import time
 import copy
-import logging
 import h5py
 import traceback
 import numpy as np
 from scipy import stats
 import pandas as pd
-
+import os,psutil
+from scipy import stats
 
 def calcHist(data,bins,errormode,data_mode = 'mean'):
     noe,mean_x,err_x,mean_y,err = np.zeros(len(bins)),\
@@ -14,28 +14,36 @@ def calcHist(data,bins,errormode,data_mode = 'mean'):
                                   np.zeros(len(bins)),\
                                   np.zeros(len(bins)),\
                                   np.zeros(len(bins))
+
     bin_selection = np.digitize(data['x'], bins)
-    for n in np.unique(bin_selection):
-        x_data = data['x'][bin_selection == n]
-        noe[n] = len(x_data)
-        mean_x[n] = np.mean(x_data)
-        err_x[n] = np.sqrt(np.mean((x_data - mean_x[n])**2))
 
-        y_data = data['y'][bin_selection == n]    
-        mean_y[n] = np.sum(y_data)
+    data['bin_selection'] = bin_selection
+    groups = data.groupby('bin_selection')
+
+    binned = pd.DataFrame()
+    
+    binned['x'] = groups['x'].mean()
+    binned['xerr'] = groups['x'].std()
+    
+    binned['noe'] = groups['bin_selection'].sum()/binned.index.values
+    
+    if data_mode == 'sum':
+        binned['y'] = groups['y'].sum()
+    else:
+        binned['y'] = groups['y'].mean()
+
+    if errormode == 'sqrt':
+        binned['yerr'] = np.sqrt(groups['y'].sum()+1)
         if data_mode == 'mean':
-            mean_y[n] = mean_y[n]/noe[n]
-            
-        if errormode == 'sqrt':
-            err[n] = np.sqrt(np.sum(y_data)+1)
-            if data_mode == 'mean':
-                err[n] = err[n] / noe[n]
-                
-        elif errormode == 'std dev':
-            err[n] = np.sqrt(np.mean((y_data - mean_y[n])**2))
+            binned['yerr'] = binned['yerr'] / binned['noe']
+    else:
+        binned['yerr'] = groups['y'].std()
+        if data_mode == 'mean':
+            binned['yerr'] = binned['yerr'] / binned['noe']**0.5
 
-    return noe,mean_x,err_x,mean_y,err
+    binned[['xerr','yerr']] = binned[['xerr','yerr']].fillna(value=0)
 
+    return binned
 
 def GetFromQueue(q):
     if not q.empty():
@@ -105,28 +113,7 @@ def try_call(func):
             reply_dict = {'status': [1], 
                           'exception': traceback.format_exc()}
         return reply_dict
-    return func_wrapper
-
-def log_message(func):
-    logging.basicConfig(filename='message_log',
-                    format='%(asctime)s: %(message)s',
-                    level=logging.INFO)
-
-    def func_wrapper(self,message):
-        if not message['message']['op'] == 'status' and \
-           not message['message']['op'] == 'data' and \
-           not message['message']['op'] == 'logbook_status' and\
-           not message['message']['op'] == 'get_data' and\
-           not message['message']['op'] == 'request_data' and\
-           not message['message']['op'] == 'data_format':
-            logging.info(message)
-        if 'reply' in message.keys():
-            if not message['reply']['parameters']['status'][0] == 0:
-                logging.info(message)
-        func(self,message)
-    
-    return func_wrapper
-        
+    return func_wrapper     
 
 def try_deco(func):
     def func_wrapper(*args,**kwargs):
@@ -137,3 +124,4 @@ def try_deco(func):
             reply = ([1],traceback.format_exc())
         return reply
     return func_wrapper
+

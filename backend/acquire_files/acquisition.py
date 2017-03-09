@@ -2,105 +2,20 @@ import json
 import numpy
 import time
 import traceback
-
-format_map = {}
-write_params_map = {}
-hardware_map = {}
-
-try:
-    from . import M2
-    format_map['M2'] = M2.this_format
-    write_params_map['M2'] = M2.write_params
-    hardware_map['M2'] = M2.M2
-except ImportError:
-    print('Could not import M2')
-    
-try:
-    from . import Matisse
-    format_map['Matisse'] = Matisse.this_format
-    write_params_map['Matisse'] = Matisse.write_params
-    hardware_map['Matisse'] = Matisse.Matisse
-except ImportError:
-    print('Could not import Matisse')
-
-try:
-    from . import wavemeter
-    format_map['wavemeter'] = wavemeter.this_format
-    write_params_map['wavemeter'] = wavemeter.write_params
-    hardware_map['wavemeter'] = wavemeter.Wavemeter
-except ImportError:
-    print('Could not import wavemeter')
-
-try:
-    from . import wavemeter_pdl
-    format_map['wavemeter_pdl'] = wavemeter_pdl.this_format
-    write_params_map['wavemeter_pdl'] = wavemeter_pdl.write_params
-    hardware_map['wavemeter_pdl'] = wavemeter_pdl.Wavemeter_pdl
-except ImportError:
-    print('Could not import wavemeter_pdl')
-
-try:
-    from . import CRIS
-    format_map['CRIS'] = CRIS.this_format
-    write_params_map['CRIS'] = CRIS.write_params
-    hardware_map['CRIS'] = CRIS.CRIS
-except:
-    print('Could not import CRIS')
-
-try:
-    from . import diodes
-    format_map['diodes'] = diodes.this_format
-    write_params_map['diodes'] = diodes.write_params
-    hardware_map['diodes'] = diodes.diodes
-except:
-    print('Could not import diodes')
-
-try:
-    from . import Beamline
-    format_map['beamline'] = Beamline.this_format
-    write_params_map['beamline'] = Beamline.write_params
-    hardware_map['beamline'] = Beamline.Beamline
-except:
-    print('Could not import beamline')
-
-
-try:
-    from . import iscool
-    format_map['iscool'] = iscool.this_format
-    write_params_map['iscool'] = iscool.write_params
-    hardware_map['iscool'] = iscool.ISCOOL
-except ImportError as e:
-    print(e)
-    print('Could not import ISCOOL')
-
-
-try:
-    from . import FPI
-    format_map['FPI'] = FPI.this_format
-    write_params_map['FPI'] = FPI.write_params
-    hardware_map['FPI'] = FPI.FPI
-except:
-    print('Could not import FPI')
-
-
-try:
-    from . import current
-    format_map['current'] = current.this_format
-    write_params_map['current'] = current.write_params
-    hardware_map['current'] = current.Current
-except ImportError as e:
-    print(e)
-    print('Could not import current')
+import importlib
 
 ### Main acquire loop
-def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
+def acquire(name,data_pipe,iQ,mQ,stopFlag,readDataFlag,ns):
     ### what hardware?
-    hardware = hardware_map[name]()
-
+    hrdwr = importlib.import_module('backend.acquire_files.{}'.format(name))
+    hardware = hrdwr.Hardware()
     hardware.ns = ns
-    
-    ### define format
+
+    # add format and write params to the namespace so
+    # they can be accesses by device
     ns.format = hardware.format
+    ns.write_params = hardware.write_params
+    ns.refresh_time = hardware.refresh_time
 
     ### set-up connections and initialize
     return_message = hardware.setup()
@@ -139,15 +54,14 @@ def acquire(name,data_pipe,iQ,mQ,stopFlag,IStoppedFlag,ns):
                 mQ.put(return_message)
 
         ### Input logic
-        return_message = hardware.input()
-        if return_message[0][0] == 0: # input was succesful
-            data = return_message[1]
-            data_pipe.send(data)
-        else: #error to report
-            mQ.put(return_message)
-        time.sleep(0.001*hardware.refresh_time)
-
-    IStoppedFlag.set()
+        if readDataFlag.is_set():
+            return_message = hardware.input()
+            if return_message[0][0] == 0: # input was succesful
+                data = return_message[1]
+                data_pipe.send(data)
+            else: #error to report
+                mQ.put(return_message)
+        time.sleep(0.001*hardware.ns.refresh_time)
 
 def receive_instruction(queue):
     try:

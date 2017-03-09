@@ -52,6 +52,9 @@ class Launcher(QtGui.QWidget):
             print("\t iscool")
             print("\t FPI")
             print("\t current")
+            print("\t temperature")
+            print("\t proton")
+            print("\t DSS")
 
         except:
             self.program = None

@@ -31,7 +31,7 @@ class Beamline(Hardware):
         super(Beamline,self).__init__(name = 'Beamline',
                                   format=this_format,
                                   write_params = write_params,
-                                  refresh_time=100)
+                                  refresh_time=200)
 
         self.received = {}
         self.previous = supplies # quick and dirty init

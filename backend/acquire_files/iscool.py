@@ -1,6 +1,5 @@
-from ..OpenOPC.OpenOPC import *
+import visa
 from .hardware import format,Hardware
-
 
 this_format = format + ('voltage',)
 write_params = []
@@ -10,21 +9,28 @@ class ISCOOL(Hardware):
         super(ISCOOL,self).__init__(name = 'ISCOOL',
                                   format=this_format,
                                   write_params = write_params,
-                                  refresh_time=300)
+                                  refresh_time=5000)
 
         self.settings = dict()
 
         self.opc = None
 
     def connect_to_device(self):
-        ######## Current readout
-        pywintypes.datetime = pywintypes.TimeType # Needed to avoid some weird bug
-        self.opc = client()
-        self.opc.connect('National Instruments.Variable Engine.1')
-        voltage = float(self.opc.read('ISCOOL.Voltage')[0])
+        rm = visa.ResourceManager()
+        self.inst=rm.open_resource('TCPIP0::A-34461A-06386::inst0::INSTR')
+        print(self.inst.query("*IDN?"))
 
+        self.inst.write("CONF:VOLT:DC 10,0.00003")
+        self.inst.write("TRIG:SOUR BUS")
+        self.inst.write("SAMP:COUN 1")
 
     def read_from_device(self):
-        voltage = float(self.opc.read('ISCOOL.Voltage')[0])*1000
+        self.inst.write("INIT")
+        self.inst.write("*TRG")
+        voltage=float(self.inst.query("FETC?"))
+        print(voltage)
+
         self.ns.status_data = {'voltage':voltage}
+
         return [voltage]
+

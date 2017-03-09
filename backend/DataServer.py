@@ -8,14 +8,15 @@ import os,sys
 import multiprocessing as mp
 import configparser
 
-CONFIG_PATH = os.getcwd() + "\\config.ini"
-
+CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
 
 class DataServer(Dispatcher):
     ### get configuration details
     config_parser = configparser.ConfigParser()
     config_parser.read(CONFIG_PATH)
     save_path = config_parser['paths']['data_path']
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
     time_offset = int(config_parser['other']['time_offset'])
     PORT = int(config_parser['ports']['server'])
     def __init__(self, PORT=PORT, name='DataServer'):
@@ -25,10 +26,13 @@ class DataServer(Dispatcher):
         self.mode = 'stream'
         self.current_scan = -1
 
-        self.formats = {}
+        self.format = {}
 
         self.no_of_rows = {}
         self.no_of_rows_scan = {}
+
+        self.saving_devices = {}
+        self.saving_stream_devices = {}
 
         self.buffer_size = 50000
 
@@ -48,7 +52,7 @@ class DataServer(Dispatcher):
         return 'data', {'t0': rep}
 
     def start_saving(self):
-        args = (self.save_output,self.save_path, self.backupFlag)
+        args = (self.save_output,self.save_path)
         self.saveProcess = mp.Process(target=save_continuously_dataserver,
                                       args=args)
         self.saveProcess.start()
@@ -69,10 +73,10 @@ class DataServer(Dispatcher):
                 data_set = self.data[origin].T
             else:
                 data_set = self.scan_data[origin].T
-            col = self.formats[origin].index(par_name)
+            col = self.format[origin].index(par_name)
             row = DS_no_of_rows[origin]-no_of_rows[origin]
         except KeyError as e:
-            # print(e,self.formats.keys(),DS_no_of_rows.keys(),no_of_rows.keys(),self.data.keys())
+            # print(e,self.format.keys(),DS_no_of_rows.keys(),no_of_rows.keys(),self.data.keys())
             # no scans yet
             return [[],[]]
 
@@ -102,7 +106,7 @@ class DataServer(Dispatcher):
         if x == [] and y == []:
             # no specific columns sent; user does not know
             # the options yet
-            return {'data':[],'format':self.formats,
+            return {'data':[],'format':self.format,
                     'no_of_rows':DS_no_of_rows,
                     'current_scan':self.current_scan}
 
@@ -120,7 +124,6 @@ class DataServer(Dispatcher):
         self.mode = params['mode']
         return {'status': [0]}
 
-
     # @try_call
     # def clear_memory(self, *args):
     #     self._clear_memory = True
@@ -134,28 +137,35 @@ class DataServer(Dispatcher):
 
     @try_call
     def status(self, *args):
-        return {'connector_info': self.connInfo,'no_of_rows':self.no_of_rows}
+        return {'connector_info': self.connInfo,'no_of_rows':self.no_of_rows,
+                'saving_devices':self.saving_devices,
+                'saving_stream_devices':self.saving_stream_devices}
 
     @try_call
     def get_latest(self,*args):
-        return {'data_format': self.formats,
+        return {'data_format': self.format,
                 'latest_data':{n:list(d[-1]) for n,d in self.data.items()}}
 
     @try_call
     def data_format(self, *args):
-        return {'data_format': self.formats,
+        return {'data_format': self.format,
                 'current_scan':self.current_scan}
 
     def data_reply(self,track,params):
         data = params['data']
-        format = params['format']
         origin, track_id = track[-1]
 
         if data == []:
             return
 
-        #send the data as is to be saved
-        self.save_input.send((origin,format,data))
+        self.saving_devices[origin] = params['save']
+        self.saving_stream_devices[origin] = params['save_stream']
+
+        if params['save']:
+            self.save_input.send((origin,
+                                  self.format[origin],
+                                  data,
+                                  self.saving_stream_devices[origin]))
 
         #add the data to the buffer (a dict of numpy arrays)
         try:
@@ -172,14 +182,13 @@ class DataServer(Dispatcher):
         finally:
             # some bookkeeping for DataViewer communications
             self.no_of_rows[origin] += len(data)
-            self.formats[origin] = format
 
         ## add the most recent scan to a separate buffer
         #turn the list of data lists into a nice array
         data = np.row_stack(data)
         #group it
         grouped_data = group_per_scan(data,
-                    axis=format.index('scan_number'))
+                    axis=self.format[origin].index('scan_number'))
         scan_no = max(grouped_data.keys())
 
         if scan_no == -1:
@@ -198,3 +207,7 @@ class DataServer(Dispatcher):
             except KeyError:
                 self.scan_data[origin] = scan_data
                 self.no_of_rows_scan[origin] = 0
+
+    def initial_information_reply(self, track, params):
+        origin, track_id = track[-1]
+        self.format[origin] = params['format']

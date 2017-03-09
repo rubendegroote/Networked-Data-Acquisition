@@ -9,6 +9,8 @@ def main():
         from DataViewerApp import main as ui_main
     elif sys.argv[1] == 'data_inspector':
         from ScanRecaller import main as ui_main
+    elif sys.argv[1] == 'data_inspector_cm':
+        from ScanRecaller_cm import main as ui_main        
     elif sys.argv[1] == 'log_viewer':
         from LogbookApp import main as ui_main
     elif sys.argv[1] == 'beam_tuning':

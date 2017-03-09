@@ -6,13 +6,13 @@ from collections import OrderedDict
 # import time
 # import os
 
-START = 'Scanning {} from {:.8f} to {:.8f} cm-1, in {:.0f} steps with {:.8f} seconds per step.'
+START = 'Scanning {} from {:.8f} to {:.8f} cm-1, in {:.0f} steps with {:.8f} units of {} per step.'
 SET   = 'Set Device {} parameter {} to {:.8f} cm-1.'
 
 def stringify_scan_summary(device,summary):
     txt = ''
     for point in summary:
-        txt += START.format(device,point[0],point[1],point[2],point[3]) + '\n'
+        txt += START.format(device,point[0],point[1],point[2],point[3],point[4]) + '\n'
 
     return txt
 

@@ -1,0 +1,16 @@
+2016-04-28 14:34:48,935: {'message': {'op': 'add_connector', 'parameters': {'address': ('PCCRIS3', '5021')}}, 'track': [('MGUI_to_DS', 100)]}
+2016-04-28 14:34:48,937: {'message': {'op': 'add_connector', 'parameters': {'address': ('PCCRIS3', '5021')}}, 'track': [('MGui_to_M', 98)]}
+2016-04-28 14:34:48,883: DataServer
+2016-04-28 14:34:48,885: Controller
+2016-04-28 14:42:56,141: {'message': {'op': 'add_connector', 'parameters': {'address': ('PCCRIS3', 5021)}}, 'track': [('MGui_to_M', 8507)]}
+2016-04-28 14:42:56,044: Controller
+2016-04-28 14:42:57,266: {'message': {'op': 'add_connector', 'parameters': {'address': ('PCCRIS3', 5021)}}, 'track': [('MGUI_to_DS', 8528)]}
+2016-04-28 14:42:57,170: DataServer
+2016-04-28 14:44:59,142: {'message': {'op': 'add_connector', 'parameters': {'address': ('PCCRIS3', 5021)}}, 'track': [('MGui_to_M', 10460)]}
+2016-04-28 14:44:59,034: Controller
+2016-04-28 14:45:00,314: {'message': {'op': 'add_connector', 'parameters': {'address': ('PCCRIS3', 5021)}}, 'track': [('MGUI_to_DS', 10481)]}
+2016-04-28 14:45:00,214: DataServer
+2016-06-06 13:17:00,375: MGUI_to_DS
+2016-06-06 13:17:03,564: {'reply': {'op': 'add_connector_reply', 'parameters': {'status': [0]}}, 'track': [['MGUI_to_DS', 53], ('DataServer', 53)], 'status_updates': [], 'message': {'op': 'add_connector', 'parameters': {'address': ['PCCRIS3', '5017']}}}
+2016-06-06 13:24:49,509: MGUI_to_DS
+2016-06-06 13:24:53,337: {'track': [['MGUI_to_DS', 63], ('DataServer', 63)], 'message': {'parameters': {'address': ['PCCRIS3', '5017']}, 'op': 'add_connector'}, 'reply': {'parameters': {'status': [0]}, 'op': 'add_connector_reply'}, 'status_updates': []}

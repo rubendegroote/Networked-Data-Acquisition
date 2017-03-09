@@ -2,18 +2,19 @@ from PyQt4 import QtCore, QtGui
 import os
 import configparser
 
-CONFIG_PATH = os.getcwd() + "\\config.ini"
+CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
 
 
-class Man_DS_ConnectionDialog(QtGui.QDialog):
+class Contr_DS_ConnectionDialog(QtGui.QDialog):
     ### get configuration details
     config_parser = configparser.ConfigParser()
     config_parser.read(CONFIG_PATH)
     def __init__(self, parent=None, message=''):
-        super(Man_DS_ConnectionDialog, self).__init__(parent)
-        ContChannelBoxtext = str(self.config_parser['IPs CERN']['controller'])
+        super(Contr_DS_ConnectionDialog, self).__init__(parent)
+        ContChannelBoxtext = str(self.config_parser['IPs']['controller'])
         ContPortBoxtext = str(self.config_parser['ports']['controller'])
-        serverChannelBoxtext = str(self.config_parser['IPs CERN']['server'])
+        
+        serverChannelBoxtext = str(self.config_parser['IPs']['server'])
         serverPortBoxtext = str(self.config_parser['ports']['server'])
 
         self.layout = QtGui.QGridLayout(self)
@@ -36,7 +37,7 @@ class Man_DS_ConnectionDialog(QtGui.QDialog):
         self.layout.addWidget(QtGui.QLabel('Data server IP'), 3, 1, 1, 1)
         self.serverChannelBox = QtGui.QLineEdit(self, text=serverChannelBoxtext)
         self.layout.addWidget(self.serverChannelBox, 4, 1, 1, 1)
-        self.layout.addWidget(QtGui.QLabel('Controller port'), 3, 2, 1, 1)
+        self.layout.addWidget(QtGui.QLabel('Data server port'), 3, 2, 1, 1)
         self.ServerPortBox = QtGui.QLineEdit(self, text=serverPortBoxtext)
         self.layout.addWidget(self.ServerPortBox, 4, 2, 1, 1)
 
@@ -46,7 +47,7 @@ class Man_DS_ConnectionDialog(QtGui.QDialog):
 
     @staticmethod
     def getInfo(parent=None, message=''):
-        dialog = Man_DS_ConnectionDialog(parent, message)
+        dialog = Contr_DS_ConnectionDialog(parent, message)
         result = dialog.exec_()
         data = dialog.getData()
         return (data, result == QtGui.QDialog.Accepted)

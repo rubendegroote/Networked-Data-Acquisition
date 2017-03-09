@@ -10,9 +10,9 @@ from backend.connectors import Connector
 from connectiondialogs import ConnectionDialog, FieldAdditionDialog
 from logviewerwidgets import LogEntryWidget
 
-CONFIG_PATH = os.getcwd() + "\\config.ini"
+CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
 
-class LogbookApp(QtGui.QMainWindow):
+class LogbookApp(QtGui.QWidget):
     editSignal = QtCore.pyqtSignal(int,object)
     addSignal = QtCore.pyqtSignal(int,object)
     messageUpdateSignal = QtCore.pyqtSignal(dict)
@@ -30,38 +30,25 @@ class LogbookApp(QtGui.QMainWindow):
         self.logEntryWidgets = {}
         self.tags = []
 
-        self.looping = True
-        t = th.Thread(target=self.startIOLoop).start()
-        self.man = None
+        self.controller = None
+
         self.init_UI()
-
-        self.add_controller()
-
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.update)
-        self.timer.start(50)
 
         self.editSignal.connect(self.edit_entry_ui)
         self.addSignal.connect(self.add_entry_to_ui)
-        #self.messageUpdateSignal.connect(self.updateMessages)
 
-        self.show()
+    def define_controller(self,controller):
+        self.controller = controller
+        self.log_timer = QtCore.QTimer()
+        self.log_timer.timeout.connect(self.add_log_request)
+        self.log_timer.start(500)
 
-    def startIOLoop(self):
-        while self.looping:
-            asyncore.loop(count=1)
-            time.sleep(0.2)
-
-    def stopIOLoop(self):
-        self.looping = False
+    def add_log_request(self):
+        req = 'logbook_status',{'no_of_log_edits':[len(self.log_edits)]}
+        self.controller.add_request(req)
 
     def init_UI(self):
-        self.central = QtGui.QSplitter()
-        widget = QtGui.QWidget()
-        self.central.addWidget(widget)
-        layout = QtGui.QGridLayout(widget)
-        self.setCentralWidget(self.central)
-
+        layout = QtGui.QGridLayout(self)
 
         self.searchStringLabel = QtGui.QPushButton('String search')
         self.searchStringLabel.clicked.connect(self.filterLogbookOnString)
@@ -89,9 +76,6 @@ class LogbookApp(QtGui.QMainWindow):
         self.addEntryButton = QtGui.QPushButton('Add entry')
         self.addEntryButton.clicked.connect(self.add_entry_to_log)
         layout.addWidget(self.addEntryButton, 5, 0, 1, 2)
-
-        #self.messageLog = QtGui.QPlainTextEdit()
-        #self.central.addWidget(self.messageLog)
 
     def new_log_page(self):
         new_page_widget = QtGui.QWidget()
@@ -197,7 +181,7 @@ class LogbookApp(QtGui.QMainWindow):
             self.logEntryWidgets[number].showNew()
 
     def add_entry_to_log(self):
-        self.man.add_request(('add_entry_to_log',{}))
+        self.controller.add_request(('add_entry_to_log',{}))
 
     def add_entry_to_log_reply(self,track,params):
         self.messageUpdateSignal.emit(
@@ -206,7 +190,7 @@ class LogbookApp(QtGui.QMainWindow):
     def submit_change(self):
         number = self.sender().number
         entry = self.sender().entry
-        self.man.add_request(('change_entry',{'number':[number],
+        self.controller.add_request(('change_entry',{'number':[number],
                                               'entry':entry[-1]}))
 
     def change_entry_reply(self,track,params):
@@ -216,7 +200,7 @@ class LogbookApp(QtGui.QMainWindow):
     def submit_new_field(self):
         field_name, result = FieldAdditionDialog.getInfo()
         if result:
-            self.man.add_request(('add_new_field', {'field_name':field_name}))
+            self.controller.add_request(('add_new_field', {'field_name':field_name}))
 
     def add_new_field_reply(self,track,params):
         self.messageUpdateSignal.emit(
@@ -228,23 +212,13 @@ class LogbookApp(QtGui.QMainWindow):
                 'Choose a tag or enter new tag:', self.tags)
 
         if result:
-            self.man.add_request(('add_new_tag', {'tag_name':tag_name,
+            self.controller.add_request(('add_new_tag', {'tag_name':tag_name,
                                                   'number':number}))
 
     def add_new_tag_reply(self,track,params):
         tag_name = params['tag_name']
         if not tag_name in self.tags:
             self.tags.append(tag_name)
-
-    def add_controller(self):
-        try:
-            self.man = Connector(name='LGUI_to_M',
-                                        chan=self.controller_channel,
-                                        callback=self.reply_cb,
-                                        onCloseCallback=self.onCloseCallback,
-                                        default_callback=self.default_cb)
-        except Exception as e:
-            print(e)
 
     def reply_cb(self,message):
         track = message['track']
@@ -261,19 +235,10 @@ class LogbookApp(QtGui.QMainWindow):
             self.messageUpdateSignal.emit(
                 {'track':track,'args':[[1],"Received status fail in reply\n:{}".format(exception)]})
     
-    def updateMessages(self,info):
-        track,message = info['track'],info['args']
-        text = '{}: {} reports {}'.format(track[-1][1],track[-1][0],message[1])
-        if message[0][0] == 0:
-            self.messageLog.appendPlainText(text)        
-        else:
-            error_dialog = QtGui.QErrorMessage(self)
-            error_dialog.showMessage(text)
-            error_dialog.exec_()
-
     def logbook_status_reply(self,track,params):
         log_edit_numbers = params['log_edit_numbers']
         log_edits = params['log_edits']
+        log_edits = log_edits[:20]
         self.log_edits.extend(log_edits)
 
         for number,edit in zip(log_edit_numbers,log_edits):
@@ -285,12 +250,6 @@ class LogbookApp(QtGui.QMainWindow):
                 self.editSignal.emit(number,edit)
             else: # entry is not yet in the logbook
                 self.addSignal.emit(number,edit)
-
-    def default_cb(self):
-        return 'logbook_status',{'no_of_log_edits':[len(self.log_edits)]}
-
-    def onCloseCallback(self, connector):
-        print(connector.acceptor_name + ' connection failure')
 
     def closeEvent(self, event):
         self.timer.stop()
