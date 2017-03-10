@@ -25,6 +25,7 @@ class DataServer(Dispatcher):
         self.scan_data = {}
         self.mode = 'stream'
         self.current_scan = -1
+        self.current_mass = -1
 
         self.format = {}
 
@@ -108,7 +109,8 @@ class DataServer(Dispatcher):
             # the options yet
             return {'data':[],'format':self.format,
                     'no_of_rows':DS_no_of_rows,
-                    'current_scan':self.current_scan}
+                    'current_scan':self.current_scan,
+                    'mass':self.current_mass}
 
         return_list = []
         for name_info in [x,y]:
@@ -117,7 +119,8 @@ class DataServer(Dispatcher):
             return_list.extend(ret_list)
         return {'data': return_list,
                 'no_of_rows':DS_no_of_rows,
-                'current_scan':self.current_scan}
+                'current_scan':self.current_scan,
+                'mass':self.current_mass}
 
     @try_call
     def change_mode(self,params):
@@ -153,6 +156,7 @@ class DataServer(Dispatcher):
 
     def data_reply(self,track,params):
         data = params['data']
+        self.current_mass = params['mass']
         origin, track_id = track[-1]
 
         if data == []:

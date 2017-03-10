@@ -13,6 +13,8 @@ class Hardware(BaseHardware):
                                   refresh_time=100)
 
     def read_from_device(self):
-        x = 12815+0.1*np.random.normal()
-        y=7*np.exp(-(x-12815)**2 / 2 / 0.05**2)
+        x = 12815+0.001*np.random.normal() + 0.2*(time.time()%20/20 - 0.5)
+        y=70*np.exp(-(x-12815.05)**2 / 2 / 0.003**2)
+        y+=60*np.exp(-(x-12815)**2 / 2 / 0.003**2)
+        y+=50*np.exp(-(x-12814.95)**2 / 2 / 0.003**2)
         return [x, np.abs(np.random.normal(y,np.sqrt(np.abs(7*np.exp(-(x-12815)**2 / 2 / 0.1**2))+1))).astype(int)]

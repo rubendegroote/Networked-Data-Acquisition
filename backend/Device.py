@@ -174,7 +174,8 @@ class Device(Dispatcher):
             data = [list(self.data_deque.popleft()) for _i in range(l)]
             return {'save':self.saveFlag.is_set(),
                     'save_stream':self.saveStreamFlag.is_set(),
-                    'data': data}
+                    'data': data,
+                    'mass':self.ns.mass}
         else:
             return {}
 

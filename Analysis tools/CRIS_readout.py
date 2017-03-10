@@ -72,7 +72,6 @@ def main():
     data = extract_scan(filename,scan_number = -1,
                                columns=['test2:wavenumber_1','test2:Counts','test3:mass'],
                                filename = 'test.csv') 
-
     plt.plot(data['wavenumber_1'],data['Counts'],'rd')
     plt.plot(data['wavenumber_1'],data['mass'],'k-')
     plt.show()

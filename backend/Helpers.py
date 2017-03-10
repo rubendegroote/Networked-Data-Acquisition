@@ -7,14 +7,9 @@ from scipy import stats
 import pandas as pd
 import os,psutil
 from scipy import stats
+from scipy.stats import chi2
 
 def calcHist(data,bins,errormode,data_mode = 'mean'):
-    noe,mean_x,err_x,mean_y,err = np.zeros(len(bins)),\
-                                  np.zeros(len(bins)),\
-                                  np.zeros(len(bins)),\
-                                  np.zeros(len(bins)),\
-                                  np.zeros(len(bins))
-
     bin_selection = np.digitize(data['x'], bins)
 
     data['bin_selection'] = bin_selection
@@ -27,23 +22,36 @@ def calcHist(data,bins,errormode,data_mode = 'mean'):
     
     binned['noe'] = groups['bin_selection'].sum()/binned.index.values
     
+    s = groups['y'].sum()
     if data_mode == 'sum':
-        binned['y'] = groups['y'].sum()
+        binned['y'] = s
     else:
         binned['y'] = groups['y'].mean()
 
-    if errormode == 'sqrt':
-        binned['yerr'] = np.sqrt(groups['y'].sum()+1)
+    if errormode == 'poisson':
+        binned['yerr_b'] = s-poisson_interval_low(s)
+        binned['yerr_t'] = poisson_interval_high(s)-s
         if data_mode == 'mean':
-            binned['yerr'] = binned['yerr'] / binned['noe']
+            binned['yerr_t'] = binned['yerr_t'] / binned['noe']
+            binned['yerr_b'] = binned['yerr_b'] / binned['noe']
     else:
-        binned['yerr'] = groups['y'].std()
+        binned['yerr_t'] = groups['y'].std()
         if data_mode == 'mean':
-            binned['yerr'] = binned['yerr'] / binned['noe']**0.5
+            binned['yerr_t'] = binned['yerr_t'] / binned['noe']**0.5
+        binned['yerr_b'] = binned['yerr_t']
 
-    binned[['xerr','yerr']] = binned[['xerr','yerr']].fillna(value=0)
+    binned[['xerr','yerr_t','yerr_b']] = binned[['xerr','yerr_t','yerr_b']].fillna(value=0)
 
     return binned
+
+def poisson_interval_high(data, alpha=0.32):
+    high = chi2.ppf(1 - alpha / 2, 2 * data + 2) / 2
+    return high
+
+def poisson_interval_low(data, alpha=0.32):
+    low = chi2.ppf(alpha / 2, 2 * data) / 2
+    low = np.nan_to_num(low)
+    return low
 
 def GetFromQueue(q):
     if not q.empty():

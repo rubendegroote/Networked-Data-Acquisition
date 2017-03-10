@@ -118,15 +118,19 @@ class DataViewerApp(QtGui.QMainWindow):
         origin, track_id = track
         data = params['data']
         scan_number = params['current_scan']
+        mass = params['mass']
 
         if data == []:
             return
 
+        self.graph.mass = mass
+        self.graph.scan_number = int(scan_number)
+
         self.graph.no_of_rows = params['no_of_rows']
 
-        data_x = pd.DataFrame({'time':np.array(data[0])-6.899886e+07,'x':data[1]})
+        data_x = pd.DataFrame({'time':np.array(data[0]),'x':data[1]})
         # number added to fix graphical jitter
-        data_y = pd.DataFrame({'time':np.array(data[2])+1./10*10**-6-6.899886e+07,'y':data[3]})
+        data_y = pd.DataFrame({'time':np.array(data[2])+1./10*10**-6,'y':data[3]})
 
         data = pd.concat([data_x,data_y])
 
@@ -140,6 +144,7 @@ class DataViewerApp(QtGui.QMainWindow):
                 self.scan_number = scan_number
             else:
                 self.graph.data = self.graph.data.append(data)
+
 
     def data_format_reply(self,track,params):
         origin, track_id = track

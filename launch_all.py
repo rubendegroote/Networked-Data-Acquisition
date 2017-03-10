@@ -27,9 +27,6 @@ def main():
             print(key)
             subprocess.Popen('python launch {}'.format(key))
 
-
-    subprocess.Popen('python launch_ui controller')
-
 if __name__ == '__main__':
     main()
 
