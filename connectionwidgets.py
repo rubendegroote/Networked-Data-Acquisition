@@ -20,7 +20,7 @@ class DeviceConnections(QtGui.QWidget):
         ports = self.config_parser['ports']
         IPs = self.config_parser['IPs devices']
         self.address = {k:(IPs[k],ports[k])
-                   for k in ports.keys() if not k in ('server','controller','file_server')}
+                   for k in ports.keys() if not k in ('data_server','controller','file_server')}
         self.reads_data = self.config_parser['read_data']
         self.saves_data = self.config_parser['save_data']
         self.saves_stream = self.config_parser['save_stream']

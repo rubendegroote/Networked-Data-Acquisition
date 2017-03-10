@@ -75,8 +75,7 @@ class AlphaViewerApp(QtGui.QMainWindow):
             function = message['reply']['op']
             args = message['reply']['parameters']
             track = message['track']
-
-            params = getattr(self, function)(track, args)
+            params = getattr(self, function)(track,args)
 
         else:
             print('DataViewer received fail message', message)

@@ -231,8 +231,9 @@ class BeamlineControllerApp(QtGui.QMainWindow):
             args = message['reply']['parameters']
             status_updates = message['status_updates']
             for status_update in status_updates:
-                self.messageUpdateSignal.emit({'track':track,'args':status_update})
-            params = getattr(self, function)(track, args)
+                self.messageUpdateSignal.emit({'track':track,
+                    'args':status_update})
+            params = getattr(self, function)(track,args)
 
         else:
             exception = message['reply']['parameters']['exception']
@@ -260,7 +261,7 @@ class BeamlineControllerApp(QtGui.QMainWindow):
         self.cupswitcher.setOptions(params['status_data']['current']['cup_names'])
         self.cupswitcher.set_cup_in(params['status_data']['current']['cup_in'])
         self.updateSignal.emit((self.container.update,{'track':track,
-                                    'args':params}))
+                                    'track':track,'args':params}))
 
     def get_data_reply(self,track,params):
         data = params['data']
@@ -269,19 +270,19 @@ class BeamlineControllerApp(QtGui.QMainWindow):
         self.graph.data = self.graph.data.append(frame)
 
         self.updateSignal.emit((self.graph.plot,{'track':track,
-                                    'args':params}))
+                                    'track':track,'args':params}))
 
     def get_latest_reply(self,track,params):
-        self.updateSignal.emit((self.container.update_controls,{'track':track,
-                                    'args':params}))
+        self.updateSignal.emit((self.container.update_controls,{
+                                    'track':track,'args':params}))
 
     def data_format_reply(self,track,params):
         origin, track_id = track
         self.container.formats = params['data_format']
 
         if not self.container.formats == {}:
-            self.updateSignal.emit((self.container.define_controls,{'track':track,
-                            'args':params}))
+            self.updateSignal.emit((self.container.define_controls,
+                                    {'track':track,'args':params}))
             self.graph.no_of_rows = {k:0 for k in self.container.formats.keys()}
 
             self.initialized = True

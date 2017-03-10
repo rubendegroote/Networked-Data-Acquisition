@@ -305,7 +305,7 @@ class FromOldWidget(QtGui.QWidget):
  
         self.range_request_sig.emit(to_request)
  
-    def update_ranges(self, track, params):
+    def update_ranges(self,track,params):
         self.scan_ranges = params['ranges']
  
         for i in reversed(range(self.ranges_layout.count())): 

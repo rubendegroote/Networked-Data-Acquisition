@@ -124,7 +124,7 @@ class ControllerApp(QtGui.QMainWindow):
             status_updates = message['status_updates']
             for status_update in status_updates:
                 self.messageUpdateSignal.emit({'track':track,'args':status_update})
-            params = getattr(self, function)(track, args)
+            params = getattr(self, function)(track,args)
 
         else:
             exception = message['reply']['parameters']['exception']
@@ -171,38 +171,31 @@ class ControllerApp(QtGui.QMainWindow):
         self.stopIOLoop()
         event.accept()
 
-    def status_reply(self, track, params):
+    def status_reply(self,track,params):
         origin, track_id = track[-1]
         if origin == 'Controller':
             self.updateSignal.emit((self.statusWidget.update,
-                                    {'track':track,
-                                    'args':params}))
+                                    {'track':track,'args':params}))
 
             self.updateSignal.emit((self.scanner.update,
-                                    {'track':track,
-                                    'args':params}))
+                                    {'track':track,'args':params}))
 
             self.updateSignal.emit((self.deviceWidget.update,
-                                    {'track':track,
-                                    'args':params['status_data']}))
+                                    {'track':track,'args':params['status_data']}))
 
             self.updateSignal.emit((self.deviceConnections.updateRefresh,
-                                    {'track':track,
-                                    'args':params['refresh_time']}))
+                                    {'track':track,'args':params['refresh_time']}))
 
         elif origin == 'DataServer':
             self.updateSignal.emit((self.deviceConnections.updateData,
-                                    {'track':track,
-                                    'args':params}))
+                                    {'track':track,'args':params}))
 
         self.updateSignal.emit((self.deviceConnections.update,
-                                       {'track':track,
-                                       'args':params['connector_info']}))
+                                    {'track':track,'args':params['connector_info']}))
 
     def forward_instruction_reply(self,track,params):
         origin,track_id = track[-1]
-        self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"Instruction forwarded"]})
+        self.messageUpdateSignal.emit({'track':track,'args':[[0],"Instruction forwarded"]})
 
     def change_refresh_time(self,info):
         device, time = info
@@ -276,8 +269,7 @@ class ControllerApp(QtGui.QMainWindow):
     def get_scan_ranges_reply(self,track,params):
         origin,track_id = track[-1]
         self.updateSignal.emit((self.scanner.fromOldWidget.update_ranges,
-                                {'track':track,
-                                'args':params}))
+                                {'track':track,'args':params}))
 
     def change_save_mode(self,info):
         device,infodict = info
@@ -301,24 +293,21 @@ class ControllerApp(QtGui.QMainWindow):
 
     def start_scan_reply(self,track,params):
         origin,track_id = track[-1]
-        self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"Start scan instruction received"]})
+        self.messageUpdateSignal.emit({'track':track,'args':[[0],"Start scan instruction received"]})
 
     def stop_scan(self):
         self.Contr_DS_Connector.instruct('Controller', ('stop_scan',{}))
 
     def stop_scan_reply(self,track,params):
         origin,track_id = track[-1]
-        self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"Stop scan instruction received"]})
+        self.messageUpdateSignal.emit({'track':track,'args':[[0],"Stop scan instruction received"]})
 
     def go_to_setpoint(self, setpointInfo):
         self.Contr_DS_Connector.instruct('Controller', ('go_to_setpoint', setpointInfo))
 
     def go_to_setpoint_reply(self,track,params):
         origin,track_id = track[-1]
-        self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"Go to setpoint instruction received"]})
+        self.messageUpdateSignal.emit({'track':track,'args':[[0],"Go to setpoint instruction received"]})
 
     def add_connector(self, info):
         receiver, name, address = info
@@ -328,16 +317,14 @@ class ControllerApp(QtGui.QMainWindow):
 
     def add_connector_reply(self,track,params):
         origin,track_id = track[-1]
-        self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"Add connector instruction received"]})
+        self.messageUpdateSignal.emit({'track':track,'args':[[0],"Add connector instruction received"]})
 
     def remove_connector(self, address):
         self.Contr_DS_Connector.instruct('Both',('remove_connector', {'address': address}))
 
     def remove_connector_reply(self,track,params):
         origin,track_id = track[-1]
-        self.messageUpdateSignal.emit(
-            {'track':track,'args':[[0],"Remove connector instruction received"]})
+        self.messageUpdateSignal.emit({'track':track,'args':[[0],"Remove connector instruction received"]})
 
     def updateMessages(self,info):
         track,message = info['track'],info['args']

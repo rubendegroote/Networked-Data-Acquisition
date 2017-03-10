@@ -2,7 +2,7 @@ from .hardware import format,BaseHardware
 import numpy as np
 import time
 
-this_format = format + ('wavenumber_1',)
+this_format = format + ('wavenumber_1','Counts')
 write_params = []
 
 class Hardware(BaseHardware):
@@ -13,4 +13,6 @@ class Hardware(BaseHardware):
                                   refresh_time=100)
 
     def read_from_device(self):
-        return [12815+0.1*np.random.rand()]
+        x = 12815+0.1*np.random.normal()
+        y=7*np.exp(-(x-12815)**2 / 2 / 0.05**2)
+        return [x, np.abs(np.random.normal(y,np.sqrt(np.abs(7*np.exp(-(x-12815)**2 / 2 / 0.1**2))+1))).astype(int)]

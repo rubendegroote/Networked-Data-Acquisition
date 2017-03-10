@@ -105,7 +105,7 @@ class Controller(Dispatcher):
         pass
 
     @try_call
-    def start_scan(self, params):
+    def start_scan(self,params):
         device_name = params['device']
         scan_parameter = params['scan_parameter']
         mode = params['mode']
@@ -167,7 +167,7 @@ class Controller(Dispatcher):
         return {}
 
     @try_call
-    def go_to_setpoint(self, params):
+    def go_to_setpoint(self,params):
         device_name = params['device']
         parameter = params['parameter']
         setpoint = params['setpoint']
@@ -252,7 +252,7 @@ class Controller(Dispatcher):
                          'mass': [self.mass],
                          'proton_info':self.proton_info}
 
-    def status_reply(self, track, params):
+    def status_reply(self,track,params):
         origin, track_id = track[-1]
         if origin == self.scanner_name:
             if self.scanning[origin] and not params['scanning']:
@@ -265,7 +265,7 @@ class Controller(Dispatcher):
         if 'proton' in self.status_data.keys():
             self.proton_info = self.status_data['proton']
 
-    def initial_information_reply(self, track, params):
+    def initial_information_reply(self,track,params):
         origin, track_id = track[-1]
         self.format[origin] = params['format']
         self.write_params[origin] = params['write_params']

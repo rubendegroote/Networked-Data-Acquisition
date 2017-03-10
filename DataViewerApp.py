@@ -26,8 +26,8 @@ class DataViewerApp(QtGui.QMainWindow):
     fserver_port = int(config_parser['ports']['file_server'])
     fileServer_channel = (fserver_ch,fserver_port)
     
-    server_ch = str(config_parser['IPs']['server'])
-    server_port = int(config_parser['ports']['server'])
+    server_ch = str(config_parser['IPs']['data_server'])
+    server_port = int(config_parser['ports']['data_server'])
     dataserver_channel = (server_ch,server_port)
 
     def __init__(self):
@@ -88,7 +88,7 @@ class DataViewerApp(QtGui.QMainWindow):
             args = message['reply']['parameters']
             track = message['track']
 
-            params = getattr(self, function)(track, args)
+            params = getattr(self, function)(track,args)
 
         else:
             print('DataViewer received fail message', message)

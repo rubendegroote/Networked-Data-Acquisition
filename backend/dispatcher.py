@@ -123,7 +123,7 @@ class Dispatcher(asyncore.dispatcher):
                 adjusted_mess = mess
                 adjusted_mess[1] = "{} says \'{}\'".format(track[-1][0],mess[1])
                 self.notify_connectors(adjusted_mess)
-            params = getattr(self, function)(track, args)
+            params = getattr(self, function)(track,args)
         else:
             exception = message['reply']['parameters']['exception']
             self.notify_connectors(([1],"Received status fail in reply\n:{}".format(exception)))

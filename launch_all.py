@@ -5,13 +5,12 @@ from backend.Device import Device
 from backend.BaseDevice import BaseDevice
 from multiprocessing import freeze_support
 import time
-from killpython import kill_all_python
 
 def main():
     freeze_support()
-    this_pc = sys.argv[1]
+    this_pc =  os.environ['COMPUTERNAME']
 
-    kill_all_python()
+    print(this_pc)
 
     CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
     config_parser = configparser.ConfigParser()
@@ -23,13 +22,13 @@ def main():
             print(key)
             subprocess.Popen('python launch device {}'.format(key))
             # time.sleep(5)
+    for key in config_parser['IPs']:
+        if config_parser['IPs'][key] == this_pc:
+            print(key)
+            subprocess.Popen('python launch {}'.format(key))
 
-    subprocess.Popen('python launch data_server')
-    # time.sleep(5)
-    subprocess.Popen('python launch controller')
-    # time.sleep(5)
+
     subprocess.Popen('python launch_ui controller')
-    time.sleep(10)
 
 if __name__ == '__main__':
     main()

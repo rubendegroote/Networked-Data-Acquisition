@@ -63,12 +63,12 @@ def save(to_save,format,file_path,group_name,save_stream=True):
                     except:
                         dataset = subgroup.create_dataset(col_name,
                                 data=column,
-                                shape=(len(column),1),
-                                maxshape=(None,1),chunks=True)
+                                shape=(len(column),),
+                                maxshape=(None,),chunks=True)
                         
                     newlen = len(dataset) + len(column)
-                    dataset.resize((newlen,1))
-                    dataset[-len(column):,0] = column
+                    dataset.resize((newlen,))
+                    dataset[-len(column):] = column
 
                 if newlen > 5*10**4:
                     subgroup = group.create_group(scan+'_{}'.format(highest_index+1))

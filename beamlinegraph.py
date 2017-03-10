@@ -13,7 +13,6 @@ class BeamlineGraph(QtGui.QWidget):
     def __init__(self):
         super(BeamlineGraph,self).__init__()
 
-
         self.init_UI()
         self.curve = pg.PlotCurveItem()
         self.avCurve = pg.PlotCurveItem()

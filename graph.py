@@ -6,6 +6,9 @@ import numpy as np
 import pandas as pd
 from picbutton import PicButton
 import time
+import pyqtgraph.exporters
+import webbrowser
+import lmfit as lm
 
 from backend.Helpers import calcHist
 
@@ -94,6 +97,7 @@ class XYGraph(QtGui.QWidget):
         self.sublayout.addWidget(label, 0, 6)
 
         self.data_box = QtGui.QComboBox(self)
+        self.data_box.currentIndexChanged.connect(self.change_label)
         self.data_box.setToolTip('Choose if you want the sum or mean of the data per bin')
         self.data_box.addItems(['sum','mean'])
         self.data_box.setCurrentIndex(0)
@@ -133,17 +137,25 @@ class XYGraph(QtGui.QWidget):
         self.unit_check = QtGui.QCheckBox('Use MHz?')
         self.unit_check.stateChanged.connect(self.change_label)
         self.unit_check.setDisabled(True)
-        self.sublayout.addWidget(self.unit_check, 3, 4)
+        self.sublayout.addWidget(self.unit_check, 2, 6)
 
         self.clean_stream = QtGui.QPushButton('Reset data')
-        self.sublayout.addWidget(self.clean_stream, 4, 5, 1, 1)
+        self.sublayout.addWidget(self.clean_stream, 2, 7, 1, 1)
         self.clean_stream.clicked.connect(self.clean)
+
+        self.export_button = QtGui.QPushButton('Export (press ctrl+E!)')
+        self.sublayout.addWidget(self.export_button, 3, 4, 1, 1)
+        self.export_button.clicked.connect(self.export)
+        QtGui.QShortcut(QtGui.QKeySequence("Ctrl+E"), self, self.export)
+
+        self.fit_button = QtGui.QPushButton('Fitting Mode')
+        self.fit_button.setCheckable(True)
+        self.sublayout.addWidget(self.fit_button, 3, 5, 1, 1)
+        self.fit_button.clicked.connect(self.fitting)
+
 
         self.sublayout.setColumnStretch(8, 1)
         self.layout.addWidget(gView, 0, 0)
-
-        self.graph.setLabel('bottom',text='')
-        self.graph.setLabel('left',text='')
 
         ###### crosshairs
         self.graphvb = self.graph.plotItem.vb
@@ -230,20 +242,29 @@ class XYGraph(QtGui.QWidget):
             offset = float(self.x_offset.text())
             if self.unit_check.isChecked():
                 offset = offset / 29979.2458
-                self.graph.setLabel('bottom','Frequency (offset {} cm-1)'.format(offset))
+                self.graph.setLabel('bottom','Frequency (offset {} cm-1)'.format(offset),labelStyle = {'color': '#FFF', 'font-size': '24pt'})
             else:
-                self.graph.setLabel('bottom','Wavenumber (offset {} cm-1)'.format(offset))
+                self.graph.setLabel('bottom','Wavenumber (offset {} cm-1)'.format(offset),labelStyle = {'color': '#FFF', 'font-size': '24pt'})
         else:
-            self.graph.setLabel('bottom','')
+            self.graph.setLabel('bottom','',labelStyle = {'color': '#FFF', 'font-size': '24pt'})
+
+
         if 'wavenumber' in ykey:
             offset = float(self.y_offset.text())
             if self.unit_check.isChecked():
                 offset = offset / 29979.2458
-                self.graph.setLabel('left','Frequency (offset {} cm-1)'.format(offset))
+                self.graph.setLabel('left','Frequency (offset {} cm-1)'.format(offset),labelStyle = {'color': '#FFF', 'font-size': '24pt'})
             else:
-                self.graph.setLabel('left','Wavenumber (offset {} cm-1)'.format(offset))
+                self.graph.setLabel('left','Wavenumber (offset {} cm-1)'.format(offset),labelStyle = {'color': '#FFF', 'font-size': '24pt'})
+        elif 'Counts' in ykey:
+            print(1)
+            if str(self.data_box.currentText()) == 'sum':
+                self.graph.setLabel('left','Total counts per bin',labelStyle = {'color': '#FFF', 'font-size': '24pt'})
+            else:
+                self.graph.setLabel('left','Counts per trigger',labelStyle = {'color': '#FFF', 'font-size': '24pt'})
+
         else:
-            self.graph.setLabel('left','')
+            self.graph.setLabel('left','',labelStyle = {'color': '#FFF', 'font-size': '24pt'})
 
 
     def reset_data(self):
@@ -331,3 +352,90 @@ class XYGraph(QtGui.QWidget):
                     self.graph.removeItem(self.points_curve)
                     del self.error_curve
                     del self.points_curve
+
+
+    def export(self):
+        exporter = pg.exporters.ImageExporter(self.graph.plotItem)
+        name = QtGui.QFileDialog.getSaveFileName(self, 'Save File')
+        exporter.export(name)
+        webbrowser.open(name)
+
+    def peak_chooser(self,mousePoint):
+        pos = self.graphvb.mapSceneToView(mousePoint.scenePos())
+        self.peaks.append(pos.x())
+        self.heights.append(pos.y())
+
+        if len(self.peaks) == 1:
+            self.fit_button.setChecked(False)
+            self.do_fit()
+
+    def fitting(self):
+        if self.fit_button.isChecked():
+            try:
+                self.graph.removeItem(self.fitcurve)
+                self.graph.removeItem(self.fit_text)
+            except:
+                pass
+
+            self.peaks = []
+            self.heights = []
+
+            self.graph.scene().sigMouseClicked.connect(self.peak_chooser)
+
+
+        else:
+            self.do_fit()
+
+    def do_fit(self):
+        self.graph.scene().sigMouseClicked.disconnect(self.peak_chooser)
+
+        x = self.binned_data['x'].values - float(self.x_offset.text())
+        xerr = self.binned_data['xerr'].values
+        y = self.binned_data['y'].values - float(self.y_offset.text())
+        yerr = self.binned_data['yerr'].values
+
+        w, ok = QtGui.QInputDialog.getText(self, 'FWHM Dialog', 'Enter estimated FHWM:')
+        if not ok:
+            return
+
+        w = float(w)
+
+        params = lm.Parameters()
+        params.add('w',w)
+        index = 0
+        for p, h in zip(self.peaks,self.heights):
+            params.add('p{}'.format(index),p)
+            params.add('h{}'.format(index),h)
+
+            index += 1
+
+        def fitfunc(params,x):
+            fit = np.zeros(len(x))
+            for i in range(int((len(params)-1)/2)):
+                fit += params['h{}'.format(i)].value*np.exp(-(x-params['p{}'.format(i)].value)**2/2/params['w'].value**2)
+
+            return fit
+
+        def resid(params,x,y,yerr):
+            return (fitfunc(params,x) - y)/yerr
+
+        x_fit = np.linspace(x.min(),x.max(),10**4)
+        self.fitcurve = pg.PlotCurveItem(x=x_fit, y=fitfunc(params,x_fit),pen='b')
+        self.graph.addItem(self.fitcurve)
+
+        w, ok = QtGui.QInputDialog.getText(self, 'Fit Dialog', 'Fit?')
+        if not ok:
+            return
+
+        results = lm.minimize(resid,params,args=(x,y,yerr))
+        self.fitcurve.setData(x=x_fit,y=fitfunc(results.params,x_fit))
+        html = '<div style="text-align: center">\
+                <span>X:{}</span><br> \
+                <span>Y:{}</span><br> \
+                <span>W:{}</span>\
+                </div>'.format(params['p0'].value, params['h0'].value,params['w'].value)
+
+        self.fit_text = pg.TextItem(html=html, anchor=(-0.3,1.3), border='w', fill=(0, 0, 255, 100))
+        self.graphvb.addItem(self.fit_text)
+        self.fit_text.setPos(params['p0'].value, params['h0'].value)
+

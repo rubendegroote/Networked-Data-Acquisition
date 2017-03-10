@@ -228,7 +228,7 @@ class LogbookApp(QtGui.QWidget):
             status_updates = message['status_updates']
             for status_update in status_updates:
                 self.messageUpdateSignal.emit({'track':track,'args':status_update})
-            params = getattr(self, function)(track, args)
+            params = getattr(self, function)(track,args)
 
         else:
             exception = message['reply']['parameters']['exception']

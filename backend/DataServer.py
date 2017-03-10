@@ -18,7 +18,7 @@ class DataServer(Dispatcher):
     if not os.path.exists(save_path):
         os.makedirs(save_path)
     time_offset = int(config_parser['other']['time_offset'])
-    PORT = int(config_parser['ports']['server'])
+    PORT = int(config_parser['ports']['data_server'])
     def __init__(self, PORT=PORT, name='DataServer'):
         super(DataServer, self).__init__(PORT, name)
         self.data = {}
@@ -208,6 +208,6 @@ class DataServer(Dispatcher):
                 self.scan_data[origin] = scan_data
                 self.no_of_rows_scan[origin] = 0
 
-    def initial_information_reply(self, track, params):
+    def initial_information_reply(self,track,params):
         origin, track_id = track[-1]
         self.format[origin] = params['format']

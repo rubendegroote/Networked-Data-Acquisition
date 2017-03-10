@@ -14,8 +14,8 @@ class Contr_DS_ConnectionDialog(QtGui.QDialog):
         ContChannelBoxtext = str(self.config_parser['IPs']['controller'])
         ContPortBoxtext = str(self.config_parser['ports']['controller'])
         
-        serverChannelBoxtext = str(self.config_parser['IPs']['server'])
-        serverPortBoxtext = str(self.config_parser['ports']['server'])
+        serverChannelBoxtext = str(self.config_parser['IPs']['data_server'])
+        serverPortBoxtext = str(self.config_parser['ports']['data_server'])
 
         self.layout = QtGui.QGridLayout(self)
         buttons = QtGui.QDialogButtonBox(
