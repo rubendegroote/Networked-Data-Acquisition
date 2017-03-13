@@ -53,6 +53,41 @@ def poisson_interval_low(data, alpha=0.32):
     low = np.nan_to_num(low)
     return low
 
+def extract_scan(path,scan_numbers,columns,filename=None):
+    scan_numbers = [str(int(s)) for s in scan_numbers]
+   
+    devices = [c.split(': ')[0] for c in columns]
+    columns = [c.split(': ')[-1] for c in columns]
+
+    dfs = []
+    with h5py.File(path) as store:
+        for dev,col in zip(devices,columns):
+            try:
+                for scanno in store[dev].keys():
+                    if scanno.split('_')[0] in scan_numbers:
+                        start = time.time()
+                        dfs.append(pd.DataFrame())
+                        dfs[-1][col] = store[dev][scanno][col].value
+                        dfs[-1]['time'] = store[dev][scanno]['timestamp'].value
+                        print('extracted {} in {}s'.format(col,round(time.time() - start,1)))
+            except:
+                print('failed getting {} {}'.format(dev,col))
+
+    dataframe = pd.concat(dfs)
+    dataframe['time'] = dataframe['time']
+    dataframe = dataframe.sort_values(by='time')
+    for col in columns:
+        if not col == 'Counts':
+            dataframe[col] = dataframe[col].fillna(method='ffill')
+    dataframe = dataframe.dropna()
+    dataframe = dataframe.reset_index()
+
+    if filename is not None:
+        dataframe.to_csv(filename)
+
+    return dataframe
+
+
 def GetFromQueue(q):
     if not q.empty():
         try:

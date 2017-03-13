@@ -62,7 +62,7 @@ class AlphaViewerApp(QtGui.QMainWindow):
 
     def add_dataserver(self):
         try:
-            self.data_server = Connector(name='R_to_DS',
+            self.data_server = Connector(name='V_to_DS',
                                          chan=dataserver_channel,
                                          callback=self.reply_cb,
                                          onCloseCallback=self.onCloseCallback,

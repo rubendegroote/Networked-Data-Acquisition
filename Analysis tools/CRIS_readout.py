@@ -7,18 +7,21 @@ def extract_scan(path,scan_number,columns,filename=None):
     if not type(scan_number)==str:
         scan_number = str(int(scan_number))
    
-    devices = [c.split(':')[0] for c in columns]
-    columns = [c.split(':')[-1] for c in columns]
+    devices = [c.split(': ')[0] for c in columns]
+    columns = [c.split(': ')[-1] for c in columns]
 
     dfs = []
     with h5py.File(path) as store:
         for dev,col in zip(devices,columns):
-            start = time.time()
-            for scanno in store[dev].keys():
-                dfs.append(pd.DataFrame())
-                dfs[-1][col] = store[dev][scanno][col].value
-                dfs[-1]['time'] = store[dev][scanno]['timestamp'].value
-            print('extracted {} in {}s'.format(col,round(time.time() - start,1)))
+            try:
+                start = time.time()
+                for scanno in store[dev].keys():
+                    dfs.append(pd.DataFrame())
+                    dfs[-1][col] = store[dev][scanno][col].value
+                    dfs[-1]['time'] = store[dev][scanno]['timestamp'].value
+                    print('extracted {} in {}s'.format(col,round(time.time() - start,1)))
+            except:
+                print('failed getting {} {}'.format(dev,col))
 
     dataframe = pd.concat(dfs)
     dataframe['time'] = dataframe['time'] - dataframe['time'].values[0]
@@ -70,7 +73,7 @@ def print_summary(self,path):
 def main():
     filename = 'C:\\DAQ tests\\Data\\test\\server_data.h5'
     data = extract_scan(filename,scan_number = -1,
-                               columns=['test2:wavenumber_1','test2:Counts','test3:mass'],
+                               columns=['test2: wavenumber_1','test2: Counts','test3: mass'],
                                filename = 'test.csv') 
     plt.plot(data['wavenumber_1'],data['Counts'],'rd')
     plt.plot(data['wavenumber_1'],data['mass'],'k-')
