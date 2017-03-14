@@ -5,7 +5,7 @@ from PyDAQmx.DAQmxConstants import *
 from PyDAQmx.DAQmxFunctions import *
 import visa
 
-from .hardware import format,Hardware
+from .hardware import format,BaseHardware
 
 
 ini = open('beamline_config.ini','rb')
@@ -26,9 +26,9 @@ aos = {'Slot3':",".join(ao_channels_1),
 this_format = format + tuple(names) + ('current',)
 write_params = ['voltages']
 
-class Beamline(Hardware):
+class Hardware(BaseHardware):
     def __init__(self):
-        super(Beamline,self).__init__(name = 'Beamline',
+        super(Hardware,self).__init__(name = 'Beamline',
                                   format=this_format,
                                   write_params = write_params,
                                   refresh_time=100)

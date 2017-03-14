@@ -2,16 +2,16 @@ import ctypes
 import traceback
 import time
 
-from .hardware import format,Hardware
+from .hardware import format,BaseHardware
 
 this_format = format + ('wavenumber_1',)
 
 write_params = []
 
-class Wavemeter_pdl(Hardware):
+class Hardware(BaseHardware):
     def __init__(self):
 
-        super(Wavemeter_pdl,self).__init__(name = 'Wavemeter_pdl',
+        super(Hardware,self).__init__(name = 'wavemeter_pdl',
                              format=this_format,
                              write_params = write_params,
                              needs_stabilization = False,
@@ -48,7 +48,11 @@ class Wavemeter_pdl(Hardware):
     def read_from_device(self):
         wavenumber_1 = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
 
-        while wavenumber_1 == self.ns.status_data['wavenumber_1']:
+        idx = 0
+        while wavenumber_1 == self.ns.status_data['wavenumber_1'] \
+            and idx < 10:
+            idx +=1
+            
             wavenumber_1 = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
             time.sleep(0.001*self.ns.refresh_time)
 

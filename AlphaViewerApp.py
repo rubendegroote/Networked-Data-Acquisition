@@ -1,4 +1,4 @@
-from PyQt4 import QtCore,QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 import pyqtgraph as pg
 import threading as th
 import asyncore
@@ -17,7 +17,7 @@ from backend.connectors import Connector
 dataserver_channel = ('PCCRIS1',5005)
 fileServer_channel = ('PCCRIS1', 5006)
 
-class AlphaViewerApp(QtGui.QMainWindow):
+class AlphaViewerApp(QtWidgets.QMainWindow):
     def __init__(self):
         super(AlphaViewerApp, self).__init__()
         self.initialized = False
@@ -33,8 +33,8 @@ class AlphaViewerApp(QtGui.QMainWindow):
         self.add_dataserver()
 
     def init_UI(self):
-        widget = QtGui.QWidget()
-        layout = QtGui.QGridLayout(widget)
+        widget = QtWidgets.QWidget()
+        layout = QtWidgets.QGridLayout(widget)
         self.setCentralWidget(widget)
 
         self.mode_selector = QtGui.QComboBox()
@@ -151,7 +151,7 @@ def main():
     pg.setConfigOption('foreground', 'k')
     # add freeze support
     freeze_support()
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     m = AlphaViewerApp()
     sys.exit(app.exec_())
 

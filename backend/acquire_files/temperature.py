@@ -2,14 +2,14 @@ import time
 import numpy as np
 import serial
 
-from .hardware import format,Hardware
+from .hardware import format,BaseHardware
 
 this_format = format + ('temperature',)
 write_params = []
 
-class Temperature(Hardware):
+class Hardware(BaseHardware):
     def __init__(self):
-        super(Temperature,self).__init__(name = 'Temperature',
+        super(Hardware,self).__init__(name = 'Temperature',
                                   format=this_format,
                                   write_params = write_params,
                                   refresh_time=1000)
@@ -24,7 +24,6 @@ class Temperature(Hardware):
 				bytesize=serial.EIGHTBITS
 				)
         command = "*IDN?"
-        print(self.write(command))
 
     def write(self,command):
         # print(command)
@@ -51,6 +50,5 @@ class Temperature(Hardware):
                 cont = False
             except:
                 time.sleep(1)
-        print(temperature) 
         return [temperature]
 

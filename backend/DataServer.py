@@ -1,4 +1,4 @@
-from backend.Helpers import *
+from backend.helpers import *
 from backend.save import *
 from backend.connectors import Connector, Acceptor
 import backend.logbook as lb
@@ -8,7 +8,9 @@ import os,sys
 import multiprocessing as mp
 import configparser
 
+
 CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
+CHUNK_SIZE = 10**4
 
 class DataServer(Dispatcher):
     ### get configuration details
@@ -35,7 +37,7 @@ class DataServer(Dispatcher):
         self.saving_devices = {}
         self.saving_stream_devices = {}
 
-        self.buffer_size = 50000
+        self.buffer_size = 10**5
 
         self.backupFlag = mp.Event()
         self.backupFlag.clear()
@@ -81,8 +83,6 @@ class DataServer(Dispatcher):
             # no scans yet
             return [[],[]]
 
-            row = min(row,self.buffer_size)
-
         return_list = []
         if row > 0:
             return_list.append(list(data_set[0,-row:])) #timestamp as well
@@ -117,6 +117,7 @@ class DataServer(Dispatcher):
             ret_list = self.slice_new_data(name_info,
                     no_of_rows,DS_no_of_rows)
             return_list.extend(ret_list)
+
         return {'data': return_list,
                 'no_of_rows':DS_no_of_rows,
                 'current_scan':self.current_scan,

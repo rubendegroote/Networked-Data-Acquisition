@@ -4,14 +4,14 @@ import numpy as np
 from PyDAQmx import *
 from scipy.optimize import curve_fit
 
-from .hardware import format,Hardware
+from .hardware import format,BaseHardware
 
 this_format = format + ('AIChannel1','AIChannel2')
 write_params = []
 
-class FPI(Hardware):
+class Hardware(BaseHardware):
     def __init__(self):
-        super(FPI,self).__init__(name = 'FPI',
+    super(Hardware,self).__init__(name = 'fpi',
                                   format=this_format,
                                   write_params = write_params,
                                   refresh_time = 0)

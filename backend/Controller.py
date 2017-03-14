@@ -1,7 +1,7 @@
 import os,sys
 import configparser
 
-from backend.Helpers import *
+from backend.helpers import *
 from backend.connectors import Connector, Acceptor
 import backend.logbook as lb
 from backend.dispatcher import Dispatcher
@@ -56,7 +56,12 @@ class Controller(Dispatcher):
         # get last scan number from config file
         try:
             self.last_scan = int(self.scan_parser['last_scan']['last_scan'])
+            self.mass = int(self.scan_parser['last_scan']['mass'])
+            self.scanner_name = self.scan_parser['scanner']['scanner']
+            self.scanning[self.scanner_name] = self.scan_parser['scanning']['scanning']
 
+            if self.scanning[self.scanner_name]:
+                self.current_scan = self.last_scan
             self.scan_mass = dict(self.scan_parser['scan_mass'])
             for key,val in self.scan_mass.items():
                 self.scan_mass[key] = eval(val)
@@ -134,6 +139,9 @@ class Controller(Dispatcher):
 
         # update scan progress in ini file
         self.scan_parser['last_scan'] = {'last_scan': self.last_scan}
+        self.scan_parser['last_scan'] = {'mass': self.mass}
+        self.scan_parser['scanner'] = {'scanner': device_name}
+        self.scan_parser['scanning'] = {'scanning': True}
         try:
             self.scan_mass[str(mass)].append(self.last_scan)
         except:

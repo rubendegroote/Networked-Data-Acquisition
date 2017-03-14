@@ -1,10 +1,10 @@
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 import os
 
-class CollapsibleArrow(QtGui.QPushButton):
-
+class CollapsibleArrow(QtWidgets.QPushButton):
+    clicked_sig = QtCore.pyqtSignal()
     def __init__(self, parent=None, path=None):
-        QtGui.QPushButton.__init__(self, parent=parent)
+        QtWidgets.QPushButton.__init__(self, parent=parent)
 
         self.isCollapsed = False
         self.setMaximumSize(24, 24)
@@ -33,14 +33,14 @@ class CollapsibleArrow(QtGui.QPushButton):
             self.isCollapsed = False
 
     def mousePressEvent(self, event):
-        self.emit(QtCore.SIGNAL('clicked()'))
+        self.clicked_sig.emit()
         return super(CollapsibleArrow, self).mousePressEvent(event)
 
 
-class TitleLabel(QtGui.QLabel):
+class TitleLabel(QtWidgets.QLabel):
 
     def __init__(self, parent=None, text=''):
-        QtGui.QLabel.__init__(self, parent=parent, text=text)
+        QtWidgets.QLabel.__init__(self, parent=parent, text=text)
         self.setStyleSheet("TitleLabel {background-color: rgba(0, 0, 0, 0);\
         color: white;\
         border-left: 0px transparent;\
@@ -121,7 +121,7 @@ class FrameLayout(QtGui.QFrame):
         self.contentLayout.addWidget(widget)
 
     def initMainLayout(self):
-        self.mainLayout = QtGui.QVBoxLayout()
+        self.mainLayout = QtWidgets.QVBoxLayout()
         self.mainLayout.setContentsMargins(0, 0, 0, 0)
         self.mainLayout.setSpacing(0)
         self.setLayout(self.mainLayout)
@@ -142,7 +142,7 @@ class FrameLayout(QtGui.QFrame):
         padding: 0px, 0px, 0px, 0px;\
         }")
 
-        self.contentLayout = QtGui.QVBoxLayout()
+        self.contentLayout = QtWidgets.QVBoxLayout()
         self.contentLayout.setContentsMargins(0, 0, 0, 0)
         self.contentLayout.setSpacing(0)
         self.contentFrame.setLayout(self.contentLayout)
@@ -182,7 +182,7 @@ class FrameLayout(QtGui.QFrame):
         self.initContentFrame()
         self.arrow = self.titleFrame.arrow
         self.label = self.titleFrame.titleLabel
-        QtCore.QObject.connect(self.arrow, QtCore.SIGNAL('clicked()'), self.toggleCollapsed)
+        self.arrow.clicked_sig.connect(self.toggleCollapsed)
 
 
 class LogEntryWidget(FrameLayout):
@@ -207,9 +207,9 @@ class LogEntryWidget(FrameLayout):
         self.visibleProp = list(self.entry[-1].keys())
         self.unEditableProp = ['Time', 'Scan Number', 'Mass']
 
-        self.widget = QtGui.QWidget(self)
-        self.grid = QtGui.QGridLayout()
-        self.versionLabel = QtGui.QLabel('Version')
+        self.widget = QtWidgets.QWidget(self)
+        self.grid = QtWidgets.QGridLayout()
+        self.versionLabel = QtWidgets.QLabel('Version')
         self.versionLabel.setStyleSheet('border: 0px;')
         self.versionSelect = QtGui.QComboBox(parent=None)
         self.versionSelect.setToolTip('Choose the entry version you want to load.')
@@ -240,7 +240,7 @@ class LogEntryWidget(FrameLayout):
         for pkey in sorted(self.entry[self.selected].keys()):
             propname = str(pkey)
             if pkey.lower() == 'text':
-                self.texts[pkey] = QtGui.QTextEdit()
+                self.texts[pkey] = QtWidgets.QTextEdit()
                 self.texts[pkey].setToolTip('Type here to help future analysis with your info!')
                 self.texts[pkey].setText(self.entry[self.selected][pkey])
             elif pkey.lower() == 'tags':
@@ -251,22 +251,22 @@ class LogEntryWidget(FrameLayout):
 
             elif pkey.lower() in self.unEditableProp:
                 if pkey.lower() == 'time':
-                    self.texts[pkey] = QtGui.QLabel(self.entry[self.selected][pkey])
+                    self.texts[pkey] = QtWidgets.QLabel(self.entry[self.selected][pkey])
                 else:
-                    self.texts[pkey] = QtGui.QLabel(str(self.entry[self.selected][pkey]))
+                    self.texts[pkey] = QtWidgets.QLabel(str(self.entry[self.selected][pkey]))
                 self.texts[pkey].setStyleSheet("border: 0px;")
             else:
-                self.texts[pkey] = QtGui.QLineEdit(str(self.entry[self.selected][pkey]))
+                self.texts[pkey] = QtWidgets.QLineEdit(str(self.entry[self.selected][pkey]))
                 self.texts[pkey].setToolTip('Type here to help future analysis with your info!')
 
             if not pkey.lower() == 'tags':
-                self.labels[pkey] = QtGui.QLabel(text=propname)
+                self.labels[pkey] = QtWidgets.QLabel(text=propname)
                 self.labels[pkey].setStyleSheet("border: 0px;")
                 self.grid.addWidget(self.labels[pkey], teller, 0)
                 self.grid.addWidget(self.texts[pkey], teller, 1)
                 teller = teller + 1
 
-        self.addTagButton = QtGui.QPushButton(text='Add tag')
+        self.addTagButton = QtWidgets.QPushButton(text='Add tag')
         self.addTagButton.setToolTip('Click here to add a tag to all logbook entries.')
         self.addTagButton.clicked.connect(self.submitTagSig.emit)
         self.grid.addWidget(self.addTagButton, teller, 0)
@@ -275,12 +275,12 @@ class LogEntryWidget(FrameLayout):
             self.grid.addWidget(box, teller, 1)
             teller = teller + 1
 
-        self.addFieldButton = QtGui.QPushButton(text='Add field')
+        self.addFieldButton = QtWidgets.QPushButton(text='Add field')
         self.addFieldButton.setToolTip('Click here to add a field to all logbook entries.')
         self.addFieldButton.clicked.connect(self.addFieldSig.emit)
         self.grid.addWidget(self.addFieldButton, teller, 0)
 
-        self.editButton = QtGui.QPushButton(text='Edit')
+        self.editButton = QtWidgets.QPushButton(text='Edit')
         self.editButton.setToolTip('Click this to edit this entry/confirm your changes.')
         self.editButton.clicked.connect(self.editEntry)
         self.grid.addWidget(self.editButton, teller, 1)

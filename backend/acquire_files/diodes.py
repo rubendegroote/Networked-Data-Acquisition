@@ -5,14 +5,14 @@ from PyDAQmx import *
 from PyDAQmx.DAQmxConstants import *
 from PyDAQmx.DAQmxFunctions import *
 
-from .hardware import format,Hardware
+from .hardware import format,BaseHardware
 
 this_format = format +  ('AIChannel1','AIChannel2','AIChannel3')
 write_params = []
 
-class diodes(Hardware):
+class Hardware(BaseHardware):
     def __init__(self):
-        super(diodes,self).__init__(name = 'diodes',
+        super(Hardware,self).__init__(name = 'diodes',
                                   format=this_format)
 
         self.settings = dict(aiChannel="/Dev1/ai1,/Dev1/ai2,/Dev1/ai3",

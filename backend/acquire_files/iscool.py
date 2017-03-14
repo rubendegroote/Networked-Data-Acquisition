@@ -1,12 +1,12 @@
 import visa
-from .hardware import format,Hardware
+from .hardware import format,BaseHardware
 
 this_format = format + ('voltage',)
 write_params = []
 
-class ISCOOL(Hardware):
+class Hardware(BaseHardware):
     def __init__(self):
-        super(ISCOOL,self).__init__(name = 'ISCOOL',
+        super(Hardware,self).__init__(name = 'ISCOOL',
                                   format=this_format,
                                   write_params = write_params,
                                   refresh_time=5000)
@@ -17,7 +17,7 @@ class ISCOOL(Hardware):
 
     def connect_to_device(self):
         rm = visa.ResourceManager()
-        self.inst=rm.open_resource('TCPIP0::A-34461A-06386::inst0::INSTR')
+        self.inst = rm.open_resource('TCPIP0::A-34461A-06386::inst0::INSTR')
         print(self.inst.query("*IDN?"))
 
         self.inst.write("CONF:VOLT:DC 10,0.00003")

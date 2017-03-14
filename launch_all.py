@@ -1,8 +1,8 @@
 import os,sys
 import configparser
 import subprocess
-from backend.Device import Device
-from backend.BaseDevice import BaseDevice
+from backend.device import Device
+from backend.basedevice import BaseDevice
 from multiprocessing import freeze_support
 import time
 

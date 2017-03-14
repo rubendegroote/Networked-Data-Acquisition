@@ -1,19 +1,19 @@
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class ConnectionsWidget(QtGui.QWidget):
+class ConnectionsWidget(QtWidgets.QWidget):
     newConn = QtCore.pyqtSignal(tuple)
     newDevice = QtCore.pyqtSignal(tuple)
 
     def __init__(self):
         super(ConnectionsWidget, self).__init__()
-        self.layout = QtGui.QGridLayout(self)
+        self.layout = QtWidgets.QGridLayout(self)
 
-        self.addConButton = QtGui.QPushButton('Add Connection')
+        self.addConButton = QtWidgets.QPushButton('Add Connection')
         self.addConButton.clicked.connect(self.addConn)
         self.layout.addWidget(self.addConButton)
 
-        self.devicesLabel = QtGui.QLabel()
+        self.devicesLabel = QtWidgets.QLabel()
         self.deviceText = ""
         self.layout.addWidget(self.devicesLabel)
 
@@ -22,24 +22,24 @@ class ConnectionsWidget(QtGui.QWidget):
         if respons[1]:
             self.newConn.emit(respons[0])
 
-class ConnectionDialog(QtGui.QDialog):
+class ConnectionDialog(QtWidgets.QDialog):
 
     def __init__(self, parent=None):
         super(ConnectionDialog, self).__init__(parent)
         self.channel = '127.0.0.1'
         self.port = 5005
 
-        layout = QtGui.QGridLayout(self)
+        layout = QtWidgets.QGridLayout(self)
 
-        layout.addWidget(QtGui.QLabel('Channel'), 1, 0, 1, 1)
-        self.channelBox = QtGui.QLineEdit(self, text=self.channel)
+        layout.addWidget(QtWidgets.QLabel('Channel'), 1, 0, 1, 1)
+        self.channelBox = QtWidgets.QLineEdit(self, text=self.channel)
         layout.addWidget(self.channelBox, 2, 0, 1, 1)
-        layout.addWidget(QtGui.QLabel('Port'), 1, 1, 1, 1)
-        self.portBox = QtGui.QLineEdit(self, text=str(self.port))
+        layout.addWidget(QtWidgets.QLabel('Port'), 1, 1, 1, 1)
+        self.portBox = QtWidgets.QLineEdit(self, text=str(self.port))
         layout.addWidget(self.portBox, 2, 1, 1, 1)
 
-        buttons = QtGui.QDialogButtonBox(
-            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel,
+        buttons = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
             QtCore.Qt.Horizontal)
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
@@ -54,4 +54,4 @@ class ConnectionDialog(QtGui.QDialog):
         dialog = ConnectionDialog(parent)
         result = dialog.exec_()
         data = dialog.getData()
-        return (data, result == QtGui.QDialog.Accepted)
+        return (data, result == QtWidgets.QDialog.Accepted)

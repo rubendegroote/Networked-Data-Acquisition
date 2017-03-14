@@ -5,14 +5,14 @@ import numpy as np
 import pandas as pd
 import configparser
 
-from backend.Helpers import *
+from backend.helpers import *
 from backend.connectors import Connector, Acceptor
 import backend.logbook as lb
 from backend.dispatcher import Dispatcher
 import threading as th
 
 CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
-CHUNK_SIZE = 10**4
+CHUNK_SIZE = 5*10**4
 class FileServer(Dispatcher):
     config_parser = configparser.ConfigParser()
     config_parser.read(CONFIG_PATH)
@@ -44,7 +44,7 @@ class FileServer(Dispatcher):
     @try_call
     def get_status(self,params):
         available_scans = []
-        info = np.loadtxt(self.save_path+'server_scans.txt',delimiter = ';')
+        info = np.atleast_2d(np.loadtxt(self.save_path+'server_scans.txt',delimiter = ';'))
         available_scans = list(info.T[0])
         masses = list(info.T[1])
         available_scans,masses = zip(*set(zip(available_scans,masses)))

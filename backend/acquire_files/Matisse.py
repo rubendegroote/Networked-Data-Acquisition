@@ -4,13 +4,13 @@ import numpy as np
 import ctypes
 from ..OpenOPC.OpenOPC import *
 
-from .hardware import format,Hardware
+from .hardware import format,BaseHardware
 
 this_format = format + ('setpoint',)
 write_params = ['wavenumber']
-class Matisse(Hardware):
+class Hardware(BaseHardware):
     def __init__(self):      
-        super(Matisse,self).__init__(name = 'Matisse',
+        super(Hardware,self).__init__(name = 'Matisse',
                                      format=this_format,
                                      write_params = write_params,
                                      refresh_time = 500,

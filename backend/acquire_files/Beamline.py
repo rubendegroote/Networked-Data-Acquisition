@@ -6,9 +6,9 @@ import struct
 import traceback
 from collections import OrderedDict
 
-from .hardware import format,Hardware
+from .hardware import format,BaseHardware
 
-ini = open('beamline_config.ini','rb')
+ini = open('.\\Config files\\beamline_config.ini','rb')
 data = np.genfromtxt(ini,delimiter = '\t',dtype=str)
 supply_names = list(data.T[0])
 modules = list(data.T[1])
@@ -26,9 +26,9 @@ for n,m,c in zip(supply_names,modules,channels):
 this_format = format + tuple(supplies.keys())
 write_params = []
 
-class Beamline(Hardware):
+class Hardware(BaseHardware):
     def __init__(self):
-        super(Beamline,self).__init__(name = 'Beamline',
+        super(Hardware,self).__init__(name = 'Beamline',
                                   format=this_format,
                                   write_params = write_params,
                                   refresh_time=200)

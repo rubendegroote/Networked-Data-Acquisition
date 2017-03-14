@@ -3,9 +3,9 @@ import numpy as np
 import os,sys,time
 
 try:
-    from Helpers import emptyPipe,group_per_scan
+    from helpers import emptyPipe,group_per_scan
 except:
-    from backend.Helpers import emptyPipe,group_per_scan
+    from backend.helpers import emptyPipe,group_per_scan
 
 def flatten(array):
     return [l for sub in array for l in sub]
@@ -34,9 +34,9 @@ def save(to_save,format,file_path,group_name,save_stream=True):
     mass_index = format.index(b'mass')
 
     with h5py.File(file_path+'_data.h5','a') as store:
-        try:
+        if group_name in store.keys():
             group = store[group_name]
-        except KeyError:
+        else:
             group = store.create_group(group_name)
 
         for scan, data in to_save_grouped.items():
@@ -58,9 +58,9 @@ def save(to_save,format,file_path,group_name,save_stream=True):
                 for i,column in enumerate(data.T):
                     col_name = format[i]
 
-                    try:
+                    if col_name in subgroup.keys():
                         dataset = subgroup[col_name]
-                    except:
+                    else:
                         dataset = subgroup.create_dataset(col_name,
                                 data=column,
                                 shape=(len(column),),

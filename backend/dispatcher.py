@@ -3,7 +3,7 @@ import asyncore
 import socket
 import time
 
-import backend.Helpers as hp
+import backend.helpers as hp
 from backend.connectors import Connector, Acceptor
 
 

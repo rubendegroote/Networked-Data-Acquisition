@@ -1,6 +1,6 @@
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 
-class Spin(QtGui.QLineEdit):
+class Spin(QtWidgets.QLineEdit):
     sigValueChanging = QtCore.pyqtSignal()
     def __init__(self,value=0,min=0,max=10**4,sig_figs=4):
         try:
@@ -14,14 +14,17 @@ class Spin(QtGui.QLineEdit):
 
         self.returnPressed.connect(self.sigValueChanging.emit)
 
-
     @property
     def value(self):
         return self._value
 
     @value.setter
     def value(self,val):
-        val = float(val)
+        try:
+            val = float(val)
+        except ValueError:
+            pass
+
         val = max(self.min,val)
         val = min(self.max,val)
         self._value = round(val,self.sig_figs)
@@ -57,7 +60,10 @@ class Spin(QtGui.QLineEdit):
         
         else:
             super(Spin,self).keyPressEvent(e)
-            self._value = float(self.text())
+            try:
+                self._value = float(self.text())
+            except:
+                pass
             return
 
         if not text == self.text():

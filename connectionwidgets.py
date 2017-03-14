@@ -1,11 +1,11 @@
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 import configparser
 from connectiondialogs import ConnectionDialog
 import os
 
 CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
 
-class DeviceConnections(QtGui.QWidget):
+class DeviceConnections(QtWidgets.QWidget):
     connectSig = QtCore.pyqtSignal(tuple)
     removeSig = QtCore.pyqtSignal(tuple)
     removeAllSig = QtCore.pyqtSignal(bool)
@@ -27,14 +27,14 @@ class DeviceConnections(QtGui.QWidget):
 
         self.deviceWidgets = {}
         self.l = 0
-        self.layout = QtGui.QGridLayout(self)
+        self.layout = QtWidgets.QGridLayout(self)
 
         self.deviceSelection = QtGui.QComboBox()
         self.deviceSelection.addItems(sorted(list(self.address.keys())))
         self.deviceSelection.setCurrentIndex(0)
         self.layout.addWidget(self.deviceSelection, 100, 0, 1, 1)
 
-        self.addDeviceButton = QtGui.QPushButton('Add Device')
+        self.addDeviceButton = QtWidgets.QPushButton('Add Device')
         self.addDeviceButton.clicked.connect(self.addConnection)
         self.layout.addWidget(self.addDeviceButton, 100, 1, 1, 1)
 
@@ -136,7 +136,7 @@ class DeviceConnections(QtGui.QWidget):
             except KeyError:
                 pass
 
-class DeviceWidget(QtGui.QWidget):
+class DeviceWidget(QtWidgets.QWidget):
     removeSig = QtCore.pyqtSignal(object)
     reconnectSig = QtCore.pyqtSignal(object)
     refresh_changed_sig = QtCore.pyqtSignal(tuple)
@@ -153,13 +153,13 @@ class DeviceWidget(QtGui.QWidget):
         self.neutral = "QLabel { background-color: yellow }"
         self.ok = "QLabel { background-color: green }"
 
-        self.layout = QtGui.QGridLayout(self)
+        self.layout = QtWidgets.QGridLayout(self)
 
-        self.label = QtGui.QLabel(' ' + str(name))
+        self.label = QtWidgets.QLabel(' ' + str(name))
         self.label.setMinimumWidth(100)
         self.layout.addWidget(self.label, 0, 0, 1, 1)
 
-        self.ManLabel = QtGui.QLabel('Controller')
+        self.ManLabel = QtWidgets.QLabel('Controller')
         self.ManLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.ManLabel.setMinimumWidth(120)
         self.ManLabel.setMinimumHeight(25)
@@ -167,10 +167,10 @@ class DeviceWidget(QtGui.QWidget):
         self.layout.addWidget(self.ManLabel, 0, 1, 1, 1)
 
         if self.has_data_connection:
-            self.DSLabel = QtGui.QLabel('Data Server')
+            self.DSLabel = QtWidgets.QLabel('Data Server')
             self.DSLabel.setStyleSheet(self.not_ok)
         else:
-            self.DSLabel = QtGui.QLabel('Data-less Device')
+            self.DSLabel = QtWidgets.QLabel('Data-less Device')
             self.DSLabel.setStyleSheet(self.neutral)
 
         self.DSLabel.setAlignment(QtCore.Qt.AlignCenter)
@@ -183,41 +183,41 @@ class DeviceWidget(QtGui.QWidget):
         self.refresh_time = 0
 
         self.save = None
-        self.saveLabel = QtGui.QLabel(self, text='')
+        self.saveLabel = QtWidgets.QLabel(self, text='')
         self.layout.addWidget(self.saveLabel, 0, 3, 1, 1)
         self.stream = None
-        self.streamLabel = QtGui.QLabel(self, text='')
+        self.streamLabel = QtWidgets.QLabel(self, text='')
         self.layout.addWidget(self.streamLabel, 0, 4, 1, 1)
 
-        self.ManReconnectButton = QtGui.QPushButton('Reconnect Controller')
+        self.ManReconnectButton = QtWidgets.QPushButton('Reconnect Controller')
         self.layout.addWidget(self.ManReconnectButton, 0, 1, 1, 1)
         self.ManReconnectButton.clicked.connect(
             lambda: self.reConnectDevice('Controller'))
         self.ManReconnectButton.setHidden(True)
 
-        self.DSReconnectButton = QtGui.QPushButton('Reconnect Data Server')
+        self.DSReconnectButton = QtWidgets.QPushButton('Reconnect Data Server')
         self.layout.addWidget(self.DSReconnectButton, 0, 2, 1, 1)
         self.DSReconnectButton.clicked.connect(
             lambda: self.reConnectDevice('Data Server'))
         self.DSReconnectButton.setHidden(True)
 
-        self.rowLabel = QtGui.QLabel()
+        self.rowLabel = QtWidgets.QLabel()
         self.layout.addWidget(self.rowLabel, 0, 6, 1, 1)
 
-        self.scanLabel = QtGui.QLabel()
+        self.scanLabel = QtWidgets.QLabel()
         self.layout.addWidget(self.scanLabel, 0, 7, 1, 1)
 
-        # self.layout.addWidget(QtGui.QLabel('Refresh rate (ms)'),0,8)
-        # self.refresh_field = QtGui.QSpinBox()
+        # self.layout.addWidget(QtWidgets.QLabel('Refresh rate (ms)'),0,8)
+        # self.refresh_field = QtWidgets.QSpinBox()
         # self.refresh_field.setRange(0,10**4)
         # self.refresh_field.valueChanged.connect(self.emit_refresh_change)
         # self.layout.addWidget(self.refresh_field,0,9)
 
-        self.settingsButton = QtGui.QPushButton('Settings...')
+        self.settingsButton = QtWidgets.QPushButton('Settings...')
         self.settingsButton.clicked.connect(self.show_settings)
         self.layout.addWidget(self.settingsButton, 0, 8, 1, 1)
 
-        self.removeButton = QtGui.QPushButton('Remove')
+        self.removeButton = QtWidgets.QPushButton('Remove')
         self.removeButton.clicked.connect(self.removeDevice)
         self.layout.addWidget(self.removeButton, 0, 9, 1, 1)
     
@@ -280,18 +280,18 @@ class DeviceWidget(QtGui.QWidget):
                 self.streamLabel.setStyleSheet("QLabel { color: red }")
                 
 
-class SettingsDialog(QtGui.QDialog):
+class SettingsDialog(QtWidgets.QDialog):
     def __init__(self,parent, info):
         super(SettingsDialog, self).__init__(parent)
 
-        layout = QtGui.QGridLayout(self)
+        layout = QtWidgets.QGridLayout(self)
 
-        layout.addWidget(QtGui.QLabel('Device: {}'.format(info['name'])),0,0)
-        layout.addWidget(QtGui.QLabel('IP: {}'.format(info['IP'])),1,0)
-        layout.addWidget(QtGui.QLabel('PORT: {}'.format(info['PORT'])),1,1)
+        layout.addWidget(QtWidgets.QLabel('Device: {}'.format(info['name'])),0,0)
+        layout.addWidget(QtWidgets.QLabel('IP: {}'.format(info['IP'])),1,0)
+        layout.addWidget(QtWidgets.QLabel('PORT: {}'.format(info['PORT'])),1,1)
 
-        layout.addWidget(QtGui.QLabel('Refresh rate (ms)'),2,0)
-        self.refresh_field = QtGui.QSpinBox()
+        layout.addWidget(QtWidgets.QLabel('Refresh rate (ms)'),2,0)
+        self.refresh_field = QtWidgets.QSpinBox()
         self.refresh_field.setRange(0,10**4)
         self.refresh_field.setValue(int(info['refresh_time']))
         layout.addWidget(self.refresh_field,2,1)
@@ -309,12 +309,15 @@ class SettingsDialog(QtGui.QDialog):
             self.save_stream_check.setChecked(False)
             self.save_stream_check.setHidden(True)
         else:
-            self.save_data_check.setChecked(info['save'])
-            self.save_stream_check.setChecked(info['stream'])
+            try:
+                self.save_data_check.setChecked(info['save'])
+                self.save_stream_check.setChecked(info['stream'])
+            except:
+                pass
 
         # OK and Cancel buttons
-        buttons = QtGui.QDialogButtonBox(
-            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel,
+        buttons = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
             QtCore.Qt.Horizontal, self)
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
@@ -339,4 +342,4 @@ class SettingsDialog(QtGui.QDialog):
         dialog = SettingsDialog(parent=parent,info=info)
         result = dialog.exec_()
         settings = dialog.settings()
-        return (settings, result == QtGui.QDialog.Accepted)
+        return (settings, result == QtWidgets.QDialog.Accepted)

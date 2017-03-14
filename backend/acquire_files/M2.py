@@ -1,12 +1,12 @@
 import socket
 import time
-import backend.acquire_files.SolsTiScommands as comm
+import backend.acquire_files.solstiscommands as comm
 import numpy as np
 import json
 import ctypes
 import traceback
 
-from .hardware import format,Hardware
+from .hardware import format,BaseHardware
 
 M2_format = ('setpoint','on_setpoint','status', 'wavelength', 'temperature', 'temperature_status',
     'etalon_lock', 'etalon_voltage', 'cavity_lock', 'resonator_voltage',
@@ -14,9 +14,9 @@ M2_format = ('setpoint','on_setpoint','status', 'wavelength', 'temperature', 'te
 this_format = format + M2_format
 write_params = ['wavenumber']
 
-class M2(Hardware):
+class Hardware(BaseHardware):
     def __init__(self):
-        super(M2,self).__init__(name = 'M2',
+        super(Hardware,self).__init__(name = 'm2',
                                  format=this_format,
                                  write_params = write_params,
                                  needs_stabilization = True,

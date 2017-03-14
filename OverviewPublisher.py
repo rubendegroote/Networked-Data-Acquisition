@@ -1,6 +1,6 @@
 from http.server import BaseHTTPRequestHandler,HTTPServer
 import os,sys
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 import time    
 import threading as th
 import configparser

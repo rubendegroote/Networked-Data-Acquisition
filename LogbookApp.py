@@ -1,4 +1,4 @@
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 import threading as th
 import asyncore
 import time
@@ -12,7 +12,7 @@ from logviewerwidgets import LogEntryWidget
 
 CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
 
-class LogbookApp(QtGui.QWidget):
+class LogbookApp(QtWidgets.QWidget):
     editSignal = QtCore.pyqtSignal(int,object)
     addSignal = QtCore.pyqtSignal(int,object)
     messageUpdateSignal = QtCore.pyqtSignal(dict)
@@ -48,46 +48,46 @@ class LogbookApp(QtGui.QWidget):
         self.controller.add_request(req)
 
     def init_UI(self):
-        layout = QtGui.QGridLayout(self)
+        layout = QtWidgets.QGridLayout(self)
 
-        self.searchStringLabel = QtGui.QPushButton('String search')
+        self.searchStringLabel = QtWidgets.QPushButton('String search')
         self.searchStringLabel.clicked.connect(self.filterLogbookOnString)
-        self.searchStringEdit = QtGui.QLineEdit('')
+        self.searchStringEdit = QtWidgets.QLineEdit('')
         layout.addWidget(self.searchStringEdit, 1, 0)
         layout.addWidget(self.searchStringLabel, 1, 1)
 
-        self.searchTagLabel = QtGui.QPushButton('Tag search')
+        self.searchTagLabel = QtWidgets.QPushButton('Tag search')
         self.searchTagLabel.clicked.connect(self.filterLogbookOnTag)
-        self.searchTagEdit = QtGui.QLineEdit('')
+        self.searchTagEdit = QtWidgets.QLineEdit('')
         layout.addWidget(self.searchTagEdit, 2, 0)
         layout.addWidget(self.searchTagLabel, 2, 1)
 
-        self.searchTagLabel = QtGui.QPushButton('Mass search')
+        self.searchTagLabel = QtWidgets.QPushButton('Mass search')
         self.searchTagLabel.clicked.connect(self.filterLogbookOnMass)
-        self.searchMassEdit = QtGui.QLineEdit('')
+        self.searchMassEdit = QtWidgets.QLineEdit('')
         layout.addWidget(self.searchMassEdit, 3, 0)
         layout.addWidget(self.searchTagLabel, 3, 1)
 
-        self.page_widget = QtGui.QTabWidget()
+        self.page_widget = QtWidgets.QTabWidget()
         layout.addWidget(self.page_widget,4,0,1,2)
         self.pages = []
         self.new_log_page()
 
-        self.addEntryButton = QtGui.QPushButton('Add entry')
+        self.addEntryButton = QtWidgets.QPushButton('Add entry')
         self.addEntryButton.clicked.connect(self.add_entry_to_log)
         layout.addWidget(self.addEntryButton, 5, 0, 1, 2)
 
     def new_log_page(self):
-        new_page_widget = QtGui.QWidget()
-        layout = QtGui.QGridLayout(new_page_widget)
+        new_page_widget = QtWidgets.QWidget()
+        layout = QtWidgets.QGridLayout(new_page_widget)
 
         scrollArea = QtGui.QScrollArea(new_page_widget)
         scrollArea.setWidgetResizable(True)
-        scrollAreaWidgetContents = QtGui.QWidget()
+        scrollAreaWidgetContents = QtWidgets.QWidget()
         scrollArea.setWidget(scrollAreaWidgetContents)
         layout.addWidget(scrollArea)
 
-        new_page = QtGui.QGridLayout(scrollAreaWidgetContents)
+        new_page = QtWidgets.QGridLayout(scrollAreaWidgetContents)
         fr = len(self.pages)*self.log_per_page
         to = fr+self.log_per_page
         self.page_widget.addTab(new_page_widget,str(fr)+' - '+str(to))
@@ -258,7 +258,7 @@ class LogbookApp(QtGui.QWidget):
 
 def main():
     # add freeze support
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     m = LogbookApp()
     sys.exit(app.exec_())
 

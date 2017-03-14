@@ -8,6 +8,8 @@ import pandas as pd
 import os,psutil
 from scipy import stats
 from scipy.stats import chi2
+import zlib,pickle
+
 
 def calcHist(data,bins,errormode,data_mode = 'mean'):
     bin_selection = np.digitize(data['x'], bins)
@@ -17,8 +19,7 @@ def calcHist(data,bins,errormode,data_mode = 'mean'):
 
     binned = pd.DataFrame()
     
-    binned['x'] = groups['x'].mean()
-    binned['xerr'] = groups['x'].std()
+    binned[['x','xerr']] = groups['x'].agg([np.mean,np.std])
     
     binned['noe'] = groups['bin_selection'].sum()/binned.index.values
     
@@ -67,8 +68,11 @@ def extract_scan(path,scan_numbers,columns,filename=None):
                     if scanno.split('_')[0] in scan_numbers:
                         start = time.time()
                         dfs.append(pd.DataFrame())
-                        dfs[-1][col] = store[dev][scanno][col].value
-                        dfs[-1]['time'] = store[dev][scanno]['timestamp'].value
+                        try:
+                            dfs[-1][col] = store[dev][scanno][col].value
+                            dfs[-1]['time'] = store[dev][scanno]['timestamp'].value
+                        except:
+                            pass
                         print('extracted {} in {}s'.format(col,round(time.time() - start,1)))
             except:
                 print('failed getting {} {}'.format(dev,col))
@@ -168,3 +172,17 @@ def try_deco(func):
         return reply
     return func_wrapper
 
+def compress_data(func):
+    def func_wrapper(*args,**kwargs):
+        retval = func(*args,**kwargs)
+        if 'data' in retval.keys():
+            print(len(retval['data']))
+            if len(retval['data']) > 0:
+                compressed = True
+                retval['data'] = zlib.compress(pickle.dumps(retval['data']))
+            else:
+                compressed = False
+
+            retval['compressed'] = compressed
+        return retval
+    return func_wrapper

@@ -12,7 +12,7 @@
 import win32serviceutil
 import win32service
 import win32event
-import servicecontroller
+import servicemanager
 import winerror
 import winreg
 import select
@@ -39,7 +39,7 @@ opc_gate_port = 7766
 def getvar(env_var):
     """Read system enviornment variable from registry"""
     try:
-        key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, 'SYSTEM\\CurrentControlSet\\Control\Session Controller\Environment',0,_winreg.KEY_READ)
+        key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, 'SYSTEM\\CurrentControlSet\\Control\Session Manager\Environment',0,_winreg.KEY_READ)
         value, valuetype = _winreg.QueryValueEx(key, env_var)
         return value
     except:
@@ -110,12 +110,12 @@ class OpcService(win32serviceutil.ServiceFramework):
         self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
     
     def SvcStop(self):
-        servicecontroller.LogInfoMsg('\n\nStopping service')
+        servicemanager.LogInfoMsg('\n\nStopping service')
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
         win32event.SetEvent(self.hWaitStop)
 
     def SvcDoRun(self):
-        servicecontroller.LogInfoMsg('\n\nStarting service on port %d' % opc_gate_port)
+        servicemanager.LogInfoMsg('\n\nStarting service on port %d' % opc_gate_port)
 
         daemon = Pyro4.core.Daemon(host=opc_gate_host, port=opc_gate_port)
         daemon.register(opc(), "opc")
@@ -131,10 +131,10 @@ class OpcService(win32serviceutil.ServiceFramework):
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         try:
-            evtsrc_dll = os.path.abspath(servicecontroller.__file__)
-            servicecontroller.PrepareToHostSingle(OpcService)
-            servicecontroller.Initialize('zzzOpenOPCService', evtsrc_dll)
-            servicecontroller.StartServiceCtrlDispatcher()
+            evtsrc_dll = os.path.abspath(servicemanager.__file__)
+            servicemanager.PrepareToHostSingle(OpcService)
+            servicemanager.Initialize('zzzOpenOPCService', evtsrc_dll)
+            servicemanager.StartServiceCtrlDispatcher()
         except win32service.error as details:
             if details.winerror == winerror.ERROR_FAILED_SERVICE_CONTROLLER_CONNECT:
                 win32serviceutil.usage()

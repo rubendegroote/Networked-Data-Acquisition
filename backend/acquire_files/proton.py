@@ -1,14 +1,14 @@
 from ..OpenOPC.OpenOPC import *
-from .hardware import format,Hardware
+from .hardware import format,BaseHardware
 
 this_format = format + ('SC_bunches','SC_current_bunch',
                         'HRS_bunches','HRS_current',
                         'HRS_protons_per_pulse','HRS_protons_on')
 write_params = []
 
-class Proton(Hardware):
+class Hardware(BaseHardware):
     def __init__(self):
-        super(Proton,self).__init__(name = 'Proton info',
+        super(Hardware,self).__init__(name = 'Proton info',
                                   format=this_format,
                                   write_params = write_params,
                                   refresh_time=5)

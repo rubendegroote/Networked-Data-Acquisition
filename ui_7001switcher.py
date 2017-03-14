@@ -1,8 +1,7 @@
-from PyQt4.uic import loadUiType
-from PyQt4.QtCore import SIGNAL
-from PyQt4.QtCore import QTimer
+from PyQt5.uic import loadUiType
+from PyQt5.QtCore import QTimer
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 from seg_plot import bullseye_plot
@@ -31,8 +30,11 @@ class CupSwitcher(QWidget,Ui_Form):
 		self.load_config()
 		self.cup_names = []
 
+		rm = visa.ResourceManager()
+		self.switch = rm.open_resource('GPIB0::15::INSTR')
+
 		self.pushCup.clicked.connect(self.switch_cup) 
-		self.connect(self.chooseCup,SIGNAL("currentIndexChanged(int)"),self.view_cup)
+		self.chooseCup.currentIndexChanged.connect(self.view_cup)
 		self.view_cup()
 		self.none=1
 
@@ -91,6 +93,7 @@ class CupSwitcher(QWidget,Ui_Form):
 			print(data)
 
 	def setOptions(self,options):
+
 		if self.cup_names == options:
 			return
 
@@ -99,15 +102,9 @@ class CupSwitcher(QWidget,Ui_Form):
 			self.chooseCup.addItem(opt)
 		self.cup_names = options
 
-	def set_cup_in(self,cup_in):
-		self.cup_in = cup_in
-		if cup_in == 0:
-			self.chActive.setStyleSheet("QLabel { background-color: green; }")
-		elif cup_in == 1:
-			self.chActive.setStyleSheet("QLabel { background-color: red; }")
-
 	def switch_cup(self):
 		cup=int(self.chooseCup.currentIndex())
+		self.switch.write(":open all")
 
 		###
 		self.switch_sig.emit(str(cup))
@@ -132,6 +129,34 @@ class CupSwitcher(QWidget,Ui_Form):
 				self.gridLayout.removeWidget(self.canvas)
 			except:
 				pass
+		####
+
+		ch_switch=self.config[cup,1]
+
+		if int(ch_switch[0]) == 0:
+			self.none=0
+			self.view_cup()
+		else:
+			self.none=1
+			if int(ch_switch[0]) == 2: self.switch.write(":close (@ 1!10)")
+			self.switch.write(":close (@ "+ch_switch+")")
+			self.view_cup()
+
+	def view_cup(self):
+
+		cup=int(self.chooseCup.currentIndex())
+		ch_switch=self.config[cup,1]
+
+		if int(ch_switch[0]) == 0:
+			reply=self.none
+		else:
+			reply = self.switch.query(":open? (@ "+ch_switch+")")
+			reply = reply.strip('\n').strip('\r')
+
+		if int(reply) == 0:
+			self.chActive.setStyleSheet("QLabel { background-color: green; }")
+		elif int(reply) == 1:
+			self.chActive.setStyleSheet("QLabel { background-color: red; }")
 
 	def load_config(self):
 		sc=open('7001_config.ini','r')
@@ -146,9 +171,8 @@ class CupSwitcher(QWidget,Ui_Form):
 
 if __name__ == '__main__':
 	import sys
-	from PyQt4 import QtGui
 
-	app = QtGui.QApplication(sys.argv)
+	app = QtWidgets.QApplication(sys.argv)
 	form=CupSwitcher()
 	form.show()
 	form.resize(0, 0)

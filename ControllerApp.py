@@ -4,7 +4,7 @@ import time
 import configparser
 from multiprocessing import freeze_support
 import sys
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 from backend.connectors import Connector
 from connectiondialogs import Contr_DS_ConnectionDialog
@@ -13,7 +13,7 @@ from controlwidget import ControlWidget
 from scanner import ScannerWidget
 from LogbookApp import LogbookApp
 
-class ControllerApp(QtGui.QMainWindow):
+class ControllerApp(QtWidgets.QMainWindow):
     updateSignal = QtCore.pyqtSignal(tuple)
     messageUpdateSignal = QtCore.pyqtSignal(dict)
     lost_connection = QtCore.pyqtSignal(object)
@@ -43,13 +43,13 @@ class ControllerApp(QtGui.QMainWindow):
             self.enable()
 
     def init_UI(self):
-        wid = QtGui.QWidget()
-        self.layout = QtGui.QGridLayout(wid)
+        wid = QtWidgets.QWidget()
+        self.layout = QtWidgets.QGridLayout(wid)
         self.setCentralWidget(wid)
 
-        self.tabs = QtGui.QTabWidget()
+        self.tabs = QtWidgets.QTabWidget()
         self.tabs.setTabBar(Tabs(width=100,height=25))
-        self.tabs.setTabPosition(QtGui.QTabWidget.West)
+        self.tabs.setTabPosition(QtWidgets.QTabWidget.West)
         self.layout.addWidget(self.tabs,0,0,10,10)
 
         self.deviceConnections = DeviceConnections()
@@ -392,45 +392,45 @@ class Contr_DS_Connector():
             self.contr.add_request(instr)
             self.DS.add_request(instr)
 
-class StatusWidget(QtGui.QWidget):
+class StatusWidget(QtWidgets.QWidget):
     def __init__(self,*args,**kwargs):
         super(StatusWidget,self).__init__()
 
-        self.layout = QtGui.QGridLayout(self)
+        self.layout = QtWidgets.QGridLayout(self)
 
         self.progressBar = QtGui.QProgressBar()
         self.progressBar.setMinimum(0)
         self.progressBar.setMaximum(1000)
         self.layout.addWidget(self.progressBar,0,0,1,1)
 
-        self.textLayout = QtGui.QGridLayout()
+        self.textLayout = QtWidgets.QGridLayout()
         self.layout.addLayout(self.textLayout,1,0,1,1)
 
-        self.scan_status = QtGui.QLabel()
+        self.scan_status = QtWidgets.QLabel()
         self.textLayout.addWidget(self.scan_status,0,0,1,1)
 
-        self.wave_1 = QtGui.QLabel('Wavenumber 1:')
+        self.wave_1 = QtWidgets.QLabel('Wavenumber 1:')
         self.textLayout.addWidget(self.wave_1,1,0)
 
-        self.wave_2 = QtGui.QLabel('Wavenumber 2:')
+        self.wave_2 = QtWidgets.QLabel('Wavenumber 2:')
         self.textLayout.addWidget(self.wave_2,1,1)
 
-        self.wave_3 = QtGui.QLabel('Wavenumber pdl:')
+        self.wave_3 = QtWidgets.QLabel('Wavenumber pdl:')
         self.textLayout.addWidget(self.wave_3,1,2)
 
-        self.laser_lock_M2 = QtGui.QLabel('M2: not locked')
+        self.laser_lock_M2 = QtWidgets.QLabel('M2: not locked')
         self.textLayout.addWidget(self.laser_lock_M2,0,1)
 
-        self.laser_lock_Matisse = QtGui.QLabel('Matisse: not locked')
+        self.laser_lock_Matisse = QtWidgets.QLabel('Matisse: not locked')
         self.textLayout.addWidget(self.laser_lock_Matisse,0,2)
 
-        self.iscool = QtGui.QLabel('ISCOOL: ')
+        self.iscool = QtWidgets.QLabel('ISCOOL: ')
         self.textLayout.addWidget(self.iscool,2,0)
 
-        self.scan_number_label = QtGui.QLabel('Scan number: ')
+        self.scan_number_label = QtWidgets.QLabel('Scan number: ')
         self.textLayout.addWidget(self.scan_number_label, 2, 1, 1, 1)
 
-        self.proton_label = QtGui.QLabel()
+        self.proton_label = QtWidgets.QLabel()
         self.textLayout.addWidget(self.proton_label, 2, 2, 1, 1)
 
         self.proton_info = {}
@@ -504,7 +504,7 @@ class StatusWidget(QtGui.QWidget):
             
     
         try:
-            M2_info = info['status_data']['M2']
+            M2_info = info['status_data']['m2']
             lock = M2_info['etalon_lock'] == 'on' and M2_info['cavity_lock'] == 'on'
             if lock:
                 self.laser_lock_M2.setText("M2 locked")
@@ -563,7 +563,7 @@ class Tabs(QtGui.QTabBar):
 def main():
     # add freeze support
     freeze_support()
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     m = ControllerApp()
     sys.exit(app.exec_())
 

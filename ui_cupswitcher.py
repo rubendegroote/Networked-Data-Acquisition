@@ -1,6 +1,6 @@
-from PyQt4.uic import loadUiType
-from PyQt4.QtCore import SIGNAL
-from PyQt4.QtCore import QTimer
+from PyQt5.uic import loadUiType
+from PyQt5.QtCore import SIGNAL
+from PyQt5.QtCore import QTimer
 
 from seg_plot import bullseye_plot
 
@@ -227,9 +227,9 @@ class CupSwitcher(QWidget,Ui_Form):
 
 if __name__ == '__main__':
 	import sys
-	from PyQt4 import QtGui
+	from PyQt5 import QtGui
 
-	app = QtGui.QApplication(sys.argv)
+	app = QtWidgets.QApplication(sys.argv)
 	form=CupSwitcher()
 	form.show()
 	form.resize(0, 0)

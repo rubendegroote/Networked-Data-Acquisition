@@ -9,13 +9,13 @@ def acquire(name,data_pipe,iQ,mQ,stopFlag,readDataFlag,ns):
     ### what hardware?
     hrdwr = importlib.import_module('backend.acquire_files.{}'.format(name))
     hardware = hrdwr.Hardware()
+    ns.write_params = hardware.write_params
+    ns.refresh_time = hardware.refresh_time
     hardware.ns = ns
 
     # add format and write params to the namespace so
     # they can be accesses by device
     ns.format = hardware.format
-    ns.write_params = hardware.write_params
-    ns.refresh_time = hardware.refresh_time
 
     ### set-up connections and initialize
     return_message = hardware.setup()

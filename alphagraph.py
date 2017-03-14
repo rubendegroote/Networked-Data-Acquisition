@@ -1,18 +1,18 @@
 import pyqtgraph as pg
-from PyQt4 import QtCore,QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 import pyqtgraph.dockarea as da
 import datetime
 import numpy as np
 import pandas as pd
 from picbutton import PicButton
 
-from backend.Helpers import calcHist
+from backend.helpers import calcHist
 
-class AlphaGraph(QtGui.QWidget):
+class AlphaGraph(QtWidgets.QWidget):
     dataRequested = QtCore.pyqtSignal(str)
     scanRequested = QtCore.pyqtSignal(str)
     def __init__(self, name):
-        super(QtGui.QWidget, self).__init__()
+        super(QtWidgets.QWidget, self).__init__()
 
         self.reset = False
         self.options = []
@@ -32,7 +32,7 @@ class AlphaGraph(QtGui.QWidget):
 
     def init_UI(self):
 
-        self.layout = QtGui.QGridLayout(self)
+        self.layout = QtWidgets.QGridLayout(self)
 
         self.labelStyle = {'font-size': '18pt'}
 
@@ -41,7 +41,7 @@ class AlphaGraph(QtGui.QWidget):
         self.graph = Graph()
         self.layout.addWidget(self.graph,0,0,1,10)
 
-        self.binLabel = QtGui.QLabel(self, text="Bin size: ")
+        self.binLabel = QtWidgets.QLabel(self, text="Bin size: ")
         self.binSpinBox = pg.SpinBox(value=1000,
                                      bounds=(0, None),
                                      dec=False)
@@ -51,23 +51,23 @@ class AlphaGraph(QtGui.QWidget):
         self.layout.addWidget(self.binLabel, 3, 4)
         self.layout.addWidget(self.binSpinBox, 3, 5)
 
-        self.layout.addWidget(QtGui.QLabel("y offset"),2,0)
-        self.y_offset = QtGui.QLineEdit("0")
+        self.layout.addWidget(QtWidgets.QLabel("y offset"),2,0)
+        self.y_offset = QtWidgets.QLineEdit("0")
         self.layout.addWidget(self.y_offset, 2, 1)
 
-        self.layout.addWidget(QtGui.QLabel("x offset"),2,2)
-        self.x_offset = QtGui.QLineEdit("0")
+        self.layout.addWidget(QtWidgets.QLabel("x offset"),2,2)
+        self.x_offset = QtWidgets.QLineEdit("0")
         self.layout.addWidget(self.x_offset, 2, 3)
 
-        self.layout.addWidget(QtGui.QLabel("x cut left"),3,0)
-        self.x_cut_left = QtGui.QLineEdit("13095")
+        self.layout.addWidget(QtWidgets.QLabel("x cut left"),3,0)
+        self.x_cut_left = QtWidgets.QLineEdit("13095")
         self.layout.addWidget(self.x_cut_left, 3, 1)
 
-        self.layout.addWidget(QtGui.QLabel("x cut right"),3,2)
-        self.x_cut_right = QtGui.QLineEdit("13097")
+        self.layout.addWidget(QtWidgets.QLabel("x cut right"),3,2)
+        self.x_cut_right = QtWidgets.QLineEdit("13097")
         self.layout.addWidget(self.x_cut_right, 3, 3)
 
-        self.clean_stream = QtGui.QPushButton('Reset data')
+        self.clean_stream = QtWidgets.QPushButton('Reset data')
         self.layout.addWidget(self.clean_stream, 3, 6, 1, 1)
         self.clean_stream.clicked.connect(self.clean)
 
@@ -113,11 +113,11 @@ class AlphaGraph(QtGui.QWidget):
         self.graph.update_plots()
 
 
-class Graph(QtGui.QWidget):
+class Graph(QtWidgets.QWidget):
     def __init__(self):
         super(Graph,self).__init__()
 
-        self.layout = QtGui.QGridLayout(self)
+        self.layout = QtWidgets.QGridLayout(self)
 
         self.alpha_plot = AlphaPlot()
         self.layout.addWidget(self.alpha_plot,0,1)
@@ -137,16 +137,16 @@ class Graph(QtGui.QWidget):
             self.hfs_plot.plot_gated(i,gate)
 
 BRUSH = [(0, 255, 0, 100.),(0, 0, 255, 100.),(255,128,0,100),(255, 0, 0, 100.),(128,128,0,100),(128,0,128,100)]
-class AlphaPlot(QtGui.QWidget):
+class AlphaPlot(QtWidgets.QWidget):
     def __init__(self):
         super(AlphaPlot,self).__init__()
-        self.layout = QtGui.QGridLayout(self)
+        self.layout = QtWidgets.QGridLayout(self)
         self.plot = pg.PlotWidget()
         self.layout.addWidget(self.plot, 0,0,1,10)
 
         self.regions = []
 
-        self.add_region_button = QtGui.QPushButton('Add energy gate')
+        self.add_region_button = QtWidgets.QPushButton('Add energy gate')
         self.add_region_button.clicked.connect(self.add_region)
         self.layout.addWidget(self.add_region_button, 1,0,1,1)
 
@@ -168,10 +168,10 @@ class AlphaPlot(QtGui.QWidget):
             pass
 
 PEN = [(0, 255, 0, 255.),(0, 0, 255, 255.),(255,128,0,255),(255, 0, 0, 255.),(128,128,0,255),(128,0,128,255)]
-class HFSPlot(QtGui.QWidget):
+class HFSPlot(QtWidgets.QWidget):
     def __init__(self):
         super(HFSPlot,self).__init__()
-        self.layout = QtGui.QGridLayout(self)
+        self.layout = QtWidgets.QGridLayout(self)
         self.plot = pg.PlotWidget()
         self.layout.addWidget(self.plot)
 

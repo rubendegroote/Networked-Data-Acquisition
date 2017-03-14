@@ -1,4 +1,4 @@
-import backend.Helpers as hp
+import backend.helpers as hp
 from backend.dispatcher import Dispatcher
 
 import os,sys

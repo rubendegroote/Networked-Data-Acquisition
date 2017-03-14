@@ -1,5 +1,5 @@
 import pyqtgraph as pg
-from PyQt4 import QtCore,QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 import pyqtgraph.dockarea as da
 import datetime
 import numpy as np
@@ -10,14 +10,15 @@ import pyqtgraph.exporters
 import webbrowser
 import lmfit as lm
 import satlas as sat
-from backend.Helpers import calcHist
+from backend.helpers import calcHist
 import uncertainties as unc
 
-class XYGraph(QtGui.QWidget):
+
+class XYGraph(QtWidgets.QWidget):
     dataRequested = QtCore.pyqtSignal(str)
     scanRequested = QtCore.pyqtSignal(str)
     def __init__(self, name):
-        super(QtGui.QWidget, self).__init__()
+        super(QtWidgets.QWidget, self).__init__()
 
         self.reset = False
         self.options = []
@@ -50,7 +51,7 @@ class XYGraph(QtGui.QWidget):
 
     def init_UI(self):
 
-        self.layout = QtGui.QGridLayout(self)
+        self.layout = QtWidgets.QGridLayout(self)
 
         self.labelStyle = {'font-size': '18pt'}
 
@@ -66,21 +67,21 @@ class XYGraph(QtGui.QWidget):
         self.points_curve = pg.ScatterPlotItem(x=np.array([]),y=np.array([]),brush='k')
         self.graph.addItem(self.points_curve)
 
-        layout = QtGui.QGridLayout(gView)
+        layout = QtWidgets.QGridLayout(gView)
 
         layout.addWidget(self.graph, 0, 0, 1, 1)
-        self.sublayout = QtGui.QGridLayout()
+        self.sublayout = QtWidgets.QGridLayout()
         layout.addLayout(self.sublayout, 1, 0)
 
 
-        self.sublayout.addWidget(QtGui.QLabel('y: '),0,0)
+        self.sublayout.addWidget(QtWidgets.QLabel('y: '),0,0)
         self.comboY = QtGui.QComboBox(parent=None)
         self.comboY.setMinimumWidth(250)
         self.comboY.setToolTip('Choose the variable you want to put\
  on the Y-axis.')
         self.sublayout.addWidget(self.comboY, 0, 1)
 
-        self.sublayout.addWidget(QtGui.QLabel('x: '),0,2)
+        self.sublayout.addWidget(QtWidgets.QLabel('x: '),0,2)
         self.comboX = QtGui.QComboBox(parent=None)
         self.comboX.setMinimumWidth(250)
         self.comboX.setToolTip('Choose the variable you want to put\
@@ -89,7 +90,7 @@ class XYGraph(QtGui.QWidget):
 
         self.graphStyles = ['poisson','std dev','None']#, 'Point']
 
-        label = QtGui.QLabel('Errors: ')
+        label = QtWidgets.QLabel('Errors: ')
         label.setStyleSheet("border: 0px;")
         self.sublayout.addWidget(label, 0, 4)
 
@@ -101,8 +102,9 @@ class XYGraph(QtGui.QWidget):
         self.error_box.setMaximumWidth(110)
         # self.error_box.currentIndexChanged.connect(self.updatePlot)
         self.sublayout.addWidget(self.error_box, 0, 5)
+        self.error_box.currentIndexChanged.connect(self.toggle_plot_needed)
 
-        label = QtGui.QLabel('data mode: ')
+        label = QtWidgets.QLabel('data mode: ')
         label.setStyleSheet("border: 0px;")
         self.sublayout.addWidget(label, 0, 6)
 
@@ -114,8 +116,9 @@ class XYGraph(QtGui.QWidget):
         self.data_box.setMaximumWidth(110)
         # self.error_box.currentIndexChanged.connect(self.updatePlot)
         self.sublayout.addWidget(self.data_box, 0, 7)
+        self.data_box.currentIndexChanged.connect(self.toggle_plot_needed)
 
-        self.binLabel = QtGui.QLabel(self, text="Bin size: ")
+        self.binLabel = QtWidgets.QLabel(self, text="Bin size: ")
         self.prev_binsize = 1000
         self.binSpinBox = pg.SpinBox(value=self.prev_binsize,
                                      bounds=(0, None),
@@ -124,47 +127,51 @@ class XYGraph(QtGui.QWidget):
         self.binSpinBox.setMaximumWidth(110)
         self.sublayout.addWidget(self.binLabel, 2, 4)
         self.sublayout.addWidget(self.binSpinBox, 2, 5)
+        self.binSpinBox.sigValueChanged.connect(self.toggle_plot_needed)
 
-        self.sublayout.addWidget(QtGui.QLabel("y offset"),2,0)
-        self.y_offset = QtGui.QLineEdit("0")
+        self.sublayout.addWidget(QtWidgets.QLabel("y offset"),2,0)
+        self.y_offset = QtWidgets.QLineEdit("0")
         self.y_offset.textChanged.connect(self.change_label)
         self.sublayout.addWidget(self.y_offset, 2, 1)
 
-        self.sublayout.addWidget(QtGui.QLabel("x offset"),2,2)
-        self.x_offset = QtGui.QLineEdit("0")
+        self.sublayout.addWidget(QtWidgets.QLabel("x offset"),2,2)
+        self.x_offset = QtWidgets.QLineEdit("0")
         self.x_offset.textChanged.connect(self.change_label)
         self.sublayout.addWidget(self.x_offset, 2, 3)
 
-        self.sublayout.addWidget(QtGui.QLabel("x cut left"),3,0)
-        self.x_cut_left = QtGui.QLineEdit("-10000000000")
+        self.sublayout.addWidget(QtWidgets.QLabel("x cut left"),3,0)
+        self.x_cut_left = QtWidgets.QLineEdit("-10000000000")
         self.sublayout.addWidget(self.x_cut_left, 3, 1)
+        self.x_cut_left.textChanged.connect(self.toggle_plot_needed)
 
-        self.sublayout.addWidget(QtGui.QLabel("x cut right"),3,2)
-        self.x_cut_right = QtGui.QLineEdit("10000000000")
+        self.sublayout.addWidget(QtWidgets.QLabel("x cut right"),3,2)
+        self.x_cut_right = QtWidgets.QLineEdit("10000000000")
         self.sublayout.addWidget(self.x_cut_right, 3, 3)
+        self.x_cut_right.textChanged.connect(self.toggle_plot_needed)
 
         self.unit_check = QtGui.QCheckBox('Use MHz?')
         self.unit_check.stateChanged.connect(self.change_label)
+        self.unit_check.stateChanged.connect(self.toggle_plot_needed)
         self.unit_check.setDisabled(True)
         self.sublayout.addWidget(self.unit_check, 2, 7)
 
-        self.clean_stream = QtGui.QPushButton('Reset data')
+        self.clean_stream = QtWidgets.QPushButton('Reset data')
         self.sublayout.addWidget(self.clean_stream, 3, 7, 1, 1)
         self.clean_stream.clicked.connect(self.clean)
         QtGui.QShortcut(QtGui.QKeySequence("Ctrl+R"), self, self.clean)
 
-        self.log_button = QtGui.QPushButton('Semilog plot')
+        self.log_button = QtWidgets.QPushButton('Semilog plot')
         self.log_button.setCheckable(True)
         self.sublayout.addWidget(self.log_button, 3, 6, 1, 1)
         self.log_button.clicked.connect(self.toggle_log)
         QtGui.QShortcut(QtGui.QKeySequence("Ctrl+L"), self, self.toggle_log)
 
-        self.remove_blobs_button = QtGui.QPushButton('Remove fits')
+        self.remove_blobs_button = QtWidgets.QPushButton('Remove fits')
         self.sublayout.addWidget(self.remove_blobs_button, 3, 5, 1, 1)
         self.remove_blobs_button.clicked.connect(self.clear_blobs)
         QtGui.QShortcut(QtGui.QKeySequence("Ctrl+C"), self, self.clear_blobs)
 
-        self.save_button = QtGui.QPushButton('Save')
+        self.save_button = QtWidgets.QPushButton('Save')
         self.sublayout.addWidget(self.save_button, 3, 4, 1, 1)
         self.save_button.clicked.connect(self.save)
         QtGui.QShortcut(QtGui.QKeySequence("Ctrl+S"), self, self.save)
@@ -225,19 +232,22 @@ class XYGraph(QtGui.QWidget):
     def clean(self):
         self.data = self.data.iloc[-10:]
 
+    def toggle_plot_needed(self):
+        self.plot_needed = True
+
     def setXYOptions(self, options):
         self.options = ['device: parameter']
         self.options.extend([key+': '+v for key,val in options.items() for v in val])
 
         self.comboX.addItems(self.options)
         try:
-            self.comboX.setCurrentIndex(options.index('wavemeter: wavenumber_1'))
+            self.comboX.setCurrentIndex(self.options.index('wavemeter: wavenumber_1'))
         except:
             self.comboX.setCurrentIndex(0)
 
         self.comboY.addItems(self.options)
         try:
-            self.comboY.setCurrentIndex(options.index('CRIS: Counts'))
+            self.comboY.setCurrentIndex(self.options.index('cris: Counts'))
         except:
             self.comboY.setCurrentIndex(0)
 
@@ -245,6 +255,8 @@ class XYGraph(QtGui.QWidget):
         self.comboX.currentIndexChanged.connect(self.change_label)
         self.comboY.currentIndexChanged.connect(self.newXY)
         self.comboY.currentIndexChanged.connect(self.change_label)
+
+        self.newXY()
 
     def newXY(self):
         new_xkey = str(self.comboX.currentText()).split(': ')
@@ -255,6 +267,8 @@ class XYGraph(QtGui.QWidget):
             self.x_key = new_xkey
             self.y_key = new_ykey
             self.verify_unit_check()
+            self.plot_needed = True
+
         else:
             self.x_key = []
             self.y_key = []
@@ -267,14 +281,21 @@ class XYGraph(QtGui.QWidget):
             self.unit_check.setChecked(False)
 
     def change_label(self):
-        xkey = str(self.comboX.currentText()).split(': ')[1]
-        ykey = str(self.comboY.currentText()).split(': ')[1]
+        try:
+            xkey = str(self.comboX.currentText()).split(': ')[1]
+            ykey = str(self.comboY.currentText()).split(': ')[1]
+        except:
+            return
+            
         if 'wavenumber' in xkey:
-            offset = float(self.x_offset.text())
-            if self.unit_check.isChecked():
-                self.graph.setLabel('bottom','Frequency (offset {} cm-1)'.format(offset),labelStyle = {'color': '#FFF', 'font-size': '24pt'})
-            else:
-                self.graph.setLabel('bottom','Wavenumber (offset {} cm-1)'.format(offset),labelStyle = {'color': '#FFF', 'font-size': '24pt'})
+            try:
+                offset = float(self.x_offset.text())
+                if self.unit_check.isChecked():
+                    self.graph.setLabel('bottom','Frequency (offset {} cm-1)'.format(offset),labelStyle = {'color': '#FFF', 'font-size': '24pt'})
+                else:
+                    self.graph.setLabel('bottom','Wavenumber (offset {} cm-1)'.format(offset),labelStyle = {'color': '#FFF', 'font-size': '24pt'})
+            except:
+                pass
         else:
             self.graph.setLabel('bottom','',labelStyle = {'color': '#FFF', 'font-size': '24pt'})
 
@@ -301,8 +322,16 @@ class XYGraph(QtGui.QWidget):
         self.data = pd.DataFrame({'time':[],
                                   'x':[],
                                   'y':[]})
+        self.binned_data = pd.DataFrame({'time':[],
+                                  'x':[],
+                                  'xerr':[],
+                                  'yerr_t':[],
+                                  'yerr_b':[],
+                                  'noe':[],
+                                  'y':[]})
                                 
         self.reset = False
+        self.plot_needed = True
 
     def toggle_log(self):
         self.logmode = not self.logmode
@@ -353,8 +382,14 @@ class XYGraph(QtGui.QWidget):
 
         self.graph.setTitle('Scan: {} \t Mass: {}'.format(self.scan_number,self.mass))
 
+        if not self.plot_needed:
+            return
+
         if len(self.data['time'])>0:
-            self.treat_data()
+            try:
+                self.treat_data()
+            except:
+                pass
 
             x,y,xerr,yerr_t,yerr_b = self.get_x_y()
 
@@ -402,6 +437,7 @@ class XYGraph(QtGui.QWidget):
             self.graph.setLogMode(y=True)
             self.axis_in_log = True
 
+
     def get_x_y(self):
         if self.unit_check.isChecked():
             if 'wavenumber' in self.x_key[1]:
@@ -441,6 +477,7 @@ class XYGraph(QtGui.QWidget):
             pass
 
         self.fit_blobs = []
+        self.fit_results.setHtml('')
 
     def pos_chooser(self,mousePoint):
         if mousePoint.double():
@@ -449,21 +486,35 @@ class XYGraph(QtGui.QWidget):
             self.heights.append(pos.y())
 
     def plot_model(self,model):
-        x = self.binned_data['x'].values
-        x_fit = np.linspace(x.min(),x.max(),10**4)
-        if not self.unit_check.isChecked():
-            x_fit = x_fit * 29979.2458
         x,y,xerr,yerr_t,yerr_b = self.get_x_y()
-        x_plot = np.linspace(x.min(),x.max(),10**4)
+        # x_plot = np.linspace(x.min(),x.max(),10**4)
+
+        ranges = []
+        for pos in model.locations:
+            r = np.linspace(pos - 5 * model.params['TotalFWHM'].value,
+                            pos + 5 * model.params['TotalFWHM'].value,
+                            200)
+            ranges.append(r)
+        x_fit = np.sort(np.concatenate(ranges))
+        if self.unit_check.isChecked():
+            x_plot = x_fit - float(self.x_offset.text())* 29979.2458 
+        else:
+            x_plot = x_fit / 29979.2458 - float(self.x_offset.text())
 
         try:
             self.hfs_fit_curve
         except:
             self.hfs_fit_curve = pg.PlotCurveItem(pen='r')
+
         self.hfs_fit_curve.setData(x=x_plot, y=model(x=x_fit))
         self.fit_blobs.append(self.hfs_fit_curve)
         self.graphvb.addItem(self.hfs_fit_curve)
     
+    def satlas_fit(model,x,y,yerr):
+        nan_slicer = np.isnan[yerr]
+        yerr[nan_slicer] = y[nan_slicer]
+        sat.chisquare_fit(model,x,y,yerr)
+
     def fit_model(self,model):
         x,y,xerr,yerr_t,yerr_b = self.get_x_y()
         if self.unit_check.isChecked():
@@ -473,7 +524,8 @@ class XYGraph(QtGui.QWidget):
         off = x.min()
 
         model.set_value({'Centroid':model.params['Centroid'].value-off})
-        sat.chisquare_fit(model,x=x-off,y=y,yerr=yerr_t)
+
+        self.satlas_fit(model,x=x-off,y=y,yerr=yerr_t)
 
         model.set_value({'Centroid':model.params['Centroid'].value+off})
 
@@ -572,11 +624,11 @@ class XYGraph(QtGui.QWidget):
                 w *= 29979.2458
                 
             html = '<div style="text-align: center">\
-                    <span><span style="font-size: 20pt;">POS:{}</span><br> \
-                    <span><span style="font-size: 20pt;">HGHT:{}</span><br> \
-                    <span><span style="font-size: 20pt;">FWHM:{}</span><br>\
-                    <span><span style="font-size: 20pt;">BKG:{}</span><br>\
-                    <span><span style="font-size: 20pt;">S/B:{}</span>\
+                    <span><span style="font-size: 14pt;">POS:{}</span><br> \
+                    <span><span style="font-size: 14pt;">HGHT:{}</span><br> \
+                    <span><span style="font-size: 14pt;">FWHM:{}</span><br>\
+                    <span><span style="font-size: 14pt;">BKG:{}</span><br>\
+                    <span><span style="font-size: 14pt;">S/B:{}</span>\
                     </div>'.format(pos,respar['h{}'.format(i)].value,w,respar['bkg'].value,
                                    respar['h{}'.format(i)].value/respar['bkg'].value)
 
@@ -587,143 +639,144 @@ class XYGraph(QtGui.QWidget):
                 height = np.log10(height)
             self.fit_blobs[-1].setPos(respar['p{}'.format(i)].value,height)
 
-class Fitter(QtGui.QWidget):
+class Fitter(QtWidgets.QWidget):
     plotSignal = QtCore.pyqtSignal(object)
     fitSignal = QtCore.pyqtSignal(object)
     fitPeakSig = QtCore.pyqtSignal()
     def __init__(self,parent):
-        super(QtGui.QWidget, self).__init__(parent)
-        self.setMaximumWidth(500)
+        super(QtWidgets.QWidget, self).__init__(parent)
+        self.setMaximumWidth(350)
+        self.setMinimumWidth(350)
 
-        self.layout = QtGui.QGridLayout(self)
+        self.layout = QtWidgets.QGridLayout(self)
 
-        self.fit_button = QtGui.QPushButton('Fit Single Peak')
+        self.fit_button = QtWidgets.QPushButton('Fit Single Peak')
         self.fit_button.setCheckable(True)
         self.layout.addWidget(self.fit_button, 0,0, 1, 1)
         self.fit_button.clicked.connect(self.do_fitting)
         QtGui.QShortcut(QtGui.QKeySequence("Ctrl+F"), self, self.toggle_fit)
 
 
-        filler = QtGui.QLabel('Fit Hyperfine Structure')
+        filler = QtWidgets.QLabel('Fit Hyperfine Structure')
         filler.setMinimumHeight(25)
         self.layout.addWidget(filler,1,0,1,4)
 
-        self.layout.addWidget(QtGui.QLabel('I'),3,0)
-        self.IBox = QtGui.QLineEdit()
+        self.layout.addWidget(QtWidgets.QLabel('I'),3,0)
+        self.IBox = QtWidgets.QLineEdit()
         self.layout.addWidget(self.IBox,3,2)
 
-        self.layout.addWidget(QtGui.QLabel('J'),4,0)
-        self.JBox1 = QtGui.QLineEdit(placeholderText='lower')
+        self.layout.addWidget(QtWidgets.QLabel('J'),4,0)
+        self.JBox1 = QtWidgets.QLineEdit(placeholderText='lower')
         self.layout.addWidget(self.JBox1,4,2)
-        self.JBox2 = QtGui.QLineEdit(placeholderText='upper')
+        self.JBox2 = QtWidgets.QLineEdit(placeholderText='upper')
         self.layout.addWidget(self.JBox2,4,4)
 
-        self.layout.addWidget(QtGui.QLabel('Centroid'),5,0)
-        self.CentroidBox = QtGui.QLineEdit(placeholderText='Absolute value (cm-1)')
+        self.layout.addWidget(QtWidgets.QLabel('Centroid'),5,0)
+        self.CentroidBox = QtWidgets.QLineEdit(placeholderText='Absolute value (cm-1)')
         self.layout.addWidget(self.CentroidBox,5,2)
         self.varyCentroidCheck = QtGui.QCheckBox()
         self.varyCentroidCheck.setChecked(True)
         self.layout.addWidget(self.varyCentroidCheck,5,1)
 
-        self.layout.addWidget(QtGui.QLabel('A'),6,0)
-        self.ABox1 = QtGui.QLineEdit(placeholderText='lower (MHz)')
+        self.layout.addWidget(QtWidgets.QLabel('A'),6,0)
+        self.ABox1 = QtWidgets.QLineEdit(placeholderText='lower (MHz)')
         self.layout.addWidget(self.ABox1,6,2)
         self.varyA1Check = QtGui.QCheckBox()
         self.varyA1Check.setChecked(True)
         self.layout.addWidget(self.varyA1Check,6,1)
-        self.ABox2 = QtGui.QLineEdit(placeholderText='upper (MHz)')
+        self.ABox2 = QtWidgets.QLineEdit(placeholderText='upper (MHz)')
         self.layout.addWidget(self.ABox2,6,4)
         self.varyA2Check = QtGui.QCheckBox()
         self.varyA2Check.setChecked(True)
         self.layout.addWidget(self.varyA2Check,6,3)
 
-        self.layout.addWidget(QtGui.QLabel('B'),7,0)
-        self.BBox1 = QtGui.QLineEdit(placeholderText='lower (MHz)')
+        self.layout.addWidget(QtWidgets.QLabel('B'),7,0)
+        self.BBox1 = QtWidgets.QLineEdit(placeholderText='lower (MHz)')
         self.layout.addWidget(self.BBox1,7,2)
         self.varyB1Check = QtGui.QCheckBox()
         self.varyB1Check.setChecked(True)
         self.layout.addWidget(self.varyB1Check,7,1)
-        self.BBox2 = QtGui.QLineEdit(placeholderText='upper (MHz)')
+        self.BBox2 = QtWidgets.QLineEdit(placeholderText='upper (MHz)')
         self.layout.addWidget(self.BBox2,7,4)
         self.varyB2Check = QtGui.QCheckBox()
         self.varyB2Check.setChecked(True)
         self.layout.addWidget(self.varyB2Check,7,3)
 
-        self.layout.addWidget(QtGui.QLabel('Width'),8,0)
-        self.WidthBox1 = QtGui.QLineEdit(placeholderText='Gaussian (MHz)')
+        self.layout.addWidget(QtWidgets.QLabel('Width'),8,0)
+        self.WidthBox1 = QtWidgets.QLineEdit(placeholderText='Gaussian (MHz)')
         self.layout.addWidget(self.WidthBox1,8,2)
         self.varyWidth1Check = QtGui.QCheckBox()
         self.varyWidth1Check.setChecked(True)
         self.layout.addWidget(self.varyWidth1Check,8,1)
-        self.WidthBox2 = QtGui.QLineEdit(placeholderText='Lorentzian (MHz)')
+        self.WidthBox2 = QtWidgets.QLineEdit(placeholderText='Lorentzian (MHz)')
         self.layout.addWidget(self.WidthBox2,8,4)
         self.varyWidth2Check = QtGui.QCheckBox()
         self.varyWidth2Check.setChecked(True)
         self.layout.addWidget(self.varyWidth2Check,8,3)
 
-        self.layout.addWidget(QtGui.QLabel('Scale'),9,0)
-        self.ScaleBox = QtGui.QLineEdit(placeholderText='')
+        self.layout.addWidget(QtWidgets.QLabel('Scale'),9,0)
+        self.ScaleBox = QtWidgets.QLineEdit(placeholderText='')
         self.layout.addWidget(self.ScaleBox,9,2)
         self.varyScaleCheck = QtGui.QCheckBox()
         self.varyScaleCheck.setChecked(True)
         self.layout.addWidget(self.varyScaleCheck,9,1)
 
-        self.layout.addWidget(QtGui.QLabel('Intensities'),10,0)
+        self.layout.addWidget(QtWidgets.QLabel('Intensities'),10,0)
         self.varyIntCheck = QtGui.QCheckBox()
         self.layout.addWidget(self.varyIntCheck,10,1)
-        self.layout.addWidget(QtGui.QLabel('Check to fix'),10,2)
+        self.layout.addWidget(QtWidgets.QLabel('Check to fix'),10,2)
 
-        self.layout.addWidget(QtGui.QLabel('Background'),11,0)
-        self.BkgBox = QtGui.QLineEdit(placeholderText='')
+        self.layout.addWidget(QtWidgets.QLabel('Background'),11,0)
+        self.BkgBox = QtWidgets.QLineEdit(placeholderText='')
         self.layout.addWidget(self.BkgBox,11,2)
         self.varyBkgCheck = QtGui.QCheckBox()
         self.varyBkgCheck.setChecked(True)
         self.layout.addWidget(self.varyBkgCheck,11,1)
 
 
-        self.plotButton = QtGui.QPushButton('Plot')
+        self.plotButton = QtWidgets.QPushButton('Plot')
         self.layout.addWidget(self.plotButton,12,2)
         self.plotButton.clicked.connect(self.make_plot)
 
-        self.fitButton = QtGui.QPushButton('Fit')
+        self.fitButton = QtWidgets.QPushButton('Fit')
         self.layout.addWidget(self.fitButton,12,4)
         self.fitButton.clicked.connect(self.fit_model)
 
-        filler = QtGui.QLabel('Hyperfine fit results')
+        filler = QtWidgets.QLabel('Hyperfine fit results')
         filler.setMinimumHeight(25)
         self.layout.addWidget(filler,13,0,1,4)
 
 
-        self.layout.addWidget(QtGui.QLabel('Centroid'),15,0)
-        self.CentroidBox_fit = QtGui.QLineEdit(placeholderText='To be fitted...')
-        self.layout.addWidget(self.CentroidBox_fit,15,2,1,4)
+        self.layout.addWidget(QtWidgets.QLabel('Centroid'),15,0)
+        self.CentroidBox_fit = QtWidgets.QLineEdit(placeholderText='To be fitted...')
+        self.layout.addWidget(self.CentroidBox_fit,15,2,1,3)
 
-        self.layout.addWidget(QtGui.QLabel('A'),16,0)
-        self.ABox1_fit = QtGui.QLineEdit(placeholderText='To be fitted...')
+        self.layout.addWidget(QtWidgets.QLabel('A'),16,0)
+        self.ABox1_fit = QtWidgets.QLineEdit(placeholderText='To be fitted...')
         self.layout.addWidget(self.ABox1_fit,16,2)
-        self.ABox2_fit = QtGui.QLineEdit(placeholderText='To be fitted...')
+        self.ABox2_fit = QtWidgets.QLineEdit(placeholderText='To be fitted...')
         self.layout.addWidget(self.ABox2_fit,16,4)
 
-        self.layout.addWidget(QtGui.QLabel('B'),17,0)
-        self.BBox1_fit = QtGui.QLineEdit(placeholderText='To be fitted...')
+        self.layout.addWidget(QtWidgets.QLabel('B'),17,0)
+        self.BBox1_fit = QtWidgets.QLineEdit(placeholderText='To be fitted...')
         self.layout.addWidget(self.BBox1_fit,17,2)
-        self.BBox2_fit = QtGui.QLineEdit(placeholderText='To be fitted...')
+        self.BBox2_fit = QtWidgets.QLineEdit(placeholderText='To be fitted...')
         self.layout.addWidget(self.BBox2_fit,17,4)
 
-        self.layout.addWidget(QtGui.QLabel('Width'),18,0)
-        self.WidthBox1_fit = QtGui.QLineEdit(placeholderText='To be fitted...')
+        self.layout.addWidget(QtWidgets.QLabel('Width'),18,0)
+        self.WidthBox1_fit = QtWidgets.QLineEdit(placeholderText='To be fitted...')
         self.layout.addWidget(self.WidthBox1_fit,18,2)
-        self.WidthBox2_fit = QtGui.QLineEdit(placeholderText='To be fitted...')
+        self.WidthBox2_fit = QtWidgets.QLineEdit(placeholderText='To be fitted...')
         self.layout.addWidget(self.WidthBox2_fit,18,4)
 
-        self.layout.addWidget(QtGui.QLabel('Scale'),19,0)
-        self.ScaleBox_fit = QtGui.QLineEdit(placeholderText='To be fitted...')
+        self.layout.addWidget(QtWidgets.QLabel('Scale'),19,0)
+        self.ScaleBox_fit = QtWidgets.QLineEdit(placeholderText='To be fitted...')
         self.layout.addWidget(self.ScaleBox_fit,19,2)
 
-        self.layout.addWidget(QtGui.QLabel('Intensities'),20,0)
+        self.layout.addWidget(QtWidgets.QLabel('Intensities'),20,0)
 
-        self.layout.addWidget(QtGui.QLabel('Background'),21,0)
-        self.BkgBox_fit = QtGui.QLineEdit(placeholderText='To be fitted...')
+        self.layout.addWidget(QtWidgets.QLabel('Background'),21,0)
+        self.BkgBox_fit = QtWidgets.QLineEdit(placeholderText='To be fitted...')
         self.layout.addWidget(self.BkgBox_fit,21,2)
 
         self.layout.setColumnStretch(5, 1)
@@ -734,7 +787,6 @@ class Fitter(QtGui.QWidget):
 
     def make_plot(self):
         model = self.make_model()
-
         self.plotSignal.emit(model)
 
     def fit_model(self):

@@ -1,11 +1,11 @@
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 from picbutton import PicButton, PicSpinBox
 import numpy as np
 from spin import Spin
 import pyqtgraph as pg
 from collections import OrderedDict
  
-class ScannerWidget(QtGui.QWidget):
+class ScannerWidget(QtWidgets.QWidget):
     scanInfoSig = QtCore.pyqtSignal(dict)
     setPointSig = QtCore.pyqtSignal(dict)
     stopScanSig = QtCore.pyqtSignal(bool)
@@ -16,9 +16,9 @@ class ScannerWidget(QtGui.QWidget):
         self.widgets = []
         self.state = 0
  
-        self.layout = QtGui.QGridLayout(self)
+        self.layout = QtWidgets.QGridLayout(self)
  
-        self.stacked = QtGui.QStackedWidget()
+        self.stacked = QtWidgets.QStackedWidget()
         self.layout.addWidget(self.stacked,0,0)
  
         self.initializer = Initializer()
@@ -49,13 +49,13 @@ class ScannerWidget(QtGui.QWidget):
         self.from_sim = False
         self.from_old = False
  
-        self.back = QtGui.QPushButton('Back')
+        self.back = QtWidgets.QPushButton('Back')
         self.back.setEnabled(True)
         self.back.setMaximumWidth(100)
         self.back.clicked.connect(self.go_back)
         self.layout.addWidget(self.back,1,1)
  
-        self.next = QtGui.QPushButton('Next')
+        self.next = QtWidgets.QPushButton('Next')
         self.next.setMaximumWidth(100)
         self.next.clicked.connect(self.go_to_next)
         self.layout.addWidget(self.next,1,2)
@@ -156,19 +156,19 @@ class ScannerWidget(QtGui.QWidget):
     def emit_range_request(self,request):
         self.range_request_sig.emit(request)
  
-class Initializer(QtGui.QWidget):
+class Initializer(QtWidgets.QWidget):
     def __init__(self):
         super(Initializer,self).__init__()
-        self.layout = QtGui.QGridLayout(self)
+        self.layout = QtWidgets.QGridLayout(self)
  
-        label = QtGui.QLabel('Choose scan parameter')
+        label = QtWidgets.QLabel('Choose scan parameter')
         font = QtGui.QFont("Helvetica", 16, QtGui.QFont.Bold) 
         label.setFont(font)
         self.layout.addWidget(label,0,0,1,5)
  
         self.tuning_parameter_combo = QtGui.QComboBox()
         self.tuning_parameters = {}
-        self.layout.addWidget(QtGui.QLabel('Tuning parameter'), 1, 0, 1, 1)
+        self.layout.addWidget(QtWidgets.QLabel('Tuning parameter'), 1, 0, 1, 1)
         self.layout.addWidget(self.tuning_parameter_combo, 1, 1, 1, 1)
  
         spacer = QtGui.QSpacerItem(20,40,QtGui.QSizePolicy.Minimum,QtGui.QSizePolicy.Expanding)
@@ -183,47 +183,47 @@ class Initializer(QtGui.QWidget):
                 items.append(str(key) + ': ' + str(item) )
         self.tuning_parameter_combo.addItems(items)
  
-class Configurator(QtGui.QWidget):
+class Configurator(QtWidgets.QWidget):
     def __init__(self):
         super(Configurator,self).__init__()
-        self.layout = QtGui.QGridLayout(self)
+        self.layout = QtWidgets.QGridLayout(self)
  
-        label = QtGui.QLabel('Choose scan option')
+        label = QtWidgets.QLabel('Choose scan option')
         font = QtGui.QFont("Helvetica", 16, QtGui.QFont.Bold) 
         label.setFont(font)
         self.layout.addWidget(label,0,0,1,5)
  
         self.options = QtGui.QComboBox()
         self.options.addItems(['From previous settings','From simulated settings','From old settings'])
-        self.layout.addWidget(QtGui.QLabel('Scan options:'), 1, 0, 1, 1)
+        self.layout.addWidget(QtWidgets.QLabel('Scan options:'), 1, 0, 1, 1)
         self.layout.addWidget(self.options, 1, 1, 1, 1)
  
         spacer = QtGui.QSpacerItem(20,40,QtGui.QSizePolicy.Minimum,QtGui.QSizePolicy.Expanding)
         self.layout.addItem(spacer,2,0,1,5)
  
-class FromSimWidget(QtGui.QWidget):
+class FromSimWidget(QtWidgets.QWidget):
     def __init__(self):
         super(FromSimWidget,self).__init__()
-        self.layout = QtGui.QGridLayout(self)
+        self.layout = QtWidgets.QGridLayout(self)
  
-        label = QtGui.QLabel('Grab scan settings from simulation')
+        label = QtWidgets.QLabel('Grab scan settings from simulation')
         font = QtGui.QFont("Helvetica", 16, QtGui.QFont.Bold) 
         label.setFont(font)
         self.layout.addWidget(label,0,0,1,5)
  
-        self.layout.addWidget(QtGui.QLabel('Range around peak:'),1,0)
+        self.layout.addWidget(QtWidgets.QLabel('Range around peak:'),1,0)
         self.dist = pg.SpinBox(value=50*10**6,bounds = (0,10**10),
                                suffix = 'Hz', siPrefix = True,
                                step = 10**6, minStep = 10**7)
         self.layout.addWidget(self.dist,1,1)
  
-        self.layout.addWidget(QtGui.QLabel('Scan speed on peak:'),2,0)
+        self.layout.addWidget(QtWidgets.QLabel('Scan speed on peak:'),2,0)
         self.s1 = pg.SpinBox(value=10**6,bounds = (0,10**10),
                                suffix = 'Hz/step', siPrefix = True,
                                step = 10**5, minStep = 10**5)
         self.layout.addWidget(self.s1,2,1)
  
-        self.layout.addWidget(QtGui.QLabel('Scan speed between peaks:'),3,0)
+        self.layout.addWidget(QtWidgets.QLabel('Scan speed between peaks:'),3,0)
         self.s2 = pg.SpinBox(value=50*10**6,bounds = (0,10**10),
                                suffix = 'Hz/step', siPrefix = True,
                                step = 10**5, minStep = 10**5)
@@ -232,33 +232,33 @@ class FromSimWidget(QtGui.QWidget):
         spacer = QtGui.QSpacerItem(20,40,QtGui.QSizePolicy.Minimum,QtGui.QSizePolicy.Expanding)
         self.layout.addItem(spacer,4,0,1,5)
  
-class FromOldWidget(QtGui.QWidget):
+class FromOldWidget(QtWidgets.QWidget):
     update_mass_selector_sig = QtCore.pyqtSignal()
     range_request_sig = QtCore.pyqtSignal(list)
     def __init__(self):
         super(FromOldWidget,self).__init__()
  
-        self.layout = QtGui.QGridLayout(self)
+        self.layout = QtWidgets.QGridLayout(self)
  
-        label = QtGui.QLabel('Recall previous scan settings')
+        label = QtWidgets.QLabel('Recall previous scan settings')
         font = QtGui.QFont("Helvetica", 16, QtGui.QFont.Bold) 
         label.setFont(font)
         self.layout.addWidget(label,0,0,1,5)
  
         self.update_mass_selector_sig.connect(self.update_mass_selector)
-        self.layout.addWidget(QtGui.QLabel('Mass:'),1,0)
+        self.layout.addWidget(QtWidgets.QLabel('Mass:'),1,0)
         self.mass_selector = QtGui.QComboBox()
         self.mass_selector.currentIndexChanged.connect(self.update_scan_selector)
         self.layout.addWidget(self.mass_selector,1,1)
          
-        self.layout.addWidget(QtGui.QLabel('Scans:'),2,0)
-        self.scan_selector = QtGui.QWidget()
-        self.scan_layout = QtGui.QGridLayout(self.scan_selector)
+        self.layout.addWidget(QtWidgets.QLabel('Scans:'),2,0)
+        self.scan_selector = QtWidgets.QWidget()
+        self.scan_layout = QtWidgets.QGridLayout(self.scan_selector)
         self.layout.addWidget(self.scan_selector,2,1)
         self.scan_mass = {}
         self.masses_list = []
  
-        self.ranges_layout = QtGui.QGridLayout()
+        self.ranges_layout = QtWidgets.QGridLayout()
         self.layout.addLayout(self.ranges_layout, 3,0,1,2)
  
         spacer = QtGui.QSpacerItem(20,40,QtGui.QSizePolicy.Minimum,QtGui.QSizePolicy.Expanding)
@@ -314,7 +314,7 @@ class FromOldWidget(QtGui.QWidget):
         row = 0
         for s,rs in self.scan_ranges.items():
             for i,r in enumerate(rs):
-                self.ranges_layout.addWidget(QtGui.QLabel('Scan {} range {}:'.format(s,i)), row, 0, 1, 1)
+                self.ranges_layout.addWidget(QtWidgets.QLabel('Scan {} range {}:'.format(s,i)), row, 0, 1, 1)
  
                 # value1 = r[1] - r[0]
                 # value1 = value1 / r[2]
@@ -323,7 +323,7 @@ class FromOldWidget(QtGui.QWidget):
                 # value2 = r[2]*r[3]
  
                 text = 'From {} to {} in {} steps of {} units of {}.'.format(r[0],r[1],r[2],r[3],r[4])
-                label = QtGui.QLabel(text)
+                label = QtWidgets.QLabel(text)
                 self.ranges_layout.addWidget(label, row, 1, 1, 1)
                 row += 1
  
@@ -334,16 +334,16 @@ class FromOldWidget(QtGui.QWidget):
         self.ranges = ranges
  
  
-class Scanner(QtGui.QWidget):
+class Scanner(QtWidgets.QWidget):
     scanInfoSig = QtCore.pyqtSignal(dict)
     setPointSig = QtCore.pyqtSignal(dict)
     stopScanSig = QtCore.pyqtSignal(bool)
     def __init__(self):
         super(Scanner,self).__init__()
-        self.layout = QtGui.QGridLayout(self)
-        self.points_layout = QtGui.QGridLayout()
+        self.layout = QtWidgets.QGridLayout(self)
+        self.points_layout = QtWidgets.QGridLayout()
  
-        label = QtGui.QLabel('Change laser setpoint')
+        label = QtWidgets.QLabel('Change laser setpoint')
         font = QtGui.QFont("Helvetica", 16, QtGui.QFont.Bold) 
         label.setFont(font)
         self.layout.addWidget(label,0,0,1,5)
@@ -351,11 +351,11 @@ class Scanner(QtGui.QWidget):
         self.setPointSpin = Spin(11836.0000,0,10**5)
         self.layout.addWidget(self.setPointSpin, 1, 0)
  
-        self.setpointButton = QtGui.QPushButton('Go to setpoint')
+        self.setpointButton = QtWidgets.QPushButton('Go to setpoint')
         self.layout.addWidget(self.setpointButton, 1, 1)
         self.setpointButton.clicked.connect(self.makeSetpoint)
  
-        label = QtGui.QLabel('Define scan regions')
+        label = QtWidgets.QLabel('Define scan regions')
         font = QtGui.QFont("Helvetica", 16, QtGui.QFont.Bold) 
         label.setFont(font)
         self.layout.addWidget(label,2,0,1,5)
@@ -370,21 +370,21 @@ class Scanner(QtGui.QWidget):
         self.removeButtons = []
         self.freqLabels = []
  
-        self.add_button = QtGui.QPushButton('Add')
+        self.add_button = QtWidgets.QPushButton('Add')
         self.layout.addWidget(self.add_button, 5, 1, 1, 1)
         self.add_button.clicked.connect(self.add)
  
-        self.reverse_button = QtGui.QPushButton('Reverse')
+        self.reverse_button = QtWidgets.QPushButton('Reverse')
         self.layout.addWidget(self.reverse_button, 5, 0, 1, 1)
         self.reverse_button.clicked.connect(self.reverse_scan)
  
-        self.layout.addWidget(QtGui.QLabel('Repeats: '), 6, 0, 1, 1)
-        self.repeatBox = QtGui.QLineEdit("1")
+        self.layout.addWidget(QtWidgets.QLabel('Repeats: '), 6, 0, 1, 1)
+        self.repeatBox = QtWidgets.QLineEdit("1")
         self.repeatBox.textChanged.connect(self.updateLabels)
         self.layout.addWidget(self.repeatBox, 6, 1, 1, 1)
  
-        self.layout.addWidget(QtGui.QLabel('units/step: '), 7, 0, 1, 1)
-        self.units_per_step_box = QtGui.QLineEdit("1")
+        self.layout.addWidget(QtWidgets.QLabel('units/step: '), 7, 0, 1, 1)
+        self.units_per_step_box = QtWidgets.QLineEdit("1")
         self.units_per_step_box.textChanged.connect(self.updateLabels)
         self.units_per_step_box.setToolTip('Use this to specify the waiting time per step.')
         self.layout.addWidget(self.units_per_step_box, 7, 1, 1, 1)
@@ -393,22 +393,22 @@ class Scanner(QtGui.QWidget):
         self.options_box.addItems(['seconds','proton pulses','proton supercycles'])
         self.layout.addWidget(self.options_box, 7, 2, 1, 1)
  
-        self.controlButton = QtGui.QPushButton('Start!')
+        self.controlButton = QtWidgets.QPushButton('Start!')
         self.state = 'START'
         self.controlButton.clicked.connect(self.control)
         self.layout.addWidget(self.controlButton, 10, 0, 2, 1)
  
-        self.layout.addWidget(QtGui.QLabel('Total Frequency: '), 8, 0, 1, 1)
-        self.total_freq = QtGui.QLabel()
+        self.layout.addWidget(QtWidgets.QLabel('Total Frequency: '), 8, 0, 1, 1)
+        self.total_freq = QtWidgets.QLabel()
         self.total_freq.setMinimumWidth(120)
         self.layout.addWidget(self.total_freq, 8, 1, 1, 1)
  
-        self.layout.addWidget(QtGui.QLabel('Total time: '), 9, 0, 1, 1)
-        self.total_time = QtGui.QLabel()
+        self.layout.addWidget(QtWidgets.QLabel('Total time: '), 9, 0, 1, 1)
+        self.total_time = QtWidgets.QLabel()
         self.total_time.setMinimumWidth(120)
         self.layout.addWidget(self.total_time, 9, 1, 1, 1)
  
-        self.fromPeakInfoLabel = QtGui.QLabel()
+        self.fromPeakInfoLabel = QtWidgets.QLabel()
         self.layout.addWidget(self.fromPeakInfoLabel,10,1,1,1)
  
         spacer = QtGui.QSpacerItem(20,40,QtGui.QSizePolicy.Minimum,QtGui.QSizePolicy.Expanding)
@@ -449,7 +449,7 @@ class Scanner(QtGui.QWidget):
         for start,step,stop in zip(self.startSpins,self.steps,self.stopSpins):
             start = float(start.value)
             stop = float(stop.value)
-            steps = int(step.text())
+            steps = int(step.value())
             rng = np.linspace(start,stop,steps)
  
             total_range = np.concatenate((total_range,rng))
@@ -497,12 +497,12 @@ class Scanner(QtGui.QWidget):
         self.stopSpins.append(stopSpin)
         self.points_layout.addWidget(stopSpin, self.adds, 2, 1, 1)
  
-        self.freqLabels.append(QtGui.QLabel())
+        self.freqLabels.append(QtWidgets.QLabel())
         self.points_layout.addWidget(self.freqLabels[-1], self.adds, 3, 1, 1)
  
         self.updateLabels()
  
-        removeButton = QtGui.QPushButton('Remove')
+        removeButton = QtWidgets.QPushButton('Remove')
         removeButton.clicked.connect(self.remove)
         self.removeButtons.append(removeButton)
         self.points_layout.addWidget(removeButton, self.adds, 4, 1, 1)
@@ -540,7 +540,7 @@ class Scanner(QtGui.QWidget):
     def updateLabels(self):
         for i, label in enumerate(self.freqLabels):
             value = self.stopSpins[i].value - self.startSpins[i].value
-            value = value / int(self.steps[i].text())
+            value = value / int(self.steps[i].value())
             value = value * 30000
             label.setText('{:.1f} MHz/step'.format(value))        
  
@@ -553,7 +553,7 @@ class Scanner(QtGui.QWidget):
                 total_freq = total_freq / 1000
                 self.total_freq.setText('{:.1f} GHz'.format(total_freq))
  
-            total_time = sum([int(s.text()) for s in self.steps]) * float(self.units_per_step_box.text())
+            total_time = sum([int(s.value()) for s in self.steps]) * float(self.units_per_step_box.text())
             total_time = total_time * int(self.repeatBox.text())
             if total_time > 3600:
                 self.total_time.setText('>{:.0f} h'.format(total_time/3600))

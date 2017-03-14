@@ -1,11 +1,11 @@
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 import os
 import configparser
 
 CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
 
 
-class Contr_DS_ConnectionDialog(QtGui.QDialog):
+class Contr_DS_ConnectionDialog(QtWidgets.QDialog):
     ### get configuration details
     config_parser = configparser.ConfigParser()
     config_parser.read(CONFIG_PATH)
@@ -17,28 +17,28 @@ class Contr_DS_ConnectionDialog(QtGui.QDialog):
         serverChannelBoxtext = str(self.config_parser['IPs']['data_server'])
         serverPortBoxtext = str(self.config_parser['ports']['data_server'])
 
-        self.layout = QtGui.QGridLayout(self)
-        buttons = QtGui.QDialogButtonBox(
-            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel,
+        self.layout = QtWidgets.QGridLayout(self)
+        buttons = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
             QtCore.Qt.Horizontal)
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
         self.layout.addWidget(buttons, 500, 1, 1, 2)
 
-        self.layout.addWidget(QtGui.QLabel(message), 0, 0, 1, 1)
+        self.layout.addWidget(QtWidgets.QLabel(message), 0, 0, 1, 1)
 
-        self.layout.addWidget(QtGui.QLabel('Controller IP'), 1, 1, 1, 1)
-        self.ContChannelBox = QtGui.QLineEdit(self, text=ContChannelBoxtext)
+        self.layout.addWidget(QtWidgets.QLabel('Controller IP'), 1, 1, 1, 1)
+        self.ContChannelBox = QtWidgets.QLineEdit(self, text=ContChannelBoxtext)
         self.layout.addWidget(self.ContChannelBox, 2, 1, 1, 1)
-        self.layout.addWidget(QtGui.QLabel('Controller port'), 1, 2, 1, 1)
-        self.ContPortBox = QtGui.QLineEdit(self, text=ContPortBoxtext)
+        self.layout.addWidget(QtWidgets.QLabel('Controller port'), 1, 2, 1, 1)
+        self.ContPortBox = QtWidgets.QLineEdit(self, text=ContPortBoxtext)
         self.layout.addWidget(self.ContPortBox, 2, 2, 1, 1)
 
-        self.layout.addWidget(QtGui.QLabel('Data server IP'), 3, 1, 1, 1)
-        self.serverChannelBox = QtGui.QLineEdit(self, text=serverChannelBoxtext)
+        self.layout.addWidget(QtWidgets.QLabel('Data server IP'), 3, 1, 1, 1)
+        self.serverChannelBox = QtWidgets.QLineEdit(self, text=serverChannelBoxtext)
         self.layout.addWidget(self.serverChannelBox, 4, 1, 1, 1)
-        self.layout.addWidget(QtGui.QLabel('Data server port'), 3, 2, 1, 1)
-        self.ServerPortBox = QtGui.QLineEdit(self, text=serverPortBoxtext)
+        self.layout.addWidget(QtWidgets.QLabel('Data server port'), 3, 2, 1, 1)
+        self.ServerPortBox = QtWidgets.QLineEdit(self, text=serverPortBoxtext)
         self.layout.addWidget(self.ServerPortBox, 4, 2, 1, 1)
 
     def getData(self):
@@ -50,27 +50,27 @@ class Contr_DS_ConnectionDialog(QtGui.QDialog):
         dialog = Contr_DS_ConnectionDialog(parent, message)
         result = dialog.exec_()
         data = dialog.getData()
-        return (data, result == QtGui.QDialog.Accepted)
+        return (data, result == QtWidgets.QDialog.Accepted)
 
 
-class ConnectionDialog(QtGui.QDialog):
+class ConnectionDialog(QtWidgets.QDialog):
 
     def __init__(self, parent=None):
         super(ConnectionDialog, self).__init__(parent)
-        self.layout = QtGui.QGridLayout(self)
-        buttons = QtGui.QDialogButtonBox(
-            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel,
+        self.layout = QtWidgets.QGridLayout(self)
+        buttons = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
             QtCore.Qt.Horizontal)
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
         self.layout.addWidget(buttons, 500, 1, 1, 2)
 
-        self.layout.addWidget(QtGui.QLabel('Channel'), 1, 0, 1, 1)
-        self.channelBox = QtGui.QLineEdit(self, text='127.0.0.1')
+        self.layout.addWidget(QtWidgets.QLabel('Channel'), 1, 0, 1, 1)
+        self.channelBox = QtWidgets.QLineEdit(self, text='127.0.0.1')
         self.layout.addWidget(self.channelBox, 2, 0, 1, 1)
 
-        self.layout.addWidget(QtGui.QLabel('Port'), 1, 1, 1, 1)
-        self.portBox = QtGui.QLineEdit(self, text='5005')
+        self.layout.addWidget(QtWidgets.QLabel('Port'), 1, 1, 1, 1)
+        self.portBox = QtWidgets.QLineEdit(self, text='5005')
         self.layout.addWidget(self.portBox, 2, 1, 1, 1)
 
     def getData(self):
@@ -82,23 +82,23 @@ class ConnectionDialog(QtGui.QDialog):
         dialog = ConnectionDialog(parent)
         result = dialog.exec_()
         data = dialog.getData()
-        return (data, result == QtGui.QDialog.Accepted)
+        return (data, result == QtWidgets.QDialog.Accepted)
 
 
-class FieldAdditionDialog(QtGui.QDialog):
+class FieldAdditionDialog(QtWidgets.QDialog):
 
     def __init__(self, parent=None):
         super(FieldAdditionDialog, self).__init__(parent)
-        self.layout = QtGui.QGridLayout(self)
-        buttons = QtGui.QDialogButtonBox(
-            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel,
+        self.layout = QtWidgets.QGridLayout(self)
+        buttons = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
             QtCore.Qt.Horizontal)
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
         self.layout.addWidget(buttons, 500, 1, 1, 2)
 
-        self.layout.addWidget(QtGui.QLabel('Field name'), 1, 0, 1, 1)
-        self.fieldBox = QtGui.QLineEdit(self, text='')
+        self.layout.addWidget(QtWidgets.QLabel('Field name'), 1, 0, 1, 1)
+        self.fieldBox = QtWidgets.QLineEdit(self, text='')
         self.layout.addWidget(self.fieldBox, 2, 0, 1, 1)
 
     def getData(self):
@@ -109,4 +109,4 @@ class FieldAdditionDialog(QtGui.QDialog):
         dialog = FieldAdditionDialog(parent)
         result = dialog.exec_()
         data = dialog.getData()
-        return (data, result == QtGui.QDialog.Accepted)
+        return (data, result == QtWidgets.QDialog.Accepted)

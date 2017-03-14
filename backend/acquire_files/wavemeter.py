@@ -2,16 +2,15 @@ import ctypes
 import traceback
 import time
 
-from .hardware import format,Hardware
+from .hardware import format,BaseHardware
 
 this_format = format + ('wavenumber_1','wavenumber_2')
-
 write_params = []
 
-class Wavemeter(Hardware):
+class Hardware(BaseHardware):
     def __init__(self):
 
-        super(Wavemeter,self).__init__(name = 'Wavemeter',
+        super(Hardware,self).__init__(name = 'wavemeter',
                              format=this_format,
                              write_params = write_params,
                              needs_stabilization = False,
@@ -56,9 +55,11 @@ class Wavemeter(Hardware):
         wavenumber_1 = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
         wavenumber_2 = self.wlmdata.GetFrequencyNum(2,0) / 0.0299792458
 
+        idx = 0
         while wavenumber_1 == self.ns.status_data['wavenumber_1'] \
-              and wavenumber_2 == self.ns.status_data['wavenumber_2']:
-
+              and wavenumber_2 == self.ns.status_data['wavenumber_2'] \
+              and idx<10:
+            idx +=1
             wavenumber_1 = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
             wavenumber_2 = self.wlmdata.GetFrequencyNum(2,0) / 0.0299792458
             

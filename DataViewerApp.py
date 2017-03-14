@@ -1,4 +1,4 @@
-from PyQt4 import QtCore,QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 import pyqtgraph as pg
 import threading as th
 import asyncore
@@ -18,7 +18,7 @@ import configparser
 CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
 
 
-class DataViewerApp(QtGui.QMainWindow):
+class DataViewerApp(QtWidgets.QMainWindow):
     config_parser = configparser.ConfigParser()
     config_parser.read(CONFIG_PATH)
 
@@ -53,23 +53,23 @@ class DataViewerApp(QtGui.QMainWindow):
         self.add_fileserver()
 
     def init_UI(self):
-        widget = QtGui.QWidget()
-        layout = QtGui.QGridLayout(widget)
+        widget = QtWidgets.QWidget()
+        layout = QtWidgets.QGridLayout(widget)
         self.setCentralWidget(widget)
 
-        self.stream_mode_button = QtGui.QPushButton('Stream')
+        self.stream_mode_button = QtWidgets.QPushButton('Stream')
         self.stream_mode_button.setCheckable(True)
         self.stream_mode_button.setChecked(True)
         layout.addWidget(self.stream_mode_button,0,0,1,1)
         self.stream_mode_button.clicked.connect(self.change_mode_stream)
 
-        self.scan_mode_button = QtGui.QPushButton('Scan')
+        self.scan_mode_button = QtWidgets.QPushButton('Scan')
         self.scan_mode_button.setCheckable(True)
         self.scan_mode_button.setChecked(False)
         layout.addWidget(self.scan_mode_button,0,1,1,1)
         self.scan_mode_button.clicked.connect(self.change_mode_scan)
 
-        self.fs_mode_button = QtGui.QPushButton('Completed scans')
+        self.fs_mode_button = QtWidgets.QPushButton('Completed scans')
         self.fs_mode_button.setCheckable(True)
         self.fs_mode_button.setChecked(False)
         layout.addWidget(self.fs_mode_button,0,2,1,1)
@@ -94,6 +94,9 @@ class DataViewerApp(QtGui.QMainWindow):
 
         self.data_server.add_request(('change_mode',{'mode':self.mode}))
 
+        self.graph.comboX.setEnabled(True)
+        self.graph.comboY.setEnabled(True)
+
     def change_mode_scan(self,clicked):
         if clicked:
             self.stream_mode_button.setChecked(False)
@@ -107,6 +110,9 @@ class DataViewerApp(QtGui.QMainWindow):
 
         self.data_server.add_request(('change_mode',{'mode':self.mode}))
 
+        self.graph.comboX.setEnabled(True)
+        self.graph.comboY.setEnabled(True)
+
     def change_mode_fs(self,clicked):
         self.chooser_required = True
         if clicked:
@@ -116,6 +122,9 @@ class DataViewerApp(QtGui.QMainWindow):
             self.fs_mode_button.setChecked(True)
         self.mode = 'fs'
         self.graph.mode = 'fs'
+
+        self.graph.comboX.setDisabled(True)
+        self.graph.comboY.setDisabled(True)
 
     def stopIOLoop(self):
         self.looping = False
@@ -218,6 +227,7 @@ class DataViewerApp(QtGui.QMainWindow):
                 self.scan_number = scan_number
             else:
                 self.graph.data = self.graph.data.append(data)
+        self.graph.plot_needed = True
 
     def data_format_reply(self,track,params):
         origin, track_id = track
@@ -257,6 +267,8 @@ class DataViewerApp(QtGui.QMainWindow):
         del self.chooser
 
     def fetch_formats(self):
+        self.graph.mass = self.chooser.mass
+
         self.file_server.add_request(('scan_format', {'scans':self.chooser.scan_numbers}))
 
     def scan_format_reply(self,track,params):
@@ -270,6 +282,8 @@ class DataViewerApp(QtGui.QMainWindow):
         self.graph.reset_data()
 
         self.scan_numbers = self.chooser.scan_numbers
+        self.graph.scan_number = self.scan_numbers
+
         self.xkey = self.chooser.xkey
         self.ykey = self.chooser.ykey
         self.file_server.add_request(('request_data',{'scan_numbers':self.scan_numbers,
@@ -280,6 +294,7 @@ class DataViewerApp(QtGui.QMainWindow):
         done = params['done']
         data = pd.DataFrame({'time':np.array(data[0]),'x':data[1],'y':data[2]})
         self.graph.data = self.graph.data.append(data)
+        self.graph.plot_needed = True
         try:
             self.chooser
             self.closeChooser.emit()
@@ -294,26 +309,26 @@ class DataViewerApp(QtGui.QMainWindow):
         self.stopIOLoop()
         event.accept()
 
-class ScanChooser(QtGui.QDialog):
+class ScanChooser(QtWidgets.QDialog):
     scans_requested = QtCore.pyqtSignal()
     formats_requested = QtCore.pyqtSignal()
     def __init__(self,parent,masses,scans):
-        super(QtGui.QDialog, self).__init__(parent)
-        self.layout = QtGui.QGridLayout(self)
+        super(QtWidgets.QDialog, self).__init__(parent)
+        self.layout = QtWidgets.QGridLayout(self)
 
-        self.layout.addWidget(QtGui.QLabel('Select mass:'),1,0)
+        self.layout.addWidget(QtWidgets.QLabel('Select mass:'),1,0)
         self.mass_selector = QtGui.QComboBox()
         self.mass_selector.currentIndexChanged.connect(self.mass_changed)
         self.layout.addWidget(self.mass_selector,1,1)
 
-        self.layout.addWidget(QtGui.QLabel('Scans:'),2,0)
+        self.layout.addWidget(QtWidgets.QLabel('Scans:'),2,0)
 
-        self.fetch_formats_button = QtGui.QPushButton('Get x,y info')
+        self.fetch_formats_button = QtWidgets.QPushButton('Get x,y info')
         self.layout.addWidget(self.fetch_formats_button,19,3,1,1)
         self.fetch_formats_button.clicked.connect(self.fetch_formats)
 
-        self.scan_selector = QtGui.QWidget()
-        self.scan_layout = QtGui.QGridLayout(self.scan_selector)
+        self.scan_selector = QtWidgets.QWidget()
+        self.scan_layout = QtWidgets.QGridLayout(self.scan_selector)
         self.layout.addWidget(self.scan_selector,3,0,16,3)
 
         self.setGeometry(1400,100,400,800)
@@ -328,21 +343,21 @@ class ScanChooser(QtGui.QDialog):
         self.xkey = []
         self.ykey = []
 
-        self.layout.addWidget(QtGui.QLabel('x: '),20,0)
+        self.layout.addWidget(QtWidgets.QLabel('x: '),20,0)
         self.comboX = QtGui.QComboBox(parent=None)
         self.comboX.setMinimumWidth(250)
         self.comboX.setToolTip('Choose the variable you want to put\
  on the X-axis.')
         self.layout.addWidget(self.comboX, 20, 1)
         
-        self.layout.addWidget(QtGui.QLabel('y: '),21,0)
+        self.layout.addWidget(QtWidgets.QLabel('y: '),21,0)
         self.comboY = QtGui.QComboBox(parent=None)
         self.comboY.setMinimumWidth(250)
         self.comboY.setToolTip('Choose the variable you want to put\
  on the Y-axis.')
         self.layout.addWidget(self.comboY, 21, 1)
 
-        self.fetch_scans_button = QtGui.QPushButton('Fetch scans')
+        self.fetch_scans_button = QtWidgets.QPushButton('Fetch scans')
         self.fetch_scans_button.setDisabled(True)
         self.layout.addWidget(self.fetch_scans_button,22,3,1,1)
         self.fetch_scans_button.clicked.connect(self.fetch_scans)
@@ -364,6 +379,7 @@ class ScanChooser(QtGui.QDialog):
                 self.scan_checks[scan]=QtGui.QCheckBox(str(scan))
                 self.scan_layout.addWidget(self.scan_checks[scan],i//3,i%3)
                 i=i+1
+        self.mass = mass
 
     def fetch_formats(self):
         self.scan_numbers = [int(name) for name,check in self.scan_checks.items() \
@@ -381,15 +397,17 @@ class ScanChooser(QtGui.QDialog):
         opts = ['device: parameter']
         opts.extend(options)
 
+        opts = sorted(opts)
+
         self.comboX.addItems(opts)
         try:
-            self.comboX.setCurrentIndex(options.index('wavemeter: wavenumber_1'))
+            self.comboX.setCurrentIndex(opts.index('wavemeter: wavenumber_1'))
         except:
             self.comboX.setCurrentIndex(0)
 
         self.comboY.addItems(opts)
         try:
-            self.comboY.setCurrentIndex(options.index('CRIS: Counts'))
+            self.comboY.setCurrentIndex(opts.index('cris: Counts'))
         except:
             self.comboY.setCurrentIndex(0)
 
@@ -406,14 +424,14 @@ class ScanChooser(QtGui.QDialog):
         else:
             self.scans_requested.emit()
             self.fetch_scans_button.setDisabled(True)
-            self.fetch_scans_button.setTExt('Fetching...')
+        self.fetch_scans_button.setText('Fetching...')
 
 def main():
     pg.setConfigOption('background', 'w')
     pg.setConfigOption('foreground', 'k')
     # add freeze support
     freeze_support()
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     m = DataViewerApp()
     sys.exit(app.exec_())
 

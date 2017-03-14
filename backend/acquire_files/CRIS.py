@@ -5,14 +5,14 @@ from PyDAQmx import *
 from PyDAQmx.DAQmxConstants import *
 from PyDAQmx.DAQmxFunctions import *
 
-from .hardware import format,Hardware
+from .hardware import format,BaseHardware
 
 this_format = format + ('Counts',)
-write_params = ['None']
+write_params = []
 
-class CRIS(Hardware):
+class Hardware(BaseHardware):
     def __init__(self):
-        super(CRIS,self).__init__(name = 'CRIS',
+        super(Hardware,self).__init__(name = 'cris',
                                   format=this_format,
                                   write_params = write_params,
                                   refresh_time = 0)

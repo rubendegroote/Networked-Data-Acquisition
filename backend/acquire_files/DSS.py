@@ -1,4 +1,4 @@
-from .hardware import format,Hardware
+from .hardware import format,BaseHardware
 import numpy as np
 import mmap
 import struct
@@ -20,9 +20,9 @@ print(Offset)
 
 print(time.ctime())
 
-class DSS(Hardware):
+class Hardware(BaseHardware):
     def __init__(self):
-        super(DSS,self).__init__(name = 'DSS',
+        super(Hardware,self).__init__(name = 'dss',
                                   format=this_format,
                                   write_params = write_params,
                                   refresh_time=50)

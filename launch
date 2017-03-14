@@ -1,11 +1,11 @@
-from PyQt4 import QtCore,QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 from multiprocessing import freeze_support
 
-from backend.FileServer import FileServer
-from backend.DataServer import DataServer
-from backend.Controller import Controller
-from backend.Device import Device
+from backend.fileserver import FileServer
+from backend.dataserver import DataServer
+from backend.controller import Controller
+from backend.device import Device
 import traceback
 
 translation = {}
@@ -14,7 +14,7 @@ translation['data_server'] = DataServer
 translation['controller'] = Controller
 translation['device'] = Device
 
-class Launcher(QtGui.QWidget):
+class Launcher(QtWidgets.QWidget):
     def __init__(self,name="",device_name = None):
         super(Launcher,self).__init__()
 
@@ -41,28 +41,28 @@ class Launcher(QtGui.QWidget):
             print("\t controller")
             print("\t device")
             print("In case of device, Possible values of <device_name>:")
-            print("\t M2")
+            print("\t m2")
             print("\t wavemeter")
             print("\t wavemeter_pdl")
-            print("\t CRIS")
+            print("\t cris")
             print("\t diodes")
-            print("\t ABU")
-            print("\t Matisse")
+            print("\t abu")
+            print("\t matisse")
             print("\t beamline")
             print("\t iscool")
-            print("\t FPI")
+            print("\t fpi")
             print("\t current")
             print("\t temperature")
             print("\t proton")
-            print("\t DSS")
+            print("\t dss")
 
         except:
             self.program = None
             e = str(traceback.format_exc())
             style = "QLabel { background-color: red }"
     
-        layout = QtGui.QGridLayout(self)
-        label = QtGui.QLabel(e)
+        layout = QtWidgets.QGridLayout(self)
+        label = QtWidgets.QLabel(e)
         label.setStyleSheet(style)
         layout.addWidget(label)
         self.show()
@@ -73,7 +73,7 @@ class Launcher(QtGui.QWidget):
 
 def main():
     freeze_support()
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     name = sys.argv[1]
     if name == 'device':
         device_name = sys.argv[2]

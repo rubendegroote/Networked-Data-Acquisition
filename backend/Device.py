@@ -1,4 +1,4 @@
-import backend.Helpers as hp
+import backend.helpers as hp
 from backend.save import *
 from backend.connectors import Connector, Acceptor
 import backend.logbook as lb

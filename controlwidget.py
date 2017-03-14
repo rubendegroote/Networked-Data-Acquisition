@@ -1,7 +1,7 @@
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 from spin import Spin
 
-class ControlWidget(QtGui.QWidget):
+class ControlWidget(QtWidgets.QWidget):
     prop_changed_sig = QtCore.pyqtSignal(tuple)
     lock_etalon_sig = QtCore.pyqtSignal(tuple)
     etalon_value_sig = QtCore.pyqtSignal(tuple)
@@ -17,9 +17,9 @@ class ControlWidget(QtGui.QWidget):
     setpoint_value_sig = QtCore.pyqtSignal(str)
     def __init__(self):
         super(ControlWidget, self).__init__()
-        layout = QtGui.QGridLayout(self)
+        layout = QtWidgets.QGridLayout(self)
 
-        label = QtGui.QLabel('M2 Controls')
+        label = QtWidgets.QLabel('M2 Controls')
         font = QtGui.QFont("Helvetica", 16, QtGui.QFont.Bold) 
         label.setFont(font)
         layout.addWidget(label,0,0,1,5)
@@ -35,7 +35,7 @@ class ControlWidget(QtGui.QWidget):
         self.M2.lock_ecd_button.clicked.connect(self.emit_lock_ecd)
         layout.addWidget(self.M2,1,0)
 
-        label = QtGui.QLabel('Matisse Controls')
+        label = QtWidgets.QLabel('Matisse Controls')
         font = QtGui.QFont("Helvetica", 16, QtGui.QFont.Bold) 
         label.setFont(font)
         layout.addWidget(label,2,0,1,5)
@@ -49,21 +49,21 @@ class ControlWidget(QtGui.QWidget):
 
         layout.addWidget(self.Matisse,3,0)
 
-        label = QtGui.QLabel('WSU2 controls')
+        label = QtWidgets.QLabel('WSU2 controls')
         font = QtGui.QFont("Helvetica", 16, QtGui.QFont.Bold) 
         label.setFont(font)
         layout.addWidget(label,4,0,1,5)
 
-        self.cal_button = QtGui.QPushButton('calibrate')
+        self.cal_button = QtWidgets.QPushButton('calibrate')
         self.cal_button.clicked.connect(self.emit_calibrate_sig)
         layout.addWidget(self.cal_button,5,0)
 
-        label = QtGui.QLabel('WS6 controls')
+        label = QtWidgets.QLabel('WS6 controls')
         font = QtGui.QFont("Helvetica", 16, QtGui.QFont.Bold) 
         label.setFont(font)
         layout.addWidget(label,6,0,1,5)
 
-        self.cal_button_pdl = QtGui.QPushButton('calibrate pdl')
+        self.cal_button_pdl = QtWidgets.QPushButton('calibrate pdl')
         self.cal_button_pdl.clicked.connect(self.emit_calibrate_sig)
         layout.addWidget(self.cal_button_pdl,7,0)
 
@@ -79,7 +79,7 @@ class ControlWidget(QtGui.QWidget):
             self.cal_button_pdl.setDisabled(True)
         else:
             self.cal_button_pdl.setEnabled(True)
-        if not 'M2' in info.keys():
+        if not 'm2' in info.keys():
             self.M2.setDisabled(True)
         else:
             self.M2.setEnabled(True)
@@ -90,7 +90,7 @@ class ControlWidget(QtGui.QWidget):
 
 
         try:
-            M2_info = info['M2']
+            M2_info = info['m2']
 
             self.etalon_locked = M2_info['etalon_lock'] == 'on'
             if self.etalon_locked:
@@ -148,22 +148,22 @@ class ControlWidget(QtGui.QWidget):
             pass
 
     def emit_prop_change_M2(self):
-        self.prop_changed_sig.emit(('M2',int(self.M2.prop_field.value())))
+        self.prop_changed_sig.emit(('m2',int(self.M2.prop_field.value())))
 
     def emit_lock_etalon(self):
-        self.lock_etalon_sig.emit(('M2',not self.etalon_locked))
+        self.lock_etalon_sig.emit(('m2',not self.etalon_locked))
 
     def emit_set_etalon(self):
-        self.etalon_value_sig.emit(('M2',self.M2.etalon_value.value))
+        self.etalon_value_sig.emit(('m2',self.M2.etalon_value.value))
 
     def emit_lock_cavity(self):
-        self.lock_cavity_sig.emit(('M2',not self.cavity_locked))
+        self.lock_cavity_sig.emit(('m2',not self.cavity_locked))
 
     def emit_set_cavity(self):
-        self.cavity_value_sig.emit(('M2',self.M2.ref_cavity_value.value))
+        self.cavity_value_sig.emit(('m2',self.M2.ref_cavity_value.value))
 
     def emit_lock_wavelength_M2(self):
-        self.lock_wavelength_sig.emit(('M2',not self.M2.wavelength_locked))
+        self.lock_wavelength_sig.emit(('m2',not self.M2.wavelength_locked))
 
     def emit_lock_wavelength_Matisse(self):
         self.lock_wavelength_sig.emit(('Matisse',not self.Matisse.wavelength_locked))
@@ -178,11 +178,11 @@ class ControlWidget(QtGui.QWidget):
         self.diff_changed_sig.emit(('Matisse',int(self.Matisse.diff_field.value())))
 
     def emit_lock_ecd(self):
-        self.lock_ecd_sig.emit(('M2',not self.ecd_locked))
+        self.lock_ecd_sig.emit(('m2',not self.ecd_locked))
 
     def emit_set_wavenumber_M2(self):
         wavenumber = self.M2.wavenumber_value.value
-        self.wavenumber_sig.emit({'device':'M2',
+        self.wavenumber_sig.emit({'device':'m2',
                                   'parameter':"wavenumber",
                                   'setpoint': [wavenumber]})
 
@@ -198,88 +198,88 @@ class ControlWidget(QtGui.QWidget):
         elif self.sender() == self.cal_button_pdl:
             self.calibrate_sig.emit({'device':'wavemeter_pdl'})
 
-class M2_UI(QtGui.QWidget):
+class M2_UI(QtWidgets.QWidget):
     def __init__(self):
         super(M2_UI,self).__init__()
 
-        layout = QtGui.QGridLayout(self)
+        layout = QtWidgets.QGridLayout(self)
 
-        layout.addWidget(QtGui.QLabel('Proportional stab.'),0,0)
-        self.prop_field = QtGui.QSpinBox()
+        layout.addWidget(QtWidgets.QLabel('Proportional stab.'),0,0)
+        self.prop_field = QtWidgets.QSpinBox()
         self.prop_field.setRange(1,500)
         layout.addWidget(self.prop_field,0,1)
 
-        layout.addWidget(QtGui.QLabel("Etalon Tune"),1,2)
+        layout.addWidget(QtWidgets.QLabel("Etalon Tune"),1,2)
         self.etalon_value = Spin(50.0000,0,100,sig_figs=2)
         layout.addWidget(self.etalon_value,1,4)
 
-        self.etalon_label = QtGui.QLabel()
+        self.etalon_label = QtWidgets.QLabel()
         layout.addWidget(self.etalon_label,1,3)
 
         self.etalon_locked = False
-        self.lock_etalon_button = QtGui.QPushButton("Lock Etalon")
+        self.lock_etalon_button = QtWidgets.QPushButton("Lock Etalon")
         layout.addWidget(self.lock_etalon_button,1,6)
 
-        layout.addWidget(QtGui.QLabel("Cavity Tune"),2,2)
+        layout.addWidget(QtWidgets.QLabel("Cavity Tune"),2,2)
         self.ref_cavity_value = Spin(50.0000,0,100)
         layout.addWidget(self.ref_cavity_value,2,4)
 
-        self.cavity_label = QtGui.QLabel()
+        self.cavity_label = QtWidgets.QLabel()
         layout.addWidget(self.cavity_label,2,3)
 
         self.cavity_locked = False
-        self.lock_cavity_button = QtGui.QPushButton("Lock Cavity")
+        self.lock_cavity_button = QtWidgets.QPushButton("Lock Cavity")
         layout.addWidget(self.lock_cavity_button,2,6)
 
-        layout.addWidget(QtGui.QLabel("target wavenumber"),4,0)
+        layout.addWidget(QtWidgets.QLabel("target wavenumber"),4,0)
         self.wavenumber_value = Spin(11836.0000,0,10**5)
         layout.addWidget(self.wavenumber_value,4,1)
 
         self.wavelength_locked = False
-        self.lock_wavelength_button = QtGui.QPushButton("Lock to wavemeter")
+        self.lock_wavelength_button = QtWidgets.QPushButton("Lock to wavemeter")
         layout.addWidget(self.lock_wavelength_button,4,6)
 
         self.ecd_locked = False
-        self.lock_ecd_button = QtGui.QPushButton("Lock doubler")
+        self.lock_ecd_button = QtWidgets.QPushButton("Lock doubler")
         layout.addWidget(self.lock_ecd_button,3,6)
 
-        self.etalon_voltage_label = QtGui.QLabel()
-        layout.addWidget(QtGui.QLabel('Etalon voltage'),1,0)
+        self.etalon_voltage_label = QtWidgets.QLabel()
+        layout.addWidget(QtWidgets.QLabel('Etalon voltage'),1,0)
         layout.addWidget(self.etalon_voltage_label,1,1)
 
-        self.cavity_voltage_label = QtGui.QLabel()
-        layout.addWidget(QtGui.QLabel('Cavity voltage'),2,0)
+        self.cavity_voltage_label = QtWidgets.QLabel()
+        layout.addWidget(QtWidgets.QLabel('Cavity voltage'),2,0)
         layout.addWidget(self.cavity_voltage_label,2,1)
 
-        self.ecd_voltage_label = QtGui.QLabel()
-        layout.addWidget(QtGui.QLabel('ECD voltage'),3,0)
+        self.ecd_voltage_label = QtWidgets.QLabel()
+        layout.addWidget(QtWidgets.QLabel('ECD voltage'),3,0)
         layout.addWidget(self.ecd_voltage_label,3,1)
 
-class Matisse_UI(QtGui.QWidget):
+class Matisse_UI(QtWidgets.QWidget):
     def __init__(self):
         super(Matisse_UI,self).__init__()
 
-        layout = QtGui.QGridLayout(self)
+        layout = QtWidgets.QGridLayout(self)
 
-        layout.addWidget(QtGui.QLabel('Proportional stab.'),0,0)
-        self.prop_field = QtGui.QSpinBox()
+        layout.addWidget(QtWidgets.QLabel('Proportional stab.'),0,0)
+        self.prop_field = QtWidgets.QSpinBox()
         self.prop_field.setRange(-500,500)
         layout.addWidget(self.prop_field,0,1)
 
-        layout.addWidget(QtGui.QLabel('Integral stab.'),1,0)
-        self.int_field = QtGui.QSpinBox()
+        layout.addWidget(QtWidgets.QLabel('Integral stab.'),1,0)
+        self.int_field = QtWidgets.QSpinBox()
         self.int_field.setRange(-500,500)
         layout.addWidget(self.int_field,1,1)
 
-        layout.addWidget(QtGui.QLabel('Differential stab.'),2,0)
-        self.diff_field = QtGui.QSpinBox()
+        layout.addWidget(QtWidgets.QLabel('Differential stab.'),2,0)
+        self.diff_field = QtWidgets.QSpinBox()
         self.diff_field.setRange(-500,500)
         layout.addWidget(self.diff_field,2,1)
 
-        layout.addWidget(QtGui.QLabel("Target wavenumber"),3,0)
+        layout.addWidget(QtWidgets.QLabel("Target wavenumber"),3,0)
         self.wavenumber_value = Spin(11836.0000,0,10**5)
         layout.addWidget(self.wavenumber_value,3,1)
 
         self.wavelength_locked = False
-        self.lock_wavelength_button = QtGui.QPushButton("Lock to wavemeter")
+        self.lock_wavelength_button = QtWidgets.QPushButton("Lock to wavemeter")
         layout.addWidget(self.lock_wavelength_button,3,2)
