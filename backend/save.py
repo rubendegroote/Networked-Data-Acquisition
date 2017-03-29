@@ -2,6 +2,8 @@ import h5py
 import numpy as np
 import os,sys,time
 
+MAXLEN = 5*10**4
+
 try:
     from helpers import emptyPipe,group_per_scan
 except:
@@ -15,17 +17,33 @@ def update_scan_info(file_path,scan,mass):
     mass = int(mass)
     scans = []
     try:
-        read_scans = np.loadtxt(file_path+'_scans.txt',delimiter = ';').T[0]
-        try:
-            scans.extend(read_scans)
-        except TypeError:
-            scans.extend([read_scans])
-    except FileNotFoundError:
-        pass
+        with open(file_path+'_scanning.txt','r') as file:
+            line = file.readline()
+            scanning = int(line) == 1
+    except:
+        scanning = False
+    if scan == -1:
+        if scanning:
+            with open(file_path+'_scanning.txt','w') as file:
+                file.write('0')
+    else:
+        if not scanning:
+            with open(file_path+'_scanning.txt','w') as file:
+                file.write('1')
 
-    if not scan in scans:
-        with open(file_path+'_scans.txt','a') as scanfile:
-            scanfile.write(str(scan)+';'+str(mass)+'\n')
+        try:
+            read_scans = np.loadtxt(file_path+'_scans.txt',delimiter = ';').T[0]
+            try:
+                scans.extend(read_scans)
+            except TypeError:
+                scans.extend([read_scans])
+        except FileNotFoundError:
+            pass
+
+        if not scan in scans:
+            with open(file_path+'_scans.txt','a') as scanfile:
+                scanfile.write(str(scan)+';'+str(mass)+'\n')
+
 
 def save(to_save,format,file_path,group_name,save_stream=True):
     # saves data, per group (for each Device) and per scan
@@ -70,11 +88,9 @@ def save(to_save,format,file_path,group_name,save_stream=True):
                     dataset.resize((newlen,))
                     dataset[-len(column):] = column
 
-                if newlen > 5*10**4:
+                if newlen > MAXLEN:
                     subgroup = group.create_group(scan+'_{}'.format(highest_index+1))
 
-        store.flush()
-        
 def save_continuously(save_output,saveDir,name,format,saveFlag,saveStreamFlag):
     format = [f.encode('utf-8') for f in format]
     try:

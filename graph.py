@@ -13,6 +13,7 @@ import satlas as sat
 from backend.helpers import calcHist
 import uncertainties as unc
 
+c = 29979.2458 # in some weird units
 
 class XYGraph(QtWidgets.QWidget):
     dataRequested = QtCore.pyqtSignal(str)
@@ -32,6 +33,7 @@ class XYGraph(QtWidgets.QWidget):
         self.scan_number = -1
 
         self.mode = 'stream'
+        self.progress = 0
 
         self.bins = np.zeros(1)
         self.init_UI()
@@ -44,10 +46,6 @@ class XYGraph(QtWidgets.QWidget):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.plot)
         self.timer.start(50)
-
-        # self.timer2 = QtCore.QTimer()
-        # self.timer2.timeout.connect(self.treat_data)
-        # self.timer2.start(50)
 
     def init_UI(self):
 
@@ -149,6 +147,10 @@ class XYGraph(QtWidgets.QWidget):
         self.sublayout.addWidget(self.x_cut_right, 3, 3)
         self.x_cut_right.textChanged.connect(self.toggle_plot_needed)
 
+        self.doppler_check = QtGui.QCheckBox('Doppler shift?')
+        self.doppler_check.stateChanged.connect(self.toggle_plot_needed)
+        self.sublayout.addWidget(self.doppler_check, 2, 6)
+
         self.unit_check = QtGui.QCheckBox('Use MHz?')
         self.unit_check.stateChanged.connect(self.change_label)
         self.unit_check.stateChanged.connect(self.toggle_plot_needed)
@@ -200,9 +202,9 @@ class XYGraph(QtWidgets.QWidget):
                     y = 10**y
                 try:
                     if 'wavenumber' in self.x_key[1]:
-                        x = curvePoint.x() 
+                        x = curvePoint.x()
                         if self.unit_check.isChecked():
-                            x = x / 29979.2458 
+                            x = x / c 
                         x += float(self.x_offset.text())
 
                         self.posLabel.setHtml("<span style='font-size: 12pt'> <span style = 'color: red'> \
@@ -230,7 +232,7 @@ class XYGraph(QtWidgets.QWidget):
 
 
     def clean(self):
-        self.data = self.data.iloc[-10:]
+        self.data = self.data.iloc[-1:]
 
     def toggle_plot_needed(self):
         self.plot_needed = True
@@ -338,14 +340,34 @@ class XYGraph(QtWidgets.QWidget):
         self.axis_in_log = False
         self.graph.setLogMode(y=False)
 
-
     def treat_data(self):
         if not self.mode == 'fs':
             data = self.data.sort_values(by='time')
-            data['x'] = data['x'].fillna(method='bfill')
+            data['x'] = data['x'].fillna(method='pad')
             data = data.dropna()
         else:
             data = self.data.sort_values(by='time')
+
+        max_x = float(self.x_cut_right.text())
+        min_x = float(self.x_cut_left.text())
+        slicer = np.logical_and(data['x']<max_x,data['x']>min_x)
+        data = data[slicer]   
+        binsize = self.binSpinBox.value()    
+        if 'wavenumber' in self.x_key[1]:
+            binsize = self.binSpinBox.value() / c
+
+        start = np.min(data['x']) - np.min(data['x'])%binsize
+        stop = np.max(data['x'])//binsize*binsize+binsize
+        steps = np.round(abs(stop-start)/binsize,0)+1
+        bins = np.linspace(start,stop,steps)
+
+        self.binned_data = calcHist(data, bins, self.errormode, self.data_mode)
+
+    def get_x_y(self):
+        data = self.binned_data.copy()
+
+        data['x'] = data['x'] - float(self.x_offset.text())
+        data['y'] = data['y'] - float(self.y_offset.text())
 
         if 'timestamp' in self.x_key:
             data['x'] = data['x'] - data['x'].values.min()
@@ -354,33 +376,29 @@ class XYGraph(QtWidgets.QWidget):
 
         if 'wavenumber' in self.x_key[1]:
             if self.unit_check.isChecked():
-                data['x'] = data['x'] * 29979.2458
+                data['x'] = data['x'] * c
+                data['xerr'] = data['xerr'] * c
 
         elif 'wavenumber' in self.y_key[1]:
             if self.unit_check.isChecked():
-                data['y'] = data['y'] * 29979.2458
+                data['y'] = data['y'] * c
+                data['yerr_t'] = data['yerr_t'] * c
+                data['yerr_b'] = data['yerr_b'] * c
 
-        max_x = float(self.x_cut_right.text())
-        min_x = float(self.x_cut_left.text())
-        slicer = np.logical_and(data['x']<max_x,data['x']>min_x)
-        data = data[slicer]   
-        binsize = self.binSpinBox.value()    
-        if 'wavenumber' in self.x_key[1] and not self.unit_check.isChecked():
-            binsize = self.binSpinBox.value() / 29979.2458
+        if self.doppler_check.isChecked():
+            if 'wavenumber' in self.x_key[1]:
+                x = x * 2
 
-        start = np.min(data['x']) - np.min(data['x'])%binsize
-        stop = np.max(data['x'])//binsize*binsize+binsize
-        steps = np.round(abs(stop-start)/binsize,0)+1
-        bins = np.linspace(start,stop,steps)
-
-        self.bins = bins
-        self.binned_data = calcHist(data, bins, self.errormode, self.data_mode)
+        return data['x'].values,data['xerr'].values,data['y'].values,data['yerr_t'].values,data['yerr_b'].values
 
     def plot(self):
         self.errormode = str(self.error_box.currentText())
         self.data_mode = str(self.data_box.currentText())
 
-        self.graph.setTitle('Scan: {} \t Mass: {}'.format(self.scan_number,self.mass))
+        if self.mode == 'fs':
+            self.graph.setTitle('Scan: {} \t Mass: {} \t Progress {}'.format(self.scan_number,self.mass,self.progress))
+        else:
+            self.graph.setTitle('Scan: {} \t Mass: {}'.format(self.scan_number,self.mass))
 
         if not self.plot_needed:
             return
@@ -391,7 +409,7 @@ class XYGraph(QtWidgets.QWidget):
             except:
                 pass
 
-            x,y,xerr,yerr_t,yerr_b = self.get_x_y()
+            x,xerr,y,yerr_t,yerr_b = self.get_x_y()
 
             if self.logmode:
                 log_y = np.log10(y)
@@ -433,30 +451,11 @@ class XYGraph(QtWidgets.QWidget):
                     del self.error_curve
                     del self.points_curve
 
+            self.plot_needed = False
+
         if self.logmode and not self.axis_in_log:
             self.graph.setLogMode(y=True)
             self.axis_in_log = True
-
-
-    def get_x_y(self):
-        if self.unit_check.isChecked():
-            if 'wavenumber' in self.x_key[1]:
-                x = self.binned_data['x'].values - float(self.x_offset.text())*29979.2458
-            else:
-                x = self.binned_data['x'].values - float(self.x_offset.text())
-            if 'wavenumber' in self.y_key[1]:
-                y = self.binned_data['y'].values - float(self.y_offset.text())*29979.2458
-            else:
-                y = self.binned_data['y'].values - float(self.y_offset.text())
-        else:
-            x = self.binned_data['x'].values - float(self.x_offset.text())
-            y = self.binned_data['y'].values - float(self.y_offset.text())
-
-        xerr,yerr_t,yerr_b = self.binned_data['xerr'].values,\
-                             self.binned_data['yerr_t'].values,\
-                             self.binned_data['yerr_b'].values
-
-        return x,y,xerr,yerr_t,yerr_b
 
     def save(self):
         exporter = pg.exporters.ImageExporter(self.graph.plotItem)
@@ -482,50 +481,51 @@ class XYGraph(QtWidgets.QWidget):
     def pos_chooser(self,mousePoint):
         if mousePoint.double():
             pos = self.graphvb.mapSceneToView(mousePoint.scenePos())
-            self.peaks.append(pos.x())
+            x = pos.x() 
+            if self.unit_check.isChecked():
+                x = x / c + float(self.x_offset.text())
+            else:
+                x = x + float(self.x_offset.text())
+
+            self.peaks.append(x)
             self.heights.append(pos.y())
 
     def plot_model(self,model):
-        x,y,xerr,yerr_t,yerr_b = self.get_x_y()
-        # x_plot = np.linspace(x.min(),x.max(),10**4)
-
         ranges = []
+        model.params = model.params
         for pos in model.locations:
             r = np.linspace(pos - 5 * model.params['TotalFWHM'].value,
                             pos + 5 * model.params['TotalFWHM'].value,
                             200)
             ranges.append(r)
         x_fit = np.sort(np.concatenate(ranges))
-        if self.unit_check.isChecked():
-            x_plot = x_fit - float(self.x_offset.text())* 29979.2458 
+        if not self.unit_check.isChecked():
+            plot_x = x_fit/c - float(self.x_offset.text())
         else:
-            x_plot = x_fit / 29979.2458 - float(self.x_offset.text())
+            plot_x = x_fit - float(self.x_offset.text())*c
 
         try:
             self.hfs_fit_curve
         except:
             self.hfs_fit_curve = pg.PlotCurveItem(pen='r')
 
-        self.hfs_fit_curve.setData(x=x_plot, y=model(x=x_fit))
+        self.hfs_fit_curve.setData(x=plot_x, y=model(x=x_fit))
         self.fit_blobs.append(self.hfs_fit_curve)
         self.graphvb.addItem(self.hfs_fit_curve)
     
-    def satlas_fit(model,x,y,yerr):
-        nan_slicer = np.isnan[yerr]
+    def satlas_fit(self,model,x,y,yerr):
+        nan_slicer = np.isnan(yerr)
         yerr[nan_slicer] = y[nan_slicer]
-        sat.chisquare_fit(model,x,y,yerr)
+        sat.chisquare_fit(model,x=x,y=y,yerr=yerr)
 
     def fit_model(self,model):
-        x,y,xerr,yerr_t,yerr_b = self.get_x_y()
-        if self.unit_check.isChecked():
-            x = x + float(self.x_offset.text())*29979.2458
-        else:
-            x = (x + float(self.x_offset.text()))*29979.2458
+        _,_,y,yerr_t,yerr_b = self.get_x_y()
+        x = self.binned_data['x'].values*c
         off = x.min()
 
         model.set_value({'Centroid':model.params['Centroid'].value-off})
 
-        self.satlas_fit(model,x=x-off,y=y,yerr=yerr_t)
+        self.satlas_fit(model=model,x=x-off,y=y,yerr=yerr_t)
 
         model.set_value({'Centroid':model.params['Centroid'].value+off})
 
@@ -534,7 +534,6 @@ class XYGraph(QtWidgets.QWidget):
         self.fitter.set_fit(model)
 
         pars = model.params
-
         html = '<div style="text-align: center">\
                 <div style = "color: black"> \
                 <div style = "font-size: 14px"> \
@@ -549,7 +548,7 @@ class XYGraph(QtWidgets.QWidget):
                                str(unc.ufloat(pars['Au'].value,pars['Au'].stderr)),
                                str(unc.ufloat(pars['Bl'].value,pars['Bl'].stderr)),
                                str(unc.ufloat(pars['Bu'].value,pars['Bu'].stderr)),
-                               str(unc.ufloat(pars['Centroid'].value,pars['Centroid'].stderr)/29979.2458),
+                               str(unc.ufloat(pars['Centroid'].value,pars['Centroid'].stderr)/c),
                                str(unc.ufloat(pars['FWHMG'].value,pars['FWHMG'].stderr)),
                                str(unc.ufloat(pars['FWHML'].value,pars['FWHML'].stderr)))
         self.fit_results.setHtml(html)
@@ -567,16 +566,21 @@ class XYGraph(QtWidgets.QWidget):
     def do_peak_fit(self):
         self.graph.scene().sigMouseClicked.disconnect(self.pos_chooser)
 
-        x,y,xerr,yerr_t,yerr_b = self.get_x_y()
+        _,_,y,yerr_t,_ = self.get_x_y()
         yerr = yerr_t
+        x = self.binned_data['x'].values
+        print(x)
+        x_fit = np.linspace(x.min(),x.max(),10**4)
+        plot_x = x_fit - float(self.x_offset.text())
+        if self.unit_check.isChecked():
+            plot_x *= c
+        print(plot_x)
 
         w, ok = QtGui.QInputDialog.getText(self, 'FWHM Dialog', 'Enter estimated FHWM (MHz):')
         if not ok:
             return
 
-        w = float(w)
-        if not self.unit_check.isChecked():
-            w /= 29979.2458
+        w = float(w)/c
 
         params = lm.Parameters()
         params.add('w',w)
@@ -591,14 +595,9 @@ class XYGraph(QtWidgets.QWidget):
             fit = np.zeros(len(x))
             for i in range(int((len(params)-2)/2)):
                 fit += params['h{}'.format(i)].value*np.exp(-(x-params['p{}'.format(i)].value)**2/2/params['w'].value**2)
-
             return fit + params['bkg'].value
 
-        def resid(params,x,y,yerr):
-            return (fitfunc(params,x) - y)/yerr
-
-        x_fit = np.linspace(x.min(),x.max(),10**4)
-        self.single_peak_curve = pg.PlotCurveItem(x=x_fit, y=fitfunc(params,x_fit),pen='r')
+        self.single_peak_curve = pg.PlotCurveItem(x=plot_x, y=fitfunc(params,x_fit),pen='r')
         self.fit_blobs.append(self.single_peak_curve)
         self.graph.addItem(self.single_peak_curve)
 
@@ -607,21 +606,22 @@ class XYGraph(QtWidgets.QWidget):
         if not reply == QtGui.QMessageBox.Yes:
             return
 
+        def resid(params,x,y,yerr):
+            return (fitfunc(params,x) - y)/yerr
+
         results = lm.minimize(resid,params,args=(x,y,yerr))
         respar = results.params
 
         fit = fitfunc(results.params,x_fit)
         if self.logmode:
             fit = np.log10(fit)
-        self.single_peak_curve.setData(x=x_fit,y=fit)
+        self.single_peak_curve.setData(x=plot_x,y=fit)
 
         for i in range(int((len(params)-2)/2)):
-            pos = respar['p{}'.format(i)].value + float(self.x_offset.text())
-            w = respar['w'].value * 2.3548
+            pos = respar['p{}'.format(i)].value - float(self.x_offset.text())
+            w = respar['w'].value * 2.3548 * c
             if self.unit_check.isChecked():
-                pos /= 29979.2458
-            else:
-                w *= 29979.2458
+                pos *= c
                 
             html = '<div style="text-align: center">\
                     <span><span style="font-size: 14pt;">POS:{}</span><br> \
@@ -629,7 +629,7 @@ class XYGraph(QtWidgets.QWidget):
                     <span><span style="font-size: 14pt;">FWHM:{}</span><br>\
                     <span><span style="font-size: 14pt;">BKG:{}</span><br>\
                     <span><span style="font-size: 14pt;">S/B:{}</span>\
-                    </div>'.format(pos,respar['h{}'.format(i)].value,w,respar['bkg'].value,
+                    </div>'.format(respar['p{}'.format(i)].value,respar['h{}'.format(i)].value,w,respar['bkg'].value,
                                    respar['h{}'.format(i)].value/respar['bkg'].value)
 
             self.fit_blobs.append(pg.TextItem(html=html, anchor=(-0.3,1.3), border='k', fill=(0, 0, 0, 0)))
@@ -637,7 +637,7 @@ class XYGraph(QtWidgets.QWidget):
             height = respar['h{}'.format(i)]
             if self.logmode:
                 height = np.log10(height)
-            self.fit_blobs[-1].setPos(respar['p{}'.format(i)].value,height)
+            self.fit_blobs[-1].setPos(pos,height)
 
 class Fitter(QtWidgets.QWidget):
     plotSignal = QtCore.pyqtSignal(object)
@@ -740,7 +740,7 @@ class Fitter(QtWidgets.QWidget):
 
         self.fitButton = QtWidgets.QPushButton('Fit')
         self.layout.addWidget(self.fitButton,12,4)
-        self.fitButton.clicked.connect(self.fit_model)
+        self.fitButton.clicked.connect(self.emit_fit_model)
 
         filler = QtWidgets.QLabel('Hyperfine fit results')
         filler.setMinimumHeight(25)
@@ -789,7 +789,7 @@ class Fitter(QtWidgets.QWidget):
         model = self.make_model()
         self.plotSignal.emit(model)
 
-    def fit_model(self):
+    def emit_fit_model(self):
         model = self.make_model()
         self.fitSignal.emit(model)
 
@@ -797,7 +797,7 @@ class Fitter(QtWidgets.QWidget):
         I = float(self.IBox.text())
         J = [float(self.JBox1.text()),float(self.JBox2.text())]
         ABC = [float(self.ABox1.text()),float(self.ABox2.text()),float(self.BBox1.text()),float(self.BBox2.text()),0,0]
-        centroid = float(self.CentroidBox.text()) * 29979.2458 
+        centroid = float(self.CentroidBox.text()) * c 
         fwhm = [float(self.WidthBox1.text()),float(self.WidthBox2.text())]
         bkg = [float(self.BkgBox.text())]
         scale = float(self.ScaleBox.text())
@@ -823,7 +823,7 @@ class Fitter(QtWidgets.QWidget):
     def set_fit(self,model):
         self.fitted_model = model
 
-        val = unc.ufloat(self.fitted_model.params['Centroid'].value,self.fitted_model.params['Centroid'].stderr)/29979.2458
+        val = unc.ufloat(self.fitted_model.params['Centroid'].value,self.fitted_model.params['Centroid'].stderr)/c
         self.CentroidBox_fit.setText(str(val))
         val = unc.ufloat(self.fitted_model.params['Al'].value,self.fitted_model.params['Al'].stderr)
         self.ABox1_fit.setText(str(val))

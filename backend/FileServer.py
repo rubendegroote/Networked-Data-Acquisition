@@ -12,7 +12,7 @@ from backend.dispatcher import Dispatcher
 import threading as th
 
 CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
-CHUNK_SIZE = 5*10**4
+CHUNK_SIZE = 5*10**5
 class FileServer(Dispatcher):
     config_parser = configparser.ConfigParser()
     config_parser.read(CONFIG_PATH)
@@ -31,23 +31,29 @@ class FileServer(Dispatcher):
             self.data = extract_scan(self.save_path+'server_data.h5',scan_numbers,[x,y],filename=None)
 
         stop = self.row+CHUNK_SIZE
-        data = [self.data['time'][self.row:stop],self.data[x.split(': ')[-1]][self.row:stop],self.data[y.split(': ')[-1]][self.row:stop]]
-        chunk = [list(d.values) for d in data]
-        print(stop)
+        data = [self.data.index.values[self.row:stop],
+                self.data[x.split(': ')[-1]].values[self.row:stop],
+                self.data[y.split(': ')[-1]].values[self.row:stop]]
+        chunk = [list(d) for d in data]
+
         if stop >= len(self.data):
             self.row = 0
-            return {'data': chunk,'done':True}
+            return {'data': chunk,'done':True,'progress':100}
         else:
             self.row = stop
-            return {'data': chunk,'done':False}
+            return {'data': chunk,'done':False,'progress':int(stop/len(self.data))}
 
     @try_call
     def get_status(self,params):
         available_scans = []
         info = np.atleast_2d(np.loadtxt(self.save_path+'server_scans.txt',delimiter = ';'))
-        available_scans = list(info.T[0])
-        masses = list(info.T[1])
-        available_scans,masses = zip(*set(zip(available_scans,masses)))
+        try:
+            available_scans = list(info.T[0])
+            masses = list(info.T[1])
+            available_scans,masses = zip(*set(zip(available_scans,masses)))
+        except:
+            masses = []
+            available_scans = []
         
         return {'available_scans':available_scans,
                 'masses':masses}
@@ -58,7 +64,7 @@ class FileServer(Dispatcher):
         scans = params['scans']
 
         format = []
-        with h5py.File(self.save_path+'server_data.h5') as store:
+        with h5py.File(self.save_path+'server_data.h5','r') as store:
             for dev in store.keys():
                 for scan in scans:
                     scanno = str(int(scan))+'_0'

@@ -61,36 +61,35 @@ def extract_scan(path,scan_numbers,columns,filename=None):
     columns = [c.split(': ')[-1] for c in columns]
 
     dfs = []
-    with h5py.File(path) as store:
+    with h5py.File(path, 'r') as store:
         for dev,col in zip(devices,columns):
             try:
                 for scanno in store[dev].keys():
                     if scanno.split('_')[0] in scan_numbers:
-                        start = time.time()
+                        # start = time.time()
                         dfs.append(pd.DataFrame())
                         try:
                             dfs[-1][col] = store[dev][scanno][col].value
                             dfs[-1]['time'] = store[dev][scanno]['timestamp'].value
                         except:
                             pass
-                        print('extracted {} in {}s'.format(col,round(time.time() - start,1)))
+                        # print('extracted {} in {}s'.format(col,round(time.time() - start,1)))
             except:
                 print('failed getting {} {}'.format(dev,col))
 
     dataframe = pd.concat(dfs)
-    dataframe['time'] = dataframe['time']
     dataframe = dataframe.sort_values(by='time')
     for col in columns:
-        if not col == 'Counts':
+        if not col == 'Counts' or col == 'counts':
             dataframe[col] = dataframe[col].fillna(method='ffill')
     dataframe = dataframe.dropna()
-    dataframe = dataframe.reset_index()
+    dataframe = dataframe.set_index('time')
 
     if filename is not None:
         dataframe.to_csv(filename)
 
-    return dataframe
 
+    return dataframe
 
 def GetFromQueue(q):
     if not q.empty():

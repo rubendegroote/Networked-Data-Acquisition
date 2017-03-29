@@ -16,7 +16,7 @@ class Controller(Dispatcher):
 
     scan_parser = configparser.ConfigParser()
     scan_parser.read(SCAN_PATH)
-    
+
     log_path = config_parser['paths']['log_path'] 
     if not os.path.exists(log_path):
         os.makedirs(log_path)
@@ -52,25 +52,28 @@ class Controller(Dispatcher):
             lb.saveLogbook(self.log_path, self.logbook)
             self.log_edits = []
 
+        self.read_config()
 
+    def read_config(self):
         # get last scan number from config file
-        try:
-            self.last_scan = int(self.scan_parser['last_scan']['last_scan'])
-            self.mass = int(self.scan_parser['last_scan']['mass'])
-            self.scanner_name = self.scan_parser['scanner']['scanner']
-            self.scanning[self.scanner_name] = self.scan_parser['scanning']['scanning']
-
-            if self.scanning[self.scanner_name]:
-                self.current_scan = self.last_scan
-            self.scan_mass = dict(self.scan_parser['scan_mass'])
-            for key,val in self.scan_mass.items():
-                self.scan_mass[key] = eval(val)
-            self.scan_ranges = dict(self.scan_parser['scan_ranges'])
-            for key,val in self.scan_ranges.items():
-                self.scan_ranges[key] = eval(val)
-        except Exception as e:
-            print(e)
-            print('No scan ini file found')
+        self.last_scan = int(self.scan_parser['last_scan']['last_scan'])
+        self.mass = int(self.scan_parser['last_scan']['mass'])
+        self.scanner_name = self.scan_parser['scanner']['scanner']
+        
+        self.scanning[self.scanner_name] = int(self.scan_parser['scanning']['scanning']) == 1
+        
+        if self.scanning[self.scanner_name]:
+            self.current_scan = self.last_scan
+        
+        scan_mass = dict(self.scan_parser['scan_mass'])
+        for key,val in scan_mass.items():
+            scan_mass[key] = eval(val)
+        self.scan_mass = scan_mass
+        
+        scan_ranges = dict(self.scan_parser['scan_ranges'])
+        for key,val in scan_ranges.items():
+            scan_ranges[key] = eval(val)
+        self.scan_ranges = scan_ranges
 
     @try_call
     def status(self, *args):
@@ -122,6 +125,12 @@ class Controller(Dispatcher):
         self.last_scan += 1
         self.current_scan = self.last_scan
         self.mass = mass
+        
+        try:
+            self.scan_mass[str(mass)].append(self.last_scan)
+        except:
+            self.scan_mass[str(mass)] = [self.last_scan]
+        self.scan_ranges[str(self.last_scan)] = scan_summary
 
         self.scan_device(device_name,scan_parameter,mode,
                          scan_array,units_per_step)
@@ -134,24 +143,6 @@ class Controller(Dispatcher):
                         'Text': lb.stringify_scan_summary(\
                                    device_name,scan_summary)}
         self.add_to_logbook(info_for_log)
-        self.current_scan_log_number = len(self.logbook)-1
-        
-
-        # update scan progress in ini file
-        self.scan_parser['last_scan'] = {'last_scan': self.last_scan}
-        self.scan_parser['last_scan'] = {'mass': self.mass}
-        self.scan_parser['scanner'] = {'scanner': device_name}
-        self.scan_parser['scanning'] = {'scanning': True}
-        try:
-            self.scan_mass[str(mass)].append(self.last_scan)
-        except:
-            self.scan_mass[str(mass)] = [self.last_scan]
-        self.scan_parser['scan_mass'] = self.scan_mass
-        self.scan_ranges[str(self.last_scan)] = scan_summary
-        self.scan_parser['scan_ranges'] = self.scan_ranges
-
-        with open(SCAN_PATH, 'w') as scanfile:
-            self.scan_parser.write(scanfile)
 
         return {}
 
@@ -172,6 +163,7 @@ class Controller(Dispatcher):
         scanner.add_request(('execute_instruction',
                {'instruction':'stop_scan',
                 'arguments':{}}))
+
         return {}
 
     @try_call
@@ -265,6 +257,11 @@ class Controller(Dispatcher):
         if origin == self.scanner_name:
             if self.scanning[origin] and not params['scanning']:
                 self.current_scan = -1
+                # update scan progress in ini file
+                self.update_scan_file(0)
+            elif not self.scanning[origin] and params['scanning']:
+                self.update_scan_file(1)
+
         self.scanning[origin] = params['scanning']
         self.progress[origin] = params['progress']
         self.on_setpoint[origin] = params['on_setpoint']
@@ -272,6 +269,16 @@ class Controller(Dispatcher):
         self.refresh_times[origin] = params['refresh_time']
         if 'proton' in self.status_data.keys():
             self.proton_info = self.status_data['proton']
+
+    def update_scan_file(self,scanning):
+        self.scan_parser['last_scan'] = {'last_scan': self.last_scan,'mass': self.mass}
+        self.scan_parser['scanner'] = {'scanner': self.scanner_name}
+        self.scan_parser['scanning'] = {'scanning': scanning}
+        self.scan_parser['scan_mass'] = self.scan_mass
+        self.scan_parser['scan_ranges'] = self.scan_ranges
+
+        with open(SCAN_PATH, 'w') as scanfile:
+            self.scan_parser.write(scanfile)
 
     def initial_information_reply(self,track,params):
         origin, track_id = track[-1]

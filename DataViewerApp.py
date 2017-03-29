@@ -292,9 +292,12 @@ class DataViewerApp(QtWidgets.QMainWindow):
     def request_data_reply(self,track,params):
         data = params['data']
         done = params['done']
-        data = pd.DataFrame({'time':np.array(data[0]),'x':data[1],'y':data[2]})
+        progress = params['progress']
+
+        data = pd.DataFrame({'time':data[0],'x':data[1],'y':data[2]})
         self.graph.data = self.graph.data.append(data)
         self.graph.plot_needed = True
+        self.graph.progress = int(100*progress)
         try:
             self.chooser
             self.closeChooser.emit()

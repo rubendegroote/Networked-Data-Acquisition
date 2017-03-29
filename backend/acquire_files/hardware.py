@@ -129,7 +129,6 @@ class BaseHardware():
 
     def step_scan(self):
         self.ns.on_setpoint = False
-        print(self.current_position)
         if self.current_position == len(self.scan_array)-1:
             self.stop_scan()
             return ([0],'Stopped {} scan.'.format(self.parameter))

@@ -65,10 +65,10 @@ class BeamlineGraph(QtWidgets.QWidget):
             x,y = self.data[x_str].values,self.data[y_str].values
         self.curve.setData(x - offset,y,pen = 'b')
 
+        self.current_value.setValue(y[-1])
         if window_size > 0:
             x = self.data[x_str][-t_val+window_size:].values
             y = self.data[y_str][-t_val+window_size:].values
-            self.current_value.setValue(y[-1])
             y_av = pd.rolling_mean(y, window_size)
 
             self.avCurve.setData(x[-t_val:] - offset,y_av[-t_val:],pen = pg.mkPen('r', width=3))

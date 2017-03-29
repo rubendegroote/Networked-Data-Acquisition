@@ -26,6 +26,8 @@ def main():
         if config_parser['IPs'][key] == this_pc:
             print(key)
             subprocess.Popen('python launch {}'.format(key))
+            if key == 'data_server':
+                subprocess.Popen('python browser_plotter.py')
 
 if __name__ == '__main__':
     main()

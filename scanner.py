@@ -444,6 +444,10 @@ class Scanner(QtWidgets.QWidget):
         dt = float(self.units_per_step_box.text())
         mode = str(self.options_box.currentText())
  
+        times = int(self.repeatBox.text())
+        if times == 0:
+            times = 1
+ 
         total_range = np.array([])
         summary = []
         for start,step,stop in zip(self.startSpins,self.steps,self.stopSpins):
@@ -454,20 +458,15 @@ class Scanner(QtWidgets.QWidget):
  
             total_range = np.concatenate((total_range,rng))
  
-            summary.append([start,stop,steps,dt,mode])
- 
-        times = int(self.repeatBox.text())
-        if times == 0:
-            times = 1
- 
-        newRng = total_range
+            summary.append([start,stop,steps,dt,mode,times])
+
         if times > 1:
             for t in range(times-1):
                 if t%2==0:
-                    newRng = np.concatenate((newRng,rng[::-1]))
+                    total_range = np.concatenate((total_range,rng[::-1]))
                 else:
-                    newRng = np.concatenate((newRng,rng))
-        rng = list(newRng)
+                    total_range = np.concatenate((total_range,rng))
+        rng = list(total_range)
  
  
         return rng,mode,dt,summary

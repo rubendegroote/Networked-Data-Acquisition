@@ -7,16 +7,21 @@ from PyDAQmx.DAQmxFunctions import *
 
 from .hardware import format,BaseHardware
 
-this_format = format +  ('AIChannel1','AIChannel2','AIChannel3')
+this_format = format +  ('Voltage_1','Voltage_2','Voltage_3','Voltage_4')
 write_params = []
+
+
+#### Change these if required and restart diodes device
+aichannels = "/Dev1/ai1,/Dev1/ai2,/Dev1/ai3,/Dev1/ai4"
+noOfAi = 4
 
 class Hardware(BaseHardware):
     def __init__(self):
         super(Hardware,self).__init__(name = 'diodes',
                                   format=this_format)
 
-        self.settings = dict(aiChannel="/Dev1/ai1,/Dev1/ai2,/Dev1/ai3",
-                               noOfAi=3)
+        self.settings = dict(aiChannel=aichannels,
+                               noOfAi=noOfAi)
 
     def connect_to_device(self):
         self.timeout = 10.0

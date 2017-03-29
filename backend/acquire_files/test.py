@@ -1,11 +1,11 @@
-from .hardware import format,BaseHardware
+import zlib
+import numpy as np
+import sys
+import time
 
-this_format = format + ('testing1_1',)
-write_params = ['testing1']
+data  = [np.zeros(5*10**6),np.zeros(5*10**6),np.zeros(5*10**6)]
 
-class Hardware(BaseHardware):
-    def __init__(self):
-        super(Hardware,self).__init__(name = 'test',
-                                  format=this_format,
-                                  write_params = write_params,
-                                  refresh_time=100)
+
+compressed = [zlib.compress(d) for d in data]
+
+print([zlib.decompress(d) for d in data])
