@@ -2,14 +2,19 @@ import threading as th
 import asyncore
 import socket
 import time
-
+import configparser
 import backend.helpers as hp
 from backend.connectors import Connector, Acceptor
 
+from config.absolute_paths import CONFIG_PATH
 
 class Dispatcher(asyncore.dispatcher):
-    def __init__(self, PORT, name):
+    def __init__(self, name):
         super(Dispatcher,self).__init__()
+        self.config_parser = configparser.ConfigParser()
+        self.config_parser.read(CONFIG_PATH)
+        PORT = int(self.config_parser['ports'][name])
+
         self.port = PORT
         self.name = name
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -64,7 +69,6 @@ class Dispatcher(asyncore.dispatcher):
         if address is None:
             return
         for name, add in self.connectors.items():
-            print(name,add,address)
             if (str(address[0]),str(address[1])) == (str(add.chan[0]), str(add.chan[1])):
                 if self.connInfo[name][0]:
                     return

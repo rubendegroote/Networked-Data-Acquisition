@@ -2,14 +2,10 @@ import os,sys,time
 import backend.helpers as hp
 import configparser
 import numpy as np
+from config.absolute_paths import CONFIG_PATH
 
 format = ('timestamp','offset','scan_number','mass')
 write_params = []
-
-config_parser = configparser.ConfigParser()
-CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
-config_parser.read(CONFIG_PATH)
-TIME_OFFSET = int(config_parser['other']['time_offset'])
 
 class BaseHardware():
     def __init__(self,name = 'hardware',
@@ -17,6 +13,10 @@ class BaseHardware():
                       write_params=write_params,
                       needs_stabilization = False,
                       refresh_time = 100):
+
+        self.config_parser = configparser.ConfigParser()
+        self.config_parser.read(CONFIG_PATH)
+        TIME_OFFSET = int(self.config_parser['other']['time_offset'])
 
         self.name = name
         self.format = format

@@ -13,12 +13,12 @@ from controlwidget import ControlWidget
 from scanner import ScannerWidget
 from LogbookApp import LogbookApp
 
-class ControllerApp(QtWidgets.QMainWindow):
+class controllerApp(QtWidgets.QMainWindow):
     updateSignal = QtCore.pyqtSignal(tuple)
     messageUpdateSignal = QtCore.pyqtSignal(dict)
     lost_connection = QtCore.pyqtSignal(object)
     def __init__(self):
-        super(ControllerApp, self).__init__()
+        super(controllerApp, self).__init__()
 
         self.setWindowTitle('Scan and device control')
 
@@ -109,11 +109,11 @@ class ControllerApp(QtWidgets.QMainWindow):
             self.enable()
             config = configparser.ConfigParser()
             if self.Contr_DS_Connector.contr and self.Contr_DS_Connector.DS:
-                self.statusBar().showMessage('Connected to Controller and Data Server')
+                self.statusBar().showMessage('Connected to controller and Data Server')
             elif self.Contr_DS_Connector.contr:
                 self.statusBar().showMessage('No Data Server Connection')
             elif self.Contr_DS_Connector.DS:
-                self.statusBar().showMessage('No Controller Connection')
+                self.statusBar().showMessage('No controller Connection')
 
         else:
             self.statusBar().showMessage('Connection failure')
@@ -176,7 +176,7 @@ class ControllerApp(QtWidgets.QMainWindow):
 
     def status_reply(self,track,params):
         origin, track_id = track[-1]
-        if origin == 'Controller':
+        if origin == 'controller':
             self.updateSignal.emit((self.statusWidget.update,
                                     {'track':track,'args':params}))
 
@@ -189,7 +189,7 @@ class ControllerApp(QtWidgets.QMainWindow):
             self.updateSignal.emit((self.deviceConnections.updateRefresh,
                                     {'track':track,'args':params['refresh_time']}))
 
-        elif origin == 'DataServer':
+        elif origin == 'data_server':
             self.updateSignal.emit((self.deviceConnections.updateData,
                                     {'track':track,'args':params}))
 
@@ -202,73 +202,73 @@ class ControllerApp(QtWidgets.QMainWindow):
 
     def change_refresh_time(self,info):
         device, time = info
-        self.Contr_DS_Connector.instruct('Controller',('forward_instruction',
+        self.Contr_DS_Connector.instruct('controller',('forward_instruction',
                                                     {'instruction':'change_device_refresh',
                                                      'device':device,
                                                      'arguments':{'time':time}}))
     def change_device_prop(self,info):
         device, prop = info
-        self.Contr_DS_Connector.instruct('Controller',('forward_instruction',
+        self.Contr_DS_Connector.instruct('controller',('forward_instruction',
                                                     {'instruction':'change_device_prop',
                                                      'device':device,
                                                      'arguments':{'prop':prop}}))
     def change_device_int(self,info):
         device, int = info
-        self.Contr_DS_Connector.instruct('Controller',('forward_instruction',
+        self.Contr_DS_Connector.instruct('controller',('forward_instruction',
                                                     {'instruction':'change_device_int',
                                                      'device':device,
                                                      'arguments':{'int':int}}))
     def change_device_diff(self,info):
         device, diff = info
-        self.Contr_DS_Connector.instruct('Controller',('forward_instruction',
+        self.Contr_DS_Connector.instruct('controller',('forward_instruction',
                                                     {'instruction':'change_device_diff',
                                                      'device':device,
                                                      'arguments':{'diff':diff}}))
     def lock_device_etalon(self,info):
         device, lock = info
-        self.Contr_DS_Connector.instruct('Controller',('forward_instruction',
+        self.Contr_DS_Connector.instruct('controller',('forward_instruction',
                                                     {'instruction':'lock_device_etalon',
                                                      'device':device,
                                                      'arguments':{'lock':lock}}))
     def set_device_etalon(self,info):
         device, etalon_value = info
-        self.Contr_DS_Connector.instruct('Controller',('forward_instruction',
+        self.Contr_DS_Connector.instruct('controller',('forward_instruction',
                                                     {'instruction':'set_device_etalon',
                                                      'device':device,
                                                      'arguments':{'etalon_value':etalon_value}}))
     def lock_device_cavity(self,info):
         device, lock = info
-        self.Contr_DS_Connector.instruct('Controller',('forward_instruction',
+        self.Contr_DS_Connector.instruct('controller',('forward_instruction',
                                                     {'instruction':'lock_device_cavity',
                                                      'device':device,
                                                      'arguments':{'lock':lock}}))
     def set_device_cavity(self,info):
         device, cavity_value = info
-        self.Contr_DS_Connector.instruct('Controller',('forward_instruction',
+        self.Contr_DS_Connector.instruct('controller',('forward_instruction',
                                                     {'instruction':'set_device_cavity',
                                                      'device':device,
                                                      'arguments':{'cavity_value':cavity_value}}))
     def lock_device_wavelength(self,info):
         device, lock = info
-        self.Contr_DS_Connector.instruct('Controller',('forward_instruction',
+        self.Contr_DS_Connector.instruct('controller',('forward_instruction',
                                                     {'instruction':'lock_device_wavelength',
                                                      'device':device,
                                                      'arguments':{'lock':lock}}))
     def lock_device_ecd(self,info):
         device, lock = info
-        self.Contr_DS_Connector.instruct('Controller',('forward_instruction',
+        self.Contr_DS_Connector.instruct('controller',('forward_instruction',
                                                     {'instruction':'lock_device_ecd',
                                                      'device':device,
                                                      'arguments':{'lock':lock}}))
     def calibrate_wavemeter(self,info):
         device = info['device']
-        self.Contr_DS_Connector.instruct('Controller',('forward_instruction',
+        self.Contr_DS_Connector.instruct('controller',('forward_instruction',
                                                      {'instruction':'calibrate_wavemeter',      
                                                      'device':device,
                                                      'arguments':{}}))
 
     def get_scan_ranges(self,scans):
-        self.Contr_DS_Connector.instruct('Controller',('get_scan_ranges',{'scans':scans}))
+        self.Contr_DS_Connector.instruct('controller',('get_scan_ranges',{'scans':scans}))
 
     def get_scan_ranges_reply(self,track,params):
         origin,track_id = track[-1]
@@ -278,7 +278,7 @@ class ControllerApp(QtWidgets.QMainWindow):
     def change_save_mode(self,info):
         device,infodict = info
         infodict['device']=device
-        self.Contr_DS_Connector.instruct('Controller',('change_save_mode',infodict))
+        self.Contr_DS_Connector.instruct('controller',('change_save_mode',infodict))
 
     def change_save_mode_reply(self,track,params):
         origin,track_id = track[-1]
@@ -291,7 +291,7 @@ class ControllerApp(QtWidgets.QMainWindow):
                 'Choose a mass or enter new mass:', masses)
         if result:
             scanInfo['mass'] = [int(mass)]
-            self.Contr_DS_Connector.instruct('Controller', ('start_scan', scanInfo))
+            self.Contr_DS_Connector.instruct('controller', ('start_scan', scanInfo))
         else:
             pass
 
@@ -300,14 +300,14 @@ class ControllerApp(QtWidgets.QMainWindow):
         self.messageUpdateSignal.emit({'track':track,'args':[[0],"Start scan instruction received"]})
 
     def stop_scan(self):
-        self.Contr_DS_Connector.instruct('Controller', ('stop_scan',{}))
+        self.Contr_DS_Connector.instruct('controller', ('stop_scan',{}))
 
     def stop_scan_reply(self,track,params):
         origin,track_id = track[-1]
         self.messageUpdateSignal.emit({'track':track,'args':[[0],"Stop scan instruction received"]})
 
     def go_to_setpoint(self, setpointInfo):
-        self.Contr_DS_Connector.instruct('Controller', ('go_to_setpoint', setpointInfo))
+        self.Contr_DS_Connector.instruct('controller', ('go_to_setpoint', setpointInfo))
 
     def go_to_setpoint_reply(self,track,params):
         origin,track_id = track[-1]
@@ -388,7 +388,7 @@ class Contr_DS_Connector():
             self.contr = None
 
     def instruct(self, receiver, instr):
-        if receiver == 'Controller':
+        if receiver == 'controller':
             self.contr.add_request(instr)
         elif receiver == 'Data Server':
             self.DS.add_request(instr)
@@ -568,7 +568,7 @@ def main():
     # add freeze support
     freeze_support()
     app = QtWidgets.QApplication(sys.argv)
-    m = ControllerApp()
+    m = controllerApp()
     sys.exit(app.exec_())
 
 

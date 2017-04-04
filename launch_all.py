@@ -3,6 +3,7 @@ import configparser
 import subprocess
 from multiprocessing import freeze_support
 import time
+from config.absolute_paths import CONFIG_PATH
 
 def main():
     freeze_support()
@@ -10,7 +11,6 @@ def main():
 
     print(this_pc)
 
-    CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
     config_parser = configparser.ConfigParser()
     config_parser.read(CONFIG_PATH)
 

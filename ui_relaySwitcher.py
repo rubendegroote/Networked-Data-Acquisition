@@ -31,7 +31,7 @@ except AttributeError:
 class Ui_RelaySwitcher(object):
 
     def __init__(self):
-        self.sc=open(u'\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\24V_config.ini','r')
+        self.sc=open(u'\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\config\\24V_config.ini','r')
         self.config={}
         self.labels={}
         self.checkRelays={}

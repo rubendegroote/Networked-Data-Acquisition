@@ -10,7 +10,7 @@ import threading as th
 import configparser
 from http.server import HTTPServer,BaseHTTPRequestHandler,SimpleHTTPRequestHandler
 import socketserver
-
+from config.absolute_paths import CONFIG_PATH
 
 ##### CHANGE THIS IF YOU WANT TO SEE SOMETHING ELSE
 binsize = 1500
@@ -18,13 +18,11 @@ x = 'wavemeter_pdl: wavenumber_1'
 y = 'cris: Counts'
 
 
-
-CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
 config_parser = configparser.ConfigParser()
 config_parser.read(CONFIG_PATH)
 save_path = config_parser['paths']['data_path']
 
-SCAN_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\scan_init.ini"
+SCAN_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\config\\scan_init.ini"
 PLOTS_PATH = 'C:\\DAQ tests\\browser\\'
 
 

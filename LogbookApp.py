@@ -5,12 +5,11 @@ import time
 from multiprocessing import freeze_support
 import os,sys
 import configparser
-
 from backend.connectors import Connector
 from connectiondialogs import ConnectionDialog, FieldAdditionDialog
 from logviewerwidgets import LogEntryWidget
+from config.absolute_paths import CONFIG_PATH
 
-CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
 
 class LogbookApp(QtWidgets.QWidget):
     editSignal = QtCore.pyqtSignal(int,object)
@@ -18,13 +17,13 @@ class LogbookApp(QtWidgets.QWidget):
     messageUpdateSignal = QtCore.pyqtSignal(dict)
     
     ### get configuration details
-    config_parser = configparser.ConfigParser()
-    config_parser.read(CONFIG_PATH)
-    log_per_page = int(config_parser['other']['log_per_page'])
-    controller_channel = (config_parser['IPs']['controller'],
-                          int(config_parser['ports']['controller']))
     def __init__(self):
         super(LogbookApp, self).__init__()
+        self.config_parser = configparser.ConfigParser()
+        self.config_parser.read(CONFIG_PATH)
+        self.log_per_page = int(self.config_parser['other']['log_per_page'])
+        self.controller_channel = (self.config_parser['IPs']['controller'],
+                              int(self.config_parser['ports']['controller']))
 
         self.log_edits = []
         self.logEntryWidgets = {}

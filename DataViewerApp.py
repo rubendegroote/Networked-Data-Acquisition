@@ -7,32 +7,31 @@ import pandas as pd
 import numpy as np
 from multiprocessing import freeze_support
 import sys,os
-
 from scanner import ScannerWidget
 from connect import ConnectionsWidget
 from graph import XYGraph
-
 from backend.connectors import Connector
-
+from config.absolute_paths import CONFIG_PATH
 import configparser
-CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
 
 class DataViewerApp(QtWidgets.QMainWindow):
-    config_parser = configparser.ConfigParser()
-    config_parser.read(CONFIG_PATH)
-
-    fserver_ch = str(config_parser['IPs']['file_server'])
-    fserver_port = int(config_parser['ports']['file_server'])
-    fileserver_channel = (fserver_ch,fserver_port)
-    
-    server_ch = str(config_parser['IPs']['data_server'])
-    server_port = int(config_parser['ports']['data_server'])
-    dataserver_channel = (server_ch,server_port)
 
     launch_chooser_signal = QtCore.pyqtSignal()
     closeChooser =  QtCore.pyqtSignal()
     def __init__(self):
         super(DataViewerApp, self).__init__()
+
+        self.config_parser = configparser.ConfigParser()
+        self.config_parser.read(CONFIG_PATH)
+
+        fserver_ch = str(self.config_parser['IPs']['file_server'])
+        fserver_port = int(self.config_parser['ports']['file_server'])
+        fileserver_channel = (fserver_ch,fserver_port)
+        
+        server_ch = str(self.config_parser['IPs']['data_server'])
+        server_port = int(self.config_parser['ports']['data_server'])
+        dataserver_channel = (server_ch,server_port)
+
         self.initialized = False
         self.scan_number = -1
 

@@ -7,8 +7,7 @@ import xmlrpc.client
 import os
 import configparser
 import time
-
-SHARED_PATH = r"\\cern.ch\\dfs\\Users\\c\\cris\\Documents\\Networked-Data-Acquisition\\"
+from config.absolute_paths import CONFIG_PATH, BATCH_PATH
 
 class CRISTAL(QtWidgets.QMainWindow):
     def __init__(self):
@@ -141,12 +140,10 @@ class CRISTAL(QtWidgets.QMainWindow):
         self.show()
 
     def launch_listener(self):
-        p = Popen(r"C:\\Networked-data-acquisition\batch scripts\listener.bat")
+        p = Popen(r"C:\\Networked-data-acquisition\\batch scripts\\listener.bat")
 
     def get_configs(self):
-        CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
         config_parser = configparser.ConfigParser()
-
         config_parser.read(CONFIG_PATH)
         ports = config_parser['ports']
         IPs1 = config_parser['IPs devices']
@@ -156,7 +153,6 @@ class CRISTAL(QtWidgets.QMainWindow):
 
     def modify_config(self):
         self.get_configs()
-        CONFIG_PATH = SHARED_PATH + "Config files\\config.ini"
         with open(CONFIG_PATH, 'r') as f:
             text = f.read()
 
@@ -254,7 +250,7 @@ class CRISTAL(QtWidgets.QMainWindow):
         p = Popen(r"C:\Networked-data-acquisition\batch scripts\run_valves_cups.bat")
 
     def run_update(self):
-        p = Popen(SHARED_PATH + r"\\batch scripts\\update_files.bat")
+        p = Popen(BATCH_PATH + r"update_files.bat")
 
     def handle_close(self):
         self.rpc.kill()

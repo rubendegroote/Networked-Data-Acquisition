@@ -4,22 +4,18 @@ import multiprocessing as mp
 import numpy as np
 import pandas as pd
 import configparser
-
 from backend.helpers import *
 from backend.connectors import Connector, Acceptor
 import backend.logbook as lb
 from backend.dispatcher import Dispatcher
 import threading as th
+from config.absolute_paths import CONFIG_PATH
 
-CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
 CHUNK_SIZE = 5*10**4
 class FileServer(Dispatcher):
-    config_parser = configparser.ConfigParser()
-    config_parser.read(CONFIG_PATH)
-    save_path = config_parser['paths']['data_path']
-    PORT = int(config_parser['ports']['file_server'])
-    def __init__(self,PORT=PORT, name='FileServer'):
-        super(FileServer, self).__init__(PORT, name)
+    def __init__(self, name='file_server'):
+        super(FileServer, self).__init__(name)
+        self.save_path = self.config_parser['paths']['data_path']
         self.row = 0
 
     @try_call

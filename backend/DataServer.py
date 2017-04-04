@@ -8,21 +8,17 @@ import os,sys
 import multiprocessing as mp
 import configparser
 
-
-CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
 CHUNK_SIZE = 10**4
 
 class DataServer(Dispatcher):
-    ### get configuration details
-    config_parser = configparser.ConfigParser()
-    config_parser.read(CONFIG_PATH)
-    save_path = config_parser['paths']['data_path']
-    if not os.path.exists(save_path):
-        os.makedirs(save_path)
-    time_offset = int(config_parser['other']['time_offset'])
-    PORT = int(config_parser['ports']['data_server'])
-    def __init__(self, PORT=PORT, name='DataServer'):
-        super(DataServer, self).__init__(PORT, name)
+    def __init__(self, name='data_server'):
+        super(DataServer, self).__init__(name)
+        ### get configuration details
+        self.save_path = self.config_parser['paths']['data_path']
+        if not os.path.exists(self.save_path):
+            os.makedirs(self.save_path)
+        time_offset = int(self.config_parser['other']['time_offset'])
+        
         self.data = {}
         self.scan_data = {}
         self.mode = 'stream'

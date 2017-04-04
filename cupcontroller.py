@@ -13,8 +13,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 mpl.rcParams['toolbar'] = 'None'
-
-CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
+from config.absolute_paths import CONFIG_PATH
 
 
 def make_plot(radii, seg = None):
@@ -77,15 +76,14 @@ def make_plot(radii, seg = None):
 
     return fig
 
-class Cup_Valve_Controller(QtWidgets.QWidget):
-
-    config_parser = configparser.ConfigParser()
-    config_parser.read(CONFIG_PATH)
+class Cup_Valve_controller(QtWidgets.QWidget):
 
     lost_connection = QtCore.pyqtSignal(object)
     update_sig = QtCore.pyqtSignal(dict)
     def __init__(self):
-        super(Cup_Valve_Controller,self).__init__()
+        super(Cup_Valve_controller,self).__init__()
+        self.config_parser = configparser.ConfigParser()
+        self.config_parser.read(CONFIG_PATH)
 
         self.setWindowTitle('Cups and valves control')
         self.outStyle = "QPushButton { background-color: rgba(255, 0, 0, 50); }"
@@ -355,7 +353,7 @@ def main():
     # add freeze support
     freeze_support()
     app = QtWidgets.QApplication(sys.argv)
-    m = Cup_Valve_Controller()
+    m = Cup_Valve_controller()
     sys.exit(app.exec_())
 
 

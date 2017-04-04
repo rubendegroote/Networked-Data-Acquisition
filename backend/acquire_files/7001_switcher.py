@@ -24,7 +24,7 @@ class Hardware(BaseHardware):
 
 
     def load_config(self):
-        sc=open(u'\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\7001_config.ini','r')
+        sc=open(u'\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\config\\7001_config.ini','r')
         for line in sc:
             cup, ch_switch = [x.strip() for x in line.split(',')]
             self.config[cup] = ch_switch

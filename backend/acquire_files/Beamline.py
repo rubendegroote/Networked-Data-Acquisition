@@ -8,7 +8,7 @@ from collections import OrderedDict
 
 from .hardware import format,BaseHardware
 
-ini = open('\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\beamline_config.ini','rb')
+ini = open('\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\config\\beamline_config.ini','rb')
 data = np.genfromtxt(ini,delimiter = '\t',dtype=str)
 supply_names = list(data.T[0])
 modules = list(data.T[1])

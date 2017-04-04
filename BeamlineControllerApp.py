@@ -11,8 +11,8 @@ from beamlinegraph import BeamlineGraph
 import pandas as pd
 from connectiondialogs import Contr_DS_ConnectionDialog
 import configparser
+from config.absolute_paths import CONFIG_PATH
 
-CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
 
 from backend.connectors import Connector
 
@@ -136,7 +136,7 @@ class ControlContainer(QtWidgets.QWidget):
 
         self.controls[key][2].sigValueChanging.connect(self.change_volts)
 
-class BeamlineControllerApp(QtWidgets.QMainWindow):
+class BeamlinecontrollerApp(QtWidgets.QMainWindow):
 
     config_parser = configparser.ConfigParser()
     config_parser.read(CONFIG_PATH)
@@ -145,7 +145,7 @@ class BeamlineControllerApp(QtWidgets.QMainWindow):
     updateSignal = QtCore.pyqtSignal(tuple)
     messageUpdateSignal = QtCore.pyqtSignal(dict)
     def __init__(self):
-        super(BeamlineControllerApp, self).__init__()   
+        super(BeamlinecontrollerApp, self).__init__()   
         self.updateSignal.connect(self.updateUI)
         self.messageUpdateSignal.connect(self.updateMessages)
         self.initialized = False
@@ -191,11 +191,11 @@ class BeamlineControllerApp(QtWidgets.QMainWindow):
         if self.control_connector or self.DS_connector:
             if self.control_connector and self.DS_connector:
                 self.statusBar().showMessage(
-                    'Connected to Controller and Data Server')
+                    'Connected to controller and Data Server')
             elif self.control_connector:
                 self.statusBar().showMessage('No Data Server Connection')
             elif self.DS_connector:
-                self.statusBar().showMessage('No Controller Connection')
+                self.statusBar().showMessage('No controller Connection')
                 
         else:
             self.statusBar().showMessage('Connection failure')
@@ -489,7 +489,7 @@ def main():
     # add freeze support
     freeze_support()
     app = QtWidgets.QApplication(sys.argv)
-    m = BeamlineControllerApp()
+    m = BeamlinecontrollerApp()
     sys.exit(app.exec_())
 
 

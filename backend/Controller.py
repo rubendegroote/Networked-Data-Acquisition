@@ -5,26 +5,16 @@ from backend.helpers import *
 from backend.connectors import Connector, Acceptor
 import backend.logbook as lb
 from backend.dispatcher import Dispatcher
-
-CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
-SCAN_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\scan_init.ini"
+from config.absolute_paths import SCAN_PATH
 
 class Controller(Dispatcher):
-    ### get configuration details
-    config_parser = configparser.ConfigParser()
-    config_parser.read(CONFIG_PATH)
+    def __init__(self, name='controller'):
+        super(Controller, self).__init__(name)
+        self.log_path = self.config_parser['paths']['log_path'] 
+        if not os.path.exists(self.log_path):
+            os.makedirs(self.log_path)
+        self.log_path += 'logbook'
 
-    scan_parser = configparser.ConfigParser()
-    scan_parser.read(SCAN_PATH)
-
-    log_path = config_parser['paths']['log_path'] 
-    if not os.path.exists(log_path):
-        os.makedirs(log_path)
-    log_path += 'logbook'
-
-    PORT = int(config_parser['ports']['controller'])
-    def __init__(self, PORT=PORT, name='Controller'):
-        super(Controller, self).__init__(PORT, name)
         self.progress = {}
         self.scanning = {}
         self.format = {}
@@ -54,6 +44,10 @@ class Controller(Dispatcher):
         self.read_config()
 
     def read_config(self):
+        ### get prev scan details
+        self.scan_parser = configparser.ConfigParser()
+        self.scan_parser.read(SCAN_PATH)
+
         # get last scan number from config file
         self.last_scan = int(self.scan_parser['last_scan']['last_scan'])
         self.mass = int(self.scan_parser['last_scan']['mass'])
@@ -284,5 +278,5 @@ class Controller(Dispatcher):
         self.format[origin] = params['format']
         self.write_params[origin] = params['write_params']
 
-def makeController():
-    return Controller()
+def makecontroller():
+    return controller()

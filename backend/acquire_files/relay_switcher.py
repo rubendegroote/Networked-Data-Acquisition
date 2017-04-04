@@ -24,7 +24,7 @@ class Hardware(BaseHardware):
         self.mapping = {'switch_actuator':self.switch_actuator}
 
     def load_config(self):
-        sc=open(u'\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\24V_config.ini','r')
+        sc=open(u'\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\config\\24V_config.ini','r')
         for line in sc:
             act, num = [x.strip() for x in line.split(',')]
             self.config[act] = num

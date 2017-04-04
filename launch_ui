@@ -14,7 +14,7 @@ def main():
     elif sys.argv[1] == 'log_viewer':
         from LogbookApp import main as ui_main
     elif sys.argv[1] == 'beam_tuning':
-        from BeamlineControllerApp import main as ui_main
+        from BeamlinecontrollerApp import main as ui_main
     else:
         print("Invalid option supplied to launch_ui")
         print("Usage: python launch_ui <name>")

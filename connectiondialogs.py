@@ -1,16 +1,15 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import os
 import configparser
-
-CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
-
+from config.absolute_paths import CONFIG_PATH
 
 class Contr_DS_ConnectionDialog(QtWidgets.QDialog):
     ### get configuration details
-    config_parser = configparser.ConfigParser()
-    config_parser.read(CONFIG_PATH)
     def __init__(self, parent=None, message=''):
         super(Contr_DS_ConnectionDialog, self).__init__(parent)
+        self.config_parser = configparser.ConfigParser()
+        self.config_parser.read(CONFIG_PATH)
+
         ContChannelBoxtext = str(self.config_parser['IPs']['controller'])
         ContPortBoxtext = str(self.config_parser['ports']['controller'])
         
@@ -27,10 +26,10 @@ class Contr_DS_ConnectionDialog(QtWidgets.QDialog):
 
         self.layout.addWidget(QtWidgets.QLabel(message), 0, 0, 1, 1)
 
-        self.layout.addWidget(QtWidgets.QLabel('Controller IP'), 1, 1, 1, 1)
+        self.layout.addWidget(QtWidgets.QLabel('controller IP'), 1, 1, 1, 1)
         self.ContChannelBox = QtWidgets.QLineEdit(self, text=ContChannelBoxtext)
         self.layout.addWidget(self.ContChannelBox, 2, 1, 1, 1)
-        self.layout.addWidget(QtWidgets.QLabel('Controller port'), 1, 2, 1, 1)
+        self.layout.addWidget(QtWidgets.QLabel('controller port'), 1, 2, 1, 1)
         self.ContPortBox = QtWidgets.QLineEdit(self, text=ContPortBoxtext)
         self.layout.addWidget(self.ContPortBox, 2, 2, 1, 1)
 

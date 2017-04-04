@@ -12,22 +12,17 @@ import configparser
 
 from backend.acquire_files.acquisition import acquire
 
-CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
-
 class Device(Dispatcher):
     ### get configuration details
-    config_parser = configparser.ConfigParser()
-    config_parser.read(CONFIG_PATH)
-
-    save_path = config_parser['paths']['data_path']
-    time_offset = int(config_parser['other']['time_offset'])
     def __init__(self, name=''):
-        PORT = int(self.config_parser['ports'][name])
-        super(Device, self).__init__(PORT, name)
+        super(Device, self).__init__(name)
+        save_path = self.config_parser['paths']['data_path']
+        time_offset = int(self.config_parser['other']['time_offset'])
+        
         self.acquire = acquire
 
         # instructions queue:
-        # Controller -> InstructionReceiver -> acquire
+        # controller -> InstructionReceiver -> acquire
         self.iQ = mp.Queue()
         # message queue
         self.mQ = mp.Queue()

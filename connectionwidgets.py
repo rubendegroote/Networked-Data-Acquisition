@@ -2,8 +2,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import configparser
 from connectiondialogs import ConnectionDialog
 import os
+from config.absolute_paths import CONFIG_PATH
 
-CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
 
 class DeviceConnections(QtWidgets.QWidget):
     connectSig = QtCore.pyqtSignal(tuple)
@@ -12,11 +12,12 @@ class DeviceConnections(QtWidgets.QWidget):
     refresh_changed_sig = QtCore.pyqtSignal(tuple)
     change_save_mode_sig = QtCore.pyqtSignal(tuple)
 
-    ### get configuration details
-    config_parser = configparser.ConfigParser()
-    config_parser.read(CONFIG_PATH)
     def __init__(self, parent=None):
         super(DeviceConnections, self).__init__(parent)
+        ### get configuration details
+        self.config_parser = configparser.ConfigParser()
+        self.config_parser.read(CONFIG_PATH)
+
         ports = self.config_parser['ports']
         IPs = self.config_parser['IPs devices']
         self.address = {k:(IPs[k],ports[k])
@@ -50,7 +51,7 @@ class DeviceConnections(QtWidgets.QWidget):
         if self.reads_data[selection] == 'yes':
             self.connectSig.emit(('Both', selection, respons))
         else:
-            self.connectSig.emit(('Controller', selection, respons))
+            self.connectSig.emit(('controller', selection, respons))
 
     def addDeviceWidget(self, name='',IP='',PORT=5000):
         self.deviceWidgets[name] = DeviceWidget(self, name, IP, PORT, self.reads_data[name] == 'yes')
@@ -83,9 +84,9 @@ class DeviceConnections(QtWidgets.QWidget):
     def update(self,track,params):
         origin, track_id = track[-1]
         # update list of existing connections
-        if origin == 'Controller':
+        if origin == 'controller':
             self.ManDevices = params.keys()
-        elif origin == 'DataServer':
+        elif origin == 'data_server':
             self.DSDevices = params.keys()
 
         for key,val in params.items():
@@ -159,7 +160,7 @@ class DeviceWidget(QtWidgets.QWidget):
         self.label.setMinimumWidth(100)
         self.layout.addWidget(self.label, 0, 0, 1, 1)
 
-        self.ManLabel = QtWidgets.QLabel('Controller')
+        self.ManLabel = QtWidgets.QLabel('controller')
         self.ManLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.ManLabel.setMinimumWidth(120)
         self.ManLabel.setMinimumHeight(25)
@@ -189,10 +190,10 @@ class DeviceWidget(QtWidgets.QWidget):
         self.streamLabel = QtWidgets.QLabel(self, text='')
         self.layout.addWidget(self.streamLabel, 0, 4, 1, 1)
 
-        self.ManReconnectButton = QtWidgets.QPushButton('Reconnect Controller')
+        self.ManReconnectButton = QtWidgets.QPushButton('Reconnect controller')
         self.layout.addWidget(self.ManReconnectButton, 0, 1, 1, 1)
         self.ManReconnectButton.clicked.connect(
-            lambda: self.reConnectDevice('Controller'))
+            lambda: self.reConnectDevice('controller'))
         self.ManReconnectButton.setHidden(True)
 
         self.DSReconnectButton = QtWidgets.QPushButton('Reconnect Data Server')
@@ -243,7 +244,7 @@ class DeviceWidget(QtWidgets.QWidget):
         self.reconnectSig.emit((sender, self.name, (self.IP, self.PORT)))
 
     def set_disconnected(self,origin):
-        if origin == 'Controller':
+        if origin == 'controller':
             self.ManLabel.setStyleSheet(self.not_ok)
             self.ManReconnectButton.setVisible(True)
         elif self.has_data_connection:
@@ -251,7 +252,7 @@ class DeviceWidget(QtWidgets.QWidget):
             self.DSReconnectButton.setVisible(True)
             
     def set_connected(self,origin):
-        if origin == 'Controller':
+        if origin == 'controller':
             self.ManLabel.setStyleSheet(self.ok)
             self.ManReconnectButton.setHidden(True)
         elif self.has_data_connection:
