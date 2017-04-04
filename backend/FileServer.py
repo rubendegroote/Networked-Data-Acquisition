@@ -11,8 +11,8 @@ import backend.logbook as lb
 from backend.dispatcher import Dispatcher
 import threading as th
 
-CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
-CHUNK_SIZE = 5*10**5
+CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
+CHUNK_SIZE = 5*10**4
 class FileServer(Dispatcher):
     config_parser = configparser.ConfigParser()
     config_parser.read(CONFIG_PATH)
@@ -28,20 +28,18 @@ class FileServer(Dispatcher):
         x,y = params['x'],params['y']
 
         if self.row == 0:
-            self.data = extract_scan(self.save_path+'server_data.h5',scan_numbers,[x,y],filename=None)
+            self.data = extract_scan(self.save_path+'server_data_1.h5',scan_numbers,[x,y],filename=None)
 
         stop = self.row+CHUNK_SIZE
-        data = [self.data.index.values[self.row:stop],
-                self.data[x.split(': ')[-1]].values[self.row:stop],
-                self.data[y.split(': ')[-1]].values[self.row:stop]]
-        chunk = [list(d) for d in data]
-
+        data = [self.data['time'][self.row:stop],self.data[x.split(': ')[-1]][self.row:stop],self.data[y.split(': ')[-1]][self.row:stop]]
+        chunk = [list(d.values) for d in data]
+        print(stop)
         if stop >= len(self.data):
             self.row = 0
-            return {'data': chunk,'done':True,'progress':100}
+            return {'data': chunk,'done':True}
         else:
             self.row = stop
-            return {'data': chunk,'done':False,'progress':int(stop/len(self.data))}
+            return {'data': chunk,'done':False}
 
     @try_call
     def get_status(self,params):
@@ -52,8 +50,8 @@ class FileServer(Dispatcher):
             masses = list(info.T[1])
             available_scans,masses = zip(*set(zip(available_scans,masses)))
         except:
-            masses = []
             available_scans = []
+            masses = []
         
         return {'available_scans':available_scans,
                 'masses':masses}
@@ -64,7 +62,7 @@ class FileServer(Dispatcher):
         scans = params['scans']
 
         format = []
-        with h5py.File(self.save_path+'server_data.h5','r') as store:
+        with h5py.File(self.save_path+'server_data_1.h5') as store:
             for dev in store.keys():
                 for scan in scans:
                     scanno = str(int(scan))+'_0'

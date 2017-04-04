@@ -19,6 +19,9 @@ class ControllerApp(QtWidgets.QMainWindow):
     lost_connection = QtCore.pyqtSignal(object)
     def __init__(self):
         super(ControllerApp, self).__init__()
+
+        self.setWindowTitle('Scan and device control')
+
         self.looping = True
         self.hasMan = False
         self.hasDS = False
@@ -263,6 +266,7 @@ class ControllerApp(QtWidgets.QMainWindow):
                                                      {'instruction':'calibrate_wavemeter',      
                                                      'device':device,
                                                      'arguments':{}}))
+
     def get_scan_ranges(self,scans):
         self.Contr_DS_Connector.instruct('Controller',('get_scan_ranges',{'scans':scans}))
 

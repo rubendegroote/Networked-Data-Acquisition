@@ -33,7 +33,7 @@ class ControlWidget(QtWidgets.QWidget):
         self.M2.wavenumber_value.sigValueChanging.connect(self.emit_set_wavenumber_M2)
         self.M2.lock_wavelength_button.clicked.connect(self.emit_lock_wavelength_M2)
         self.M2.lock_ecd_button.clicked.connect(self.emit_lock_ecd)
-        layout.addWidget(self.M2,1,0)
+        layout.addWidget(self.M2,1,0,1,5)
 
         label = QtWidgets.QLabel('Matisse Controls')
         font = QtGui.QFont("Helvetica", 16, QtGui.QFont.Bold) 
@@ -47,7 +47,7 @@ class ControlWidget(QtWidgets.QWidget):
         self.Matisse.lock_wavelength_button.clicked.connect(self.emit_lock_wavelength_Matisse)
         self.Matisse.wavenumber_value.sigValueChanging.connect(self.emit_set_wavenumber_Matisse)
 
-        layout.addWidget(self.Matisse,3,0)
+        layout.addWidget(self.Matisse,3,0,1,5)
 
         label = QtWidgets.QLabel('WSU2 controls')
         font = QtGui.QFont("Helvetica", 16, QtGui.QFont.Bold) 
@@ -56,7 +56,7 @@ class ControlWidget(QtWidgets.QWidget):
 
         self.cal_button = QtWidgets.QPushButton('calibrate')
         self.cal_button.clicked.connect(self.emit_calibrate_sig)
-        layout.addWidget(self.cal_button,5,0)
+        layout.addWidget(self.cal_button,5,0,1,1)
 
         label = QtWidgets.QLabel('WS6 controls')
         font = QtGui.QFont("Helvetica", 16, QtGui.QFont.Bold) 
@@ -65,29 +65,33 @@ class ControlWidget(QtWidgets.QWidget):
 
         self.cal_button_pdl = QtWidgets.QPushButton('calibrate pdl')
         self.cal_button_pdl.clicked.connect(self.emit_calibrate_sig)
-        layout.addWidget(self.cal_button_pdl,7,0)
+        layout.addWidget(self.cal_button_pdl,7,0,1,1)
+
+        # label = QtWidgets.QLabel('Cup controls')
+        # font = QtGui.QFont("Helvetica", 16, QtGui.QFont.Bold) 
+        # label.setFont(font)
+        # layout.addWidget(label,8,0,1,5)
 
         spacer = QtGui.QSpacerItem(20,40,QtGui.QSizePolicy.Minimum,QtGui.QSizePolicy.Expanding)
-        layout.addItem(spacer,10,1,1,4)
+        layout.addItem(spacer,12,1,1,4)
 
     def update(self,track,info):
-        if not 'wavemeter' in info.keys():
-            self.cal_button.setDisabled(True)
-        else:
+        if 'wavemeter' in info.keys():
             self.cal_button.setEnabled(True)
-        if not 'wavemeter_pdl' in info.keys():
-            self.cal_button_pdl.setDisabled(True)
         else:
+            self.cal_button.setDisabled(True)
+        if 'wavemeter_pdl' in info.keys():
             self.cal_button_pdl.setEnabled(True)
-        if not 'm2' in info.keys():
-            self.M2.setDisabled(True)
         else:
+            self.cal_button_pdl.setDisabled(True)
+        if 'm2' in info.keys():
             self.M2.setEnabled(True)
-        if not 'Matisse' in info.keys():
-            self.Matisse.setDisabled(True)
         else:
+            self.M2.setDisabled(True)
+        if 'Matisse' in info.keys():
             self.Matisse.setEnabled(True)
-
+        else:
+            self.Matisse.setDisabled(True)
 
         try:
             M2_info = info['m2']

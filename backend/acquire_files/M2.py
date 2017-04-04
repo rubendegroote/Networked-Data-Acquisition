@@ -20,7 +20,7 @@ class Hardware(BaseHardware):
                                  format=this_format,
                                  write_params = write_params,
                                  needs_stabilization = True,
-                                 refresh_time = 20)
+                                 refresh_time = 200)
         self.mapping = {
             "Set Wavelength": comm.set_wave_m,
             "Poll Wavelength": comm.poll_wave_m,
@@ -141,7 +141,7 @@ class Hardware(BaseHardware):
             self.setpoint_reached()
             return ([0],'{} setpoint reached'.format(self.parameter))
 
-    def read_from_device(self):
+    def read_status(self):
         self.socket.sendall(comm.get_status())
         response = json.loads(self.socket.recv(1024).decode('utf-8'))
         status_data = response['message']['parameters']
@@ -156,6 +156,8 @@ class Hardware(BaseHardware):
 
         self.wavenumber = self.wlmdata.GetFrequencyNum(1,0) / 0.0299792458
 
+    def read_from_device(self):
+        self.read_status()
         data = [convert_data(self.ns.status_data[m]) for m in M2_format]
 
         return data

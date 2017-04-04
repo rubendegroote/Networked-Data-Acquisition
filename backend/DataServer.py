@@ -8,7 +8,9 @@ import os,sys
 import multiprocessing as mp
 import configparser
 
-CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
+
+CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
+CHUNK_SIZE = 10**4
 
 class DataServer(Dispatcher):
     ### get configuration details
@@ -35,7 +37,7 @@ class DataServer(Dispatcher):
         self.saving_devices = {}
         self.saving_stream_devices = {}
 
-        self.buffer_size = 50000
+        self.buffer_size = 10**5
 
         self.backupFlag = mp.Event()
         self.backupFlag.clear()
@@ -81,13 +83,10 @@ class DataServer(Dispatcher):
             # no scans yet
             return [[],[]]
 
-            row = min(row,self.buffer_size)
-
         return_list = []
         if row > 0:
             return_list.append(list(data_set[0,-row:])) #timestamp as well
             return_list.append(list(data_set[col,-row:]))
-            
         else:
             # row == 0 means the DataViewer is up to date, nothing to send
             return_list.append([])
@@ -172,8 +171,6 @@ class DataServer(Dispatcher):
                                   self.format[origin],
                                   data,
                                   self.saving_stream_devices[origin]))
-            # self.bin_input.send((self.format[origin],
-            #                       data))
 
         #add the data to the buffer (a dict of numpy arrays)
         try:

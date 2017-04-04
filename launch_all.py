@@ -1,8 +1,6 @@
 import os,sys
 import configparser
 import subprocess
-from backend.device import Device
-from backend.basedevice import BaseDevice
 from multiprocessing import freeze_support
 import time
 
@@ -12,7 +10,7 @@ def main():
 
     print(this_pc)
 
-    CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
+    CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
     config_parser = configparser.ConfigParser()
     config_parser.read(CONFIG_PATH)
 
@@ -26,8 +24,6 @@ def main():
         if config_parser['IPs'][key] == this_pc:
             print(key)
             subprocess.Popen('python launch {}'.format(key))
-            if key == 'data_server':
-                subprocess.Popen('python browser_plotter.py')
 
 if __name__ == '__main__':
     main()

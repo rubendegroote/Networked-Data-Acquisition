@@ -12,7 +12,7 @@ import configparser
 
 from backend.acquire_files.acquisition import acquire
 
-CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
+CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
 
 class Device(Dispatcher):
     ### get configuration details
@@ -84,12 +84,13 @@ class Device(Dispatcher):
         while self.ns.format == tuple():
             time.sleep(1)
 
-        self.start_saving()
+        if read:
+            self.start_saving()
 
     def stop(self):
         self.stopFlag.set()
         self.interfaceThread.join()
-        if self.saveFlag.is_set():
+        if self.readDataFlag.is_set():
             if not self.name == 'DSS':
                 self.saveProcess.terminate()
         self.DAQProcess.terminate()
@@ -114,7 +115,9 @@ class Device(Dispatcher):
             self.handle_messages()
             if self.readDataFlag.is_set():
                 self.read_data()
-            time.sleep(0.01)
+                time.sleep(0.001)
+            else:
+                time.sleep(0.100)
             
     def read_data(self):
         data_packet = hp.emptyPipe(self.data_output)

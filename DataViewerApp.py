@@ -15,8 +15,7 @@ from graph import XYGraph
 from backend.connectors import Connector
 
 import configparser
-CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
-
+CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
 
 class DataViewerApp(QtWidgets.QMainWindow):
     config_parser = configparser.ConfigParser()
@@ -41,6 +40,8 @@ class DataViewerApp(QtWidgets.QMainWindow):
         t = th.Thread(target=self.startIOLoop).start()
 
         self.init_UI()
+
+        self.setWindowTitle('Data Viewer')
 
         self.chooser_required = False    
         self.launch_chooser_signal.connect(self.launch_chooser)
@@ -292,12 +293,12 @@ class DataViewerApp(QtWidgets.QMainWindow):
     def request_data_reply(self,track,params):
         data = params['data']
         done = params['done']
-        progress = params['progress']
+        # progress = params['progress']
 
         data = pd.DataFrame({'time':data[0],'x':data[1],'y':data[2]})
         self.graph.data = self.graph.data.append(data)
         self.graph.plot_needed = True
-        self.graph.progress = int(100*progress)
+        # self.graph.progress = int(100*progress)
         try:
             self.chooser
             self.closeChooser.emit()
@@ -334,7 +335,7 @@ class ScanChooser(QtWidgets.QDialog):
         self.scan_layout = QtWidgets.QGridLayout(self.scan_selector)
         self.layout.addWidget(self.scan_selector,3,0,16,3)
 
-        self.setGeometry(1400,100,400,800)
+        # self.setGeometry(1400,100,400,800)
 
         self.masses = masses
         self.scans = scans

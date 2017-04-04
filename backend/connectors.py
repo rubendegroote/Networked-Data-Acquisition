@@ -126,7 +126,6 @@ class Acceptor(asynchat.async_chat):
 
     @track
     def push(self,message):
-        start = time.time()
         dump = (json.dumps(message) + "STOP_DATA").encode('UTF-8')
         super(Acceptor, self).push(dump)
 

@@ -10,7 +10,7 @@ from backend.connectors import Connector
 from connectiondialogs import ConnectionDialog, FieldAdditionDialog
 from logviewerwidgets import LogEntryWidget
 
-CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
+CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
 
 class LogbookApp(QtWidgets.QWidget):
     editSignal = QtCore.pyqtSignal(int,object)

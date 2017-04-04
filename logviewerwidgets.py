@@ -355,7 +355,7 @@ class LogEntryWidget(FrameLayout):
         return self.entry
 
     def chooseColor(self):
-        imagePath = os.getcwd() + '\\resources\\'
+        imagePath = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\resources\\"
 
         self.titleFrame.setStyleSheet("QFrame {\
         background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #43aa44, stop: 1 #66cc66);\

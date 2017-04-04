@@ -23,6 +23,7 @@ class Hardware(BaseHardware):
         self.settings = dict(aiChannel=aichannels,
                                noOfAi=noOfAi)
 
+
     def connect_to_device(self):
         self.timeout = 10.0
 

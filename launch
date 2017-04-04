@@ -18,6 +18,8 @@ class Launcher(QtWidgets.QWidget):
     def __init__(self,name="",device_name = None):
         super(Launcher,self).__init__()
 
+        self.setGeometry(100,400,250,25)
+
         try:
             if device_name is None:
                 self.program = translation[name]()

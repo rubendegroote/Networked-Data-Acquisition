@@ -2,7 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import os
 import configparser
 
-CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
+CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
 
 
 class Contr_DS_ConnectionDialog(QtWidgets.QDialog):

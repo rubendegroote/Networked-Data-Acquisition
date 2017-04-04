@@ -39,7 +39,7 @@ def acquire(name,iQ,mQ,stopFlag,ns):
         time.sleep(0.001*hardware.ns.refresh_time)
 
 
-CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
+CONFIG_PATH = "\\cern.ch\\dfs\\Users\\c\\cris\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
 class BaseDevice(Dispatcher):
     ### get configuration details
     config_parser = configparser.ConfigParser()

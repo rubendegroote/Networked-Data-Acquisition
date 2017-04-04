@@ -3,7 +3,7 @@ import configparser
 from connectiondialogs import ConnectionDialog
 import os
 
-CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
+CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
 
 class DeviceConnections(QtWidgets.QWidget):
     connectSig = QtCore.pyqtSignal(tuple)

@@ -33,9 +33,11 @@ class Hardware(BaseHardware):
     def read_from_device(self):
         read_back = self.opc.read(group = 'Proton Variables')
         current_pulse = read_back[1][1]
-        while read_back[1][1] == current_pulse:
+        tic = 0
+        while read_back[1][1] == current_pulse and tic <= 100:
             read_back = self.opc.read(group = 'Proton Variables')
             time.sleep(0.001*self.ns.refresh_time)
+            tic += 1
 
         variables = [v[1] for v in read_back]
         if variables[-1]:

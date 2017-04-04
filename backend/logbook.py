@@ -81,11 +81,12 @@ def loadLogbook(filePath):
     logbook = []
     fileNames = glob.glob(filePath + '*')
     fileNames = [f for f in fileNames if '_raw' in f]
-    sorting_key = lambda f: int(f.split('_')[1])
+    sorting_key = lambda f: int(f.split('_raw')[0].split('_')[-1])
     for fileName in sorted(fileNames,key = sorting_key):
         with open(fileName, 'rb') as f:
             logbook.append(pickle.load(f))
     return logbook
+
 
 def main():
     print(SET.format(1,2,3))

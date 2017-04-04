@@ -11,15 +11,25 @@ import configparser
 from http.server import HTTPServer,BaseHTTPRequestHandler,SimpleHTTPRequestHandler
 import socketserver
 
-CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
+
+##### CHANGE THIS IF YOU WANT TO SEE SOMETHING ELSE
+binsize = 1500
+x = 'wavemeter_pdl: wavenumber_1'
+y = 'cris: Counts'
+
+
+
+CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
 config_parser = configparser.ConfigParser()
 config_parser.read(CONFIG_PATH)
 save_path = config_parser['paths']['data_path']
 
-SCAN_PATH = os.getcwd() + "\\Config files\\scan_init.ini"
+SCAN_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\scan_init.ini"
 PLOTS_PATH = 'C:\\DAQ tests\\browser\\'
 
+
 def plot_scan(s,m):
+
     directory = PLOTS_PATH + '\\{}\\'.format(m)
 
     if not os.path.exists(directory):
@@ -27,12 +37,11 @@ def plot_scan(s,m):
     if not os.path.exists(directory+'\\data\\'):
         os.makedirs(directory+'\\data\\')
 
-    if '{}.html'.format(s) in os.listdir(directory):
+    try:
+        df = extract_scan(save_path+'server_data.h5',[s],
+            [y,x])
+    except:
         return
-
-    df = extract_scan(save_path+'test2_data.h5',[s],
-        ['test2: Counts','test2: wavenumber_1'])
-
 
     df = df.rename(columns={'wavenumber_1': 'x', 'Counts': 'y'})
     off = df['x'].mean()
@@ -41,7 +50,7 @@ def plot_scan(s,m):
 
     start = df['x'].min()
     stop = df['x'].max()
-    bins = np.linspace(start,stop,(stop-start)/10)
+    bins = np.linspace(start,stop,(stop-start)/binsize)
     if not len(bins) == 0:
         df = calcHist(df,bins,errormode = 'sqrt',data_mode = 'mean')
 
@@ -105,12 +114,12 @@ class OverviewHandler(BaseHTTPRequestHandler):
         self.wfile.write(bytes(to_write,'utf-8'))
 
 def run():
-    with HTTPServer(('', 10000), OverviewHandler) as server:
+    with HTTPServer(('0.0.0.0', 10000), OverviewHandler) as server:
         server.serve_forever()
 
 def run_plots():
     os.chdir(PLOTS_PATH)
-    with socketserver.TCPServer(("", 20000), SimpleHTTPRequestHandler) as httpd:
+    with socketserver.TCPServer(("0.0.0.0", 20000), SimpleHTTPRequestHandler) as httpd:
         httpd.serve_forever()
 
 def main():

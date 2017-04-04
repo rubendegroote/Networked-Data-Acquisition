@@ -7,7 +7,7 @@ format = ('timestamp','offset','scan_number','mass')
 write_params = []
 
 config_parser = configparser.ConfigParser()
-CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
+CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
 config_parser.read(CONFIG_PATH)
 TIME_OFFSET = int(config_parser['other']['time_offset'])
 
@@ -52,6 +52,10 @@ class BaseHardware():
         return []
 
     def stabilize_device(self):
+        pass
+
+    def read_status(self):
+        # to be overridden
         pass
 
     @hp.try_deco

@@ -14,7 +14,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 mpl.rcParams['toolbar'] = 'None'
 
-CONFIG_PATH = "C:\\Networked-Data-Acquisition\\Config files\\config.ini"
+CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
 
 
 def make_plot(radii, seg = None):

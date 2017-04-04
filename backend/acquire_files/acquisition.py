@@ -61,6 +61,9 @@ def acquire(name,data_pipe,iQ,mQ,stopFlag,readDataFlag,ns):
                 data_pipe.send(data)
             else: #error to report
                 mQ.put(return_message)
+        else:
+            hardware.read_status()
+            
         time.sleep(0.001*hardware.ns.refresh_time)
 
 def receive_instruction(queue):

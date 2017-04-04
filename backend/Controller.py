@@ -6,8 +6,8 @@ from backend.connectors import Connector, Acceptor
 import backend.logbook as lb
 from backend.dispatcher import Dispatcher
 
-CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
-SCAN_PATH = os.getcwd() + "\\Config files\\scan_init.ini"
+CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
+SCAN_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\scan_init.ini"
 
 class Controller(Dispatcher):
     ### get configuration details
@@ -47,7 +47,6 @@ class Controller(Dispatcher):
             self.logbook = lb.loadLogbook(self.log_path)
             self.log_edits = list(range(len(self.logbook)))
         except Exception as e:
-            print(e)
             self.logbook = []
             lb.saveLogbook(self.log_path, self.logbook)
             self.log_edits = []

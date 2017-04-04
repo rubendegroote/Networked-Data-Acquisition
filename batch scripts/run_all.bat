@@ -1,5 +1,4 @@
 title DAQ Launcher
-cd C:\Users\ruben_000\Dropbox\PhD\CRIS DAQ\Networked-Data-Acquisition
-TASKKILL /F /IM "python.exe"
-TASKKILL /F /IM "pythonw.exe"
+xcopy /s/e/Y "\\cern.ch\\dfs\\Users\\c\\cris\\Documents\\Networked-Data-Acquisition\\Config files" "c:\\Networked-data-acquisition\\Config files\\*"
+cd C:\Networked-data-acquisition
 start python launch_all.py

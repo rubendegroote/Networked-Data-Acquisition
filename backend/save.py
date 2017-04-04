@@ -109,6 +109,9 @@ def save_continuously(save_output,saveDir,name,format,saveFlag,saveStreamFlag):
                 save(to_save,format,file_path,group_name,save_stream)
             else:
                 time.sleep(0.001)
+        else:
+            time.sleep(0.100)
+
 
 def save_continuously_dataserver(save_output,saveDir):
     try:

@@ -11,15 +11,13 @@ from beamlinegraph import BeamlineGraph
 import pandas as pd
 from connectiondialogs import Contr_DS_ConnectionDialog
 import configparser
-CONFIG_PATH = os.getcwd() + "\\Config files\\config.ini"
 
-import zlib,pickle
+CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Config files\\config.ini"
 
 from backend.connectors import Connector
 
 # from cupswitcher import CupSwitcher
-
-from ui_7001switcher import CupSwitcher
+# from ui_7001switcher import CupSwitcher
 
 class ControlContainer(QtWidgets.QWidget):
     new_setpoint = QtCore.pyqtSignal(dict)
@@ -408,7 +406,6 @@ class BeamlineControllerApp(QtWidgets.QMainWindow):
                 name,value = line.split(';')
                 value = float(value.strip('\n'))
                 self.container.setBuffer(name,value)
-        self.container.change_volts()
 
     def optimize(self):
         print('optimization requested')

@@ -53,10 +53,9 @@ class XYGraph(QtWidgets.QWidget):
 
         self.labelStyle = {'font-size': '18pt'}
 
-        gView = pg.GraphicsView()
-
         self.graph = pg.PlotWidget()
         self.graph.showGrid(x=True, y=True, alpha=0.1)
+        self.layout.addWidget(self.graph, 0, 0, 1, 10)
 
         self.error_curve = pg.ErrorBarItem(x=np.array([]),y=np.array([]),
                     top=np.array([]),bottom=np.array([]),beam=0.)
@@ -65,32 +64,26 @@ class XYGraph(QtWidgets.QWidget):
         self.points_curve = pg.ScatterPlotItem(x=np.array([]),y=np.array([]),brush='k')
         self.graph.addItem(self.points_curve)
 
-        layout = QtWidgets.QGridLayout(gView)
 
-        layout.addWidget(self.graph, 0, 0, 1, 1)
-        self.sublayout = QtWidgets.QGridLayout()
-        layout.addLayout(self.sublayout, 1, 0)
-
-
-        self.sublayout.addWidget(QtWidgets.QLabel('y: '),0,0)
+        self.layout.addWidget(QtWidgets.QLabel('y: '),1,0)
         self.comboY = QtGui.QComboBox(parent=None)
         self.comboY.setMinimumWidth(250)
         self.comboY.setToolTip('Choose the variable you want to put\
  on the Y-axis.')
-        self.sublayout.addWidget(self.comboY, 0, 1)
+        self.layout.addWidget(self.comboY, 1, 1)
 
-        self.sublayout.addWidget(QtWidgets.QLabel('x: '),0,2)
+        self.layout.addWidget(QtWidgets.QLabel('x: '),1,2)
         self.comboX = QtGui.QComboBox(parent=None)
         self.comboX.setMinimumWidth(250)
         self.comboX.setToolTip('Choose the variable you want to put\
  on the X-axis.')
-        self.sublayout.addWidget(self.comboX, 0, 3)
+        self.layout.addWidget(self.comboX, 1, 3)
 
         self.graphStyles = ['poisson','std dev','None']#, 'Point']
 
         label = QtWidgets.QLabel('Errors: ')
         label.setStyleSheet("border: 0px;")
-        self.sublayout.addWidget(label, 0, 4)
+        self.layout.addWidget(label, 1, 4)
 
         self.error_box = QtGui.QComboBox(self)
         self.error_box.setToolTip('Choose how you want to calculate the errors:\
@@ -99,12 +92,12 @@ class XYGraph(QtWidgets.QWidget):
         self.error_box.setCurrentIndex(0)
         self.error_box.setMaximumWidth(110)
         # self.error_box.currentIndexChanged.connect(self.updatePlot)
-        self.sublayout.addWidget(self.error_box, 0, 5)
+        self.layout.addWidget(self.error_box, 1, 5)
         self.error_box.currentIndexChanged.connect(self.toggle_plot_needed)
 
         label = QtWidgets.QLabel('data mode: ')
         label.setStyleSheet("border: 0px;")
-        self.sublayout.addWidget(label, 0, 6)
+        self.layout.addWidget(label, 1, 6)
 
         self.data_box = QtGui.QComboBox(self)
         self.data_box.currentIndexChanged.connect(self.change_label)
@@ -113,7 +106,7 @@ class XYGraph(QtWidgets.QWidget):
         self.data_box.setCurrentIndex(0)
         self.data_box.setMaximumWidth(110)
         # self.error_box.currentIndexChanged.connect(self.updatePlot)
-        self.sublayout.addWidget(self.data_box, 0, 7)
+        self.layout.addWidget(self.data_box, 1, 7)
         self.data_box.currentIndexChanged.connect(self.toggle_plot_needed)
 
         self.binLabel = QtWidgets.QLabel(self, text="Bin size: ")
@@ -123,63 +116,62 @@ class XYGraph(QtWidgets.QWidget):
                                      dec=False)
         self.binSpinBox.setToolTip('Choose the bin size used to bin the data.')
         self.binSpinBox.setMaximumWidth(110)
-        self.sublayout.addWidget(self.binLabel, 2, 4)
-        self.sublayout.addWidget(self.binSpinBox, 2, 5)
+        self.layout.addWidget(self.binLabel, 2, 4)
+        self.layout.addWidget(self.binSpinBox, 2, 5)
         self.binSpinBox.sigValueChanged.connect(self.toggle_plot_needed)
 
-        self.sublayout.addWidget(QtWidgets.QLabel("y offset"),2,0)
+        self.layout.addWidget(QtWidgets.QLabel("y offset"),2,0)
         self.y_offset = QtWidgets.QLineEdit("0")
         self.y_offset.textChanged.connect(self.change_label)
-        self.sublayout.addWidget(self.y_offset, 2, 1)
+        self.layout.addWidget(self.y_offset, 2, 1)
 
-        self.sublayout.addWidget(QtWidgets.QLabel("x offset"),2,2)
+        self.layout.addWidget(QtWidgets.QLabel("x offset"),2,2)
         self.x_offset = QtWidgets.QLineEdit("0")
         self.x_offset.textChanged.connect(self.change_label)
-        self.sublayout.addWidget(self.x_offset, 2, 3)
+        self.layout.addWidget(self.x_offset, 2, 3)
 
-        self.sublayout.addWidget(QtWidgets.QLabel("x cut left"),3,0)
+        self.layout.addWidget(QtWidgets.QLabel("x cut left"),3,0)
         self.x_cut_left = QtWidgets.QLineEdit("-10000000000")
-        self.sublayout.addWidget(self.x_cut_left, 3, 1)
+        self.layout.addWidget(self.x_cut_left, 3, 1)
         self.x_cut_left.textChanged.connect(self.toggle_plot_needed)
 
-        self.sublayout.addWidget(QtWidgets.QLabel("x cut right"),3,2)
+        self.layout.addWidget(QtWidgets.QLabel("x cut right"),3,2)
         self.x_cut_right = QtWidgets.QLineEdit("10000000000")
-        self.sublayout.addWidget(self.x_cut_right, 3, 3)
+        self.layout.addWidget(self.x_cut_right, 3, 3)
         self.x_cut_right.textChanged.connect(self.toggle_plot_needed)
 
         self.doppler_check = QtGui.QCheckBox('Doppler shift?')
         self.doppler_check.stateChanged.connect(self.toggle_plot_needed)
-        self.sublayout.addWidget(self.doppler_check, 2, 6)
+        # self.layout.addWidget(self.doppler_check, 2, 6)
 
         self.unit_check = QtGui.QCheckBox('Use MHz?')
         self.unit_check.stateChanged.connect(self.change_label)
         self.unit_check.stateChanged.connect(self.toggle_plot_needed)
         self.unit_check.setDisabled(True)
-        self.sublayout.addWidget(self.unit_check, 2, 7)
+        self.layout.addWidget(self.unit_check, 2, 7)
 
         self.clean_stream = QtWidgets.QPushButton('Reset data')
-        self.sublayout.addWidget(self.clean_stream, 3, 7, 1, 1)
+        self.layout.addWidget(self.clean_stream, 3, 7, 1, 1)
         self.clean_stream.clicked.connect(self.clean)
         QtGui.QShortcut(QtGui.QKeySequence("Ctrl+R"), self, self.clean)
 
         self.log_button = QtWidgets.QPushButton('Semilog plot')
         self.log_button.setCheckable(True)
-        self.sublayout.addWidget(self.log_button, 3, 6, 1, 1)
+        self.layout.addWidget(self.log_button, 3, 6, 1, 1)
         self.log_button.clicked.connect(self.toggle_log)
         QtGui.QShortcut(QtGui.QKeySequence("Ctrl+L"), self, self.toggle_log)
 
         self.remove_blobs_button = QtWidgets.QPushButton('Remove fits')
-        self.sublayout.addWidget(self.remove_blobs_button, 3, 5, 1, 1)
+        self.layout.addWidget(self.remove_blobs_button, 3, 5, 1, 1)
         self.remove_blobs_button.clicked.connect(self.clear_blobs)
         QtGui.QShortcut(QtGui.QKeySequence("Ctrl+C"), self, self.clear_blobs)
 
         self.save_button = QtWidgets.QPushButton('Save')
-        self.sublayout.addWidget(self.save_button, 3, 4, 1, 1)
+        self.layout.addWidget(self.save_button, 3, 4, 1, 1)
         self.save_button.clicked.connect(self.save)
         QtGui.QShortcut(QtGui.QKeySequence("Ctrl+S"), self, self.save)
 
-        self.sublayout.setColumnStretch(8, 1)
-        self.layout.addWidget(gView, 0, 0)
+        self.layout.setColumnStretch(8, 1)
 
         self.fit_results = pg.TextItem()
         self.fit_results.setParentItem(self.graph.plotItem.vb)
@@ -205,7 +197,22 @@ class XYGraph(QtWidgets.QWidget):
                         x = curvePoint.x()
                         if self.unit_check.isChecked():
                             x = x / c 
-                        x += float(self.x_offset.text())
+                        text = self.x_offset.text()
+                        if text == '':
+                            text = '0'
+                        x += float(text)
+
+                        self.posLabel.setHtml("<span style='font-size: 12pt'> <span style = 'color: red'> \
+                            x=%0.5fcm-1,y=%0.5f</span>" % (x, y))
+                    
+                    elif 'wavenumber' in self.y_key[1]:
+                        y = curvePoint.y()
+                        if self.unit_check.isChecked():
+                            y = y / c 
+                        text = self.y_offset.text()
+                        if text == '':
+                            text = '0'
+                        y += float(text)
 
                         self.posLabel.setHtml("<span style='font-size: 12pt'> <span style = 'color: red'> \
                             x=%0.5fcm-1,y=%0.5f</span>" % (x, y))
@@ -228,7 +235,7 @@ class XYGraph(QtWidgets.QWidget):
         self.fitter.fitSignal.connect(self.fit_model)
         self.fitter.fitPeakSig.connect(self.start_peakfit)
 
-        self.layout.addWidget(self.fitter,0,1)
+        self.layout.addWidget(self.fitter,0,11,4,1)
 
 
     def clean(self):
@@ -291,7 +298,10 @@ class XYGraph(QtWidgets.QWidget):
             
         if 'wavenumber' in xkey:
             try:
-                offset = float(self.x_offset.text())
+                text = self.x_offset.text()
+                if text == '':
+                    text = '0'
+                offset = float(text)
                 if self.unit_check.isChecked():
                     self.graph.setLabel('bottom','Frequency (offset {} cm-1)'.format(offset),labelStyle = {'color': '#FFF', 'font-size': '24pt'})
                 else:
@@ -303,7 +313,10 @@ class XYGraph(QtWidgets.QWidget):
 
 
         if 'wavenumber' in ykey:
-            offset = float(self.y_offset.text())
+            text = self.y_offset.text()
+            if text == '':
+                text = '0'
+            offset = float(text)
             if self.unit_check.isChecked():
                 self.graph.setLabel('left','Frequency (offset {} cm-1)'.format(offset),labelStyle = {'color': '#FFF', 'font-size': '24pt'})
             else:
@@ -366,8 +379,14 @@ class XYGraph(QtWidgets.QWidget):
     def get_x_y(self):
         data = self.binned_data.copy()
 
-        data['x'] = data['x'] - float(self.x_offset.text())
-        data['y'] = data['y'] - float(self.y_offset.text())
+        text = self.x_offset.text()
+        if text == '':
+            text = '0'
+        data['x'] = data['x'] - float(text)
+        text = self.y_offset.text()
+        if text == '':
+            text = '0'
+        data['y'] = data['y'] - float(text)
 
         if 'timestamp' in self.x_key:
             data['x'] = data['x'] - data['x'].values.min()
@@ -483,9 +502,15 @@ class XYGraph(QtWidgets.QWidget):
             pos = self.graphvb.mapSceneToView(mousePoint.scenePos())
             x = pos.x() 
             if self.unit_check.isChecked():
-                x = x / c + float(self.x_offset.text())
+                text = self.x_offset.text()
+                if text == '':
+                    text = '0'
+                x = x / c - float(text)
             else:
-                x = x + float(self.x_offset.text())
+                text = self.x_offset.text()
+                if text == '':
+                    text = '0'
+                x = x - float(text)
 
             self.peaks.append(x)
             self.heights.append(pos.y())
@@ -500,9 +525,15 @@ class XYGraph(QtWidgets.QWidget):
             ranges.append(r)
         x_fit = np.sort(np.concatenate(ranges))
         if not self.unit_check.isChecked():
-            plot_x = x_fit/c - float(self.x_offset.text())
+            text = self.x_offset.text()
+            if text == '':
+                text = '0'
+            plot_x = x_fit/c - float(text)
         else:
-            plot_x = x_fit - float(self.x_offset.text())*c
+            text = self.x_offset.text()
+            if text == '':
+                text = '0'
+            plot_x = x_fit - float(text)*c
 
         try:
             self.hfs_fit_curve
@@ -525,7 +556,10 @@ class XYGraph(QtWidgets.QWidget):
 
         model.set_value({'Centroid':model.params['Centroid'].value-off})
 
-        self.satlas_fit(model=model,x=x-off,y=y,yerr=yerr_t)
+        try:
+            self.satlas_fit(model=model,x=x-off,y=y,yerr=yerr_t)
+        except:
+            self.satlas_fit(model=model,x=x-off,y=y,yerr=np.ones(len(y)))
 
         model.set_value({'Centroid':model.params['Centroid'].value+off})
 
@@ -571,7 +605,10 @@ class XYGraph(QtWidgets.QWidget):
         x = self.binned_data['x'].values
         print(x)
         x_fit = np.linspace(x.min(),x.max(),10**4)
-        plot_x = x_fit - float(self.x_offset.text())
+        text = self.x_offset.text()
+        if text == '':
+            text = '0'
+        plot_x = x_fit - float(text)
         if self.unit_check.isChecked():
             plot_x *= c
         print(plot_x)
@@ -606,10 +643,12 @@ class XYGraph(QtWidgets.QWidget):
         if not reply == QtGui.QMessageBox.Yes:
             return
 
-        def resid(params,x,y,yerr):
+        def resid(params,x,y,yerr=None):
+            if yerr is None:
+                yerr = np.ones(len(x))
             return (fitfunc(params,x) - y)/yerr
 
-        results = lm.minimize(resid,params,args=(x,y,yerr))
+        results = lm.minimize(resid,params,args=(x,y))
         respar = results.params
 
         fit = fitfunc(results.params,x_fit)
@@ -618,7 +657,10 @@ class XYGraph(QtWidgets.QWidget):
         self.single_peak_curve.setData(x=plot_x,y=fit)
 
         for i in range(int((len(params)-2)/2)):
-            pos = respar['p{}'.format(i)].value - float(self.x_offset.text())
+            text = self.x_offset.text()
+            if text == '':
+                text = '0'
+            pos = respar['p{}'.format(i)].value - float(text)
             w = respar['w'].value * 2.3548 * c
             if self.unit_check.isChecked():
                 pos *= c

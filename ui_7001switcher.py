@@ -148,7 +148,7 @@ class CupSwitcher(QWidget,Ui_Form):
 		ch_switch=self.config[cup,1]
 
 		if int(ch_switch[0]) == 0:
-			reply=self.none
+			reply = self.none
 		else:
 			reply = self.switch.query(":open? (@ "+ch_switch+")")
 			reply = reply.strip('\n').strip('\r')
