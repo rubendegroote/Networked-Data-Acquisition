@@ -16,8 +16,8 @@ class Device(Dispatcher):
     ### get configuration details
     def __init__(self, name=''):
         super(Device, self).__init__(name)
-        save_path = self.config_parser['paths']['data_path']
-        time_offset = int(self.config_parser['other']['time_offset'])
+        self.save_path = self.config_parser['paths']['data_path']
+        self.time_offset = int(self.config_parser['other']['time_offset'])
         
         self.acquire = acquire
 

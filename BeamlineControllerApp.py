@@ -11,7 +11,7 @@ from beamlinegraph import BeamlineGraph
 import pandas as pd
 from connectiondialogs import Contr_DS_ConnectionDialog
 import configparser
-from config.absolute_paths import CONFIG_PATH
+from config.absolute_paths import CONFIG_PATH, BEAM_PATH
 
 
 from backend.connectors import Connector
@@ -140,7 +140,6 @@ class BeamlinecontrollerApp(QtWidgets.QMainWindow):
 
     config_parser = configparser.ConfigParser()
     config_parser.read(CONFIG_PATH)
-    beam_tune_path = config_parser['paths']['beamtune_path']
 
     updateSignal = QtCore.pyqtSignal(tuple)
     messageUpdateSignal = QtCore.pyqtSignal(dict)
@@ -386,7 +385,7 @@ class BeamlinecontrollerApp(QtWidgets.QMainWindow):
                                     'arguments':arguments}))
     def save(self):
         fileName,ext = QtWidgets.QFileDialog.getSaveFileName(self, 
-            'Select file', self.beam_tune_path,"CSV (*.csv)")
+            'Select file', BEAM_PATH,"CSV (*.csv)")
         if fileName == '':
             return
         # Saves the settings to a .txt so they can easily be loaded next time.
@@ -397,7 +396,7 @@ class BeamlinecontrollerApp(QtWidgets.QMainWindow):
 
     def load(self):
         fileName,ext = QtWidgets.QFileDialog.getOpenFileName(self, 
-            'Select file', self.beam_tune_path,"CSV (*.csv)")
+            'Select file', BEAM_PATH,"CSV (*.csv)")
         if fileName == '':
             return
 

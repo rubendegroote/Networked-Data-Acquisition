@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from picbutton import PicButton, PicSpinBox
+from picbutton import PicSpinBox
 import numpy as np
 from spin import Spin
 import pyqtgraph as pg

@@ -1,7 +1,7 @@
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtGui, QtWidgets
 import os
-PATH = "./resources/"
+IMG_PATH = './resources/'
 
 
 class PicButton(QtWidgets.QPushButton):
@@ -19,7 +19,7 @@ class PicButton(QtWidgets.QPushButton):
         self.setIcon(iconName)
 
     def setIcon(self, iconName):
-        super(PicButton, self).setIcon(QtGui.QIcon(PATH + iconName))
+        super(PicButton, self).setIcon(QtGui.QIcon(IMG_PATH + iconName))
 
 
 class PicSpinBox(pg.SpinBox):
@@ -28,7 +28,7 @@ class PicSpinBox(pg.SpinBox):
         super(PicSpinBox, self).__init__(
             parent, value=value, int=integer, step=step)
         self.pic = QtGui.QToolButton(self)
-        self.pic.setIcon(QtGui.QIcon(PATH + iconName))
+        self.pic.setIcon(QtGui.QIcon(IMG_PATH + iconName))
         self.pic.setStyleSheet('border: 0px; padding: 0px;')
         self.pic.setCursor(QtCore.Qt.ArrowCursor)
 

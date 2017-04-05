@@ -1,7 +1,11 @@
 # CONFIG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\config\\config.ini"
 # BATCH_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\batch scripts\\"
 # SCAN_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\config\\scan_init.ini"
+# BEAM_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\BeamTunes\\"
+# IMG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\Resources\\"
 
 CONFIG_PATH = "C:\\Users\\MyStuff\\Dropbox\\PhD\\CRIS DAQ\\Networked-Data-Acquisition\\config\\config.ini"
 BATCH_PATH = "C:\\Users\\MyStuff\\Dropbox\\PhD\\CRIS DAQ\\Networked-Data-Acquisition\\batch scripts\\"
 SCAN_PATH = "C:\\Users\\MyStuff\\Dropbox\\PhD\\CRIS DAQ\\Networked-Data-Acquisition\\config\\scan_init.ini"
+BEAM_PATH = "C:\\Users\\MyStuff\\Dropbox\\PhD\\CRIS DAQ\\Networked-Data-Acquisition\\BeamTunes\\"
+IMG_PATH = "C:\\Users\\MyStuff\\Dropbox\\PhD\\CRIS DAQ\\Networked-Data-Acquisition\\resources\\"

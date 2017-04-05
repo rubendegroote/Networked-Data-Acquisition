@@ -36,6 +36,7 @@ def execute_launch_file_server():
         file_server_p.kill()
     try:
         command = 'python launch file_server'
+        print(command)
         file_server_p = Popen(command)
     except Exception as e:
         return False, e

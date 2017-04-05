@@ -26,11 +26,11 @@ class DataViewerApp(QtWidgets.QMainWindow):
 
         fserver_ch = str(self.config_parser['IPs']['file_server'])
         fserver_port = int(self.config_parser['ports']['file_server'])
-        fileserver_channel = (fserver_ch,fserver_port)
+        self.fileserver_channel = (fserver_ch,fserver_port)
         
         server_ch = str(self.config_parser['IPs']['data_server'])
         server_port = int(self.config_parser['ports']['data_server'])
-        dataserver_channel = (server_ch,server_port)
+        self.dataserver_channel = (server_ch,server_port)
 
         self.initialized = False
         self.scan_number = -1
@@ -292,12 +292,10 @@ class DataViewerApp(QtWidgets.QMainWindow):
     def request_data_reply(self,track,params):
         data = params['data']
         done = params['done']
-        # progress = params['progress']
 
         data = pd.DataFrame({'time':data[0],'x':data[1],'y':data[2]})
         self.graph.data = self.graph.data.append(data)
         self.graph.plot_needed = True
-        # self.graph.progress = int(100*progress)
         try:
             self.chooser
             self.closeChooser.emit()

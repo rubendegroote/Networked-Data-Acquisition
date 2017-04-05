@@ -497,24 +497,6 @@ class XYGraph(QtWidgets.QWidget):
         self.fit_blobs = []
         self.fit_results.setHtml('')
 
-    def pos_chooser(self,mousePoint):
-        if mousePoint.double():
-            pos = self.graphvb.mapSceneToView(mousePoint.scenePos())
-            x = pos.x() 
-            if self.unit_check.isChecked():
-                text = self.x_offset.text()
-                if text == '':
-                    text = '0'
-                x = x / c - float(text)
-            else:
-                text = self.x_offset.text()
-                if text == '':
-                    text = '0'
-                x = x - float(text)
-
-            self.peaks.append(x)
-            self.heights.append(pos.y())
-
     def plot_model(self,model):
         ranges = []
         model.params = model.params
@@ -587,6 +569,24 @@ class XYGraph(QtWidgets.QWidget):
                                str(unc.ufloat(pars['FWHML'].value,pars['FWHML'].stderr)))
         self.fit_results.setHtml(html)
 
+    def pos_chooser(self,mousePoint):
+        if mousePoint.double():
+            pos = self.graphvb.mapSceneToView(mousePoint.scenePos())
+            x = pos.x() 
+            if self.unit_check.isChecked():
+                text = self.x_offset.text()
+                if text == '':
+                    text = '0'
+                x = x / c + float(text)
+            else:
+                text = self.x_offset.text()
+                if text == '':
+                    text = '0'
+                x = x + float(text)
+
+            self.peaks.append(x)
+            self.heights.append(pos.y())
+
     def start_peakfit(self):
         if self.fitter.fit_button.isChecked():
             self.peaks = []
@@ -603,7 +603,6 @@ class XYGraph(QtWidgets.QWidget):
         _,_,y,yerr_t,_ = self.get_x_y()
         yerr = yerr_t
         x = self.binned_data['x'].values
-        print(x)
         x_fit = np.linspace(x.min(),x.max(),10**4)
         text = self.x_offset.text()
         if text == '':
@@ -611,7 +610,6 @@ class XYGraph(QtWidgets.QWidget):
         plot_x = x_fit - float(text)
         if self.unit_check.isChecked():
             plot_x *= c
-        print(plot_x)
 
         w, ok = QtGui.QInputDialog.getText(self, 'FWHM Dialog', 'Enter estimated FHWM (MHz):')
         if not ok:

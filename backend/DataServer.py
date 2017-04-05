@@ -17,7 +17,7 @@ class DataServer(Dispatcher):
         self.save_path = self.config_parser['paths']['data_path']
         if not os.path.exists(self.save_path):
             os.makedirs(self.save_path)
-        time_offset = int(self.config_parser['other']['time_offset'])
+        self.time_offset = int(self.config_parser['other']['time_offset'])
         
         self.data = {}
         self.scan_data = {}

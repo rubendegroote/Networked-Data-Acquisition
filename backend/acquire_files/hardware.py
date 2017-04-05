@@ -16,7 +16,7 @@ class BaseHardware():
 
         self.config_parser = configparser.ConfigParser()
         self.config_parser.read(CONFIG_PATH)
-        TIME_OFFSET = int(self.config_parser['other']['time_offset'])
+        self.time_offset = int(self.config_parser['other']['time_offset'])
 
         self.name = name
         self.format = format
@@ -183,7 +183,7 @@ class BaseHardware():
 
     @hp.try_deco
     def input(self):
-        generic_data = [time.time() - TIME_OFFSET - self.ns.clock_offset,
+        generic_data = [time.time() - self.time_offset - self.ns.clock_offset,
                 self.ns.clock_offset,
                 self.ns.scan_number,
                 self.ns.mass]

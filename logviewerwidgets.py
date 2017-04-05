@@ -1,10 +1,11 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import os
+IMG_PATH = './resources/'
 
 class CollapsibleArrow(QtWidgets.QPushButton):
     clicked_sig = QtCore.pyqtSignal()
     def __init__(self, parent=None, path=None):
-        QtWidgets.QPushButton.__init__(self, parent=parent)
+        super(CollapsibleArrow,self).__init__(parent=parent)
 
         self.isCollapsed = False
         self.setMaximumSize(24, 24)
@@ -18,18 +19,17 @@ class CollapsibleArrow(QtWidgets.QPushButton):
         padding: 0px, 0px, 0px, 0px;}\
         QFrame:hover {background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #44a, stop: 1 #66c);\
         }")
-        imagePath = path + 'Code\\gui\\resources\\'
-        self.arrowNameTrue = imagePath + 'minimizeBlue.png'
-        self.arrowNameFalse = imagePath + 'maximizeBlue.png'
+        self.arrowNameTrue = IMG_PATH + 'minimizeBlue.png'
+        self.arrowNameFalse = IMG_PATH + 'maximizeBlue.png'
 
         self.setToolTip('Click to maximize/minimize.')
 
     def setArrow(self, arrowDir=True):
         if arrowDir:
-            self.setIcon(QtGui.QIcon(self.arrowNameTrue))
+            # self.setIcon(QtGui.QIcon(self.arrowNameTrue))
             self.isCollapsed = True
         else:
-            self.setIcon(QtGui.QIcon(self.arrowNameFalse))
+            # self.setIcon(QtGui.QIcon(self.arrowNameFalse))
             self.isCollapsed = False
 
     def mousePressEvent(self, event):
@@ -38,9 +38,8 @@ class CollapsibleArrow(QtWidgets.QPushButton):
 
 
 class TitleLabel(QtWidgets.QLabel):
-
     def __init__(self, parent=None, text=''):
-        QtWidgets.QLabel.__init__(self, parent=parent, text=text)
+        super(TitleLabel,self).__init__(parent=parent, text=text)
         self.setStyleSheet("TitleLabel {background-color: rgba(0, 0, 0, 0);\
         color: white;\
         border-left: 0px transparent;\
@@ -50,10 +49,9 @@ class TitleLabel(QtWidgets.QLabel):
         }")
 
 
-class TitleFrame(QtGui.QFrame):
-
+class TitleFrame(QtWidgets.QFrame):
     def __init__(self, parent=None, text='', path=None):
-        QtGui.QFrame.__init__(self, parent=parent)
+        super(TitleFrame,self).__init__(parent=parent)
 
         self.titleLabel = None
         self.arrow = None
@@ -97,10 +95,9 @@ class TitleFrame(QtGui.QFrame):
         return super(TitleFrame, self).mouseDoubleClickEvent(event)
 
 
-class FrameLayout(QtGui.QFrame):
-
+class FrameLayout(QtWidgets.QFrame):
     def __init__(self, parent=None, text=None, path=None):
-        QtGui.QFrame.__init__(self, parent=parent)
+        super(FrameLayout,self).__init__(parent=parent)
 
         self.text = text
         self.path = ''
@@ -355,7 +352,7 @@ class LogEntryWidget(FrameLayout):
         return self.entry
 
     def chooseColor(self):
-        imagePath = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\resources\\"
+        IMG_PATH = "\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\resources\\"
 
         self.titleFrame.setStyleSheet("QFrame {\
         background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #43aa44, stop: 1 #66cc66);\
@@ -378,5 +375,5 @@ class LogEntryWidget(FrameLayout):
         QFrame:hover {background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #43aa44, stop: 1 #66cc66);\
         }")
 
-        self.arrow.arrowNameTrue = imagePath + 'minimizeGreen.png'
-        self.arrow.arrowNameFalse = imagePath + 'maximizeGreen.png'
+        self.arrow.arrowNameTrue = IMG_PATH + 'minimizeGreen.png'
+        self.arrow.arrowNameFalse = IMG_PATH + 'maximizeGreen.png'

@@ -54,7 +54,30 @@ def poisson_interval_low(data, alpha=0.32):
     low = np.nan_to_num(low)
     return low
 
-def extract_scan(path,scan_numbers,columns,filename=None):
+def extract_scan(file_paths,columns,devices):
+    frames = []
+    for file_path in file_paths:
+        for dev,col in zip(devices,columns):
+            data_path = file_path + dev + '_ds.csv'
+            with open(file_path + 'metadata_{}.txt'.format(dev), 'r') as mf:
+                mass_info = mf.readline()
+                scan_info = mf.readline()
+                frmt = eval(mf.readline())
+            col_index = frmt.index(col)
+
+            data = np.loadtxt(data_path,delimiter = ';').T
+            frames.append(pd.DataFrame({'time':data[0], col:data[col_index]}))
+
+    dataframe = pd.concat(frames)
+    dataframe = dataframe.sort_values(by='time')
+    for col in columns:
+        if not col == 'Counts' or col == 'counts':
+            dataframe[col] = dataframe[col].fillna(method='ffill')
+    dataframe = dataframe.dropna()
+
+    return dataframe
+
+def extract_scan_hdf(path,scan_numbers,columns,filename=None):
     scan_numbers = [str(int(s)) for s in scan_numbers]
    
     devices = [c.split(': ')[0] for c in columns]
@@ -87,7 +110,6 @@ def extract_scan(path,scan_numbers,columns,filename=None):
 
     if filename is not None:
         dataframe.to_csv(filename)
-
 
     return dataframe
 
