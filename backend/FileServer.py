@@ -27,12 +27,12 @@ CHUNK_SIZE = 5*10**4
 def copy_data(src_path, dest_path):
     if not os.path.isdir(dest_path):
         os.makedirs(dest_path)
-
-    for f in os.listdir(src_path):
-        src_file = os.path.join(src_path, f)
-        dst_file = os.path.join(dest_path, f)
-        shutil.copyfile(src_file, dst_file) 
-
+        # only copy files if they weren't copied before, i.e. if this
+        # folder did not exist before
+        for f in os.listdir(src_path):
+            src_file = os.path.join(src_path, f)
+            dst_file = os.path.join(dest_path, f)
+            shutil.copyfile(src_file, dst_file) 
 
 def plot_scan(file_path):
     try:
@@ -41,6 +41,7 @@ def plot_scan(file_path):
         return
 
     df = df.rename(columns={'wavenumber_1': 'x', 'Counts': 'y'})
+    df = df[df['x'] > 10000]
     off = df['x'].mean()
     df['x'] -= off
     df['x'] *= 29979.2458
