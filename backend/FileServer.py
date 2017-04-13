@@ -12,17 +12,13 @@ from backend.dispatcher import Dispatcher
 from backend.helpers import try_call
 from os.path import join, dirname, normpath, isdir
 from os import listdir
-
+import configparser
 
 ##### CHANGE THIS IF YOU WANT TO SEE SOMETHING ELSE
 binsize = 5
-# x_dev_browser = 'wavemeter_pdl'
-# x_col_browser = 'wavenumber_1'
-# y_dev_browser = 'cris'
-# y_col_browser = 'Counts'
-x_dev_browser = 'test2'
+x_dev_browser = 'wavemeter_pdl'
 x_col_browser = 'wavenumber_1'
-y_dev_browser = 'test2'
+y_dev_browser = 'cris'
 y_col_browser = 'Counts'
 
 CHUNK_SIZE = 5*10**4
@@ -38,7 +34,11 @@ def copy_data(src_path, dest_path):
             shutil.copyfile(src_file, dst_file) 
 
 def plot_scan(file_path):
-    df = extract_scan([file_path],[x_col_browser,y_col_browser], [x_dev_browser,y_dev_browser])
+    try:
+        df = extract_scan([file_path],[x_col_browser,y_col_browser], [x_dev_browser,y_dev_browser])
+    except FileNotFoundError:
+        print(file_path, ' was not extracted during static browser plotting, probably no data for requested columns')
+        return
 
     df = df.rename(columns={'wavenumber_1': 'x', 'Counts': 'y'})
     df = df[df['x'] > 10000]
@@ -73,13 +73,15 @@ def plot_scan(file_path):
 class OverviewHandler(BaseHTTPRequestHandler):
     def __init__(self,*args,**kwargs):
         super(OverviewHandler,self).__init__(*args,**kwargs)
-        self.config_parser = configparser.ConfigParser()
-        self.config_parser.read(CONFIG_PATH)
-        self.scan_parser = self.configparser.ConfigParser()
+        self.scan_parser = configparser.ConfigParser()
         self.scan_parser.read(SCAN_PATH)
         
     def do_GET(self):
-        last_scan = int(self.scan_parser['last_scan']['last_scan'])
+        try:
+            last_scan = int(self.scan_parser['last_scan']['last_scan'])
+        except:
+            self.wfile.write(bytes('No scans yet','utf-8'))
+            return
         mass = int(self.scan_parser['last_scan']['mass'])
         scanner_name = self.scan_parser['scanner']['scanner']
         scanning = self.scan_parser['scanning']['scanning']
@@ -161,18 +163,20 @@ class FileServer(Dispatcher):
     def survey_directory(self):
         ## not elegant, but robust...
         # in diiiiire need of refactoring
-        for path in listdir(self.save_path):
-            if not isdir(self.save_path+path):
+        for dirname in listdir(self.save_path):
+            if not isdir(self.save_path+dirname):
                 continue
-            sub_path = join(self.save_path, path)
+            sub_path = join(self.save_path, dirname)
             if not normpath(sub_path) == normpath(self.serve_path):
-                mass = int(float(path))
-                for p in listdir(sub_path):
-                    full_path = join(sub_path,p) 
+                if dirname == 'stream':
+                    continue
+                mass = int(float(dirname))
+                for subdirname in listdir(sub_path):
+                    full_path = join(sub_path,subdirname) 
                     if not isdir(full_path):
                         continue
 
-                    scan = int(p.strip('scan_').lstrip('0'))
+                    scan = int(subdirname.strip('scan_'))
                     if not scan in self.scans:
                         with open(join(self.save_path,'scanning.txt'),'r') as f1:
                             line = f1.readline()

@@ -5,10 +5,10 @@ import threading
 import struct
 import traceback
 from collections import OrderedDict
-
+from config.absolute_paths import BEAMLINE_CONFIG_PATH
 from .hardware import format,BaseHardware
 
-ini = open('\\\\cern.ch\\dfs\\Users\\c\\CRIS\\Documents\\Networked-Data-Acquisition\\config\\beamline_config.ini','rb')
+ini = open(BEAMLINE_CONFIG_PATH,'rb')
 data = np.genfromtxt(ini,delimiter = '\t',dtype=str)
 supply_names = list(data.T[0])
 modules = list(data.T[1])
@@ -159,7 +159,7 @@ class Hardware(BaseHardware):
 
                 except:
                     # print('error')
-                    # print(traceback.format_exc())
+                    print(traceback.format_exc())
                     pass
 
         return ret_list

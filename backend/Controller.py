@@ -41,7 +41,10 @@ class Controller(Dispatcher):
             lb.saveLogbook(self.log_path, self.logbook)
             self.log_edits = []
 
-        self.read_config()
+        try:
+            self.read_config()
+        except:
+            print('Failed to read scan_init.ini!!')
 
     def read_config(self):
         ### get prev scan details

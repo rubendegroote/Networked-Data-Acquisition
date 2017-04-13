@@ -2,17 +2,29 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 from multiprocessing import freeze_support
 
-from backend.fileserver import FileServer
-from backend.dataserver import DataServer
-from backend.controller import Controller
-from backend.device import Device
+translation = {}
+try:
+    from backend.fileserver import FileServer
+    translation['file_server'] = FileServer
+except:
+    print('Problem importing {} - this should not affect anything'.format('file_server'))
+try:
+    from backend.dataserver import DataServer
+    translation['data_server'] = DataServer
+except:
+    print('Problem importing {} - this should not affect anything'.format('data_server'))
+try:
+    from backend.controller import Controller
+    translation['controller'] = Controller
+except:
+    print('Problem importing {} - this should not affect anything'.format('controller'))
+try:
+    from backend.device import Device
+    translation['device'] = Device
+except:
+    print('Problem importing {} - this should not affect anything'.format('device'))
 import traceback
 
-translation = {}
-translation['file_server'] = FileServer
-translation['data_server'] = DataServer
-translation['controller'] = Controller
-translation['device'] = Device
 
 class Launcher(QtWidgets.QWidget):
     def __init__(self,name="",device_name = None):

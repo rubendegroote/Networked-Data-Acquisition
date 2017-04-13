@@ -83,7 +83,7 @@ def save_continuously(save_output,saveDir,name,frmt,saveFlag,saveStreamFlag):
     try:
         os.stat(saveDir)
     except:
-        os.mkdir(saveDir)
+        os.mkdirs(saveDir)
 
     while True:
         if saveFlag.is_set():

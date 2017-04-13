@@ -13,10 +13,7 @@ class CRISTAL(QtWidgets.QMainWindow):
     def __init__(self):
         super(CRISTAL, self).__init__()
 
-        try:
-            self.get_configs()
-        except:
-            self.run_update()
+        self.get_configs()
 
         time.sleep(5)
         self.get_configs()

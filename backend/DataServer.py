@@ -16,7 +16,11 @@ class DataServer(Dispatcher):
         ### get configuration details
         self.save_path = self.config_parser['paths']['data_path']
         if not os.path.exists(self.save_path):
-            os.makedirs(self.save_path)
+            try:
+                os.makedirs(self.save_path)
+            except:
+                # in case the file server or something just made it
+                pass
         self.time_offset = int(self.config_parser['other']['time_offset'])
         
         self.data = {}
