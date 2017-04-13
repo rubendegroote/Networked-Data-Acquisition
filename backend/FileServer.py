@@ -10,6 +10,9 @@ from config.absolute_paths import CONFIG_PATH, SCAN_PATH
 import shutil
 from backend.dispatcher import Dispatcher
 from backend.helpers import try_call
+from os.path import join, dirname, normpath, isdir
+from os import listdir
+
 
 ##### CHANGE THIS IF YOU WANT TO SEE SOMETHING ELSE
 binsize = 5
@@ -35,10 +38,7 @@ def copy_data(src_path, dest_path):
             shutil.copyfile(src_file, dst_file) 
 
 def plot_scan(file_path):
-    try:
-        df = extract_scan([file_path],[x_col_browser,y_col_browser], [x_dev_browser,y_dev_browser])
-    except:
-        return
+    df = extract_scan([file_path],[x_col_browser,y_col_browser], [x_dev_browser,y_dev_browser])
 
     df = df.rename(columns={'wavenumber_1': 'x', 'Counts': 'y'})
     df = df[df['x'] > 10000]
@@ -52,7 +52,7 @@ def plot_scan(file_path):
     if not len(bins) == 0:
         df = calcHist(df,bins,errormode = 'sqrt',data_mode = 'mean')
 
-        with open(file_path + 'plot.csv', 'w') as dfile:
+        with open(os.path.join(file_path,'plot.csv'), 'w') as dfile:
             df.to_csv(dfile)
 
         fig = plt.figure()
@@ -65,7 +65,7 @@ def plot_scan(file_path):
         plt.xlim([start,stop])
         plt.ylim([0.9*(df['y']-df['yerr_b']).min(),1.1*(df['y'] + df['yerr_t']).max()])
        
-        with open(file_path + 'plot.html', 'w') as sf:
+        with open(os.path.join(file_path,'plot.html'), 'w') as sf:
             sf.write(mpld3.fig_to_html(fig))
 
         fig.clf()
@@ -73,21 +73,21 @@ def plot_scan(file_path):
 class OverviewHandler(BaseHTTPRequestHandler):
     def __init__(self,*args,**kwargs):
         super(OverviewHandler,self).__init__(*args,**kwargs)
-
-    def do_GET(self):
+        self.config_parser = configparser.ConfigParser()
+        self.config_parser.read(CONFIG_PATH)
+        self.scan_parser = self.configparser.ConfigParser()
+        self.scan_parser.read(SCAN_PATH)
         
-        scan_parser = configparser.ConfigParser()
-        scan_parser.read(SCAN_PATH)
+    def do_GET(self):
+        last_scan = int(self.scan_parser['last_scan']['last_scan'])
+        mass = int(self.scan_parser['last_scan']['mass'])
+        scanner_name = self.scan_parser['scanner']['scanner']
+        scanning = self.scan_parser['scanning']['scanning']
 
-        last_scan = int(scan_parser['last_scan']['last_scan'])
-        mass = int(scan_parser['last_scan']['mass'])
-        scanner_name = scan_parser['scanner']['scanner']
-        scanning = scan_parser['scanning']['scanning']
-
-        scan_mass = dict(scan_parser['scan_mass'])
+        scan_mass = dict(self.scan_parser['scan_mass'])
         for key,val in scan_mass.items():
             scan_mass[key] = eval(val)
-        scan_ranges = dict(scan_parser['scan_ranges'])
+        scan_ranges = dict(self.scan_parser['scan_ranges'])
         for key,val in scan_ranges.items():
             scan_ranges[key] = eval(val)
 
@@ -127,34 +127,26 @@ class FileServer(Dispatcher):
         self.scans = []
         self.masses = []
         self.current_scan = None
-        self.looping = True
 
-        self.start_survey_thread()
-        self.run_servers()
-
-        time.sleep(1)
-
-    def start_survey_thread(self):
-        self.survey_thread = th.Thread(target = self.survey_directory)
-        self.survey_thread.setDaemon(True)
+        self.survey_thread = th.Timer(0, self.survey_directory)
         self.survey_thread.start()
+
+        self.run_servers()
 
     def run_servers(self):
         self.server_thread = th.Thread(target = self.run)
-        self.server_thread.setDaemon(True)
+        self.server_thread.daemon = True
         self.server_thread.start()
 
         self.server_thread_2 = th.Thread(target = self.run_plots)
-        self.server_thread_2.setDaemon(True)
+        self.server_thread_2.daemon = True
         self.server_thread_2.start()
 
     def stop(self):
-        self.looping = False
         self.server.shutdown()
         self.httpd.shutdown()
-        self.server_thread.join()
-        self.server_thread_2.join()
-        self.survey_thread.join()
+
+        super(FileServer,self).stop()
 
     def run(self):
         self.server =  HTTPServer(('0.0.0.0', 10000), OverviewHandler)
@@ -167,40 +159,45 @@ class FileServer(Dispatcher):
         self.httpd.serve_forever()
 
     def survey_directory(self):
-        while self.looping:
-            ## not elegant, but robust...
-            for path in [path for path in os.listdir(self.save_path) if os.path.isdir(self.save_path+path)]:
-                sub_path = self.save_path + path  + '\\' 
-                if not os.path.normpath(sub_path) == os.path.normpath(self.serve_path):
-                    mass = int(float(path))
+        ## not elegant, but robust...
+        # in diiiiire need of refactoring
+        for path in listdir(self.save_path):
+            if not isdir(self.save_path+path):
+                continue
+            sub_path = join(self.save_path, path)
+            if not normpath(sub_path) == normpath(self.serve_path):
+                mass = int(float(path))
+                for p in listdir(sub_path):
+                    full_path = join(sub_path,p) 
+                    if not isdir(full_path):
+                        continue
 
-                    for p in [p for p in os.listdir(sub_path) if os.path.isdir(sub_path+p)]:
-                        full_path = sub_path + p + '\\' 
-                        scan = int(p.strip('scan_').lstrip('0'))
-
-                        if not scan in self.scans:
-                            with open(self.save_path+'scanning.txt','r') as f1:
-                                line = f1.readline()
-                                scanning = int(line) == 1
-                                if scanning:
-                                    self.current_scan = int(float(f1.readline()))
-                                else:
-                                    self.current_scan = None
-
-                            if scanning and scan == self.current_scan:
-                                pass
+                    scan = int(p.strip('scan_').lstrip('0'))
+                    if not scan in self.scans:
+                        with open(join(self.save_path,'scanning.txt'),'r') as f1:
+                            line = f1.readline()
+                            scanning = int(line) == 1
+                            if scanning:
+                                self.current_scan = int(float(f1.readline()))
                             else:
-                                time.sleep(1) ## one can never be too sure that the saving is done ;)
-                                
-                                path_to_serve = self.change_path_to_serve(full_path)
-                                copy_data(full_path, path_to_serve)
-                                plot_scan(path_to_serve)
-                                
-                                self.paths_dict[scan] = full_path
-                                self.masses.append(mass)
-                                self.scans.append(scan)
+                                self.current_scan = None
 
-            time.sleep(5)
+                        if scanning and scan == self.current_scan:
+                            pass
+                        else:
+                            print(mass,scan)
+                            time.sleep(0.1) ## one can never be too sure that the saving is done ;)
+                            
+                            path_to_serve = self.change_path_to_serve(full_path)
+                            copy_data(full_path, path_to_serve)
+                            plot_scan(path_to_serve)
+                            
+                            self.paths_dict[scan] = full_path
+                            self.masses.append(mass)
+                            self.scans.append(scan)
+        if self.looping:
+            self.survey_thread = th.Timer(5, self.survey_directory)
+            self.survey_thread.start()
     
     def change_path_to_serve(self,path):
         return self.serve_path + path.strip(self.save_path)    
@@ -242,8 +239,8 @@ class FileServer(Dispatcher):
             self.data = extract_scan(file_paths,[x_col,y_col], [x_dev,y_dev])
 
         stop = self.row+CHUNK_SIZE
-
-        data = [self.data['time'][self.row:stop],
+        progress = int(100*(stop/len(self.data)))
+        data = [self.data['timestamp'][self.row:stop],
                 self.data[x_col][self.row:stop],
                 self.data[y_col][self.row:stop]]
 
@@ -251,10 +248,10 @@ class FileServer(Dispatcher):
 
         if stop >= len(self.data):
             self.row = 0
-            return {'data': chunk,'done':True}
+            return {'data': chunk,'done':True, 'progress':100}
         else:
             self.row = stop
-            return {'data': chunk,'done':False}
+            return {'data': chunk,'done':False, 'progress':progress}
 
 def makeFileServer():
     return FileServer()

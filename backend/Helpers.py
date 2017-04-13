@@ -58,18 +58,17 @@ def extract_scan(file_paths,columns,devices):
     frames = []
     for file_path in file_paths:
         for dev,col in zip(devices,columns):
-            data_path = file_path + dev + '_ds.csv'
-            with open(file_path + 'metadata_{}.txt'.format(dev), 'r') as mf:
+            data_path = os.path.join(file_path,dev + '_ds.csv')
+            with open(os.path.join(file_path,'metadata_{}.txt'.format(dev)), 'r') as mf:
                 mass_info = mf.readline()
                 scan_info = mf.readline()
                 frmt = eval(mf.readline())
-            col_index = frmt.index(col)
 
-            data = np.loadtxt(data_path,delimiter = ';').T
-            frames.append(pd.DataFrame({'time':data[0], col:data[col_index]}))
+            data = pd.read_csv(data_path,delimiter = ';', names = frmt)
+            frames.append(data[['timestamp',col]])
 
     dataframe = pd.concat(frames)
-    dataframe = dataframe.sort_values(by='time')
+    dataframe = dataframe.sort_values(by='timestamp')
     for col in columns:
         if not col == 'Counts' or col == 'counts':
             dataframe[col] = dataframe[col].fillna(method='ffill')

@@ -415,7 +415,7 @@ class XYGraph(QtWidgets.QWidget):
         self.data_mode = str(self.data_box.currentText())
 
         if self.mode == 'fs':
-            self.graph.setTitle('Scan: {} \t Mass: {} \t Progress {}'.format(self.scan_number,self.mass,self.progress))
+            self.graph.setTitle('Scan: {} \t Mass: {} \t Replay {}% complete'.format(self.scan_number,self.mass,self.progress))
         else:
             self.graph.setTitle('Scan: {} \t Mass: {}'.format(self.scan_number,self.mass))
 
